@@ -3,8 +3,8 @@ node_js:
   - "7.2"
 script:
   - echo "Deploying..."
-install:
-  - npm install -g firebase-tools
+# install:
+#   - npm install -g firebase-tools
 after_success:
   - firebase login
   - firebase use fmjs-2ef79
