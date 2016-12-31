@@ -1,4 +1,4 @@
 # fmjs
 About ...
 
-Fernando Millan
+Fernando Millan JS
