@@ -1,14 +1,50 @@
-<md-toolbar color="primary" class="fullbar">
-    <h1>{{title}}</h1> 
-</md-toolbar>
-<!--<md-card>
-  hello
-</md-card>
-<div class="flex-container" 
-     fxLayout="row" 
-     fxLayout.xs="column"
-     fxLayoutAlign="center center"
-     fxLayoutAlign.xs="start">
-  <div class="flex-item" fxFlex="20%" fxFlex.xs="40%"> SUP </div>
-  <div class="flex-item" fxFlex>      not much  </div>
-</div> -->
+<mdl-layout mdl-layout-fixed-header mdl-layout-header-seamed>
+  <mdl-layout-header>
+    <mdl-layout-header-row>
+      <!--Logo-->
+      <img src="../assets/logo1.svg" alt="FernandoMillan_logo" class="logo">
+      <mdl-layout-title>{{title}}</mdl-layout-title>
+      <mdl-layout-spacer></mdl-layout-spacer>
+      <!-- Navigation. We hide it in small screens. -->
+      <nav class="mdl-navigation">
+        <a href="" class="mdl-navigation__link">Profile</a>
+        <a href="" class="mdl-navigation__link">Projects</a>
+        <a href="" class="mdl-navigation__link">CodeLab</a>
+        <a href="" class="mdl-navigation__link">Blog</a>
+        <a href="" class="mdl-navigation__link">Resources</a>
+      </nav>
+    </mdl-layout-header-row>
+  </mdl-layout-header>
+  <mdl-layout-content>
+      
+      <mdl-card class="demo-card-square" mdl-shadow="2">
+        <mdl-card-title mdl-card-expand>
+          <h2 mdl-card-title-text>Update</h2>
+        </mdl-card-title>
+        <mdl-card-supporting-text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenan convallis.
+        </mdl-card-supporting-text>
+        <mdl-card-actions mdl-card-border>
+          <button mdl-button mdl-colored mdl-ripple>
+              View Updates
+            </button>
+        </mdl-card-actions>
+      </mdl-card>
+
+       <mdl-card class="demo-card-square" mdl-shadow="2">
+        <mdl-card-title mdl-card-expand>
+          <h2 mdl-card-title-text>Update</h2>
+        </mdl-card-title>
+        <mdl-card-supporting-text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenan convallis.
+        </mdl-card-supporting-text>
+        <mdl-card-actions mdl-card-border>
+          <button mdl-button mdl-colored mdl-ripple>
+              View Updates
+            </button>
+        </mdl-card-actions>
+      </mdl-card>
+
+  </mdl-layout-content>
+</mdl-layout>
+

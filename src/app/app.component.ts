@@ -7,6 +7,6 @@ import 'hammerjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'app works!';
+  title = 'Fernando Millan';
   // myColor = 'primary';
 }
