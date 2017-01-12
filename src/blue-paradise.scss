@@ -2,23 +2,23 @@
 ** 
 ** angularmaterial2
 **/
-// @import '~@angular/material/core/theming/all-theme';
-// // Include non-theme styles for core.
-// @include md-core();
-// // Define a theme.
-// $primary: md-palette($md-blue);
-// $accent:  md-palette($md-green);
-// $theme: md-dark-theme($primary, $accent);
-// // Include all theme styles for the components.
-// @include angular-material-theme($theme);
+@import '~@angular/material/core/theming/all-theme';
+// Include non-theme styles for core.
+@include md-core();
+// Define a theme.
+$primary: md-palette($md-blue);
+$accent:  md-palette($md-green);
+$theme: md-dark-theme($primary, $accent);
+// Include all theme styles for the components.
+@include angular-material-theme($theme);
 /*
 ** 
 ** angular2-mdl
 **/
-@import "~angular2-mdl/scss/color-definitions";
-$color-primary: $palette-blue-500;
-$color-primary-dark: $palette-blue-700;
-$color-accent: $palette-amber-A200;
-$color-primary-contrast: $color-dark-contrast;
-$color-accent-contrast: $color-dark-contrast;
-@import '~angular2-mdl/scss/material-design-lite';
+// @import "~angular2-mdl/scss/color-definitions";
+// $color-primary: $palette-blue-500;
+// $color-primary-dark: $palette-blue-700;
+// $color-accent: $palette-amber-A200;
+// $color-primary-contrast: $color-dark-contrast;
+// $color-accent-contrast: $color-dark-contrast;
+// @import '~angular2-mdl/scss/material-design-lite';
