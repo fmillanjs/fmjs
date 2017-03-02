@@ -1,0 +1,7 @@
+@import '../mixins';
+
+#logo {
+    @include centerer;
+    position: absolute;
+    width: 50%;
+}
