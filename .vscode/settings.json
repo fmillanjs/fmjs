@@ -1,0 +1,12 @@
+{
+    "vsicons.presets.angular": true,
+    "files.exclude": {
+        "**/node_modules": {},
+        "typings": {},
+        "**/*.map": {},
+        "**/*.spec.ts": {},
+        "**/*.js": {
+            "when": "$(basename).ts"
+        }
+    }
+}
