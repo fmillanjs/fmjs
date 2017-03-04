@@ -1,7 +1,8 @@
 @import '../mixins';
 
 #logo {
-    @include centerer;
     position: absolute;
-    width: 50%;
+    width: 10%;
+    padding: 20px 0 0 20px;
+    transform-origin: 0% 0%
 }
