@@ -1,12 +1,8 @@
 @import 'mixins';
-// MAIN COLORS
-$color1: #044f80;
-$color2: #1db7da;
-$color3: #4b9cdb;
-$color4: #1D242c;
-$color5: #717f8f;
-// END MAIN COLORS
-
+@import 'config';
+body{
+    background: #EEE;
+}
 
 // // // // // // 
 // RESET STYLES // 

@@ -1,7 +1,21 @@
 <!--Add Loading Animation strcuture-->
-<div id="headBar">
-  <div id="logo" [@loading]><img src="./imgs/logo.svg" alt="fernando millan"></div>
-  <div id="navigation"></div>
+<div id="headBar" class="headBar" [@loadingHeadBar] >
+  <div id="logo" class="logo" [@loadingLogo]>
+    <img src="./imgs/logo.svg" alt="fernando millan">
+  </div>
+  <div id="title" class="title" [@loadingHeadTitle]>
+    <h1>Fernando Millan</h1>
+  </div>
+  <div id="navigation" class="navigation" [@loadingNavigation]>
+    <nav>
+      <ul class="ul-navigation">
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Profile</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Work</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Blog</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
 </div>
 <!--End Loading Animation-->
 <router-outlet></router-outlet>
