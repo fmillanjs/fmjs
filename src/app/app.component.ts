@@ -1,14 +1,23 @@
-import { Component } from '@angular/core';
-import { loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation } from './animations';
+import { Component, HostBinding, OnInit} from '@angular/core';
+import { Router } from '@angular/router';
+import { loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation, routeTransition} from './animations';
 
 @Component({
   selector: 'fm-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   animations: [
-    loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation
-  ]
+    loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation,
+  ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Fernando Millan';
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    setTimeout( () => {
+      this.router.navigate(['/profile'])
+    }, 2800);
+  }
 }

@@ -4,18 +4,19 @@
     <img src="./imgs/logo.svg" alt="fernando millan">
   </div>
   <div id="title" class="title" [@loadingHeadTitle]>
-    <h1>Fernando Millan</h1>
+    <h1>{{title}}</h1>
   </div>
   <div id="navigation" class="navigation" [@loadingNavigation]>
     <nav>
       <ul class="ul-navigation">
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Profile</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Work</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Blog</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/route-link']">Contact</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/profile']" routerLinkActive="active">Profile</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/work']" routerLinkActive="active">Work</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="['/blog']" routerLinkActive="active">Blog</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="[{ outlets: { popup: ['contact'] } }]">Contact</a></li>
       </ul>
     </nav>
   </div>
 </div>
 <!--End Loading Animation-->
 <router-outlet></router-outlet>
+<router-outlet name="popup"></router-outlet>

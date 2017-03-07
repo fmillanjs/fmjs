@@ -73,3 +73,32 @@ export const loadingNavigation = trigger('loadingNavigation', [
         ]))
     ])
 ]);
+// loading firt route
+// export const loadingFirstRoute = trigger('loadingFirstRoute', [
+//     state('void', style({position: 'fixed', width: '100%'}) ),
+//     state('*', style({position: 'fixed', width: '100%'}) ),
+//     transition(':enter', [
+//       style({transform: 'translateX(100%)'}),
+//       animate('0.5s 2.4s ease-in-out', style({transform: 'translateX(0%)'}))
+//     ])
+// ]);
+
+// Component animations
+export function routeTransition() {
+    return slideLeft();
+}
+
+function slideLeft() {
+  return trigger('routeTransition', [
+    state('void', style({position: 'fixed', width: '100%'}) ),
+    state('*', style({position: 'fixed', width: '100%'}) ),
+    transition(':enter', [
+      style({transform: 'translateX(100%)'}),
+      animate('0.5s ease-in-out', style({transform: 'translateX(0%)'}))
+    ]),
+    transition(':leave', [
+      style({transform: 'translateX(0%)'}),
+      animate('0.5s ease-in-out', style({transform: 'translateX(-100%)'}))
+    ])
+  ]);
+}

@@ -1,10 +1,28 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+import { ProfileComponent } from './profile.component';
+import { WorkComponent } from './work.component';
+import { BlogComponent } from './blog.component';
+import { ContactComponent } from './contact.component';
+
 const routes: Routes = [
   {
-    path: '',
-    children: []
+    path: 'profile',
+    component: ProfileComponent
+  },
+  {
+    path: 'work',
+    component: WorkComponent
+  },
+  {
+    path: 'blog',
+    component: BlogComponent
+  },
+  {
+    path: 'contact',
+    component: ContactComponent,
+    outlet: 'popup'
   }
 ];
 

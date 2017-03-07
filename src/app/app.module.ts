@@ -8,10 +8,18 @@ import 'hammerjs';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ProfileComponent } from './profile.component';
+import { WorkComponent } from './work.component';
+import { BlogComponent } from './blog.component';
+import { ContactComponent } from './contact.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ProfileComponent,
+    WorkComponent,
+    BlogComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,
