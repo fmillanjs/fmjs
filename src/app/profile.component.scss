@@ -1,0 +1,31 @@
+@import "../config.scss";
+@import "../mixins.scss";
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 5px;
+}
+.mat-card{
+    margin: 0.5%
+}
+.profile-card {
+    width: 30%;
+}
+.description-card {
+    width: 50%;
+}
+.thumbs-card {
+    width: 50%
+}
+.skills-card {
+    width: 30%;
+}
+.mat-card-subtitle {
+    font-size: 2vw!important;
+}
+.mat-card-title {
+    font-family: $roboto;
+    font-size: 3.7vw!important;
+}
