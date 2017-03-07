@@ -7,6 +7,7 @@ import { BlogComponent } from './blog.component';
 import { ContactComponent } from './contact.component';
 
 const routes: Routes = [
+  // { path: '',   redirectTo: '/profile', pathMatch: 'full' },
   {
     path: 'profile',
     component: ProfileComponent
