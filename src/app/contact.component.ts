@@ -8,11 +8,13 @@ import { Router } from '@angular/router';
 })
 export class ContactComponent implements OnInit {
   details: string;
-  sending: boolean = false;
+  sending = false;
+  height: number;
 
   constructor(private router: Router) { }
 
   ngOnInit() {
+    this.height = this.getHeight();
   }
 
   send() {
@@ -33,6 +35,11 @@ export class ContactComponent implements OnInit {
     // Providing a `null` value to the named outlet
     // clears the contents of the named outlet
     this.router.navigate([{ outlets: { popup: null }}]);
+  }
+  getHeight() {
+    let body = document.body,
+    html = document.documentElement;
+    return Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
   }
 
 }
