@@ -4,14 +4,14 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { routeTransition } from './animations';
 
-export interface Work {
+interface Work {
     id: number;
     name: string;
     updated: Date;
     description: string;
 }
 
-export const WORKS: Work[] = [
+const WORKS: Work[] = [
       {
       id: 0,
       name: 'Blog CMS',
@@ -40,11 +40,17 @@ export const WORKS: Work[] = [
   host: {'[@routeTransition]': ''}
 })
 export class WorkComponent implements OnInit {
+  works: Work[];
 
-
-  constructor() { }
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.getWorks().then(works => this.works = works);
   }
-
+  getWorks(): Promise<Work[]> {
+    return Promise.resolve(WORKS); // TODO: get hero data from the server;
+  }
+  onSelect(id){
+    this.router.navigate([id], { relativeTo: this.route } );
+  }
 }
