@@ -3,6 +3,7 @@
 
 .container {
     @include centerer;
+    z-index: 2;
 }
 
 .mat-card {
@@ -17,4 +18,19 @@ button {
 }
 .closePop{
     position: absolute;
+    z-index: 2;
+    top: -6%;
+    left: 94%;
+}
+.mat-card-actions .mat-raised-button {
+    margin: 0;
+}
+.backClosePop {
+    opacity: .7;
+    background: #333;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    z-index: 1;
 }
