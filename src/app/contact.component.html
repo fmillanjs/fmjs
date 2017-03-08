@@ -1,16 +1,19 @@
-<h3>Contact Crisis Center</h3>
-<div *ngIf="details">
-  {{ details }}
-</div>
-<div>
-  <div>
-    <label>Message: </label>
+<div class="container">
+  <div class="closePop">
+  <button md-mini-fab (click)="cancel()"><md-icon>close</md-icon></button>
   </div>
-  <div>
-    <textarea [(ngModel)]="message" rows="10" cols="35" [disabled]="sending"></textarea>
-  </div>
+  <md-card>
+    <md-card-title>Get in touch</md-card-title>
+    <md-input-container>
+      <input mdInput placeholder="Name" value="Ex. John Codeman">
+    </md-input-container>
+    <br>
+    <md-input-container>
+      <textarea mdInput placeholder="Message" [(ngModel)]="message" rows="6" cols="35"></textarea>
+    </md-input-container>
+    <md-card-actions>
+      <button md-raised-button (click)="send()">Send</button>
+      <button md-raised-button (click)="cancel()">Cancel</button>
+    </md-card-actions>
+  </md-card>
 </div>
-<p *ngIf="!sending">
-  <button (click)="send()">Send</button>
-  <button (click)="cancel()">Cancel</button>
-</p>

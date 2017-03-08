@@ -1,0 +1,20 @@
+@import "../config";
+@import "../mixins";
+
+.container {
+    @include centerer;
+}
+
+.mat-card {
+    background: $color4;
+    color: $color2;
+}
+input, textarea{
+    color: #AAA;
+}
+button {
+    color: #000;
+}
+.closePop{
+    position: absolute;
+}
