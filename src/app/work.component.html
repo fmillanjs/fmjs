@@ -1,3 +1,9 @@
-<p>
-  work works!
-</p>
+<div class="container">
+  <md-card *ngFor="let work of works"
+        (click)="onSelect(work.id)">
+    <img src="http://placehold.it/250x50" md-card-image>
+    <md-card-title>{{work.name}}</md-card-title>
+    <md-card-subtitle>{{work.updated | date}}</md-card-subtitle>
+    <md-card-content>project description</md-card-content>
+  </md-card>
+</div>

@@ -12,6 +12,7 @@ import { ProfileComponent } from './profile.component';
 import { WorkComponent } from './work.component';
 import { BlogComponent } from './blog.component';
 import { ContactComponent } from './contact.component';
+import { WorkDetailComponent } from './work-detail.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ContactComponent } from './contact.component';
     ProfileComponent,
     WorkComponent,
     BlogComponent,
-    ContactComponent
+    ContactComponent,
+    WorkDetailComponent
   ],
   imports: [
     BrowserModule,

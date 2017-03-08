@@ -1,0 +1,25 @@
+@import "../config";
+@import "../mixins";
+
+.container{
+    @include flex-contain;
+}
+.mat-card{
+    margin: 0.5%;
+    width: 80%;
+    font-family: $roboto;
+}
+.mat-card-title {
+    font-size: 3.7vw!important;
+}
+.mat-list{
+    .mat-line{
+        font-size: 3.5vw;
+    }
+    .mat-line:nth-child(n+2){
+        font-size: 2vw;
+    }
+    .material-icons {
+        font-size: 3vw;
+    }
+}
