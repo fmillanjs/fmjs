@@ -1,5 +1,7 @@
 <div class="container">
-  <md-card *ngFor="let work of works">
+  <md-card *ngFor="let work of works | async"
+        [class.selected]="isSelected(work)"
+        (click)="onSelect(work)">
     <img src="http://placehold.it/250x50" md-card-image>
     <md-card-title>{{work.name}}</md-card-title>
     <md-card-subtitle>{{work.updated | date}}</md-card-subtitle>
