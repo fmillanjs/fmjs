@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./contact.component.scss']
 })
 export class ContactComponent implements OnInit {
-
   details: string;
   sending: boolean = false;
 
