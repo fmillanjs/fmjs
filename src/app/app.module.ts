@@ -27,10 +27,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     ContactComponent,
     WorkDetailComponent,
     BlogDetailComponent,
-<<<<<<< HEAD
-=======
     Beerd3Component
->>>>>>> beerD3
   ],
   imports: [
     BrowserModule,
