@@ -1,5 +1,11 @@
 <div class="container">
-  <md-card>
-    Work details
+  <md-card *ngIf="workItem=='beersd3'">
+    <fm-beerd3></fm-beerd3>
+  </md-card>
+  <md-card *ngIf="workItem=='diveshop'">
+    diveshop component
+  </md-card>
+  <md-card *ngIf="workItem=='chatfm'">
+    chatfm component
   </md-card>
 </div>
