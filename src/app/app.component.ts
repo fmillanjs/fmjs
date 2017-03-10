@@ -16,9 +16,6 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    // setTimeout( () => {
-    //   this.router.navigate(['/profile']);
-    // }, 2800);
   }
   animationDone(e) {
     let url = this.router.url;

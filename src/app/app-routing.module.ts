@@ -28,7 +28,9 @@ const routes: Routes = [
     path: 'contact',
     component: ContactComponent,
     outlet: 'popup'
-  }
+  },
+//   {path: '404', component: NotFoundComponent},
+//  {path: '**', redirectTo: '/404'},
 ];
 
 @NgModule({

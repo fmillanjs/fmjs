@@ -23,7 +23,7 @@ import { BlogDetailComponent } from './blog-detail.component';
     BlogComponent,
     ContactComponent,
     WorkDetailComponent,
-    BlogDetailComponent
+    BlogDetailComponent,
   ],
   imports: [
     BrowserModule,
