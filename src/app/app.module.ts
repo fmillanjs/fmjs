@@ -13,6 +13,7 @@ import { WorkComponent } from './work.component';
 import { BlogComponent } from './blog.component';
 import { ContactComponent } from './contact.component';
 import { WorkDetailComponent } from './work-detail.component';
+import { BlogDetailComponent } from './blog-detail.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { WorkDetailComponent } from './work-detail.component';
     WorkComponent,
     BlogComponent,
     ContactComponent,
-    WorkDetailComponent
+    WorkDetailComponent,
+    BlogDetailComponent
   ],
   imports: [
     BrowserModule,

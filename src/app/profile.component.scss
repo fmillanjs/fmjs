@@ -8,30 +8,43 @@
     margin-top: 5px;
 }
 .mat-card{
-    margin: 0.5%
+    margin: 0.5%;
+    background: $color4;
+    color: $color2;
 }
 .profile-card {
     width: 30%;
+    text-align: center;
+    .mat-card-subtitle{
+        font-size: 3vw;
+    }
 }
 .description-card {
     width: 50%;
 }
+.mat-card-content{
+    line-height: 4vw;
+    font-size: 2.4vw;
+    padding-left: 3vw;
+}
 .thumbs-card {
-    width: 50%
+    width: 80%
 }
 .skills-card {
-    width: 30%;
+    width: 50%;
 }
 .resume-card {
-    width: 40%
+    width: 30%
 }
 .contact-card {
-    width: 40%;
+    width: 80%;
+    text-align: center;
 }
 .mat-card-subtitle {
-    font-size: 2vw!important;
+    font-size: 2vw;
 }
 .mat-card-title {
     font-family: $roboto;
     font-size: 3.7vw!important;
+    color: #bbb;
 }

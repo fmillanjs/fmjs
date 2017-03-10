@@ -1,22 +1,25 @@
 <!--Add Loading Animation strcuture-->
-<div id="headBar" class="headBar" [@loadingHeadBar] >
+<div id="headBar" class="headBar" [@loadingHeadBar]>
+  <a [routerLink]="['/profile']">
   <div id="logo" class="logo" [@loadingLogo]>
     <img src="./imgs/logo.svg" alt="fernando millan">
   </div>
   <div id="title" class="title" [@loadingHeadTitle]>
     <h1>{{title}}</h1>
   </div>
-  <div id="navigation" class="navigation" [@loadingNavigation]>
+  </a>
+  <div id="navigation" class="navigation" [@loadingNavigation] (@loadingNavigation.done)="animationDone($event)">
     <nav>
       <ul class="ul-navigation">
         <li class="li-navItem"><a class="navItem" [routerLink]="['/profile']" routerLinkActive="active">Profile</a></li>
         <li class="li-navItem"><a class="navItem" [routerLink]="['/work']" routerLinkActive="active">Work</a></li>
         <li class="li-navItem"><a class="navItem" [routerLink]="['/blog']" routerLinkActive="active">Blog</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="[{ outlets: { popup: ['contact'] } }]">Contact</a></li>
+        <li class="li-navItem"><a class="navItem" [routerLink]="[{ outlets: { popup: ['contact'] } }]" routerLinkActive="active">Contact</a></li>
       </ul>
     </nav>
   </div>
 </div>
+
 <!--End Loading Animation-->
 <router-outlet></router-outlet>
 <router-outlet name="popup"></router-outlet>

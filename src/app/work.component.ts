@@ -51,6 +51,6 @@ export class WorkComponent implements OnInit {
     return Promise.resolve(WORKS); // TODO: get hero data from the server;
   }
   onSelect(id){
-    this.router.navigate([id], { relativeTo: this.route } );
+    this.router.navigate([id], {relativeTo: this.route});
   }
 }

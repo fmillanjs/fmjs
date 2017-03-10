@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { routeTransition } from './animations';
 
 @Component({
@@ -10,9 +11,13 @@ import { routeTransition } from './animations';
 })
 export class BlogComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
+  }
+
+  onSelect(id){
+      this.router.navigate([id], {relativeTo: this.route});
   }
 
 }

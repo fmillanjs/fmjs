@@ -1,5 +1,5 @@
 import { Component, HostBinding, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
+import { Router , ActivatedRoute} from '@angular/router';
 import { loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation, routeTransition} from './animations';
 
 @Component({
@@ -13,11 +13,15 @@ import { loadingLogo, loadingHeadBar, loadingHeadTitle, loadingNavigation, route
 export class AppComponent implements OnInit {
   title = 'Fernando Millan';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
     // setTimeout( () => {
     //   this.router.navigate(['/profile']);
     // }, 2800);
+  }
+  animationDone(e) {
+    let url = this.router.url;
+    (url === '/') ? this.router.navigate(['/profile']): '';
   }
 }
