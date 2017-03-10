@@ -14,6 +14,9 @@ import { BlogComponent } from './blog.component';
 import { ContactComponent } from './contact.component';
 import { WorkDetailComponent } from './work-detail.component';
 import { BlogDetailComponent } from './blog-detail.component';
+import { Beerd3Component } from './beerd3.component';
+
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -23,14 +26,16 @@ import { BlogDetailComponent } from './blog-detail.component';
     BlogComponent,
     ContactComponent,
     WorkDetailComponent,
-    BlogDetailComponent
+    BlogDetailComponent,
+    Beerd3Component
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    MaterialModule
+    MaterialModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
