@@ -16,7 +16,6 @@ import { WorkDetailComponent } from './work-detail.component';
 import { BlogDetailComponent } from './blog-detail.component';
 import { Beerd3Component } from './beerd3.component';
 
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -35,7 +34,6 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     HttpModule,
     AppRoutingModule,
     MaterialModule,
-    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

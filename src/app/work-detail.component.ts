@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { routeTransition } from './animations';
 
 @Component({
   selector: 'fm-work-detail',
   templateUrl: './work-detail.component.html',
-  styleUrls: ['./work-detail.component.scss']
+  styleUrls: ['./work-detail.component.scss'],
+  animations: [routeTransition()],
+  host: {'[@routeTransition]': ''}
 })
 export class WorkDetailComponent implements OnInit {
 

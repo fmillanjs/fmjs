@@ -22,7 +22,7 @@ export class WorkComponent implements OnInit {
     this.getWorks().then(works => this.works = works);
   }
   getWorks(): Promise<Work[]> {
-    return Promise.resolve(WORKS); // TODO: get hero data from the server;
+    return Promise.resolve(WORKS); // TODO: get works data from the server;
   }
   onSelect(urlName) {
     this.router.navigate([urlName], {relativeTo: this.route});
