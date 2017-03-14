@@ -113,3 +113,12 @@ table {
     background: $color4;
     color: $color2
 }
+
+.axis {
+    fill: $color2;
+    stroke: $color2;
+    color: $color2
+}
+.axis .tick line{
+    stroke: #fff;
+}

@@ -1,3 +1,29 @@
 <br>
-<md-card class="beerd3">
+<md-card>
+    <md-card-title>Craft Beer ABV and IBU correlation</md-card-title>
+    <md-card-subtitle>Description:</md-card-subtitle>
+    <md-card-content>
+       D3 Graph to find the correlation between ABV (Alcohol by volume) and IBU (International Bitterness Units) if there is any, from a sample data of 40 different types of craft beers.
+    </md-card-content>
+    <md-card-subtitle>Process:</md-card-subtitle>
+    <md-card-content>
+       <ul>
+           <li>Integrated D3 to Angular 2</li>
+           <li>Grabbed data from Kaggle datasets</li>
+           <li>Created a scatter graph with its axis</li>
+           <li>Added data using D3</li>
+           <li>Added interaction of brush zoom</li>
+       </ul>
+    </md-card-content>
+</md-card>
+<br>
+<md-card>
+    <div class="interinfo">
+        <ul>
+            <li><span>Double-Click</span> to zoom out.</li>
+            <li><span>Draw a Square</span>to zoom in</li>
+        </ul>
+    </div>
+    <div class="abv-label">IBU</div><div class="ibu-label">ABV</div>
+<svg class="beerd3" width="300" height="180" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet"></svg>
 </md-card>

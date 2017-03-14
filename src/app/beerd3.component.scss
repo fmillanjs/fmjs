@@ -2,9 +2,10 @@
 @import "../mixins";
 
 .beerd3{
-    height: 0;
-    padding-bottom: 50%;
-    width: 85%;
-    justify-content: center;
-    margin: 0 auto;
+    width:100%;
+    height: auto;
 }
+.mat-card {
+    margin: 0 5%;
+}
+
