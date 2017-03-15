@@ -122,3 +122,12 @@ table {
 .axis .tick line{
     stroke: #fff;
 }
+
+@media only screen and (max-device-width: 320px) {
+    .mat-card{
+        width: auto!important;
+    }
+    .formacontact {
+        width: 260px!important;
+    }
+}
