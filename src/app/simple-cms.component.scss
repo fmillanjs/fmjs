@@ -1,0 +1,22 @@
+@import "../mixins";
+
+.mat-card {
+    margin: 1% 5%;
+}
+.log-reg {
+    display: flex;
+    flex-wrap: wrap;
+}
+.lr {
+    flex: 1 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+    button {
+        margin: 0 3px;
+    }
+}
+.formi {
+    text-align: center;
+    flex: 1 100%;
+}

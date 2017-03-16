@@ -1,11 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 
 import 'hammerjs';
 import { D3Service } from 'd3-ng2-service';
+import { AuthService } from './auth.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +17,9 @@ import { ContactComponent } from './contact.component';
 import { WorkDetailComponent } from './work-detail.component';
 import { BlogDetailComponent } from './blog-detail.component';
 import { Beerd3Component } from './beerd3.component';
+import { SimpleCMSComponent } from './simple-cms.component';
+import { AngularFireModule } from 'angularfire2';
+import { firebaseConfig } from '../environments/firebase.config';
 
 
 @NgModule({
@@ -27,7 +31,8 @@ import { Beerd3Component } from './beerd3.component';
     ContactComponent,
     WorkDetailComponent,
     BlogDetailComponent,
-    Beerd3Component
+    Beerd3Component,
+    SimpleCMSComponent
   ],
   imports: [
     BrowserModule,
@@ -35,8 +40,10 @@ import { Beerd3Component } from './beerd3.component';
     HttpModule,
     AppRoutingModule,
     MaterialModule,
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(firebaseConfig)
   ],
-  providers: [D3Service],
+  providers: [D3Service, AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

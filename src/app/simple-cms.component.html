@@ -1,0 +1,64 @@
+<md-card>
+    <md-card-title>Simple CMS</md-card-title>
+    <md-card-subtitle>Description:</md-card-subtitle>
+    <md-card-content>
+       Simple page content managament system demonstration
+    </md-card-content>
+</md-card>
+<md-card class="log-reg" *ngIf="!logged" >
+  <div class="lr">
+  <button md-button (click)="showLogin()" >Login</button>
+  <button md-button (click)="showRegister()">Register</button>
+  </div>
+  <div class="login formi" *ngIf="show" >
+    <md-card-title>Login</md-card-title>
+    <md-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin(loginForm)" >
+        <section class="email">
+          <md-input-container class="example-full-width">
+            <input formControlName="email" mdInput required placeholder="Email" value="">
+          </md-input-container>
+        </section>
+        <section class="password">
+          <md-input-container class="example-full-width">
+            <input formControlName="password" mdInput required type="password" placeholder="Password" value="">
+          </md-input-container>
+        </section>
+        <button md-raised-button type="submit" [disabled]="!loginForm.valid">Login</button>
+      </form>
+    </md-card-content>
+  </div>
+  <div class="register formi" *ngIf="show == false">
+    <md-card-title>Register</md-card-title>
+    <md-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmitRegister(registerForm)" >
+        <section class="email">
+          <md-input-container class="example-full-width">
+            <input formControlName="email" mdInput required placeholder="Email" value="">
+          </md-input-container>
+        </section>
+        <section class="password">
+          <md-input-container class="example-full-width">
+            <input formControlName="password" mdInput required type="password" placeholder="Password" value="">
+          </md-input-container>
+        </section>
+        <button md-raised-button type="submit" [disabled]="!registerForm.valid">Register</button>
+      </form>
+    </md-card-content>
+  </div>
+  <div *ngIf="formErrors.email || formErrors.password" class="alert alert-danger">
+    {{ formErrors.email || formErrors.password}}
+  </div>
+</md-card>
+<md-card *ngIf="logged" >
+  <button md-raised-button (click)="onLogOut()" type="button">Logout</button>
+</md-card>
+<md-card>
+  <md-card-title>View</md-card-title>
+  <div class="CMSview">
+    <div class="insideImg"><h2>Inside Image title</h2></div>
+    <img src="http://placehold.it/465x150" alt="">
+    <h2>Subtitle</h2>
+    <p>content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content <p>
+  </div>
+</md-card>
