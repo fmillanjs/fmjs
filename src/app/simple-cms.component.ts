@@ -11,9 +11,12 @@ import { AuthService } from './auth.service';
 })
 export class SimpleCMSComponent implements OnInit {
   private logged: Boolean = false;
+  private registered: Boolean = false;
   private show = false;
   private loginForm: FormGroup;
   private registerForm: FormGroup;
+  public onLoginError = '';
+  public onRegisterError = '';
   users: any;
   emailPatt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -47,13 +50,22 @@ export class SimpleCMSComponent implements OnInit {
   }
   onSubmitLogin(loginForm) {
     this.as.loginEmail(loginForm)
-            .then(a => this.logged = true)
-            .catch(error => console.log(error));
+            .then(a => {
+                this.logged = true;
+                this.loginForm.reset();
+              })
+            .catch(error => this.onLoginError = error.message);
   }
   onSubmitRegister(registerForm) {
     this.as.registerUser(registerForm)
-            .then(a => console.log(a))
-            .catch(err => console.log(err));
+            .then(a => {
+                this.registered = true;
+                this.registerForm.reset();
+              })
+            .catch(err => this.onRegisterError = err.message);
+  }
+  onSubmitGoogle() {
+    this.as.loginGoogle();
   }
   showLogin(){
     this.show = true;

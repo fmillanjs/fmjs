@@ -32,9 +32,9 @@ export class AuthService {
       method: AuthMethods.Password,
   });
   }
-  loginGithub() {
+  loginGoogle() {
     return this.af.auth.login({
-      provider: AuthProviders.Github,
+      provider: AuthProviders.Google,
       method: AuthMethods.Popup
     });
   }
