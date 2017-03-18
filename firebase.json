@@ -5,8 +5,13 @@
   "hosting": {
     "public": "dist"
   },
-  "rewrites": [ {
+  "rewrites": {
     "source": "**",
-    "destination": "/index.html"
-  } ]
+    "destination": "/"
+  },
+  "redirects": {
+    "source" : "/**",
+    "destination" : "/",
+    "type" : 301
+  }
 }
