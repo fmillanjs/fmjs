@@ -12,9 +12,9 @@ import * as firebase from 'firebase';
 })
 export class AdminSimpleCMSComponent implements OnInit {
   simpleItems: FirebaseObjectObservable<any>;
+  logged: Boolean = true;
   editForm: FormGroup;
   editState: string;
-  subscription: any;
   items = {
     title: '',
     subtitle: '',
@@ -23,17 +23,17 @@ export class AdminSimpleCMSComponent implements OnInit {
   };
   constructor(private af: AngularFire, public fb: FormBuilder, public as: AuthService ) {
     this.simpleItems = this.as.getCmsItems();
-    this.subscription = this.simpleItems.subscribe(snapshot => {
+    this.simpleItems.subscribe(snapshot => {
       this.items.title = snapshot.title;
       this.items.subtitle = snapshot.subtitle;
       this.items.img = snapshot.img;
       this.items.content = snapshot.content;
-      this.setValues();
     });
     this.buildForm();
    }
 
   ngOnInit() {
+    this.setValues();
   }
   buildForm() {
     this.editForm = this.fb.group({

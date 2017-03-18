@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFire, AuthProviders, AuthMethods, FirebaseListObservable } from 'angularfire2';
 
-interface User {
-  $uid: number;
-  email: string;
-  password: string;
-}
-
 @Injectable()
 export class AuthService {
 
