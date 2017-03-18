@@ -24,6 +24,7 @@ export class SimpleCMSComponent implements OnInit {
   imgUrl: string;
   content: string;
   subtitle: string;
+  subs: any;
   constructor(private fb: FormBuilder, private af: AngularFire, public as: AuthService) {
     this.as.af.auth.subscribe(
       (auth) => {
@@ -31,12 +32,12 @@ export class SimpleCMSComponent implements OnInit {
       }
     );
     this.buildForm();
-    this.simplecms = af.database.object('/simplecms', { preserveSnapshot: true });
+    this.simplecms = this.as.getCmsItems();
     this.simplecms.subscribe(snapshot => {
-      this.title = snapshot.val().title;
-      this.imgUrl = snapshot.val().img;
-      this.content = snapshot.val().content;
-      this.subtitle = snapshot.val().subtitle;
+      this.title = snapshot.title;
+      this.subtitle = snapshot.subtitle;
+      this.imgUrl = snapshot.img;
+      this.content = snapshot.content;
     });
   }
 
@@ -88,10 +89,10 @@ export class SimpleCMSComponent implements OnInit {
   onSubmitGoogle() {
     this.as.loginGoogle();
   }
-  showLogin(){
+  showLogin() {
     this.show = true;
   }
-  showRegister(){
+  showRegister() {
     this.show = false;
   }
   onLogOut() {
@@ -113,7 +114,7 @@ export class SimpleCMSComponent implements OnInit {
           this.formErrors[field] += messages[key] + ' ';
         }
       }
-      if (control.value === ''){
+      if (control.value === '') {
         this.formErrors[field] = '';
       }
     }

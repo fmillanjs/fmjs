@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators, NgModel } from '@angular/forms';
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
+import { AuthService } from '../auth.service';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase';
 
@@ -13,15 +14,16 @@ export class AdminSimpleCMSComponent implements OnInit {
   simpleItems: FirebaseObjectObservable<any>;
   editForm: FormGroup;
   editState: string;
+  subscription: any;
   items = {
     title: '',
     subtitle: '',
     img: '',
     content: ''
   };
-  constructor(private af: AngularFire, public fb: FormBuilder) {
-    this.simpleItems = this.af.database.object('/simplecms');
-    this.simpleItems.subscribe(snapshot => {
+  constructor(private af: AngularFire, public fb: FormBuilder, public as: AuthService ) {
+    this.simpleItems = this.as.getCmsItems();
+    this.subscription = this.simpleItems.subscribe(snapshot => {
       this.items.title = snapshot.title;
       this.items.subtitle = snapshot.subtitle;
       this.items.img = snapshot.img;
@@ -63,5 +65,6 @@ export class AdminSimpleCMSComponent implements OnInit {
       }).catch(err => {
         console.error(err.message);
     });
+    this.simpleItems.subscribe().unsubscribe();
   }
 }

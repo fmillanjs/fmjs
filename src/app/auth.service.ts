@@ -9,12 +9,10 @@ interface User {
 
 @Injectable()
 export class AuthService {
-  private users: FirebaseListObservable<any[]>;
 
   constructor(public af: AngularFire) { }
-  getUsers() {
-    this.users = this.af.database.list('/users') as FirebaseListObservable<User[]>;
-    return this.users;
+  getCmsItems() {
+    return this.af.database.object('/simplecms');
   }
   registerUser(registerForm) {
     return this.af.auth.createUser({
