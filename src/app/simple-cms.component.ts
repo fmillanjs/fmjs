@@ -87,7 +87,9 @@ export class SimpleCMSComponent implements OnInit {
             });
   }
   onSubmitGoogle() {
-    this.as.loginGoogle();
+    this.as.loginGoogle().then(onResolve => {
+      this.logged = true;
+    });
   }
   showLogin() {
     this.show = true;

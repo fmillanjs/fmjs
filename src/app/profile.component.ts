@@ -9,7 +9,6 @@ import { routeTransition } from './animations';
   host: {'[@routeTransition]': ''}
 })
 export class ProfileComponent implements OnInit {
-
   constructor() { }
 
   ngOnInit() {
