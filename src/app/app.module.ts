@@ -12,15 +12,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProfileComponent } from './profile.component';
 import { WorkComponent } from './work.component';
-import { BlogComponent } from './blog.component';
+// import { BlogComponent } from './blog.component';
 import { ContactComponent } from './contact.component';
 import { WorkDetailComponent } from './work-detail.component';
-import { BlogDetailComponent } from './blog-detail.component';
+// import { BlogDetailComponent } from './blog-detail.component';
 import { Beerd3Component } from './beerd3.component';
 import { SimpleCMSComponent } from './simple-cms.component';
 import { AngularFireModule } from 'angularfire2';
 import { firebaseConfig } from '../environments/firebase.config';
 import { AdminSimpleCMSComponent } from './admin-simple-cms/admin-simple-cms.component';
+import { WebsitesComponent } from './websites.component';
 
 
 @NgModule({
@@ -28,13 +29,14 @@ import { AdminSimpleCMSComponent } from './admin-simple-cms/admin-simple-cms.com
     AppComponent,
     ProfileComponent,
     WorkComponent,
-    BlogComponent,
+    // BlogComponent,
     ContactComponent,
     WorkDetailComponent,
-    BlogDetailComponent,
+    // BlogDetailComponent,
     Beerd3Component,
     SimpleCMSComponent,
-    AdminSimpleCMSComponent
+    AdminSimpleCMSComponent,
+    WebsitesComponent
   ],
   imports: [
     BrowserModule,

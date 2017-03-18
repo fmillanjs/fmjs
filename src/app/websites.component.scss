@@ -1,0 +1,14 @@
+@import "../config";
+@import "../mixins";
+
+.container{
+    @include flex-contain;
+}
+.mat-card{
+    margin: 0.5%;
+    width: 80%;
+    font-family: $roboto;
+}
+.mat-card-title{
+    text-align: center;
+}
