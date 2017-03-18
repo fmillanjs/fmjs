@@ -20,6 +20,7 @@ import { Beerd3Component } from './beerd3.component';
 import { SimpleCMSComponent } from './simple-cms.component';
 import { AngularFireModule } from 'angularfire2';
 import { firebaseConfig } from '../environments/firebase.config';
+import { AdminSimpleCMSComponent } from './admin-simple-cms/admin-simple-cms.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { firebaseConfig } from '../environments/firebase.config';
     WorkDetailComponent,
     BlogDetailComponent,
     Beerd3Component,
-    SimpleCMSComponent
+    SimpleCMSComponent,
+    AdminSimpleCMSComponent
   ],
   imports: [
     BrowserModule,

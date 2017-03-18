@@ -58,14 +58,15 @@
   </div>
 </md-card>
 <md-card *ngIf="logged" >
-  <button md-raised-button (click)="onLogOut()" type="button">Logout</button>
+  <button md-raised-button (click)="onLogOut()" type="button">Logout</button><br><br>
+  <fm-admin-simple-cms></fm-admin-simple-cms>
 </md-card>
 <md-card>
   <md-card-title>View</md-card-title>
   <div class="CMSview">
-    <div class="insideImg"><h2>Inside Image title</h2></div>
-    <img src="http://placehold.it/465x150" alt="">
-    <h2>Subtitle</h2>
-    <p>content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content <p>
+    <div class="insideImg"><h2>{{ title }}</h2></div>
+    <img src="{{ imgUrl }}" alt="image" class="imgCMS">
+    <h2>{{ subtitle }}</h2>
+    <p>{{ content }}</p>
   </div>
 </md-card>

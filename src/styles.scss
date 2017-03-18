@@ -122,6 +122,9 @@ table {
 .axis .tick line{
     stroke: #fff;
 }
+textarea {
+    resize: vertical;
+}
 
 @media only screen and (max-device-width: 320px) {
     .mat-card{

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { AngularFire, FirebaseListObservable } from 'angularfire2';
+import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable';
 import { AuthService } from './auth.service';
 
@@ -17,9 +17,13 @@ export class SimpleCMSComponent implements OnInit {
   private registerForm: FormGroup;
   public onLoginError = '';
   public onRegisterError = '';
-  users: any;
-  emailPatt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+  // tslint:disable-next-line:max-line-length
+  private emailPatt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  private simplecms: FirebaseObjectObservable <any>;
+  title: string;
+  imgUrl: string;
+  content: string;
+  subtitle: string;
   constructor(private fb: FormBuilder, private af: AngularFire, public as: AuthService) {
     this.as.af.auth.subscribe(
       (auth) => {
@@ -27,6 +31,13 @@ export class SimpleCMSComponent implements OnInit {
       }
     );
     this.buildForm();
+    this.simplecms = af.database.object('/simplecms', { preserveSnapshot: true });
+    this.simplecms.subscribe(snapshot => {
+      this.title = snapshot.val().title;
+      this.imgUrl = snapshot.val().img;
+      this.content = snapshot.val().content;
+      this.subtitle = snapshot.val().subtitle;
+    });
   }
 
   ngOnInit() {
@@ -54,7 +65,12 @@ export class SimpleCMSComponent implements OnInit {
                 this.logged = true;
                 this.loginForm.reset();
               })
-            .catch(error => this.onLoginError = error.message);
+            .catch(error => {
+              this.onLoginError = error.message;
+              setTimeout(() => {
+                this.onLoginError = '';
+              }, 2000);
+            });
   }
   onSubmitRegister(registerForm) {
     this.as.registerUser(registerForm)
@@ -62,7 +78,12 @@ export class SimpleCMSComponent implements OnInit {
                 this.registered = true;
                 this.registerForm.reset();
               })
-            .catch(err => this.onRegisterError = err.message);
+            .catch(err => {
+              this.onRegisterError = err.message;
+              setTimeout(() => {
+                this.onRegisterError = '';
+              }, 2000);
+            });
   }
   onSubmitGoogle() {
     this.as.loginGoogle();
@@ -80,22 +101,25 @@ export class SimpleCMSComponent implements OnInit {
     let form: FormGroup;
     if (!this.loginForm) { return; } else if (this.show === true) { form = this.loginForm; }
     if (!this.registerForm) { return; } else if (this.show === false) { form = this.registerForm; }
-    
+
+    // tslint:disable-next-line:forin
     for (const field in this.formErrors) {
       this.formErrors[field] = '';
       const control = form.get(field);
       if (control && control.dirty && !control.valid) {
         const messages = this.validationMessages[field];
+        // tslint:disable-next-line:forin
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
         }
       }
-      if(control.value == ''){
-        this.formErrors[field]= '';
+      if (control.value === ''){
+        this.formErrors[field] = '';
       }
     }
   }
 
+  // tslint:disable-next-line:member-ordering
   formErrors = {
     'email': '',
     'password': ''

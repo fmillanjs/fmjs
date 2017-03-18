@@ -1,0 +1,16 @@
+<form [formGroup]="editForm" (ngSubmit)="updateView(editForm)">
+  <md-input-container>
+    <input mdInput formControlName="title" placeholder="Title">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput formControlName="subtitle" placeholder="Subtitle">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput formControlName="img" placeholder="Image url">
+  </md-input-container>
+  <md-input-container>
+    <textarea mdInput formControlName="content" class="contentaf" placeholder="Content"></textarea>
+  </md-input-container>
+  <button md-button type="submit">Save Edit</button><br><br>
+  <div *ngIf="editState !== ''" >{{editState}}</div>
+</form>
