@@ -1,5 +1,16 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { Router } from '@angular/router';
+import { AngularFire, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2';
+import { Observable } from 'Rxjs';
+
+export class Contact {
+  constructor(
+    public name: string,
+    public email: string,
+    public phone: any,
+    public message: string
+  ) {}
+}
 
 @Component({
   selector: 'fm-contact',
@@ -10,17 +21,22 @@ export class ContactComponent implements OnInit {
   details: string;
   sending = false;
   height: number;
-
-  constructor(private router: Router) { }
-
+  contact = new Contact('Ex. John Codeman',
+                        'Ex. John@gmail.com',
+                        'Ex. (619)333-9802',
+                        'Ex. I want to hire you. :)');
+  formObservable: FirebaseListObservable<any>;
+  constructor(private router: Router, private af: AngularFire) {
+    this.formObservable = this.af.database.list('/contacts');
+   }
   ngOnInit() {
     this.height = this.getHeight();
   }
 
-  send() {
+  send(form) {
     this.sending = true;
     this.details = 'Sending Message...';
-
+    this.formObservable.push(form).catch(err => console.log(err.message));
   setTimeout(() => {
       this.sending = false;
       this.closePopup();

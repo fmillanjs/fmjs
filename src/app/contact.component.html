@@ -2,19 +2,33 @@
   <div class="closePop">
   <button md-mini-fab (click)="cancel()"><md-icon>close</md-icon></button>
   </div>
-  <md-card class="formacontact">
+  <md-card class="contact">
+    <form #contactForm="ngForm" >
     <md-card-title>Get in touch</md-card-title>
     <md-input-container>
-      <input mdInput placeholder="Name" value="Ex. John Codeman">
+      <input mdInput required placeholder="Name" name="name" [(ngModel)]="contact.name" (focus)="contact.name = ''">
     </md-input-container>
     <br>
     <md-input-container>
-      <textarea mdInput placeholder="Message" [(ngModel)]="message" rows="6" cols="35"></textarea>
+      <input mdInput required placeholder="Email" name="email" [(ngModel)]="contact.email" (focus)="contact.email = ''">
+    </md-input-container>
+    <br>
+    <md-input-container>
+      <input mdInput placeholder="Phone (optional)" name="phone" [(ngModel)]="contact.phone" (focus)="contact.phone = ''">
+    </md-input-container>
+    <br>
+    <md-input-container>
+      <textarea mdInput required placeholder="Message" name="message" [(ngModel)]="contact.message" rows="6" cols="35" (focus)="contact.message = ''"></textarea>
     </md-input-container>
     <md-card-actions>
-      <button md-raised-button (click)="send()">Send</button>
-      <button md-raised-button (click)="cancel()">Cancel</button>
+      <button md-raised-button (click)="send(contactForm.value)">Send</button>
+      <button md-raised-button (click)="cancel()">Cancel</button><br><br>
+      <div *ngIf="details">
+        {{details}}
+      </div>
     </md-card-actions>
+    </form>
   </md-card>
 </div>
 <div class="backClosePop" [style.height.px]="height" (click)="cancel()" ></div>
+ 
