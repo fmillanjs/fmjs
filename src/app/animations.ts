@@ -33,7 +33,7 @@ export const loadingLogo = trigger('loadingLogo', [
         style({
         opacity: 1,
         transform: 'scale(1) translate(0%, 0%)',
-        width: '10%',
+        width: '6%',
         top: '0%',
         left: '0%',
         offset: 1

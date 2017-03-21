@@ -2,7 +2,7 @@
   <md-card class="profile-card">
     <img src="imgs/profilephoto.png" md-card-image>
     <md-card-title>Profile Card</md-card-title>
-    <md-card-subtitle>Fernando Millan</md-card-subtitle>
+    <md-card-content>Fernando Millan</md-card-content>
   </md-card>
   <md-card class="description-card">
     <md-card-title>About Me:</md-card-title>
@@ -14,13 +14,13 @@
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->
     <md-card-content class="hoverResume">
       <div>
-        <h3>Art Institute of California San Diego</h3>
+        <h3 class="secondaryColor">Art Institute of California San Diego</h3>
         <p>2009 – 2012</p>
         <p>Bachelor's of Computer Science, Field of Study Web Development, Digital/Multimedia and Information Resources Design</p>
       </div>
       <hr>
       <div>
-        <h3>Tecnologico de Monterrey, Campus Monterrey</h3>
+        <h3 class="secondaryColor">Tecnologico de Monterrey, Campus Monterrey</h3>
         <p>2006 – 2009</p>
         <p>Completed Studies in Mechanical Engineer and Financial Administration</p>
       </div>
@@ -31,14 +31,14 @@
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->
     <md-card-content>
       <div>
-        <h3>Front-End Developer</h3>
-        <h4>Locbit</h4>
+        <h3>Front-End Developer - Design and implemented main website and content using CakePHP</h3>
+        <h4 class="secondaryColor">Locbit</h4>
         <p>2013 - 2014</p>
       </div>
       <hr>
       <div>
-        <h3>UX/UI Developer</h3>
-        <h4>Cofamedia</h4>
+        <h3>UX/UI Developer - Help maintaining and improving clients websites</h3>
+        <h4 class="secondaryColor">Cofamedia</h4>
         <p>2012 - 2013</p>
       </div>
     </md-card-content>
@@ -47,7 +47,7 @@
     <md-card-title>Abilities</md-card-title>
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->
     <md-card-content>
-      <ul>
+      <!--<ul>
         <li>HTML/CSS</li>
         <li>JAVASCRIPT</li>
         <li>ANGULAR 2</li>
@@ -55,12 +55,43 @@
         <li>NODE</li>
         <li>SASS</li>
         <li>GIT</li>
-      </ul>
+      </ul>-->
+      <md-grid-list cols="3" rowHeight="4:1">
+        <md-grid-tile>
+          <md-card-title>Skillset</md-card-title>
+          </md-grid-tile>
+        <md-grid-tile>
+          <md-card-title>Knowledge</md-card-title>
+          </md-grid-tile>
+        <md-grid-tile>
+          <md-card-title>Tools</md-card-title>
+          </md-grid-tile>
+        <md-grid-tile>HTML5</md-grid-tile>
+        <md-grid-tile>Angular 2</md-grid-tile>
+        <md-grid-tile>Github</md-grid-tile>
+        <md-grid-tile>CSS3</md-grid-tile>
+        <md-grid-tile>React</md-grid-tile>
+        <md-grid-tile>StackOverflow</md-grid-tile>
+        <md-grid-tile>JAVSCRIPT</md-grid-tile>
+        <md-grid-tile>RxJs</md-grid-tile>
+        <md-grid-tile>VSCode/Sublime</md-grid-tile>
+        <md-grid-tile>SQL</md-grid-tile>
+        <md-grid-tile>Redux</md-grid-tile>
+        <md-grid-tile>Photoshop</md-grid-tile>
+        <md-grid-tile>PHP</md-grid-tile>
+        <md-grid-tile>Nodejs</md-grid-tile>
+        <md-grid-tile>TravisCI</md-grid-tile>
+        <md-grid-tile>SWIFT</md-grid-tile>
+        <md-grid-tile>D3js</md-grid-tile>
+        <md-grid-tile>NPM</md-grid-tile>
+      </md-grid-list>
     </md-card-content>
   </md-card>
-  <md-card class="contact-card" on-mouseover="hover($event)" #res>
+  <md-card class="contact-card" on-mouseover="hover(res)" #res>
+    <div class="centerVer">
     <i class="material-icons usevw">file_download</i>
     <md-card-title>Resume</md-card-title>
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->
+    </div>
   </md-card>
 </div>

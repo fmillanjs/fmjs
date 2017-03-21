@@ -6,56 +6,127 @@
 }
 .mat-card{
     margin: 0.5%;
+    .mat-card-title{
+        font-size: 1.5vw;
+    }
 }
 .mat-card-title {
     font-family: $font;
-    font-size: 3.7vw!important;
     color: #bbb;
 }
 .mat-card-content{
-    line-height: 3.8vw;
-    font-size: 2.1vw;
+    line-height: 2.5vw;
     font-family: $font;
 }
 .profile-card {
-    width: 30%;
+    width: 12%;
     text-align: center;
-    font-family: $font;
 }
 .description-card {
-    width: 50%;
-    .mat-card-content{
-        padding-left: 2vw;
-    } 
+    width: 30%;
 }
 .thumbs-card {
-    width: 85%;
-    h3 {
-        text-align: right;
-        font-size: 3vw;
-        color: $secondaryFontColor;
-    }
-    p{
-        text-align: right;
+    width: 30%;
+    .mat-card-content{
+        line-height: 2.35vw;
     }
 }
 .skills-card {
     width: 30%;
-    h3{
-        font-size: 2.5vw;
-        color: $secondaryFontColor;
-    }
 }
 .resume-card {
-    width: 20%;
-    text-align: center;
+    width: 30%;
+    .mat-grid-list .mat-card-title {
+        color: $secondaryFontColor;
+        text-decoration: none;
+        font-size: 1.3vw;
+    }
+    .mat-grid-tile {
+        overflow: visible;
+    }
 }
 .contact-card {
-    width: 20%;
-    text-align: center;
-    vertical-align: center;
+    width: 12%;
+    text-align:center;
 }
-
-.usevw{
-    font-size: 3.7vw;
+.centerVer {
+    margin-top: 80%!important;
+}
+@media only screen and (max-device-width: 320px) {
+    .mat-card-title {
+        font-size: 4.5vw!important;
+    }
+    .profile-card {
+        width: 100%;
+    }
+    .description-card {
+        width: 100%;
+    }
+    .thumbs-card {
+        width: 100%;
+    }
+    .skills-card {
+        width: 100%;
+    }
+    .resume-card {
+        width: 100%;
+    }
+    .contact-card {
+        width: 100%;
+    }
+    .centerVer {
+        margin-top: 0% !important;
+    }
+}
+@media only screen and (max-device-width: 375px) {
+    .mat-card-title {
+        font-size: 4.5vw!important;
+    }
+    .mat-card-content {
+        line-height: 4.5vw!important;
+    }
+    .profile-card {
+        width: 100%;
+    }
+    .description-card {
+        width: 100%;
+    }
+    .thumbs-card {
+        width: 100%;
+    }
+    .skills-card {
+        width: 100%;
+    }
+    .resume-card {
+        width: 100%;
+    }
+    .contact-card {
+        width: 100%;
+    }
+    .centerVer {
+        margin-top: 0% !important;
+    }
+}
+@media (min-device-width:768px) and (max-device-width:1024px){
+    .profile-card {
+        width: 20%;
+    }
+    .description-card {
+        width: 62%;
+    }
+    .thumbs-card {
+        width: 41%;
+    }
+    .skills-card {
+        width: 41%;
+    }
+    .resume-card {
+        width: 51%;
+    }
+    .contact-card {
+        width: 31%;
+    }
+    .centerVer {
+        margin-top: 28% !important;
+    }
 }

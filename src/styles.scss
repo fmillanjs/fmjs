@@ -1,10 +1,6 @@
 @import 'mixins';
 @import 'config';
 
-body{
-    background: #EEE;
-}
-
 // // // // // // 
 // RESET STYLES // 
 // // // // // // 
@@ -58,7 +54,22 @@ table {
 //*//*//*//*//*//  
 // MAIN STYLES //
 // // // // // //
+body{
+    background: #bbb;
+}
+.mat-card{
+    @include mat-card-styles;
+}
+.mat-card-title{
+    text-decoration: underline;
+}
+.secondaryColor {
+    color: $secondaryFontColor;
+}
 
+// Phone 320 wide
+@media only screen and (max-device-width: 320px) {
+}
 // // // //  // // //
 // END MAIN STYLES //
 //*//*//*//**//*//*//
@@ -110,30 +121,16 @@ table {
 // END LOADER ANIMATION //
 // // // // // // // // //
 
-.mat-card{
-    @include mat-card-styles;
-}
-.secondaryColor {
-    color: $secondaryFontColor;
-}
 
-.axis {
-    fill: $color2;
-    stroke: $color2;
-    color: $color2
-}
-.axis .tick line{
-    stroke: #fff;
-}
-textarea {
-    resize: vertical;
-}
 
-@media only screen and (max-device-width: 320px) {
-    .mat-card{
-        width: auto!important;
-    }
-    .formacontact {
-        width: 260px!important;
-    }
-}
+// .axis {
+//     fill: $color2;
+//     stroke: $color2;
+//     color: $color2
+// }
+// .axis .tick line{
+//     stroke: #fff;
+// }
+// textarea {
+//     resize: vertical;
+// }
