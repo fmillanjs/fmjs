@@ -4,11 +4,6 @@
 .container{
     @include flex-contain;
 }
-.mat-card{
-    margin: 0.5%;
-    width: 80%;
-    font-family: $roboto;
-}
 .mat-card-title {
     font-size: 3.7vw!important;
 }

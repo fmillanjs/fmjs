@@ -13,5 +13,6 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  hover(r) {
+  }
 }

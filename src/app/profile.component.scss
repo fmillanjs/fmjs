@@ -2,52 +2,60 @@
 @import "../mixins.scss";
 
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 5px;
+    @include flex-contain;
 }
 .mat-card{
     margin: 0.5%;
-    background: $color4;
-    color: $color2;
+}
+.mat-card-title {
+    font-family: $font;
+    font-size: 3.7vw!important;
+    color: #bbb;
+}
+.mat-card-content{
+    line-height: 3.8vw;
+    font-size: 2.1vw;
+    font-family: $font;
 }
 .profile-card {
     width: 30%;
     text-align: center;
-    .mat-card-subtitle{
-        font-size: 3vw;
-    }
+    font-family: $font;
 }
 .description-card {
     width: 50%;
-}
-.mat-card-content{
-    line-height: 4vw;
-    font-size: 2.4vw;
-    padding-left: 3vw;
+    .mat-card-content{
+        padding-left: 2vw;
+    } 
 }
 .thumbs-card {
-    width: 80%
+    width: 85%;
+    h3 {
+        text-align: right;
+        font-size: 3vw;
+        color: $secondaryFontColor;
+    }
+    p{
+        text-align: right;
+    }
 }
 .skills-card {
-    width: 50%;
+    width: 30%;
+    h3{
+        font-size: 2.5vw;
+        color: $secondaryFontColor;
+    }
 }
 .resume-card {
-    width: 30%
-}
-.contact-card {
-    width: 80%;
+    width: 20%;
     text-align: center;
 }
-.mat-card-subtitle {
-    font-size: 2vw;
+.contact-card {
+    width: 20%;
+    text-align: center;
+    vertical-align: center;
 }
-.mat-card-title {
-    font-family: $roboto;
-    font-size: 3.7vw!important;
-    color: #bbb;
-}
+
 .usevw{
     font-size: 3.7vw;
 }

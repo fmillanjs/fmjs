@@ -13,3 +13,10 @@
     justify-content: center;
     margin-top: 5px;
 }
+
+@mixin mat-card-styles {
+    margin: 0.5%;
+    font-family: $font;
+    background: $backCardColor;
+    color: $mainFontColor;
+}

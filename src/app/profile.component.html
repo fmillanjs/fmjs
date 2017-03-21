@@ -7,21 +7,21 @@
   <md-card class="description-card">
     <md-card-title>About Me:</md-card-title>
     <!--<md-card-subtitle></md-card-subtitle>-->
-    <md-card-content>I have spent the last 6 years developing and refining my skills as a full stack developer, began using the standard LAMP stack technologies (Linux, Apache, MySQL and PHP). Later on as Javascript started to become popular thanks to Node.js, I shifted to all Javascript development using frameworks and libraries like Google’s Angular 2, Rxjs, D3, Firebase for Real-time databasing with NoSQL and Express.js servers.</md-card-content>
+    <md-card-content>I have spent the last 6 years developing and refining my skills as a <span class="secondaryColor">full stack developer</span>, began using the standard LAMP stack technologies (Linux, Apache, MySQL and PHP). Later on as <span class="secondaryColor">ECMAScript</span> started to become popular thanks to Node.js, I shifted to all <span class="secondaryColor">Javascript</span> development using frameworks and libraries like Google’s Angular 2, Rxjs, D3, Firebase for Real-time databasing with NoSQL and Express.js servers.</md-card-content>
   </md-card>
   <md-card class="thumbs-card">
     <md-card-title>Education</md-card-title>
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->
-    <md-card-content>
+    <md-card-content class="hoverResume">
       <div>
         <h3>Art Institute of California San Diego</h3>
-        <p>Dates: 2009 – 2012</p>
+        <p>2009 – 2012</p>
         <p>Bachelor's of Computer Science, Field of Study Web Development, Digital/Multimedia and Information Resources Design</p>
       </div>
       <hr>
       <div>
         <h3>Tecnologico de Monterrey, Campus Monterrey</h3>
-        <p>Dates: 2006 – 2009</p>
+        <p>2006 – 2009</p>
         <p>Completed Studies in Mechanical Engineer and Financial Administration</p>
       </div>
     </md-card-content>
@@ -51,13 +51,14 @@
         <li>HTML/CSS</li>
         <li>JAVASCRIPT</li>
         <li>ANGULAR 2</li>
+        <li>REACT</li>
         <li>NODE</li>
         <li>SASS</li>
         <li>GIT</li>
       </ul>
     </md-card-content>
   </md-card>
-  <md-card class="contact-card">
+  <md-card class="contact-card" on-mouseover="hover($event)" #res>
     <i class="material-icons usevw">file_download</i>
     <md-card-title>Resume</md-card-title>
     <!--<md-card-subtitle>Fernando Millan</md-card-subtitle>-->

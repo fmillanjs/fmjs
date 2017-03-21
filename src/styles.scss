@@ -1,5 +1,6 @@
 @import 'mixins';
 @import 'config';
+
 body{
     background: #EEE;
 }
@@ -110,8 +111,10 @@ table {
 // // // // // // // // //
 
 .mat-card{
-    background: $color4;
-    color: $color2
+    @include mat-card-styles;
+}
+.secondaryColor {
+    color: $secondaryFontColor;
 }
 
 .axis {
