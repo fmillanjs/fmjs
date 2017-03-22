@@ -1,8 +1,12 @@
+@import "../../mixins";
+@import "../../config";
+
 .contentaf {
     padding-bottom: 20%;
 }
 .mat-input-container {
     display:block!important;
-    width:80%;
+    width:100%;
     padding-bottom: 2%;
+    font-family: $font;
 }

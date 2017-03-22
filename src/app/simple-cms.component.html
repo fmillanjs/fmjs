@@ -1,12 +1,14 @@
-<md-card>
+<div class="container">
+<md-card class="des" *ngIf="!logged" >
     <md-card-title>Simple CMS</md-card-title>
-    <md-card-subtitle>Description:</md-card-subtitle>
     <md-card-content>
-       Simple page content managament system demonstration
+      <h2>Description:</h2>
+      <p>Simple page <span class="secondaryColor">content managament system (CMS)</span> demonstration to create and manage digital content. Using this uncomplicated system you can very easily add, delete images and edit text in your web site on the fly.</p>
+       <h2>Process:</h2>
        <ul>
         <li>Integrated AngularFire2 for handling authentication</li>
         <li>Managing data from Firebase database (CRUD)</li>
-        <li>Created admin to view</li>
+        <li>Created client and admin to view</li>
       </ul>
     </md-card-content>
 </md-card>
@@ -29,7 +31,7 @@
             <input formControlName="password" mdInput required type="password" placeholder="Password" value="">
           </md-input-container>
         </section>
-        <button md-raised-button type="submit" [disabled]="!loginForm.valid">Login</button>
+        <button md-raised-button type="submit" [ngClass]="{'disabled': !loginForm.valid }" [disabled]="!loginForm.valid">Login</button>
         <span> OR </span>
         <button md-raised-button type="button" (click)="onSubmitGoogle()">Google Login</button>
       </form>
@@ -49,7 +51,7 @@
             <input formControlName="password" mdInput required type="password" placeholder="Password" value="">
           </md-input-container>
         </section>
-        <button md-raised-button type="submit" [disabled]="!registerForm.valid">Register</button>
+        <button md-raised-button type="submit" [ngClass]="{'disabled': !registerForm.valid }" [disabled]="!registerForm.valid">Register</button>
       </form>
     </md-card-content>
   </div>
@@ -60,16 +62,17 @@
     {{ onLoginError || onRegisterError}}
   </div>
 </md-card>
-<md-card *ngIf="logged" >
+<md-card *ngIf="logged" class="admin">
   <button md-raised-button (click)="onLogOut()" type="button">Logout</button><br><br>
   <fm-admin-simple-cms></fm-admin-simple-cms>
 </md-card>
-<md-card>
+<md-card class="view">
   <md-card-title>View</md-card-title>
   <div class="CMSview">
-    <div class="insideImg"><h2>{{ title }}</h2></div>
+    <div class="insideImg jackpots"><h2>{{ title }}</h2></div>
     <img src="{{ imgUrl }}" alt="image" class="imgCMS">
-    <h2>{{ subtitle }}</h2>
-    <p>{{ content }}</p>
+    <h2 class="sub">{{ subtitle }}</h2>
+    <p class="con">{{ content }}</p>
   </div>
 </md-card>
+</div>
