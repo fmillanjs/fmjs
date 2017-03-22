@@ -4,17 +4,10 @@
 .container{
     @include flex-contain;
 }
-.mat-card-title {
-    font-size: 3.7vw!important;
-}
-.mat-list{
-    .mat-line{
-        font-size: 3.5vw;
-    }
-    .mat-line:nth-child(n+2){
-        font-size: 2vw;
-    }
-    .material-icons {
-        font-size: 3vw;
+.mat-card {
+    width: 82%;
+    font-family: $font;
+    .mat-card-title {
+        color: #bbb;
     }
 }

@@ -62,7 +62,7 @@ export class Beerd3Component implements OnInit {
     let brush: BrushBehavior<any>;
     let idleTimeout: number | null;
     let idleDelay: number;
-
+    
     function brushended(this: SVGGElement) {
       let e = <D3BrushEvent<any>>d3.event;
       let s: BrushSelection = e.selection;
@@ -96,7 +96,6 @@ export class Beerd3Component implements OnInit {
         .attr('cy', function (d) { return y(d[1]); });
     }
 
-
     if (this.parentNativeElement !== null) {
 
       d3ParentElement = d3.select(this.parentNativeElement);
@@ -118,8 +117,8 @@ export class Beerd3Component implements OnInit {
       y = d3.scaleLinear().domain(y0).range([height, 0]);
       z = d3.scaleOrdinal<number, string>(d3.schemeCategory10);
 
-      xAxis = d3.axisTop<number>(x).ticks(10);
-      yAxis = d3.axisRight<number>(y).ticks(10 * height / width);
+      xAxis = d3.axisTop<number>(x).ticks(8).tickSize(0);
+      yAxis = d3.axisRight<number>(y).ticks(8 * height / width).tickSize(0);
 
       brush = d3.brush().on('end', brushended);
       idleDelay = 350;
@@ -129,27 +128,38 @@ export class Beerd3Component implements OnInit {
         .enter().append<SVGCircleElement>('circle')
         .attr('cx', function (d) { return x(d[0]); })
         .attr('cy', function (d) { return y(d[1]); })
+        .attr('position', 'absolute')
         .attr('r', 2.5)
-        .attr('fill', function (d) { return "#fff"; });
+        .attr('fill', function (d) { return "#fff"; })
+        .attr('class', 'svgcircle');
 
       d3Svg.append<SVGGElement>('g')
         .attr('class', 'axis axis--x')
         .attr('transform', 'translate(0,' + (height - 10) + ')')
+        .attr('stroke', function (d) { return "#fff"; })
         .call(xAxis);
 
       d3Svg.append<SVGGElement>('g')
-        .attr('class', 'axis axis--y')
+       .attr('class', 'axis axis--y')
         .attr('transform', 'translate(10,0)')
+        .attr('stroke', function (d) { return "#fff"; })
         .call(yAxis);
 
       d3Svg.selectAll('.domain')
-        .style('display', 'none');
+        .style('display', 'visible')
+        .attr('stroke', function (d) { return "#fff"; });
+
+      d3Svg.selectAll('.ticks')
+        .style('display', 'none')
+        .attr('stroke', function (d) { return "#fff"; });
 
       d3Svg.append<SVGGElement>('g')
         .attr('class', 'brush')
         .call(brush);
 
     }
+    // document.getElementById('beerd3').setAttribute('viewBox', '0 0 640 400');
+
 
   }
 }

@@ -12,21 +12,21 @@ export const WORKS: Work[] = [
       urlName: 'beersd3',
       name: 'Craft Beers Data',
       imgUrl: '/imgs/work-beers.png',
-      description: 'Graph using D3 exploring craft beers'
+      description: 'Graph using D3 exploring diferent craft beers using bitternes and alcohol volume as data points.'
     },
     {
       id: 1,
       urlName: 'simplecms',
       name: 'Simple CMS',
       imgUrl: '/imgs/work-simplecms.png',
-      description: 'Simple CMS'
+      description: 'Integrated a simple content management system into the website as a separate module.'
     },
     {
       id: 2,
       urlName: 'web',
       name: 'Websites',
       imgUrl: '/imgs/work-websites.png',
-      description: 'Old Websites'
+      description: 'Website Examples I personally developed from scratch.'
     }
 ];
 

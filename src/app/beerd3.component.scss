@@ -1,11 +1,153 @@
 @import "../config";
 @import "../mixins";
 
-.beerd3{
-    width:100%;
-    height: auto;
+.container {
+    @include flex-contain;
 }
-.mat-card {
-    margin: 0 5%;
+.mat-card{
+    margin: 0.5%;
+    font-family: $font;
+    .mat-card-title{
+        font-size: 1.5vw;
+        color: #bbb;
+    }
+    .mat-card-content {
+        line-height: 2.4vw;
+        padding: 0 0 0 5%;
+    }
 }
+.card-desc {
+    width: 41%;
+    h3 {
+        color: #bbb;
+    }
+    li {
+        list-style: circle;
+    }
+}
+.card-graph {
+    width: 41%;
+    overflow: hidden;
+}
+.beerd3 {
+    .axis .ticks {
+        color: #fff;
+    }
+}
+.interinfo {
+    position: absolute;
+    font-family: $font;
+    font-size: 1.2vw;
+    color: $mainFontColor;
+    left:75%;
+    top: 10%;
+    z-index: 10;
+    background: $color1;
+    padding: 2%;
+}
+@media only screen and (max-device-width: 320px) { 
+    .mat-card{
+        margin: 0.5%;
+        font-family: $font;
+        .mat-card-title{
+            font-size: 4.5vw;
+            color: #bbb;
+        }
+        .mat-card-content {
+            line-height: 4.5vw;
+            font-size: 3vw;
+            padding: 0 0 0 5%;
+        }
+    }
+    .card-desc {
+        width: 100%;
+        h3 {
+            color: #bbb;
+        }
+        li {
+            list-style: circle;
+        }
+    }
+    .card-graph {
+        width: 100%;
+        overflow: hidden;
+    }
+    .beerd3 {
+        .axis .ticks {
+            color: #fff;
+        }
+    }
+    .interinfo {
+        position: absolute;
+        font-family: $font;
+        font-size: 4.2vw;
+        color: $mainFontColor;
+        left:75%;
+        top: 47%;
+        z-index: 10;
+        background: $color1;
+        padding: 2%;
+        li{ list-style: none; }
+    }
+}
+@media only screen and (max-device-width: 375px) {
+    .mat-card{
+        margin: 0.5%;
+        font-family: $font;
+        .mat-card-title{
+            font-size: 4.5vw;
+            color: #bbb;
+        }
+        .mat-card-content {
+            line-height: 4.5vw;
+            font-size: 3vw;
+            padding: 0 0 0 5%;
+        }
+    }
+    .card-desc {
+        width: 100%;
+        h3 {
+            color: #bbb;
+        }
+        li {
+            list-style: circle;
+        }
+    }
+    .card-graph {
+        width: 100%;
+        overflow: hidden;
+    }
+    .beerd3 {
+        .axis .ticks {
+            color: #fff;
+        }
+    }
+    .interinfo {
+        position: absolute;
+        font-family: $font;
+        font-size: 4.2vw;
+        color: $mainFontColor;
+        left:75%;
+        top: 47%;
+        z-index: 10;
+        background: $color1;
+        padding: 2%;
+        li{ list-style: none; }
+    }
+ }
+@media (min-device-width:768px) and (max-device-width:1024px){
+     .mat-card{
+        margin: 0.5%;
+        font-family: $font;
+        .mat-card-title{
+            font-size: 2.5vw;
+            color: #bbb;
+        }
+        .mat-card-content {
+            line-height: 2.5vw;
+            font-size: 2vw;
+            padding: 0 0 0 5%;
+        }
+    }
+ }
 

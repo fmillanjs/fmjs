@@ -66,6 +66,9 @@ body{
 .secondaryColor {
     color: $secondaryFontColor;
 }
+.ticks {
+    stroke: #fff;
+}
 
 // Phone 320 wide
 @media only screen and (max-device-width: 320px) {

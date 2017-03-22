@@ -1,11 +1,11 @@
-<br>
-<md-card>
-    <md-card-title>Craft Beer ABV and IBU correlation</md-card-title>
-    <md-card-subtitle>Description:</md-card-subtitle>
+<div class="container">
+<md-card class="card-desc">
+    <md-card-title>Craft Beer ABV and IBU correlation</md-card-title><br>
+    <h3>Description:</h3><br>
     <md-card-content>
-       D3 Graph to find the correlation between ABV (Alcohol by volume) and IBU (International Bitterness Units) if there is any, from a sample data of 40 different types of craft beers.
+       <span class="secondaryColor">D3 Graph</span> to find the correlation between <span class="secondaryColor">ABV (Alcohol by volume)</span> and <span class="secondaryColor">IBU (International Bitterness Units)</span> if there is any, from a sample data of 40 different types of craft beers.
     </md-card-content>
-    <md-card-subtitle>Process:</md-card-subtitle>
+    <h3>Process:</h3><br>
     <md-card-content>
        <ul>
            <li>Integrated D3 to Angular 2</li>
@@ -16,14 +16,13 @@
        </ul>
     </md-card-content>
 </md-card>
-<br>
-<md-card>
     <div class="interinfo">
         <ul>
-            <li><span>Double-Click</span> to zoom out.</li>
-            <li><span>Draw a Square</span>to zoom in</li>
+            <li><span>Draw a Square to</span> <span class="secondaryColor"> zoom in</span>.</li>
+            <li><span>Double-Click</span> <span class="secondaryColor"> zoom out</span>.</li>
         </ul>
     </div>
-    <div class="abv-label">IBU</div><div class="ibu-label">ABV</div>
-<svg class="beerd3" width="300" height="180" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet"></svg>
+<md-card class="card-graph" >
+<svg class="beerd3" id="beerd3" width="540" height="400"  overflow="visible" viewBox="0 0 540 400" preserveAspectRatio="xMidYMid meet"></svg>
 </md-card>
+</div>
