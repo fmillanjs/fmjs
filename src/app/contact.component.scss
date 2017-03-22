@@ -18,7 +18,7 @@ button {
 }
 .closePop{
     position: absolute;
-    z-index: 2;
+    z-index: 50;
     top: -6%;
     left: 94%;
 }
@@ -33,3 +33,14 @@ button {
     top:0;
     z-index: 1;
 }
+@media only screen and (max-device-width: 320px) { 
+    .container {
+        width: 92%;
+    }
+ }
+@media only screen and (max-device-width: 375px) {
+    .container {
+        width: 92%;
+    }
+ }
+@media (min-device-width:768px) and (max-device-width:1024px){ }

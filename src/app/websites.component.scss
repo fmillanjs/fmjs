@@ -11,4 +11,19 @@
 }
 .mat-card-title{
     text-align: center;
+    padding: 4% 0;
+    color: #bbb;
+    text-decoration: underline;
+
+}
+.mat-card-content {
+    padding: 2% 0;
+    font-size: 1.5vw;
+    line-height: 2vw;
+}
+.mat-button {
+    font-family: $font;
+    font-size: 1.5vw;
+    color: $color3;
+    border: solid 1px $mainFontColor;
 }

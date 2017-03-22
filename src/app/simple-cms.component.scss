@@ -124,7 +124,8 @@
         height: 200px;
     }
  }
-@media only screen and (max-device-width: 375px) {     .des {
+@media only screen and (max-device-width: 375px) {     
+    .des {
         width: 100%;
         .mat-card-title {
             font-size: 5vw;
