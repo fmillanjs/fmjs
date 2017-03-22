@@ -52,6 +52,9 @@
 .centerVer {
     margin-top: 80%!important;
 }
+md-card.contact-card.mat-card:hover {
+    background: $color1;
+}
 @media only screen and (max-device-width: 320px) {
     .mat-card-title {
         font-size: 4.5vw!important;
