@@ -6,17 +6,9 @@
   </div>
   <div id="title" class="title" [@loadingHeadTitle]>
     <h1>{{title}}</h1>
+    <h2>UNDER CONSTRUCTION</h2>
   </div>
   </a>
-  <div id="navigation" class="navigation" [@loadingNavigation] (@loadingNavigation.done)="animationDone($event)">
-    <nav>
-      <ul class="ul-navigation">
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/profile']" routerLinkActive="active">Profile</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="['/work']" routerLinkActive="active">Work</a></li>
-        <li class="li-navItem"><a class="navItem" [routerLink]="[{ outlets: { popup: ['contact'] } }]" routerLinkActive="active">Contact</a></li>
-      </ul>
-    </nav>
-  </div>
 </div>
 
 <!--End Loading Animation-->

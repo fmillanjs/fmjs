@@ -13,7 +13,4 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
   }
-  resume(){
-    window.open('https://fernandomillan.me/resume.pdf','_blank');
-  }
 }
