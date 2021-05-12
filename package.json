@@ -658,7 +658,7 @@
     "pnp-webpack-plugin": "^1.6.4",
     "portfinder": "^1.0.28",
     "posix-character-classes": "^0.1.1",
-    "postcss": "^7.0.35",
+    "postcss": "^8.2.10",
     "postcss-attribute-case-insensitive": "^4.0.2",
     "postcss-browser-comments": "^3.0.0",
     "postcss-calc": "^7.0.5",
