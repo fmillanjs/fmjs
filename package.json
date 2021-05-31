@@ -1022,7 +1022,7 @@
     "wrap-ansi": "^6.2.0",
     "wrappy": "^1.0.2",
     "write-file-atomic": "^3.0.3",
-    "ws": "^6.2.1",
+    "ws": "^7.4.6",
     "xml-name-validator": "^3.0.0",
     "xmlchars": "^2.2.0",
     "xtend": "^4.0.2",
