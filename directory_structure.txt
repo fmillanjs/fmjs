@@ -1,0 +1,30 @@
+.
+├── README.md
+├── database.rules.json
+├── directory_structure.txt
+├── firebase.json
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public
+│   └── index.html
+├── src
+│   ├── App.js
+│   ├── components
+│   │   ├── PhotoCard.js
+│   │   └── PhotoUpload.js
+│   ├── favicon.ico
+│   ├── firebase
+│   │   └── firebaseConfig.js
+│   ├── imgs
+│   │   ├── logo.svg
+│   │   └── profilephoto.png
+│   ├── index.css
+│   ├── index.js
+│   ├── pages
+│   │   ├── LoginPage.js
+│   │   └── PhotoGallery.js
+│   └── styles.scss
+└── tailwind.config.js
+
+7 directories, 21 files
