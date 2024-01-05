@@ -19,7 +19,7 @@
     "build": "NODE_ENV=production react-scripts build",
     "deploy": "firebase deploy",
     "emuinit": "firebase init emulators",
-    "emurun": "firebase emulators:start"
+    "emu": "firebase emulators:start"
   },
   "repository": {
     "type": "git",
