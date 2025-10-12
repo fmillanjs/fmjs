@@ -9,6 +9,7 @@ interface HeroProps {
     profileImage: string | null;
     twitterUrl: string | null;
     githubUrl: string | null;
+    startDate: string;
   } | null;
 }
 
@@ -42,9 +43,14 @@ export default function Hero({ profile }: HeroProps) {
       <h1 className="text-3xl font-bold mb-1">{profile.name}</h1>
       <p className="text-gray-500 text-sm mb-3">{profile.location}</p>
 
-      <p className="text-base text-gray-700 mb-6 max-w-md mx-auto">
+      <p className="text-base text-gray-700 mb-3 max-w-md mx-auto">
         {profile.tagline}
       </p>
+
+      <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-xs font-medium rounded-full mb-6">
+        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+        Started {new Date(profile.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+      </div>
 
       <div className="flex justify-center gap-3 mb-8">
         {profile.twitterUrl && (
