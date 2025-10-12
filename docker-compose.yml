@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - NEXT_PUBLIC_NAME=${NEXT_PUBLIC_NAME}
+      - NEXT_PUBLIC_LOCATION=${NEXT_PUBLIC_LOCATION}
+      - NEXT_PUBLIC_TWITTER_URL=${NEXT_PUBLIC_TWITTER_URL}
+      - NEXT_PUBLIC_GITHUB_URL=${NEXT_PUBLIC_GITHUB_URL}
+      - NEXT_PUBLIC_START_DATE=${NEXT_PUBLIC_START_DATE}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-transparency_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
