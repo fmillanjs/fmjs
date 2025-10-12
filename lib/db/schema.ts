@@ -32,3 +32,10 @@ export const profile = pgTable('profile', {
   startDate: text('start_date').notNull(), // Date when you started building
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+export const subscribers = pgTable('subscribers', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  subscribedAt: timestamp('subscribed_at').defaultNow().notNull(),
+  isActive: text('is_active').notNull().default('true'), // 'true' or 'false' for unsubscribes
+});

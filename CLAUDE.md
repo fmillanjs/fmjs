@@ -34,10 +34,25 @@ app/
   page.tsx              # Main page (Server Component)
   layout.tsx            # Root layout with Rubik font
   globals.css           # Tailwind + custom scrollbar
+  admin/                # Admin panel (password protected)
+    login/page.tsx      # Admin login
+    page.tsx            # Admin dashboard
+    updates/page.tsx    # Manage updates
+    projects/page.tsx   # Manage projects
+    subscribers/page.tsx # Manage newsletter subscribers
+  unsubscribe/page.tsx  # Newsletter unsubscribe page
   api/
+    auth/               # Admin authentication
+      login/route.ts    # Login endpoint
+      logout/route.ts   # Logout endpoint
+      check/route.ts    # Auth check endpoint
     updates/route.ts    # CRUD for daily updates
     projects/route.ts   # CRUD for projects
-    newsletter/route.ts # Newsletter signup
+    newsletter/route.ts # Newsletter CRUD (subscribe/unsubscribe)
+    webhooks/
+      new-update/route.ts # n8n webhook for Twitter posting
+    cron/
+      weekly-digest/route.ts # Weekly newsletter cron job
 
 components/
   Hero.tsx             # Profile header
@@ -46,11 +61,17 @@ components/
   Updates.tsx          # Daily update timeline
   Newsletter.tsx       # Email signup (client component)
   Footer.tsx           # Footer
+  AdminNav.tsx         # Admin panel navigation
 
-lib/db/
-  schema.ts            # Database schema (updates, projects, profile)
-  index.ts             # DB connection
-  seed.ts              # Seed initial profile
+lib/
+  db/
+    schema.ts          # Database schema (updates, projects, profile, subscribers)
+    index.ts           # DB connection
+    seed.ts            # Seed initial profile
+  auth.ts              # Admin authentication helpers
+  resend.ts            # Resend email client
+  email-templates/
+    weekly-digest.tsx  # Weekly newsletter email template
 
 scripts/
   add-update.ts        # CLI to add updates
@@ -58,6 +79,8 @@ scripts/
 
 Dockerfile            # Multi-stage build
 entrypoint.sh         # Auto-runs migrations on startup
+vercel.json           # Vercel cron configuration
+N8N_SETUP.md          # Complete n8n + Twitter setup guide
 ```
 
 ## Database Schema
@@ -76,6 +99,10 @@ entrypoint.sh         # Auto-runs migrations on startup
 - id, name, logo (emoji), description, link
 - revenue (e.g., "$100/mo"), status (building/live/paused)
 - daysToComplete, createdAt, completedAt
+
+### `subscribers` table
+- id, email (unique), subscribedAt, isActive
+- Newsletter subscribers (soft delete via isActive flag)
 
 ## Deployment Process
 
@@ -126,12 +153,29 @@ npm run db:studio      # Open Drizzle Studio
 
 **Required in Coolify:**
 ```env
+# Database
 DATABASE_URL=postgresql://user:password@postgres:5432/transparency_db
+
+# Public Profile Info
 NEXT_PUBLIC_NAME=Fernando Millan
 NEXT_PUBLIC_LOCATION=San Diego
 NEXT_PUBLIC_TWITTER_URL=https://x.com/fmillanjs
 NEXT_PUBLIC_GITHUB_URL=https://github.com/fmillanjs
 NEXT_PUBLIC_START_DATE=2025-10-12
+NEXT_PUBLIC_SITE_URL=https://fernandomillan.me
+
+# Admin Panel Authentication
+ADMIN_PASSWORD=your-secure-password-here
+
+# Resend (Newsletter)
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+RESEND_FROM_EMAIL=updates@fernandomillan.me
+
+# n8n Integration (optional)
+N8N_WEBHOOK_URL=https://n8n.yourdomain.com/webhook/new-update
+
+# Cron Security (optional)
+CRON_SECRET=your-random-secret-here
 ```
 
 ## Known Issues & Solutions
@@ -220,6 +264,15 @@ npm run dev
 ## Common Tasks
 
 ### Add Your Daily 4 Updates
+
+**Via Admin Panel (Recommended):**
+1. Go to https://fernandomillan.me/admin
+2. Login with your admin password
+3. Navigate to "Updates"
+4. Fill out the form and submit
+5. **Automatically posts to Twitter** (if n8n is configured)
+
+**Via CLI:**
 ```bash
 # 6am update
 npx tsx scripts/add-update.ts "6:00 AM" "Morning update"
@@ -235,6 +288,13 @@ npx tsx scripts/add-update.ts "6:00 PM" "End of day wrap-up"
 ```
 
 ### Ship a New Project
+
+**Via Admin Panel (Recommended):**
+1. Go to https://fernandomillan.me/admin
+2. Navigate to "Projects"
+3. Fill out the project form and submit
+
+**Via CLI:**
 ```bash
 npx tsx scripts/add-project.ts \
   "Project Name" \
@@ -243,6 +303,22 @@ npx tsx scripts/add-project.ts \
   "https://project-url.com" \
   "$0/mo" \
   "live"
+```
+
+### Manage Newsletter Subscribers
+1. Go to https://fernandomillan.me/admin
+2. Navigate to "Subscribers"
+3. View all subscribers, export emails, track stats
+
+### Send Weekly Newsletter
+**Automatic (Recommended):**
+- Configured in `vercel.json` to run every Monday at 9 AM UTC
+- No action needed
+
+**Manual Trigger:**
+```bash
+curl -X GET https://fernandomillan.me/api/cron/weekly-digest \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
 ### Update Your Profile
@@ -272,18 +348,40 @@ npm run db:studio
 - **GitHub**: https://github.com/fmillanjs
 - **Website**: https://fernandomillan.me
 
+## New Features
+
+### ✅ Admin Panel
+- Password-protected admin interface at `/admin`
+- Manage updates, projects, and subscribers
+- Dashboard with quick stats
+- No need for CLI or Coolify terminal anymore
+
+### ✅ Newsletter System
+- Email collection via homepage
+- Weekly digest sent automatically (every Monday)
+- Powered by Resend
+- Unsubscribe functionality included
+
+### ✅ Twitter Automation (via n8n)
+- Auto-post updates to Twitter when added via admin panel
+- Webhook integration with n8n
+- See `N8N_SETUP.md` for complete setup guide
+
 ## Future Improvements
 
-- [ ] Add authentication for admin panel
+- [✅] ~~Add authentication for admin panel~~ **DONE**
+- [✅] ~~Add Twitter auto-posting~~ **DONE**
+- [✅] ~~Add newsletter functionality~~ **DONE**
 - [ ] Add image upload for projects
 - [ ] Add analytics tracking
 - [ ] Add RSS feed for updates
-- [ ] Add Twitter auto-posting
 - [ ] Add revenue chart/graph
 - [ ] Optimize Docker image size
 - [ ] Add caching layer (Redis)
+- [ ] Add email notifications for new subscribers
 
 ---
 
 **Last Updated**: Oct 12, 2025
 **Status**: ✅ Deployed and running on Coolify
+**New**: Admin Panel + Newsletter + Twitter Automation
