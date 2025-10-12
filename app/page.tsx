@@ -41,6 +41,18 @@ export default async function Home() {
   const today = new Date();
   const daysBuilding = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
+  // Calculate total MMR from projects
+  const totalMMR = projectsData.reduce((total, project) => {
+    if (!project.revenue) return total;
+    // Parse revenue string like "$100/mo" or "$1,234/mo"
+    const match = project.revenue.match(/\$([0-9,]+)/);
+    if (match) {
+      const amount = parseInt(match[1].replace(/,/g, ''), 10);
+      return total + amount;
+    }
+    return total;
+  }, 0);
+
   return (
     <main className="min-h-screen bg-white">
       <div className="max-w-5xl mx-auto px-6 py-8">
@@ -50,6 +62,7 @@ export default async function Home() {
           projectCount={projectsData.length}
           daysBuilding={daysBuilding}
           updatesCount={updatesData.length}
+          mmr={totalMMR}
         />
 
         <Updates updates={updatesData} />

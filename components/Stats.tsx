@@ -2,11 +2,16 @@ interface StatsProps {
   projectCount: number;
   daysBuilding: number;
   updatesCount: number;
+  mmr: number;
 }
 
-export default function Stats({ projectCount, daysBuilding, updatesCount }: StatsProps) {
+export default function Stats({ projectCount, daysBuilding, updatesCount, mmr }: StatsProps) {
   return (
     <div className="flex justify-center gap-8 py-8 border-y border-gray-200 max-w-4xl mx-auto">
+      <div className="text-center">
+        <div className="text-3xl font-bold">${mmr}</div>
+        <div className="text-xs text-gray-600 mt-1">MMR</div>
+      </div>
       <div className="text-center">
         <div className="text-3xl font-bold">{projectCount}</div>
         <div className="text-xs text-gray-600 mt-1">Projects</div>
