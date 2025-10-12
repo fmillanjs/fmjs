@@ -6,7 +6,7 @@ export async function checkAuth() {
   const authCookie = cookieStore.get('admin_auth');
 
   if (authCookie?.value !== 'true') {
-    redirect('/admin/login');
+    redirect('/login');
   }
 
   return true;

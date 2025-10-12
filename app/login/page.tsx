@@ -28,6 +28,7 @@ export default function LoginPage() {
       }
 
       router.push('/admin');
+      router.refresh();
     } catch (err) {
       setError('Login failed. Please try again.');
       setLoading(false);
