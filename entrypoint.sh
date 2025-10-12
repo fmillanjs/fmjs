@@ -12,12 +12,12 @@ do
 done
 
 echo "📊 Running database migrations..."
-npx drizzle-kit push --config=/app/drizzle.config.ts || {
+node /app/node_modules/drizzle-kit/bin.cjs push --config=/app/drizzle.config.ts || {
   echo "⚠️  Migration failed, but continuing (tables might already exist)"
 }
 
 echo "🌱 Seeding database..."
-npx tsx /app/lib/db/seed.ts || {
+node /app/node_modules/tsx/dist/cli.mjs /app/lib/db/seed.ts || {
   echo "⚠️  Seeding failed, but continuing (data might already exist)"
 }
 
