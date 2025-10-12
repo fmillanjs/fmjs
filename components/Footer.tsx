@@ -6,9 +6,9 @@ export default function Footer() {
   });
 
   return (
-    <footer className="text-center py-12 text-gray-600 text-sm">
-      <p>Built with transparency. Updated daily.</p>
-      <p className="text-xs mt-2 opacity-70">Last updated: {currentDate}</p>
+    <footer className="text-center py-8 border-t border-gray-200">
+      <p className="text-gray-600 text-xs">Built with brutal honesty. Updated daily.</p>
+      <p className="text-gray-400 text-xs mt-1">{currentDate}</p>
     </footer>
   );
 }

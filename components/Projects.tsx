@@ -19,44 +19,29 @@ interface ProjectsProps {
 
 export default function Projects({ projects }: ProjectsProps) {
   return (
-    <section className="py-16 border-t border-gray-200">
-      <h2 className="text-3xl font-bold text-center mb-2">Projects</h2>
-      <p className="text-center text-gray-600 mb-12">One project every 2 days</p>
+    <section className="py-12 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Projects</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.length === 0 ? (
-          <div className="col-span-full bg-gray-50 rounded-xl p-12 text-center border border-gray-200">
-            <div className="text-6xl mb-4">🚀</div>
-            <h3 className="text-xl font-semibold mb-2">First project coming soon...</h3>
-            <p className="text-gray-600">Check back in 2 days!</p>
+          <div className="col-span-full border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+            <div className="text-5xl mb-3">🚀</div>
+            <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
+            <p className="text-gray-600 text-sm">Building in progress...</p>
           </div>
         ) : (
           projects.map((project) => (
-            <div
+            <Link
               key={project.id}
-              className="bg-gray-50 rounded-xl p-8 border border-gray-200 hover:border-black transition-all hover:-translate-y-2 cursor-pointer text-center"
-              onClick={() => project.link && window.open(project.link, '_blank')}
+              href={project.link || '#'}
+              target={project.link ? '_blank' : '_self'}
+              rel={project.link ? 'noopener noreferrer' : undefined}
+              className="block border border-gray-200 rounded-lg p-5 hover:border-black hover:shadow-md transition-all group"
             >
-              <div className="text-5xl mb-4">{project.logo}</div>
-              <h3 className="text-xl font-semibold mb-2">{project.name}</h3>
-              {project.revenue && (
-                <div className="text-lg font-bold text-blue-600 mb-3">{project.revenue}</div>
-              )}
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">{project.description}</p>
-              {project.link && (
-                <Link
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-600 hover:underline inline-block"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Visit →
-                </Link>
-              )}
-              <div className="mt-4">
+              <div className="flex items-start justify-between mb-3">
+                <div className="text-3xl">{project.logo}</div>
                 <span
-                  className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
+                  className={`text-xs font-semibold px-2 py-1 rounded ${
                     project.status === 'live'
                       ? 'bg-green-100 text-green-800'
                       : project.status === 'paused'
@@ -67,7 +52,19 @@ export default function Projects({ projects }: ProjectsProps) {
                   {project.status}
                 </span>
               </div>
-            </div>
+
+              <h3 className="text-lg font-bold mb-1 group-hover:underline">{project.name}</h3>
+
+              {project.revenue && (
+                <div className="text-lg font-bold text-green-600 mb-2">{project.revenue}</div>
+              )}
+
+              <p className="text-sm text-gray-600 leading-relaxed">{project.description}</p>
+
+              {project.daysToComplete && (
+                <p className="text-xs text-gray-500 mt-3">Built in {project.daysToComplete} days</p>
+              )}
+            </Link>
           ))
         )}
       </div>

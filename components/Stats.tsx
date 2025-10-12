@@ -6,18 +6,18 @@ interface StatsProps {
 
 export default function Stats({ projectCount, daysBuilding, updatesCount }: StatsProps) {
   return (
-    <div className="flex justify-center gap-12 py-12 flex-wrap">
+    <div className="flex justify-center gap-8 py-8 border-y border-gray-200 max-w-4xl mx-auto">
       <div className="text-center">
-        <div className="text-4xl font-bold">{projectCount}</div>
-        <div className="text-sm text-gray-600 mt-1">Projects Built</div>
+        <div className="text-3xl font-bold">{projectCount}</div>
+        <div className="text-xs text-gray-600 mt-1">Projects</div>
       </div>
       <div className="text-center">
-        <div className="text-4xl font-bold">{daysBuilding}</div>
-        <div className="text-sm text-gray-600 mt-1">Days Building</div>
+        <div className="text-3xl font-bold">{daysBuilding}</div>
+        <div className="text-xs text-gray-600 mt-1">Days</div>
       </div>
       <div className="text-center">
-        <div className="text-4xl font-bold">{updatesCount}</div>
-        <div className="text-sm text-gray-600 mt-1">Updates Posted</div>
+        <div className="text-3xl font-bold">{updatesCount}</div>
+        <div className="text-xs text-gray-600 mt-1">Updates</div>
       </div>
     </div>
   );
