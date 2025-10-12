@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { updates, subscribers } from '@/lib/db/schema';
 import { eq, gte } from 'drizzle-orm';
-import { resend } from '@/lib/resend';
+import { getResend } from '@/lib/resend';
 import { generateWeeklyDigestHTML } from '@/lib/email-templates/weekly-digest';
 
 /**
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
         unsubscribeUrl,
       });
 
-      return resend.emails.send({
+      return getResend().emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'updates@fernandomillan.me',
         to: subscriber.email,
         subject: `Weekly Build Update: ${weekStart} - ${weekEnd}`,
