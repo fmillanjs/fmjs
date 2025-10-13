@@ -52,6 +52,13 @@ export default async function AdminDashboard() {
             <h3 className="font-semibold mb-1">View Subscribers</h3>
             <p className="text-sm text-gray-600">Manage newsletter subscribers</p>
           </a>
+          <a
+            href="/admin/metrics"
+            className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <h3 className="font-semibold mb-1">View Metrics</h3>
+            <p className="text-sm text-gray-600">Track visitor analytics and stats</p>
+          </a>
         </div>
       </div>
     </div>

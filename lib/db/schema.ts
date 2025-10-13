@@ -39,3 +39,13 @@ export const subscribers = pgTable('subscribers', {
   subscribedAt: timestamp('subscribed_at').defaultNow().notNull(),
   isActive: text('is_active').notNull().default('true'), // 'true' or 'false' for unsubscribes
 });
+
+export const pageViews = pgTable('page_views', {
+  id: serial('id').primaryKey(),
+  page: text('page').notNull(), // URL path visited
+  referrer: text('referrer'), // Where they came from
+  country: text('country'), // Country from IP geolocation
+  city: text('city'), // City from IP geolocation
+  userAgent: text('user_agent'), // Browser/device info
+  visitedAt: timestamp('visited_at').defaultNow().notNull(),
+});

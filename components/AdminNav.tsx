@@ -17,6 +17,7 @@ export default function AdminNav() {
     { href: '/admin/updates', label: 'Updates' },
     { href: '/admin/projects', label: 'Projects' },
     { href: '/admin/subscribers', label: 'Subscribers' },
+    { href: '/admin/metrics', label: 'Metrics' },
   ];
 
   return (
