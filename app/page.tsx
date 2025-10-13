@@ -56,13 +56,12 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-white">
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <Hero profile={profileData} />
+        <Hero profile={profileData} mmr={totalMMR} />
 
         <Stats
           projectCount={projectsData.length}
           daysBuilding={daysBuilding}
           updatesCount={updatesData.length}
-          mmr={totalMMR}
         />
 
         <Updates updates={updatesData} />

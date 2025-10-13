@@ -11,9 +11,17 @@ interface HeroProps {
     githubUrl: string | null;
     startDate: string;
   } | null;
+  mmr?: number;
 }
 
-export default function Hero({ profile }: HeroProps) {
+function formatMMR(amount: number): string {
+  if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(1)}k`;
+  }
+  return `$${amount}`;
+}
+
+export default function Hero({ profile, mmr = 0 }: HeroProps) {
   if (!profile) {
     return (
       <div className="text-center py-20">
@@ -41,7 +49,24 @@ export default function Hero({ profile }: HeroProps) {
       </div>
 
       <h1 className="text-3xl font-bold mb-1">{profile.name}</h1>
-      <p className="text-gray-500 text-sm mb-3">{profile.location}</p>
+
+      <div className="flex items-center justify-center gap-4 text-sm mb-3">
+        <div className="flex items-center gap-1 text-gray-500">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>{profile.location}</span>
+        </div>
+
+        <div className="flex items-center gap-1 text-gray-500">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>{formatMMR(mmr)}/Month</span>
+        </div>
+      </div>
 
       <p className="text-base text-gray-700 mb-3 max-w-md mx-auto">
         {profile.tagline}
