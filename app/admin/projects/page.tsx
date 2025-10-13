@@ -107,6 +107,26 @@ export default function ProjectsManagement() {
         if (!response.ok) throw new Error('Failed to add project');
 
         setMessage('Project added successfully!');
+
+        // Post to Twitter if project status is "live" (only for new projects)
+        if (formData.status === 'live') {
+          try {
+            const twitterResponse = await fetch('/api/twitter/post-project', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(formData),
+            });
+
+            const twitterResult = await twitterResponse.json();
+            if (twitterResult.success) {
+              console.log('Project posted to Twitter:', twitterResult.tweetId);
+            } else if (!twitterResult.skipped) {
+              console.warn('Twitter posting failed:', twitterResult.error);
+            }
+          } catch (twitterError) {
+            console.error('Twitter error (non-critical):', twitterError);
+          }
+        }
       }
 
       setFormData({

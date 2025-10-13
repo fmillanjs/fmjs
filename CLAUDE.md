@@ -49,8 +49,11 @@ app/
     updates/route.ts    # CRUD for daily updates
     projects/route.ts   # CRUD for projects
     newsletter/route.ts # Newsletter CRUD (subscribe/unsubscribe)
+    twitter/
+      post-update/route.ts  # Post updates to Twitter
+      post-project/route.ts # Post project launches to Twitter
     webhooks/
-      new-update/route.ts # n8n webhook for Twitter posting
+      new-update/route.ts # Legacy webhook (not used)
     cron/
       weekly-digest/route.ts # Weekly newsletter cron job
 
@@ -68,6 +71,9 @@ lib/
     schema.ts          # Database schema (updates, projects, profile, subscribers)
     index.ts           # DB connection
     seed.ts            # Seed initial profile
+  twitter/
+    client.ts          # Twitter API v2 client (using twitter-api-v2)
+    format.ts          # Tweet formatting utilities
   auth.ts              # Admin authentication helpers
   resend.ts            # Resend email client
   email-templates/
@@ -171,8 +177,11 @@ ADMIN_PASSWORD=your-secure-password-here
 RESEND_API_KEY=re_xxxxxxxxxxxxx
 RESEND_FROM_EMAIL=updates@fernandomillan.me
 
-# n8n Integration (optional)
-N8N_WEBHOOK_URL=https://n8n.yourdomain.com/webhook/new-update
+# Twitter API v2 (Auto-posting)
+TWITTER_API_KEY=xxxxxxxxxxxxx
+TWITTER_API_SECRET=xxxxxxxxxxxxx
+TWITTER_ACCESS_TOKEN=xxxxxxxxxxxxx
+TWITTER_ACCESS_TOKEN_SECRET=xxxxxxxxxxxxx
 
 # Cron Security (optional)
 CRON_SECRET=your-random-secret-here
@@ -270,7 +279,7 @@ npm run dev
 2. Login with your admin password
 3. Navigate to "Updates"
 4. Fill out the form and submit
-5. **Automatically posts to Twitter** (if n8n is configured)
+5. **Automatically posts to Twitter** (if Twitter API is configured)
 
 **Via CLI:**
 ```bash
@@ -293,6 +302,7 @@ npx tsx scripts/add-update.ts "6:00 PM" "End of day wrap-up"
 1. Go to https://fernandomillan.me/admin
 2. Navigate to "Projects"
 3. Fill out the project form and submit
+4. **Automatically posts to Twitter** (if status is "live" and Twitter API is configured)
 
 **Via CLI:**
 ```bash
@@ -362,10 +372,12 @@ npm run db:studio
 - Powered by Resend
 - Unsubscribe functionality included
 
-### ✅ Twitter Automation (via n8n)
-- Auto-post updates to Twitter when added via admin panel
-- Webhook integration with n8n
-- See `N8N_SETUP.md` for complete setup guide
+### ✅ Twitter Automation (Direct API)
+- Auto-post daily updates to Twitter (4x/day: 6am, 11am, 2pm, 6pm)
+- Auto-post project launches when status is "live"
+- Direct Twitter API v2 integration (no external services needed)
+- Graceful fallback if Twitter not configured
+- Format: `6:00 AM - [content] #BuildInPublic #IndieHackers`
 
 ## Future Improvements
 

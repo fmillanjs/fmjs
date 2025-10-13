@@ -93,9 +93,9 @@ export default function UpdatesManagement() {
 
         setMessage('Update added successfully!');
 
-        // Trigger n8n webhook for Twitter posting (only for new updates)
+        // Post to Twitter (only for new updates)
         try {
-          await fetch('/api/webhooks/new-update', {
+          const twitterResponse = await fetch('/api/twitter/post-update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -104,8 +104,15 @@ export default function UpdatesManagement() {
               date: formData.date,
             }),
           });
-        } catch (webhookError) {
-          console.error('Webhook error (non-critical):', webhookError);
+
+          const twitterResult = await twitterResponse.json();
+          if (twitterResult.success) {
+            console.log('Posted to Twitter:', twitterResult.tweetId);
+          } else if (!twitterResult.skipped) {
+            console.warn('Twitter posting failed:', twitterResult.error);
+          }
+        } catch (twitterError) {
+          console.error('Twitter error (non-critical):', twitterError);
         }
       }
 
