@@ -28,6 +28,7 @@ export default function ProjectsManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const statusOptions = ['building', 'live', 'paused'];
   const emojiOptions = ['🚀', '💰', '📱', '🌐', '⚡', '🎨', '🔧', '📊', '🎯', '💡'];
@@ -48,21 +49,66 @@ export default function ProjectsManagement() {
     }
   };
 
+  const handleEdit = (project: Project) => {
+    setEditingProject(project);
+    setFormData({
+      name: project.name,
+      logo: project.logo,
+      description: project.description,
+      link: project.link || '',
+      revenue: project.revenue || '$0/mo',
+      status: project.status,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProject(null);
+    setFormData({
+      name: '',
+      logo: '🚀',
+      description: '',
+      link: '',
+      revenue: '$0/mo',
+      status: 'building',
+    });
+    setMessage('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage('');
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      if (editingProject) {
+        // Update existing project
+        const response = await fetch('/api/projects', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: editingProject.id,
+            ...formData,
+          }),
+        });
 
-      if (!response.ok) throw new Error('Failed to add project');
+        if (!response.ok) throw new Error('Failed to update project');
 
-      setMessage('Project added successfully!');
+        setMessage('Project updated successfully!');
+        setEditingProject(null);
+      } else {
+        // Create new project
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) throw new Error('Failed to add project');
+
+        setMessage('Project added successfully!');
+      }
+
       setFormData({
         name: '',
         logo: '🚀',
@@ -73,7 +119,7 @@ export default function ProjectsManagement() {
       });
       fetchProjects();
     } catch (error) {
-      setMessage('Failed to add project');
+      setMessage(editingProject ? 'Failed to update project' : 'Failed to add project');
     } finally {
       setSubmitting(false);
     }
@@ -100,9 +146,22 @@ export default function ProjectsManagement() {
     <div>
       <h1 className="text-3xl font-bold mb-8">Manage Projects</h1>
 
-      {/* Add Project Form */}
+      {/* Add/Edit Project Form */}
       <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-        <h2 className="text-xl font-bold mb-4">Add New Project</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">
+            {editingProject ? 'Edit Project' : 'Add New Project'}
+          </h2>
+          {editingProject && (
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -194,7 +253,7 @@ export default function ProjectsManagement() {
             disabled={submitting}
             className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            {submitting ? 'Adding...' : 'Add Project'}
+            {submitting ? (editingProject ? 'Updating...' : 'Adding...') : (editingProject ? 'Update Project' : 'Add Project')}
           </button>
         </form>
       </div>
@@ -227,12 +286,20 @@ export default function ProjectsManagement() {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="text-red-600 hover:text-red-700 text-sm"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(project)}
+                      className="text-blue-600 hover:text-blue-700 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="text-red-600 hover:text-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 <p className="text-sm text-gray-700 mb-2">{project.description}</p>
                 {project.link && (

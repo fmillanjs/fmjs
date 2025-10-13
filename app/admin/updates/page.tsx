@@ -20,6 +20,7 @@ export default function UpdatesManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [editingUpdate, setEditingUpdate] = useState<Update | null>(null);
 
   const timeOptions = ['6:00 AM', '11:00 AM', '2:00 PM', '6:00 PM'];
 
@@ -39,40 +40,83 @@ export default function UpdatesManagement() {
     }
   };
 
+  const handleEdit = (update: Update) => {
+    setEditingUpdate(update);
+    setFormData({
+      time: update.time,
+      content: update.content,
+      date: update.date,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUpdate(null);
+    setFormData({
+      time: '6:00 AM',
+      content: '',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    });
+    setMessage('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage('');
 
     try {
-      const response = await fetch('/api/updates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error('Failed to add update');
-
-      setMessage('Update added successfully!');
-      setFormData({ ...formData, content: '' });
-      fetchUpdates();
-
-      // Trigger n8n webhook for Twitter posting
-      try {
-        await fetch('/api/webhooks/new-update', {
-          method: 'POST',
+      if (editingUpdate) {
+        // Update existing update
+        const response = await fetch('/api/updates', {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            time: formData.time,
-            content: formData.content,
-            date: formData.date,
+            id: editingUpdate.id,
+            ...formData,
           }),
         });
-      } catch (webhookError) {
-        console.error('Webhook error (non-critical):', webhookError);
+
+        if (!response.ok) throw new Error('Failed to update update');
+
+        setMessage('Update updated successfully!');
+        setEditingUpdate(null);
+      } else {
+        // Create new update
+        const response = await fetch('/api/updates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) throw new Error('Failed to add update');
+
+        setMessage('Update added successfully!');
+
+        // Trigger n8n webhook for Twitter posting (only for new updates)
+        try {
+          await fetch('/api/webhooks/new-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              time: formData.time,
+              content: formData.content,
+              date: formData.date,
+            }),
+          });
+        } catch (webhookError) {
+          console.error('Webhook error (non-critical):', webhookError);
+        }
       }
+
+      setFormData({
+        time: '6:00 AM',
+        content: '',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      });
+      fetchUpdates();
     } catch (error) {
-      setMessage('Failed to add update');
+      setMessage(editingUpdate ? 'Failed to update update' : 'Failed to add update');
     } finally {
       setSubmitting(false);
     }
@@ -99,9 +143,22 @@ export default function UpdatesManagement() {
     <div>
       <h1 className="text-3xl font-bold mb-8">Manage Updates</h1>
 
-      {/* Add Update Form */}
+      {/* Add/Edit Update Form */}
       <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-        <h2 className="text-xl font-bold mb-4">Add New Update</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">
+            {editingUpdate ? 'Edit Update' : 'Add New Update'}
+          </h2>
+          {editingUpdate && (
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -155,7 +212,7 @@ export default function UpdatesManagement() {
             disabled={submitting}
             className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            {submitting ? 'Adding...' : 'Add Update'}
+            {submitting ? (editingUpdate ? 'Updating...' : 'Adding...') : (editingUpdate ? 'Update' : 'Add Update')}
           </button>
         </form>
       </div>
@@ -176,12 +233,20 @@ export default function UpdatesManagement() {
                     <span className="font-semibold">{update.time}</span>
                     <span className="text-gray-600 ml-2">• {update.date}</span>
                   </div>
-                  <button
-                    onClick={() => handleDelete(update.id)}
-                    className="text-red-600 hover:text-red-700 text-sm"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(update)}
+                      className="text-blue-600 hover:text-blue-700 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(update.id)}
+                      className="text-red-600 hover:text-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 <p className="text-gray-800">{update.content}</p>
               </div>
