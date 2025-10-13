@@ -41,6 +41,27 @@ export default function SubscribersManagement() {
     URL.revokeObjectURL(url);
   };
 
+  const handleDelete = async (email: string) => {
+    if (!confirm(`Are you sure you want to remove ${email} from the newsletter?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/newsletter?email=${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await fetchSubscribers();
+      } else {
+        alert('Failed to remove subscriber');
+      }
+    } catch (error) {
+      console.error('Error removing subscriber:', error);
+      alert('Failed to remove subscriber');
+    }
+  };
+
   const activeSubscribers = subscribers.filter(sub => sub.isActive === 'true');
   const inactiveSubscribers = subscribers.filter(sub => sub.isActive === 'false');
 
@@ -89,9 +110,17 @@ export default function SubscribersManagement() {
                     Subscribed: {new Date(subscriber.subscribedAt).toLocaleDateString()}
                   </p>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm">
-                  Active
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm">
+                    Active
+                  </span>
+                  <button
+                    onClick={() => handleDelete(subscriber.email)}
+                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>

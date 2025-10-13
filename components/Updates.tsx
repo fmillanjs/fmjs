@@ -14,7 +14,7 @@ export default function Updates({ updates }: UpdatesProps) {
   return (
     <section className="py-12 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">Daily Updates</h2>
-      <p className="text-gray-600 text-sm mb-6">Raw, unfiltered progress — 4 updates/day at 6am, 11am, 2pm, 6pm</p>
+      <p className="text-gray-600 text-sm mb-6">Raw, unfiltered progress</p>
 
       <div className="space-y-4">
         {updates.length === 0 ? (

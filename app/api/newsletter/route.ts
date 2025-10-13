@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Unsubscribe
+// DELETE - Permanently delete subscriber
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -74,19 +74,18 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Soft delete - mark as inactive
-    await db.update(subscribers)
-      .set({ isActive: 'false' })
+    // Hard delete - permanently remove from database
+    await db.delete(subscribers)
       .where(eq(subscribers.email, email));
 
     return NextResponse.json(
-      { message: 'Successfully unsubscribed' },
+      { message: 'Successfully deleted subscriber' },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Unsubscribe error:', error);
+    console.error('Delete subscriber error:', error);
     return NextResponse.json(
-      { error: 'Failed to unsubscribe' },
+      { error: 'Failed to delete subscriber' },
       { status: 500 }
     );
   }
