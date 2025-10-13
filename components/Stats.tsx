@@ -8,7 +8,7 @@ interface StatsProps {
 export default function Stats({ projectCount, daysBuilding, updatesCount, mmr }: StatsProps) {
   return (
     <div className="flex justify-center gap-8 py-8 border-y border-gray-200 max-w-4xl mx-auto">
-      <div className="text-center">
+      <div className="text-center px-6 py-3 border border-black">
         <div className="text-3xl font-bold">${mmr}</div>
         <div className="text-xs text-gray-600 mt-1">MMR</div>
       </div>
