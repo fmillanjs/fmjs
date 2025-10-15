@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 
@@ -17,6 +18,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          defer
+          data-website-id="dfid_iQLw8sP0KeQISWwdx66RC"
+          data-domain="fernandomillan.me"
+          src="https://datafa.st/js/script.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={rubik.className}>
         <AnalyticsTracker />
         {children}
