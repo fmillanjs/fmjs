@@ -1,0 +1,116 @@
+# Roadmap: Fernando Millan Portfolio & TeamFlow
+
+## Overview
+
+This roadmap transforms Fernando's portfolio website into a compelling technical showcase by building TeamFlow—a production-quality work management SaaS application that demonstrates senior full-stack engineering capabilities. The journey progresses from foundational authentication and authorization patterns through core task management features, then adds the most technically impressive showcase element (real-time collaboration), and concludes with portfolio integration and production polish. Each phase builds on validated patterns from the previous phase, avoiding critical security pitfalls while delivering incrementally working software within the 3-4 week timeline.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3, 4): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Foundation & Authentication** - Establish security foundation with auth, RBAC, audit logging, and infrastructure
+- [ ] **Phase 2: Core Work Management** - Build teams, projects, tasks, and views with proper data modeling
+- [ ] **Phase 3: Real-Time Collaboration** - Add live updates, presence indicators, and conflict resolution
+- [ ] **Phase 4: Portfolio & Polish** - Integrate portfolio website, polish UX, testing, and deploy to production
+
+## Phase Details
+
+### Phase 1: Foundation & Authentication
+**Goal**: Establish security foundation enabling all protected features with proper authentication, multi-layer authorization, audit logging, and technical infrastructure
+
+**Depends on**: Nothing (first phase)
+
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, RBAC-01, RBAC-02, RBAC-03, RBAC-04, RBAC-05, RBAC-06, AUDIT-01, AUDIT-02, AUDIT-03, AUDIT-04, AUDIT-07, TECH-01, TECH-02, TECH-03, TECH-04, TECH-05, TECH-06, TECH-08, DEPLOY-01, DEPLOY-03
+
+**Success Criteria** (what must be TRUE):
+  1. User can create account with email and password and have session persist across browser restarts
+  2. User can log in, log out, and reset password via email link
+  3. User can view and edit their profile information
+  4. System enforces three-role RBAC (Admin, Manager, Member) at multiple layers with clear permission denied errors for unauthorized actions
+  5. System logs all authentication events, authorization failures, and RBAC changes with user context, IP address, and user agent
+  6. WebSocket connections authenticate via JWT and reject unauthenticated clients
+  7. Monorepo structure shares types and validation schemas between frontend and backend with API documentation available
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (to be created during `/gsd:plan-phase 1`)
+
+### Phase 2: Core Work Management
+**Goal**: Deliver complete task management capability with teams, projects, tasks, views, filtering, and activity tracking using optimized data models
+
+**Depends on**: Phase 1
+
+**Requirements**: TEAM-01, TEAM-02, TEAM-03, TEAM-04, TEAM-05, PROJ-01, PROJ-02, PROJ-03, PROJ-04, PROJ-05, TASK-01, TASK-02, TASK-03, TASK-04, TASK-05, TASK-06, TASK-07, TASK-08, TASK-09, VIEW-01, VIEW-02, VIEW-03, VIEW-04, VIEW-05, VIEW-06, AUDIT-05, AUDIT-06
+
+**Success Criteria** (what must be TRUE):
+  1. User can create teams, invite members, view member roles, and manage team membership with role-based restrictions
+  2. User can create projects within teams, edit project details, archive projects, and delete projects (Admin only)
+  3. User can create tasks with all fields (title, description, due date, priority, status, labels, assignee)
+  4. User can edit, delete, comment on tasks, and view task history showing all changes
+  5. User can view tasks in both list and Kanban board formats with drag-and-drop between status columns
+  6. User can filter tasks by status, priority, assignee, and labels, plus search by title and description
+  7. User can view activity feed for a project and searchable audit log (Admin only) showing who did what and when
+  8. Demo workspace exists with seeded sample data ready for immediate recruiter interaction
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (to be created during `/gsd:plan-phase 2`)
+
+### Phase 3: Real-Time Collaboration
+**Goal**: Transform task management into live collaborative experience with WebSocket-based real-time updates, presence indicators, and conflict resolution
+
+**Depends on**: Phase 2
+
+**Requirements**: REAL-01, REAL-02, REAL-03, REAL-04, REAL-05, REAL-06, REAL-07, TECH-09
+
+**Success Criteria** (what must be TRUE):
+  1. User sees live updates when other users create tasks, move tasks between columns, or change task details without page refresh
+  2. User sees live updates when comments are added to tasks they are viewing
+  3. User sees presence indicators showing how many users are viewing the same project
+  4. User experiences optimistic UI updates with automatic rollback on server failure
+  5. System detects concurrent edits and shows clear conflict resolution UI to user
+  6. WebSocket events use Redis pub/sub enabling horizontal scaling across multiple server instances
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (to be created during `/gsd:plan-phase 3`)
+
+### Phase 4: Portfolio & Polish
+**Goal**: Complete professional portfolio website showcasing TeamFlow, polish UX for production quality, implement testing, and deploy with CI/CD
+
+**Depends on**: Phase 3
+
+**Requirements**: PORT-01, PORT-02, PORT-03, PORT-04, PORT-05, PORT-06, PORT-07, PORT-08, UI-01, UI-02, UI-03, UI-04, UI-05, UI-06, UI-07, TECH-07, TEST-01, TEST-02, TEST-03, TEST-04, TEST-05, DEPLOY-02, DEPLOY-04, DEPLOY-05
+
+**Success Criteria** (what must be TRUE):
+  1. Portfolio website has professional home page with hero section, About page with bio and stack, Resume page with download, and Contact form
+  2. Portfolio showcases TeamFlow as featured project with comprehensive case study page explaining problem, solution, architecture, and tech decisions
+  3. Portfolio and TeamFlow are both responsive and mobile-friendly with dark mode support
+  4. Application shows loading skeletons during data fetch, proper error messages with recovery actions, and empty states when no data exists
+  5. Application has proper 404 and 500 error pages with keyboard shortcuts for common actions
+  6. Critical paths have integration tests, authentication has E2E tests, RBAC enforcement has unit tests, and API endpoints have validation tests
+  7. Application deploys to Coolify with CI/CD pipeline, custom domains, and proper environment variable configuration
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (to be created during `/gsd:plan-phase 4`)
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 would execute between 2 and 3)
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation & Authentication | 0/TBD | Not started | - |
+| 2. Core Work Management | 0/TBD | Not started | - |
+| 3. Real-Time Collaboration | 0/TBD | Not started | - |
+| 4. Portfolio & Polish | 0/TBD | Not started | - |
