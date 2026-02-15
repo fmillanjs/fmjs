@@ -17,6 +17,7 @@ interface TaskFormProps {
   labels: LabelBase[];
   onClose: () => void;
   onSuccess: () => void;
+  prefilledStatus?: TaskStatus;
 }
 
 export function TaskForm({
@@ -27,6 +28,7 @@ export function TaskForm({
   labels,
   onClose,
   onSuccess,
+  prefilledStatus,
 }: TaskFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function TaskForm({
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',
-      status: task?.status || TaskStatus.TODO,
+      status: task?.status || prefilledStatus || TaskStatus.TODO,
       priority: task?.priority || TaskPriority.MEDIUM,
       dueDate: task?.dueDate ? (new Date(task.dueDate).toISOString().split('T')[0] as any) : undefined,
       assigneeId: task?.assigneeId || undefined,
