@@ -19,7 +19,7 @@ export function useRealTimeTasks(
   projectId: string,
   currentUserId: string,
   tasks: TaskWithRelations[],
-  setTasks: (tasks: TaskWithRelations[]) => void
+  setTasks: (tasks: TaskWithRelations[] | ((prev: TaskWithRelations[]) => TaskWithRelations[])) => void
 ) {
   const { socket } = useWebSocket();
 

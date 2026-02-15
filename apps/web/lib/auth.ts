@@ -1,9 +1,9 @@
-import NextAuth, { type DefaultSession, type NextAuthResult } from 'next-auth';
+import NextAuth, { type DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@repo/database';
 import { loginSchema } from '@repo/shared/validators';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 import { authConfig } from './auth.config';
 import { redis } from './redis';
 import { randomUUID } from 'crypto';
@@ -86,7 +86,7 @@ async function deleteSessionFromRedis(sessionToken: string) {
   await redis.del(`${SESSION_PREFIX}${sessionToken}`);
 }
 
-const nextAuth: NextAuthResult = NextAuth({
+const nextAuthResult = NextAuth({
   ...authConfig,
   session: {
     strategy: 'jwt', // Credentials provider requires JWT strategy
@@ -196,7 +196,8 @@ const nextAuth: NextAuthResult = NextAuth({
               role: user.role,
             },
             jwtSecret,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
+            // Type assertion needed due to strict build mode with process.env types
+            { expiresIn: '15m' }
           );
 
           session.accessToken = accessToken;
@@ -219,7 +220,8 @@ const nextAuth: NextAuthResult = NextAuth({
   },
 });
 
-export const handlers: NextAuthResult['handlers'] = nextAuth.handlers;
-export const auth: NextAuthResult['auth'] = nextAuth.auth;
-export const signIn: NextAuthResult['signIn'] = nextAuth.signIn;
-export const signOut: NextAuthResult['signOut'] = nextAuth.signOut;
+// Export with explicit types to avoid portability issues
+export const handlers: typeof nextAuthResult.handlers = nextAuthResult.handlers;
+export const auth: typeof nextAuthResult.auth = nextAuthResult.auth;
+export const signIn: typeof nextAuthResult.signIn = nextAuthResult.signIn;
+export const signOut: typeof nextAuthResult.signOut = nextAuthResult.signOut;

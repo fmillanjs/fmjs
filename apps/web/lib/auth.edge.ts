@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import type { NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig, Session } from 'next-auth';
 
 // Minimal edge-compatible auth for middleware
 // No providers, no callbacks that access Redis/Prisma
@@ -29,4 +29,9 @@ const edgeConfig: NextAuthConfig = {
   providers: [],
 };
 
-export const { auth, signIn, signOut } = NextAuth(edgeConfig);
+// Export with explicit types to avoid portability issues
+const nextAuth = NextAuth(edgeConfig);
+
+export const auth: typeof nextAuth.auth = nextAuth.auth;
+export const signIn: typeof nextAuth.signIn = nextAuth.signIn;
+export const signOut: typeof nextAuth.signOut = nextAuth.signOut;
