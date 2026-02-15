@@ -16,6 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Core Work Management** - Build teams, projects, tasks, and views with proper data modeling (completed 2026-02-14)
 - [x] **Phase 3: Real-Time Collaboration** - Add live updates, presence indicators, and conflict resolution (completed 2026-02-15)
 - [x] **Phase 4: Portfolio & Polish** - Integrate portfolio website, polish UX, testing, and deploy to production (completed 2026-02-15)
+- [ ] **Phase 5.1: Authentication Investigation** - Debug WebSocket and SSR authentication issues blocking real-time features (in progress)
 
 ## Phase Details
 
@@ -131,10 +132,30 @@ Plans:
 - [x] 04-09-PLAN.md -- Playwright E2E tests (auth flows, portfolio navigation)
 - [x] 04-10-PLAN.md -- Production Dockerfiles + GitHub Actions CI/CD + Coolify deployment prep
 
+### Phase 5.1: Authentication Investigation
+**Goal**: Understand the exact token format mismatch and SSR session access patterns
+
+**Depends on**: Nothing (starts immediately)
+
+**Requirements**: REAL-01 through REAL-07 prerequisites
+
+**Success Criteria**:
+1. WebSocket handshake token extraction logged and debugged
+2. NextAuth JWT signing algorithm identified
+3. NestJS JWT validation algorithm identified
+4. SSR session access pattern documented for Next.js 15 + NextAuth v5
+5. Clear understanding of what needs to change where
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05.1-01-PLAN.md — WebSocket authentication debugging (comprehensive logging, explicit algorithm config, findings documentation)
+- [ ] 05.1-02-PLAN.md — SSR session access verification (audit Server Components, test SSR patterns, document findings)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 would execute between 2 and 3)
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 (decimal phases like 2.1 would execute between 2 and 3)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -142,3 +163,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 wo
 | 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
 | 3. Real-Time Collaboration | 4/4 | ✓ Complete | 2026-02-15 |
 | 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
+| 5.1. Authentication Investigation | 0/2 | In Progress | - |
