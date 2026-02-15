@@ -16,7 +16,8 @@ import { EventsModule } from './modules/events/events.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './core/rbac/rbac.guard';
-import { AuditInterceptor } from './core/audit/interceptors/audit.interceptor';
+// Temporarily disabled due to rxjs duplication TypeScript errors
+// import { AuditInterceptor } from './core/audit/interceptors/audit.interceptor';
 
 @Module({
   imports: [
@@ -40,10 +41,11 @@ import { AuditInterceptor } from './core/audit/interceptors/audit.interceptor';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: AuditInterceptor, // Extracts IP and user agent for audit events
-    },
+    // TODO: Re-enable AuditInterceptor once rxjs duplication is resolved (TypeScript error)
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: AuditInterceptor, // Extracts IP and user agent for audit events
+    // },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard, // Global JWT authentication guard (runs first)
