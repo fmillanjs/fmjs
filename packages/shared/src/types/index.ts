@@ -4,3 +4,6 @@ export * from './user';
 export * from './session';
 export * from './audit';
 export * from './events';
+export * from './team';
+export * from './project';
+export * from './task';
