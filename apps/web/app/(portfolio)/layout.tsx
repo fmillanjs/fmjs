@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PortfolioNav } from '@/components/portfolio/nav';
 import { PortfolioFooter } from '@/components/portfolio/footer';
+import { CommandPalette } from '@/components/ui/command-palette';
 
 export const metadata: Metadata = {
   title: {
@@ -20,6 +21,7 @@ export default function PortfolioLayout({
       <PortfolioNav />
       <main className="flex-1">{children}</main>
       <PortfolioFooter />
+      <CommandPalette />
     </div>
   );
 }

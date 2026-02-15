@@ -47,6 +47,9 @@ export function PortfolioNav() {
                 {link.label}
               </Link>
             ))}
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
+              <span className="text-xs">⌘</span>K
+            </kbd>
             <ThemeToggle />
           </div>
 
