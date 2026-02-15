@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   transpilePackages: ['@repo/shared', '@repo/database'],
   webpack: (config, { isServer }) => {
     // Externalize server-only modules for client-side builds
