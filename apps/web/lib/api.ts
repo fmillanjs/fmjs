@@ -5,8 +5,6 @@
  * with automatic JWT token attachment and error handling.
  */
 
-import { auth } from './auth';
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
@@ -109,9 +107,11 @@ export const api = {
 /**
  * Server-side API client (use in Server Components, Server Actions)
  * Automatically fetches session and attaches JWT token
+ * Uses dynamic import to avoid bundling server-only code (bcrypt) in client
  */
 export const serverApi = {
   async get<T>(path: string): Promise<T> {
+    const { auth } = await import('./auth');
     const session = await auth();
     const token = (session as any)?.accessToken;
 
@@ -123,6 +123,7 @@ export const serverApi = {
   },
 
   async post<T>(path: string, body: any): Promise<T> {
+    const { auth } = await import('./auth');
     const session = await auth();
     const token = (session as any)?.accessToken;
 
@@ -134,6 +135,7 @@ export const serverApi = {
   },
 
   async patch<T>(path: string, body: any): Promise<T> {
+    const { auth } = await import('./auth');
     const session = await auth();
     const token = (session as any)?.accessToken;
 
@@ -145,6 +147,7 @@ export const serverApi = {
   },
 
   async delete<T>(path: string): Promise<T> {
+    const { auth } = await import('./auth');
     const session = await auth();
     const token = (session as any)?.accessToken;
 
