@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 const projectSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be less than 100 characters'),
@@ -23,6 +24,7 @@ interface ProjectFormProps {
 
 export function ProjectForm({ mode, teamId, projectId, defaultValues, onSuccess }: ProjectFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,12 +52,17 @@ export function ProjectForm({ mode, teamId, projectId, defaultValues, onSuccess 
 
       const method = mode === 'create' ? 'POST' : 'PATCH';
 
+      const accessToken = (session as any)?.accessToken;
+      if (!accessToken) {
+        throw new Error('Not authenticated. Please sign in again.');
+      }
+
       const response = await fetch(endpoint, {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
 
