@@ -61,7 +61,7 @@ export class CommentsService {
     metadata: { ipAddress: string; userAgent: string },
   ) {
     // Verify user has access to task's organization
-    await this.verifyTaskAccess(taskId, user.id);
+    const task = await this.verifyTaskAccess(taskId, user.id);
 
     const comment = await this.prisma.comment.create({
       data: {
@@ -88,6 +88,9 @@ export class CommentsService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: task.project.id,
+      taskId,
+      comment,
     };
     this.eventEmitter.emit('comment.created', commentEvent);
 
@@ -175,6 +178,9 @@ export class CommentsService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: comment.task.project.id,
+      taskId: comment.taskId,
+      comment: updatedComment,
     };
     this.eventEmitter.emit('comment.updated', commentEvent);
 
@@ -225,6 +231,8 @@ export class CommentsService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: comment.task.project.id,
+      taskId: comment.taskId,
     };
     this.eventEmitter.emit('comment.deleted', commentEvent);
 

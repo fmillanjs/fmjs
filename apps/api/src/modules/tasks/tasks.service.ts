@@ -185,6 +185,8 @@ export class TasksService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: dto.projectId,
+      task,
     };
     this.eventEmitter.emit('task.created', taskEvent);
 
@@ -397,6 +399,7 @@ export class TasksService {
         priority: dto.priority,
         dueDate: dto.dueDate,
         assigneeId: dto.assigneeId,
+        version: { increment: 1 },
         labels: dto.labelIds
           ? {
               set: [], // Disconnect all
@@ -424,6 +427,8 @@ export class TasksService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: task.project.id,
+      task: updatedTask,
       changes: {
         previous,
         current: {
@@ -463,6 +468,7 @@ export class TasksService {
       where: { id: taskId },
       data: {
         status: dto.status,
+        version: { increment: 1 },
       },
       include: {
         assignee: {
@@ -484,6 +490,8 @@ export class TasksService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: task.project.id,
+      task: updatedTask,
       changes: {
         previousStatus,
         newStatus: dto.status,
@@ -521,6 +529,7 @@ export class TasksService {
       actorId: user.id,
       outcome: 'SUCCESS',
       metadata,
+      projectId: task.project.id,
     };
     this.eventEmitter.emit('task.deleted', taskEvent);
 

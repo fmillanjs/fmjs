@@ -54,11 +54,16 @@ export interface ProjectEvent extends AuditEventPayload {
 export interface TaskEvent extends AuditEventPayload {
   entityType: 'Task';
   action: 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_STATUS_CHANGED' | 'TASK_DELETED';
+  projectId?: string;
+  task?: any;
 }
 
 export interface CommentEvent extends AuditEventPayload {
   entityType: 'Comment';
   action: 'COMMENT_CREATED' | 'COMMENT_UPDATED' | 'COMMENT_DELETED';
+  projectId?: string;
+  taskId?: string;
+  comment?: any;
 }
 
 // WebSocket event types (re-export for frontend access)
