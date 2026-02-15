@@ -1,6 +1,8 @@
 import { serverApi } from '@/lib/api';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 interface Team {
   id: string;
   name: string;
