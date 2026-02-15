@@ -6,7 +6,9 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main",
-    "lint": "echo 'No lint configured yet'"
+    "lint": "echo 'No lint configured yet'",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",
+    "@nestjs/testing": "^11.1.13",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^22.0.0",
@@ -48,6 +51,8 @@
     "ignore-loader": "^0.1.2",
     "null-loader": "^4.0.1",
     "typescript": "~5.6.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.0.18",
     "webpack-node-externals": "^3.0.0"
   }
 }
