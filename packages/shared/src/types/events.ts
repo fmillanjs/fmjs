@@ -39,3 +39,8 @@ export interface AuthorizationDeniedEvent extends AuditEventPayload {
     requiredPermission: string;
   };
 }
+
+export interface TeamEvent extends AuditEventPayload {
+  entityType: 'Organization' | 'Membership';
+  action: 'TEAM_CREATED' | 'MEMBER_INVITED' | 'MEMBER_REMOVED';
+}

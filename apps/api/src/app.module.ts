@@ -7,6 +7,7 @@ import { AuditModule } from './core/audit/audit.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { TeamsModule } from './modules/teams/teams.module';
 import { EventsModule } from './modules/events/events.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -22,6 +23,7 @@ import { AuditInterceptor } from './core/audit/interceptors/audit.interceptor';
     HealthModule,    // Health check endpoints
     AuthModule,      // JWT authentication
     UsersModule,     // User management
+    TeamsModule,     // Team/Organization management
     EventsModule,    // WebSocket real-time events
   ],
   controllers: [],

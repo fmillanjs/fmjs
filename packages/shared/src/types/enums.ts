@@ -16,6 +16,9 @@ export const AuditAction = {
   ROLE_CHANGED: 'ROLE_CHANGED',
   PROFILE_UPDATED: 'PROFILE_UPDATED',
   AUTHORIZATION_DENIED: 'AUTHORIZATION_DENIED',
+  TEAM_CREATED: 'TEAM_CREATED',
+  MEMBER_INVITED: 'MEMBER_INVITED',
+  MEMBER_REMOVED: 'MEMBER_REMOVED',
 } as const;
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
 
