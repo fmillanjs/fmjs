@@ -117,10 +117,19 @@ Plans:
   6. Critical paths have integration tests, authentication has E2E tests, RBAC enforcement has unit tests, and API endpoints have validation tests
   7. Application deploys to Coolify with CI/CD pipeline, custom domains, and proper environment variable configuration
 
-**Plans**: TBD
+**Plans:** 10 plans
 
 Plans:
-- [ ] TBD (to be created during `/gsd:plan-phase 4`)
+- [ ] 04-01-PLAN.md -- Auth fix (SSR session + WebSocket) + Dark mode theming infrastructure
+- [ ] 04-02-PLAN.md -- Global error pages (404, 500) + Loading skeletons + Empty state component
+- [ ] 04-03-PLAN.md -- Portfolio layout, navigation, footer + Home page hero + About page
+- [ ] 04-04-PLAN.md -- Projects showcase + TeamFlow case study + Resume page
+- [ ] 04-05-PLAN.md -- Contact form with server action + Portfolio loading states + Responsiveness
+- [ ] 04-06-PLAN.md -- Dashboard responsive mobile + Dark mode polish + Empty states + Error boundaries
+- [ ] 04-07-PLAN.md -- Command palette (Ctrl+K) with keyboard shortcuts
+- [ ] 04-08-PLAN.md -- Vitest setup + Unit tests (RBAC, contact, components) + API validation tests
+- [ ] 04-09-PLAN.md -- Playwright E2E tests (auth flows, portfolio navigation)
+- [ ] 04-10-PLAN.md -- Production Dockerfiles + GitHub Actions CI/CD + Coolify deployment prep
 
 ## Progress
 
@@ -132,4 +141,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 wo
 | 1. Foundation & Authentication | 7/7 | ✓ Complete | 2026-02-14 |
 | 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
 | 3. Real-Time Collaboration | 0/4 | Not started | - |
-| 4. Portfolio & Polish | 0/TBD | Not started | - |
+| 4. Portfolio & Polish | 0/10 | Not started | - |
