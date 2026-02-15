@@ -1,9 +1,10 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../core/database/prisma.service';
-import { LoginDto, SignUpDto } from '@repo/shared';
+import { LoginDto, SignUpDto, AuthEvent } from '@repo/shared';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async generateToken(user: { id: string; email: string; role: string }) {
@@ -41,14 +43,40 @@ export class AuthService {
     return user;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, metadata?: { ipAddress: string; userAgent: string }) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     if (!user) {
+      // Emit login failed event
+      if (metadata) {
+        const failedEvent: AuthEvent = {
+          entityType: 'User',
+          action: 'LOGIN_FAILED',
+          outcome: 'DENIED',
+          metadata,
+          changes: {
+            email: loginDto.email,
+          },
+        };
+        this.eventEmitter.emit('auth.login.failed', failedEvent);
+      }
       throw new UnauthorizedException('Invalid email or password');
     }
 
     const accessToken = await this.generateToken(user);
+
+    // Emit login success event
+    if (metadata) {
+      const successEvent: AuthEvent = {
+        entityType: 'User',
+        entityId: user.id,
+        action: 'LOGIN',
+        actorId: user.id,
+        outcome: 'SUCCESS',
+        metadata,
+      };
+      this.eventEmitter.emit('auth.login', successEvent);
+    }
 
     return {
       accessToken,
@@ -61,7 +89,7 @@ export class AuthService {
     };
   }
 
-  async signup(signUpDto: SignUpDto) {
+  async signup(signUpDto: SignUpDto, metadata?: { ipAddress: string; userAgent: string }) {
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: signUpDto.email.toLowerCase() },
@@ -85,6 +113,19 @@ export class AuthService {
     });
 
     const accessToken = await this.generateToken(user);
+
+    // Emit signup event
+    if (metadata) {
+      const signupEvent: AuthEvent = {
+        entityType: 'User',
+        entityId: user.id,
+        action: 'SIGNUP',
+        actorId: user.id,
+        outcome: 'SUCCESS',
+        metadata,
+      };
+      this.eventEmitter.emit('auth.signup', signupEvent);
+    }
 
     return {
       accessToken,

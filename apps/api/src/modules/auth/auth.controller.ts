@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -16,8 +17,9 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @ApiResponse({ status: 409, description: 'User already exists' })
   @ApiResponse({ status: 400, description: 'Validation error' })
-  async signup(@Body() signUpDto: SignUpDto) {
-    return this.authService.signup(signUpDto);
+  async signup(@Body() signUpDto: SignUpDto, @Req() req: Request) {
+    const metadata = (req as any).auditMetadata;
+    return this.authService.signup(signUpDto, metadata);
   }
 
   @Public()
@@ -26,8 +28,9 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiResponse({ status: 400, description: 'Validation error' })
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+    const metadata = (req as any).auditMetadata;
+    return this.authService.login(loginDto, metadata);
   }
 
   @Get('me')

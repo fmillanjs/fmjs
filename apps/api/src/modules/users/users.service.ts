@@ -1,14 +1,17 @@
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../core/database/prisma.service';
 import { AbilityFactory, UserContext } from '../../core/rbac/ability.factory';
 import { accessibleBy } from '@casl/prisma';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { RbacEvent } from '@repo/shared';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly abilityFactory: AbilityFactory,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async findAll(user: UserContext) {
@@ -84,7 +87,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  async updateRole(targetUserId: string, newRole: string, actor: UserContext) {
+  async updateRole(targetUserId: string, newRole: string, actor: UserContext, metadata?: { ipAddress: string; userAgent: string }) {
     const ability = this.abilityFactory.createForUser(actor);
 
     // Only ADMIN can change roles
@@ -97,6 +100,12 @@ export class UsersService {
       throw new ForbiddenException('Invalid role');
     }
 
+    // Get user before update to track from/to
+    const beforeUser = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { role: true },
+    });
+
     const updatedUser = await this.prisma.user.update({
       where: { id: targetUserId },
       data: { role: newRole as any },
@@ -107,6 +116,24 @@ export class UsersService {
         role: true,
       },
     });
+
+    // Emit role changed event
+    if (beforeUser && metadata) {
+      const roleChangedEvent: RbacEvent = {
+        entityType: 'User',
+        entityId: targetUserId,
+        action: 'ROLE_CHANGED',
+        actorId: actor.id,
+        outcome: 'SUCCESS',
+        metadata,
+        changes: {
+          field: 'role',
+          from: beforeUser.role,
+          to: newRole,
+        },
+      };
+      this.eventEmitter.emit('rbac.role.changed', roleChangedEvent);
+    }
 
     return updatedUser;
   }

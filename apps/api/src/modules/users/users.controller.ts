@@ -1,5 +1,6 @@
-import { Controller, Get, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Request } from 'express';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CheckAbility } from '../../core/rbac/decorators/check-ability.decorator';
@@ -56,7 +57,9 @@ export class UsersController {
     @Param('id') id: string,
     @Body('role') role: string,
     @CurrentUser() user: any,
+    @Req() req: Request,
   ) {
-    return this.usersService.updateRole(id, role, user);
+    const metadata = (req as any).auditMetadata;
+    return this.usersService.updateRole(id, role, user, metadata);
   }
 }
