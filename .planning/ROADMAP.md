@@ -164,3 +164,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 (decimal phases lik
 | 3. Real-Time Collaboration | 4/4 | ✓ Complete | 2026-02-15 |
 | 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
 | 5.1. Authentication Investigation | 0/2 | In Progress | - |
+
+### Phase 6: Authentication Fixes
+
+**Goal:** [To be planned]
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 6 to break down)

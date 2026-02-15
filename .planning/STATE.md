@@ -165,6 +165,10 @@ Recent decisions affecting current work:
 - [Phase 05.1-02]: Static code audit confirms 100% Next.js 15 async compliance (11/11 auth() calls properly awaited)
 - [Phase 05.1-02]: Three-tier auth patterns identified: layout-level protection (primary), defensive double-check, server action error return
 
+### Roadmap Evolution
+
+- Phase 6 added: Authentication Fixes
+
 ### Pending Todos
 
 None yet.
