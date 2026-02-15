@@ -42,7 +42,6 @@ export default async function DashboardLayout({
           user={{
             name: session.user.name,
             email: session.user.email,
-            image: session.user.image,
             role: session.user.role,
           }}
         />

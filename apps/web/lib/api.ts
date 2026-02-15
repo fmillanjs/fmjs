@@ -5,8 +5,7 @@
  * with automatic JWT token attachment and error handling.
  */
 
-import { getServerSession } from 'next-auth';
-import { authConfig } from './auth.config';
+import { auth } from './auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -97,7 +96,7 @@ export const api = {
  */
 export const serverApi = {
   async get<T>(path: string): Promise<T> {
-    const session = await getServerSession(authConfig);
+    const session = await auth();
     const token = (session as any)?.accessToken;
 
     if (!token) {
@@ -108,7 +107,7 @@ export const serverApi = {
   },
 
   async post<T>(path: string, body: any): Promise<T> {
-    const session = await getServerSession(authConfig);
+    const session = await auth();
     const token = (session as any)?.accessToken;
 
     if (!token) {
@@ -119,7 +118,7 @@ export const serverApi = {
   },
 
   async patch<T>(path: string, body: any): Promise<T> {
-    const session = await getServerSession(authConfig);
+    const session = await auth();
     const token = (session as any)?.accessToken;
 
     if (!token) {
@@ -130,7 +129,7 @@ export const serverApi = {
   },
 
   async delete<T>(path: string): Promise<T> {
-    const session = await getServerSession(authConfig);
+    const session = await auth();
     const token = (session as any)?.accessToken;
 
     if (!token) {

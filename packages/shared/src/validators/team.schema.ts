@@ -9,7 +9,7 @@ export type CreateTeamInput = z.infer<typeof createTeamSchema>;
 
 export const inviteMemberSchema = z.object({
   email: z.string().email('Invalid email address'),
-  role: z.nativeEnum(UserRole).default(UserRole.MEMBER),
+  role: z.nativeEnum(UserRole),
 });
 
 export type InviteMemberInput = z.infer<typeof inviteMemberSchema>;
