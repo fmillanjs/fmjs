@@ -10,8 +10,8 @@ import { validateEnv } from './env.validation';
       isGlobal: true,
       validate: validateEnv,
       // Load .env from project root (monorepo root)
-      // When compiled: dist/apps/api/src/core/config -> ../../../../../../../../.env
-      envFilePath: join(__dirname, '../../../../../../../../.env'),
+      // With webpack bundling, __dirname is apps/api/dist, so go up 3 levels to monorepo root
+      envFilePath: join(__dirname, '../../../.env'),
     }),
   ],
 })

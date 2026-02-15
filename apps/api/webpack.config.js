@@ -1,24 +1,43 @@
-const nodeExternals = require('webpack-node-externals');
+module.exports = function (options) {
+  const lazyImports = [
+    '@mikro-orm/core',
+    '@nestjs/mongoose',
+    '@nestjs/sequelize',
+    '@nestjs/sequelize/dist/common/sequelize.utils',
+    '@nestjs/typeorm',
+    '@nestjs/typeorm/dist/common/typeorm.utils',
+  ];
 
-module.exports = function (options, webpack) {
   return {
     ...options,
-    externals: [
-      nodeExternals({
-        // Include these packages that cause issues with webpack
-        allowlist: [],
-      }),
-    ],
+    externals: {
+      'bcrypt': 'commonjs bcrypt',
+    },
     module: {
       ...options.module,
       rules: [
         ...options.module.rules,
         {
-          // Ignore .d.ts and .map files
-          test: /\.(d\.ts|js\.map)$/,
-          use: 'null-loader',
+          test: /\.(js\.map|d\.ts)$/,
+          loader: 'ignore-loader',
         },
       ],
     },
+    plugins: [
+      ...options.plugins,
+      new (require('webpack').IgnorePlugin)({
+        checkResource(resource) {
+          if (!lazyImports.includes(resource)) {
+            return false;
+          }
+          try {
+            require.resolve(resource);
+          } catch (err) {
+            return true;
+          }
+          return false;
+        },
+      }),
+    ],
   };
 };

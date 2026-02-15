@@ -9,6 +9,8 @@
     "lint": "echo 'No lint configured yet'"
   },
   "dependencies": {
+    "@casl/ability": "^6.8.0",
+    "@casl/prisma": "^1.6.1",
     "@nestjs/common": "^11.1.13",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.13",
@@ -39,6 +41,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^22.0.0",
     "@types/passport-jwt": "^4.0.1",
+    "ignore-loader": "^0.1.2",
     "null-loader": "^4.0.1",
     "typescript": "~5.6.0",
     "webpack-node-externals": "^3.0.0"
