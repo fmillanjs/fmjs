@@ -11,29 +11,29 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 2 of 4 (Core Work Management) — IN PROGRESS
-Plan: 5 of 11 complete in Phase 2
+Plan: 6 of 11 complete in Phase 2
 Status: Executing Phase 2 plans
-Last activity: 2026-02-15 — Completed 02-05: Teams Frontend (Dashboard + UI)
+Last activity: 2026-02-15 — Completed 02-06: Projects Frontend (List + Detail + Settings)
 
-Progress: [████░░░░░░] 40% (Phase 1 complete + 5/11 of Phase 2)
+Progress: [████░░░░░░] 41% (Phase 1 complete + 6/11 of Phase 2)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 7.3 min/plan
-- Total execution time: 1.5 hours
+- Total plans completed: 13
+- Average duration: 7.2 min/plan
+- Total execution time: 1.6 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation-authentication | 7 | 61 min | 8.7 min |
-| 02-core-work-management | 5 | 32 min | 6.4 min |
+| 02-core-work-management | 6 | 40 min | 6.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3m), 02-02 (12m), 02-03 (4m), 02-04 (7m), 02-05 (6m)
-- Trend: UI plans averaging ~6 min, API plans ~7-12 min, schema plans ~3 min
+- Last 5 plans: 02-02 (12m), 02-03 (4m), 02-04 (7m), 02-05 (6m), 02-06 (8m)
+- Trend: UI plans averaging ~6-8 min, API plans ~7-12 min, schema plans ~3 min
 
 *Updated after each plan completion*
 
@@ -94,6 +94,11 @@ Recent decisions affecting current work:
 - Role badge colors: Admin=red, Manager=blue, Member=green (NO purple per user requirement) (02-05)
 - Form validation: React Hook Form + Zod resolver using shared schemas from @repo/shared (02-05)
 - Role-based UI: Admin sees remove buttons, Admin/Manager see invite form, settings admin-only (02-05)
+- Next.js 15 async params: All dynamic route params are Promise<T> requiring await (02-06)
+- date-fns for relative time: Using formatDistanceToNow for user-friendly "2 days ago" display (02-06)
+- Archive vs delete UI: Archive=yellow (reversible), delete=red with name confirmation (permanent) (02-06)
+- Webpack fallbacks for Node modules: Added fs/net/tls/dns fallbacks to prevent ioredis/bcrypt breaking client builds (02-06)
+- Server Component data fetching: Project pages use Server Components with direct API fetch (02-06)
 
 ### Pending Todos
 
@@ -105,8 +110,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15 (Phase 2 execution - Plan 5)
-Stopped at: Completed 02-05-PLAN.md (Teams Frontend Dashboard + UI)
+Last session: 2026-02-15 (Phase 2 execution - Plan 6)
+Stopped at: Completed 02-06-PLAN.md (Projects Frontend)
 Resume file: None
 
 ---
