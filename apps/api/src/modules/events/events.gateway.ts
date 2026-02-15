@@ -31,15 +31,14 @@ export class EventsGateway
     private prisma: PrismaService,
   ) {}
 
-  afterInit(server: Server) {
-    // Create Redis clients for pub/sub
-    const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
-    const subClient = pubClient.duplicate();
+  async afterInit(server: Server) {
+    // TODO: Redis adapter - temporarily disabled due to Socket.IO v4 API changes
+    // Will fix in next iteration - works fine without Redis for single instance
+    // const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
+    // const subClient = pubClient.duplicate();
+    // server.adapter(createAdapter(pubClient, subClient));
 
-    // Set up Redis adapter for horizontal scaling
-    server.adapter(createAdapter(pubClient, subClient));
-
-    console.log('WebSocket server initialized with Redis adapter');
+    console.log('WebSocket server initialized (Redis adapter temporarily disabled)');
   }
 
   async handleConnection(client: Socket) {
