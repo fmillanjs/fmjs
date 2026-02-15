@@ -71,11 +71,11 @@ export function TaskForm({
       }
 
       if (mode === 'create') {
-        await api.post(`/projects/${projectId}/tasks`, data, token);
+        await api.post(`/api/projects/${projectId}/tasks`, data, token);
       } else if (task) {
         // Include version for conflict detection
         const updateData = { ...data, version: task.version };
-        await api.patch(`/tasks/${task.id}`, updateData, token);
+        await api.patch(`/api/tasks/${task.id}`, updateData, token);
       }
 
       onSuccess();

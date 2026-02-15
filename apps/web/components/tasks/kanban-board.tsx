@@ -96,7 +96,7 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
       }
 
       // Update task status via API with version
-      await api.patch(`/tasks/${taskId}/status`, {
+      await api.patch(`/api/tasks/${taskId}/status`, {
         status: targetStatus,
         version: task.version
       }, token);

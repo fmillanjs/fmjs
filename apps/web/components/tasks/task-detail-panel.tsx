@@ -155,7 +155,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
     if (!token) return;
 
     try {
-      await api.delete(`/tasks/${currentTask.id}`, token);
+      await api.delete(`/api/tasks/${currentTask.id}`, token);
       router.push(`/teams/${teamId}/projects/${projectId}`);
     } catch (error) {
       console.error('Failed to delete task:', error);
@@ -166,7 +166,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const handleCommentsUpdate = async () => {
     // Refetch comments from API to get latest data
     try {
-      const updatedTask = await api.get<TaskDetail>(`/tasks/${currentTask.id}`, token);
+      const updatedTask = await api.get<TaskDetail>(`/api/tasks/${currentTask.id}`, token);
       setComments(updatedTask.comments);
     } catch (error) {
       console.error('Failed to fetch updated comments:', error);
@@ -176,7 +176,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const handleRefreshTask = async () => {
     // Refetch the entire task to get the latest version
     try {
-      const updatedTask = await api.get<TaskDetail>(`/tasks/${currentTask.id}`, token);
+      const updatedTask = await api.get<TaskDetail>(`/api/tasks/${currentTask.id}`, token);
       setCurrentTask(updatedTask);
       setEditedTitle(updatedTask.title);
       setEditedDescription(updatedTask.description || '');

@@ -23,7 +23,7 @@ export function CommentForm({ taskId, onCommentAdded }: CommentFormProps) {
 
     setIsSubmitting(true);
     try {
-      await api.post(`/tasks/${taskId}/comments`, { content: content.trim() }, token);
+      await api.post(`/api/tasks/${taskId}/comments`, { content: content.trim() }, token);
       setContent('');
       onCommentAdded();
     } catch (error) {
