@@ -14,6 +14,9 @@ export function getSocket(token: string): Socket {
 
   socket.on('connect', () => console.log('WS connected'));
   socket.on('disconnect', () => console.log('WS disconnected'));
+  socket.on('reconnect', (attemptNumber) =>
+    console.log('WS reconnected after', attemptNumber, 'attempts'),
+  );
   socket.on('connect_error', (err) =>
     console.error('WS error:', err.message),
   );
