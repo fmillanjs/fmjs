@@ -5,10 +5,10 @@
  * Production: TODO - Integrate with SMTP service (e.g., SendGrid, AWS SES, Resend)
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-
 export async function sendResetPasswordEmail(email: string, token: string) {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password/${token}`;
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+  const resetUrl = `${baseUrl}/reset-password/${token}`;
 
   if (isDevelopment) {
     // In development, log the reset URL to console
