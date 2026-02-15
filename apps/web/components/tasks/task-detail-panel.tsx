@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { useSession } from 'next-auth/react';
 import { CommentThread } from './comment-thread';
 import { CommentForm } from './comment-form';
+import { TaskHistory } from './task-history';
 import { useRouter } from 'next/navigation';
 
 interface TaskDetailPanelProps {
@@ -56,6 +57,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState(task.description || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const token = (session as any)?.accessToken;
@@ -189,17 +191,44 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
           </div>
         </div>
 
-        {/* Comments Section */}
+        {/* Comments and History Tabs */}
         <div className="bg-white shadow rounded-lg">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Comments ({currentTask.comments.length})
-            </h2>
+          {/* Tab Headers */}
+          <div className="border-b border-gray-200">
+            <div className="flex gap-4 px-6">
+              <button
+                onClick={() => setActiveTab('comments')}
+                className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                  activeTab === 'comments'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Comments ({currentTask.comments.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                  activeTab === 'history'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                History
+              </button>
+            </div>
           </div>
 
-          <div className="p-6 space-y-6">
-            <CommentThread comments={currentTask.comments} taskId={currentTask.id} onUpdate={handleCommentsUpdate} />
-            <CommentForm taskId={currentTask.id} onCommentAdded={handleCommentsUpdate} />
+          {/* Tab Content */}
+          <div className="p-6">
+            {activeTab === 'comments' ? (
+              <div className="space-y-6">
+                <CommentThread comments={currentTask.comments} taskId={currentTask.id} onUpdate={handleCommentsUpdate} />
+                <CommentForm taskId={currentTask.id} onCommentAdded={handleCommentsUpdate} />
+              </div>
+            ) : (
+              <TaskHistory taskId={currentTask.id} projectId={projectId} />
+            )}
           </div>
         </div>
       </div>
