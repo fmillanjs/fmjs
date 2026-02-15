@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { serverApi } from '@/lib/api';
 import { WebSocketProvider } from '@/providers/websocket-provider';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 interface Team {
   id: string;
@@ -32,28 +33,30 @@ export default async function DashboardLayout({
   }
 
   return (
-    <WebSocketProvider>
-      <div className="flex h-screen bg-gray-50">
-        {/* Sidebar */}
-        <Sidebar teams={teams} />
+    <NuqsAdapter>
+      <WebSocketProvider>
+        <div className="flex h-screen bg-gray-50">
+          {/* Sidebar */}
+          <Sidebar teams={teams} />
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
-          <Header
-            user={{
-              name: session.user.name,
-              email: session.user.email,
-              role: session.user.role,
-            }}
-          />
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Header */}
+            <Header
+              user={{
+                name: session.user.name,
+                email: session.user.email,
+                role: session.user.role,
+              }}
+            />
 
-          {/* Page content */}
-          <main className="flex-1 overflow-y-auto">
-            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{children}</div>
-          </main>
+            {/* Page content */}
+            <main className="flex-1 overflow-y-auto">
+              <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{children}</div>
+            </main>
+          </div>
         </div>
-      </div>
-    </WebSocketProvider>
+      </WebSocketProvider>
+    </NuqsAdapter>
   );
 }
