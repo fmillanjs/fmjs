@@ -78,11 +78,18 @@ export class EventsGateway
       const rooms = Array.from(client.rooms);
       const projectRooms = rooms.filter((room) => room.startsWith('project:'));
 
+      // Fetch user name for presence (optional, since user is leaving anyway)
+      const userData = await this.prisma.user.findUnique({
+        where: { id: client.data.user.id },
+        select: { name: true },
+      });
+
       for (const room of projectRooms) {
         const projectId = room.replace('project:', '');
         this.server.to(room).emit('presence:leave', {
           userId: client.data.user.id,
           email: client.data.user.email,
+          name: userData?.name || null,
           projectId,
         });
       }
@@ -140,10 +147,17 @@ export class EventsGateway
       const roomName = `project:${projectId}`;
       client.join(roomName);
 
+      // Fetch user name for presence
+      const userData = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: { name: true },
+      });
+
       // Emit presence:join to room
       this.server.to(roomName).emit('presence:join', {
         userId: user.id,
         email: user.email,
+        name: userData?.name || null,
         projectId,
       });
 
@@ -178,10 +192,17 @@ export class EventsGateway
 
       const roomName = `project:${projectId}`;
 
+      // Fetch user name for presence
+      const userData = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: { name: true },
+      });
+
       // Emit presence:leave before leaving
       this.server.to(roomName).emit('presence:leave', {
         userId: user.id,
         email: user.email,
+        name: userData?.name || null,
         projectId,
       });
 
@@ -197,6 +218,53 @@ export class EventsGateway
       return {
         event: 'error',
         data: { message: 'Failed to leave project room' },
+      };
+    }
+  }
+
+  @SubscribeMessage('presence:request')
+  async handlePresenceRequest(
+    client: Socket,
+    payload: { projectId: string },
+  ): Promise<{ activeUsers: any[]; count: number }> {
+    try {
+      const { projectId } = payload;
+      const roomName = `project:${projectId}`;
+
+      // Get all sockets in the project room
+      const socketsInRoom = await this.server.in(roomName).fetchSockets();
+
+      // Extract user info from each socket, deduplicate by userId
+      const userMap = new Map<string, { userId: string; email: string; name: string | null }>();
+
+      for (const socket of socketsInRoom) {
+        const userData = socket.data.user;
+        if (userData?.id && !userMap.has(userData.id)) {
+          // Fetch user name from database if not in socket data
+          const user = await this.prisma.user.findUnique({
+            where: { id: userData.id },
+            select: { name: true, email: true },
+          });
+
+          userMap.set(userData.id, {
+            userId: userData.id,
+            email: userData.email || user?.email || '',
+            name: user?.name || null,
+          });
+        }
+      }
+
+      const activeUsers = Array.from(userMap.values());
+
+      return {
+        activeUsers,
+        count: activeUsers.length,
+      };
+    } catch (error) {
+      console.error('Error fetching presence:', error);
+      return {
+        activeUsers: [],
+        count: 0,
       };
     }
   }
