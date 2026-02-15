@@ -7,7 +7,7 @@ import { PrismaClient } from '@repo/database';
 type Action = 'create' | 'read' | 'update' | 'delete' | 'manage';
 
 // Define subjects (Prisma models + 'all')
-type Subject = 'User' | 'Project' | 'Task' | 'AuditLog' | 'all';
+type Subject = 'User' | 'Organization' | 'Membership' | 'Project' | 'Task' | 'AuditLog' | 'all';
 
 // PrismaAbility type for this application
 export type AppAbility = PrismaAbility<[Action, Subject]>;
@@ -27,8 +27,13 @@ export class AbilityFactory {
       // ADMIN: Full access to everything
       can('manage', 'all');
     } else if (user.role === 'MANAGER') {
-      // MANAGER: Can manage projects and tasks, read users
-      can('read', 'User'); // Can read all users (will be scoped by org in Phase 2)
+      // MANAGER: Can manage projects and tasks, create teams, invite members, read users
+      can('read', 'User'); // Can read all users (scoped by org in service layer)
+      can('create', 'Organization'); // Can create teams/organizations
+      can('read', 'Organization');
+      can('update', 'Organization'); // Can update their own org (ownership check in service layer)
+      can('create', 'Membership'); // Can invite members
+      can('read', 'Membership');
       can('read', 'Project');
       can('create', 'Project');
       can('update', 'Project'); // Can update projects (ownership check in service layer)
@@ -37,6 +42,8 @@ export class AbilityFactory {
       can('update', 'Task');
 
       // MANAGER cannot:
+      cannot('delete', 'Organization'); // Cannot delete organizations
+      cannot('delete', 'Membership'); // Cannot remove members (admin only)
       cannot('delete', 'Project'); // Cannot delete projects they don't own (service layer check)
       cannot('delete', 'Task');
       cannot('manage', 'AuditLog'); // Cannot access audit logs
@@ -44,7 +51,9 @@ export class AbilityFactory {
       cannot('delete', 'User');
     } else if (user.role === 'MEMBER') {
       // MEMBER: Read-only + own profile + assigned tasks
-      can('read', 'User'); // Can read users (will be scoped by org in Phase 2)
+      can('read', 'User'); // Can read users (scoped by org in service layer)
+      can('read', 'Organization');
+      can('read', 'Membership');
       can('read', 'Project');
       can('read', 'Task');
 
@@ -55,6 +64,10 @@ export class AbilityFactory {
       can('update', 'Task'); // Filtered by assignment in service
 
       // MEMBER cannot:
+      cannot('create', 'Organization');
+      cannot('delete', 'Organization');
+      cannot('create', 'Membership');
+      cannot('delete', 'Membership');
       cannot('create', 'Project');
       cannot('delete', 'Project');
       cannot('create', 'Task');
