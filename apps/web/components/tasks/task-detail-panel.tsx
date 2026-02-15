@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { TaskDetail, LabelBase } from '@repo/shared/types';
 import { TaskStatus, TaskPriority } from '@repo/shared/types/enums';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,6 +11,8 @@ import { CommentThread } from './comment-thread';
 import { CommentForm } from './comment-form';
 import { TaskHistory } from './task-history';
 import { useRouter } from 'next/navigation';
+import { useRealTimeComments } from '@/hooks/use-real-time-comments';
+import { useWebSocket } from '@/hooks/use-websocket';
 
 interface TaskDetailPanelProps {
   task: TaskDetail;
@@ -50,8 +52,10 @@ const priorityLabels: Record<TaskPriority, string> = {
 
 export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }: TaskDetailPanelProps) {
   const { data: session } = useSession();
+  const { socket } = useWebSocket();
   const router = useRouter();
   const [currentTask, setCurrentTask] = useState(task);
+  const [comments, setComments] = useState(task.comments);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -61,6 +65,30 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const token = (session as any)?.accessToken;
+  const currentUserId = session?.user?.id || '';
+
+  // Real-time comment updates from other users
+  useRealTimeComments(currentTask.id, projectId, currentUserId, comments, setComments);
+
+  // Listen for task updates from other users
+  useEffect(() => {
+    if (!socket || !currentUserId) return;
+
+    const handleTaskUpdated = (event: any) => {
+      // Only update if it's this task and from another user
+      if (event.task?.id === currentTask.id && event.userId !== currentUserId) {
+        setCurrentTask(event.task);
+        setEditedTitle(event.task.title);
+        setEditedDescription(event.task.description || '');
+      }
+    };
+
+    socket.on('task:updated', handleTaskUpdated);
+
+    return () => {
+      socket.off('task:updated', handleTaskUpdated);
+    };
+  }, [socket, currentTask.id, currentUserId]);
 
   const updateField = useCallback(async (field: string, value: any) => {
     if (!token) return;
@@ -124,9 +152,14 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
     }
   };
 
-  const handleCommentsUpdate = () => {
-    // Refresh the page to get updated comments
-    router.refresh();
+  const handleCommentsUpdate = async () => {
+    // Refetch comments from API to get latest data
+    try {
+      const updatedTask = await api.get<TaskDetail>(`/tasks/${currentTask.id}`, token);
+      setComments(updatedTask.comments);
+    } catch (error) {
+      console.error('Failed to fetch updated comments:', error);
+    }
   };
 
   return (
@@ -204,7 +237,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Comments ({currentTask.comments.length})
+                Comments ({comments.length})
               </button>
               <button
                 onClick={() => setActiveTab('history')}
@@ -223,7 +256,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
           <div className="p-6">
             {activeTab === 'comments' ? (
               <div className="space-y-6">
-                <CommentThread comments={currentTask.comments} taskId={currentTask.id} onUpdate={handleCommentsUpdate} />
+                <CommentThread comments={comments} taskId={currentTask.id} onUpdate={handleCommentsUpdate} />
                 <CommentForm taskId={currentTask.id} onCommentAdded={handleCommentsUpdate} />
               </div>
             ) : (
