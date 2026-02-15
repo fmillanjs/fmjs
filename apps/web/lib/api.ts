@@ -6,6 +6,7 @@
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE = `${API_URL}/api`;
 
 /**
  * Custom error class that includes HTTP response details
@@ -29,7 +30,7 @@ class ApiError extends Error {
  */
 export const api = {
   async get<T>(path: string, token?: string): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_BASE}${path}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const api = {
   },
 
   async post<T>(path: string, body: any, token?: string): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_BASE}${path}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ export const api = {
   },
 
   async patch<T>(path: string, body: any, token?: string): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_BASE}${path}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +83,7 @@ export const api = {
   },
 
   async delete<T>(path: string, token?: string): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_BASE}${path}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
