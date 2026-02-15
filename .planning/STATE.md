@@ -43,6 +43,7 @@ Progress: [█████████░] 90% (Phase 1 complete + Phase 2 compl
 | Phase 04-portfolio-polish P04-07 | 4 | 2 tasks | 5 files |
 | Phase 04-portfolio-polish P04-06 | 4 | 2 tasks | 8 files |
 | Phase 04-portfolio-polish P04-09 | 3 | 2 tasks | 7 files |
+| Phase 04-portfolio-polish P04-08 | 4 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -148,6 +149,8 @@ Recent decisions affecting current work:
 - [Phase 04-09]: Auth state management pattern with Playwright setup project for reusable authenticated sessions
 - [Phase 04-09]: Public vs authenticated test flows - clear storage state for auth tests, portfolio tests run unauthenticated
 - [Phase 04-09]: Semantic selectors (getByRole, getByLabel) for resilient E2E tests
+- [Phase 04-08]: Vitest over Jest for consistency and modern ESM support
+- [Phase 04-08]: Comprehensive RBAC tests (20 test cases) covering ADMIN, MANAGER, MEMBER roles proving security model
 
 ### Pending Todos
 
