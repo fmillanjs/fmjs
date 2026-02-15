@@ -189,6 +189,15 @@ const nextAuthResult = NextAuth({
 
           // Generate JWT token for API authentication
           const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
+
+          console.log('[NextAuth Session] Generating accessToken for user:', {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            jwtSecretPresent: !!jwtSecret,
+            jwtSecretLength: jwtSecret?.length,
+          });
+
           const accessToken = jwt.sign(
             {
               sub: user.id,
@@ -199,6 +208,13 @@ const nextAuthResult = NextAuth({
             // Type assertion needed due to strict build mode with process.env types
             { expiresIn: '15m' }
           );
+
+          console.log('[NextAuth Session] Generated accessToken:', {
+            tokenLength: accessToken.length,
+            tokenPreview: accessToken.substring(0, 20) + '...',
+            decodedHeader: jwt.decode(accessToken, { complete: true })?.header,
+            expiresIn: '15m',
+          });
 
           session.accessToken = accessToken;
         }
