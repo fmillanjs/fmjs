@@ -28,15 +28,16 @@ interface Team {
 export default async function TeamSettingsPage({
   params,
 }: {
-  params: { teamId: string };
+  params: Promise<{ teamId: string }>;
 }) {
   const session = await auth();
+  const { teamId } = await params;
 
   let team: Team | null = null;
   let error: string | null = null;
 
   try {
-    team = await serverApi.get<Team>(`/api/teams/${params.teamId}`);
+    team = await serverApi.get<Team>(`/api/teams/${teamId}`);
   } catch (err) {
     console.error('Failed to fetch team:', err);
     error = err instanceof Error ? err.message : 'Failed to load team';
