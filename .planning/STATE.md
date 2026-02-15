@@ -13,26 +13,26 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 Phase: 1 of 4 (Foundation & Authentication)
 Plan: 4 of 7 in current phase
 Status: In progress
-Last activity: 2026-02-14 — Completed 01-04-PLAN.md (Frontend Authentication)
+Last activity: 2026-02-14 — Completed 01-03-PLAN.md (NestJS Backend API) and 01-04-PLAN.md (Frontend Authentication)
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 4
-- Average duration: 6.5 min
-- Total execution time: 0.43 hours
+- Average duration: 7.8 min
+- Total execution time: 0.52 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation-authentication | 4 | 26 min | 6.5 min |
+| 01-foundation-authentication | 4 | 39 min | 9.8 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (5 min), 01-03 (6 min est), 01-04 (11 min)
-- Trend: Increasing complexity
+- Last 5 plans: 01-01 (4 min), 01-02 (5 min), 01-03 (13 min), 01-04 (11 min)
+- Trend: Increasing complexity with API/auth infrastructure
 
 *Updated after each plan completion*
 
@@ -54,6 +54,10 @@ Recent decisions affecting current work:
 - Postgres port 5434: Avoids conflict with system Postgres (01-02)
 - Prisma db push for development: Faster iteration than migrations (01-02)
 - z.infer types from Zod schemas: Single source of truth for validation + types (01-02)
+- NestJS 11 with Swagger: Upgraded to v11 for compatibility with latest Swagger (01-03)
+- Webpack bundler for API: Resolves TypeScript path mappings in monorepo (01-03)
+- Load .env from monorepo root: Workspace runs from apps/api but env is at root (01-03)
+- Logging interceptor deferred: Duplicate rxjs dependency issue, will revisit after deduplication (01-03)
 - JWT session strategy with Redis verification: Credentials provider requires JWT, but Redis stores session data server-side (01-04)
 - Tailwind CSS v4 migration: API changes require @tailwindcss/postcss plugin (01-04)
 - Email normalization to lowercase: Prevents case-sensitivity login issues (01-04)
@@ -69,7 +73,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed 01-04-PLAN.md - NextAuth v5 frontend authentication with login/signup forms
+Stopped at: Completed 01-03-PLAN.md (NestJS Backend API) - Swagger docs, health checks, Prisma/Redis indicators
 Resume file: None
 
 ---
