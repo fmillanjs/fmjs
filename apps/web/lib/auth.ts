@@ -158,11 +158,24 @@ const nextAuthResult = NextAuth({
     async session({ session, token }) {
       const customToken = token as typeof token & CustomJWT;
 
+      // SSR diagnostic logging
+      const isSSR = typeof window === 'undefined';
+      console.log(`[NextAuth Session Callback] ${isSSR ? 'SSR' : 'Client'}:`, {
+        timestamp: new Date().toISOString(),
+        hasToken: !!customToken,
+        hasSessionToken: !!customToken.sessionToken,
+        tokenId: customToken.id || 'none',
+      });
+
       // Verify session exists in Redis
       if (customToken.sessionToken) {
         const redisSession = await getSessionFromRedis(customToken.sessionToken);
         if (!redisSession) {
           // Session expired or invalid
+          console.warn(`[NextAuth Session Callback] ${isSSR ? 'SSR' : 'Client'} Failure:`, {
+            reason: 'Redis session not found or expired',
+            sessionToken: customToken.sessionToken,
+          });
           return {
             ...session,
             user: {
@@ -190,14 +203,6 @@ const nextAuthResult = NextAuth({
           // Generate JWT token for API authentication
           const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
 
-          console.log('[NextAuth Session] Generating accessToken for user:', {
-            userId: user.id,
-            email: user.email,
-            role: user.role,
-            jwtSecretPresent: !!jwtSecret,
-            jwtSecretLength: jwtSecret?.length,
-          });
-
           const accessToken = jwt.sign(
             {
               sub: user.id,
@@ -209,14 +214,13 @@ const nextAuthResult = NextAuth({
             { expiresIn: '15m' }
           );
 
-          console.log('[NextAuth Session] Generated accessToken:', {
-            tokenLength: accessToken.length,
-            tokenPreview: accessToken.substring(0, 20) + '...',
-            decodedHeader: jwt.decode(accessToken, { complete: true })?.header,
-            expiresIn: '15m',
-          });
-
           session.accessToken = accessToken;
+
+          console.log(`[NextAuth Session Callback] ${isSSR ? 'SSR' : 'Client'} Success:`, {
+            userId: user.id,
+            hasAccessToken: !!session.accessToken,
+            accessTokenLength: accessToken.length,
+          });
         }
       }
 
