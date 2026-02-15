@@ -104,34 +104,51 @@ export function Sidebar({ teams }: SidebarProps) {
                   <div className="px-3 py-2 text-sm text-gray-500">No teams yet</div>
                 ) : (
                   <div className="space-y-1">
-                    {teams.map((team) => (
-                      <Link
-                        key={team.id}
-                        href={`/teams/${team.id}`}
-                        onClick={() => setIsMobileOpen(false)}
-                        className={`
-                          flex items-center px-3 py-2 text-sm font-medium rounded-md
-                          ${
-                            isActive(`/teams/${team.id}`)
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'text-gray-700 hover:bg-gray-50'
-                          }
-                        `}
-                      >
-                        <svg
-                          className="mr-3 h-5 w-5"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span className="truncate">{team.name}</span>
-                      </Link>
-                    ))}
+                    {teams
+                      .sort((a, b) => {
+                        // Show demo workspace first
+                        if (a.slug === 'demo-workspace') return -1;
+                        if (b.slug === 'demo-workspace') return 1;
+                        return a.name.localeCompare(b.name);
+                      })
+                      .map((team) => {
+                        const isDemoWorkspace = team.slug === 'demo-workspace';
+                        return (
+                          <Link
+                            key={team.id}
+                            href={`/teams/${team.id}`}
+                            onClick={() => setIsMobileOpen(false)}
+                            className={`
+                              flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md
+                              ${
+                                isActive(`/teams/${team.id}`)
+                                  ? 'bg-blue-50 text-blue-700'
+                                  : 'text-gray-700 hover:bg-gray-50'
+                              }
+                            `}
+                          >
+                            <div className="flex items-center min-w-0">
+                              <svg
+                                className="mr-3 h-5 w-5 flex-shrink-0"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                              <span className="truncate">{team.name}</span>
+                            </div>
+                            {isDemoWorkspace && (
+                              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full flex-shrink-0">
+                                DEMO
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
                   </div>
                 )}
 
