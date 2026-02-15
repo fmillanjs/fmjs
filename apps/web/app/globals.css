@@ -1,5 +1,84 @@
 @import "tailwindcss";
 
+/* Design tokens for light and dark themes */
+@theme {
+  /* Light theme (default) */
+  --color-background: oklch(98% 0 0);
+  --color-foreground: oklch(15% 0 0);
+  --color-muted: oklch(96% 0 0);
+  --color-muted-foreground: oklch(45% 0 0);
+  --color-border: oklch(89% 0 0);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(15% 0 0);
+
+  /* Primary - Blue */
+  --color-primary: oklch(55% 0.2 250);
+  --color-primary-foreground: oklch(100% 0 0);
+
+  /* Secondary - Slate */
+  --color-secondary: oklch(96% 0 0);
+  --color-secondary-foreground: oklch(15% 0 0);
+
+  /* Accent - Blue (lighter) */
+  --color-accent: oklch(94% 0.05 250);
+  --color-accent-foreground: oklch(20% 0 0);
+
+  /* Destructive - Red */
+  --color-destructive: oklch(55% 0.22 25);
+  --color-destructive-foreground: oklch(100% 0 0);
+
+  /* Success - Green */
+  --color-success: oklch(60% 0.18 145);
+  --color-success-foreground: oklch(100% 0 0);
+
+  /* Warning - Orange */
+  --color-warning: oklch(70% 0.15 65);
+  --color-warning-foreground: oklch(15% 0 0);
+
+  /* Input */
+  --color-input: oklch(89% 0 0);
+  --color-ring: oklch(55% 0.2 250);
+}
+
+/* Dark theme overrides */
+.dark {
+  --color-background: oklch(15% 0 0);
+  --color-foreground: oklch(98% 0 0);
+  --color-muted: oklch(20% 0 0);
+  --color-muted-foreground: oklch(65% 0 0);
+  --color-border: oklch(27% 0 0);
+  --color-card: oklch(18% 0 0);
+  --color-card-foreground: oklch(98% 0 0);
+
+  /* Primary - Blue (adjusted for dark) */
+  --color-primary: oklch(65% 0.2 250);
+  --color-primary-foreground: oklch(100% 0 0);
+
+  /* Secondary - Slate */
+  --color-secondary: oklch(25% 0 0);
+  --color-secondary-foreground: oklch(98% 0 0);
+
+  /* Accent - Blue (lighter for dark) */
+  --color-accent: oklch(25% 0.05 250);
+  --color-accent-foreground: oklch(98% 0 0);
+
+  /* Destructive - Red (adjusted) */
+  --color-destructive: oklch(60% 0.22 25);
+  --color-destructive-foreground: oklch(100% 0 0);
+
+  /* Success - Green (adjusted) */
+  --color-success: oklch(65% 0.18 145);
+  --color-success-foreground: oklch(100% 0 0);
+
+  /* Warning - Orange (adjusted) */
+  --color-warning: oklch(75% 0.15 65);
+  --color-warning-foreground: oklch(10% 0 0);
+
+  /* Input */
+  --color-input: oklch(27% 0 0);
+  --color-ring: oklch(65% 0.2 250);
+}
+
 @keyframes slide-in-up {
   from {
     transform: translateY(100%);

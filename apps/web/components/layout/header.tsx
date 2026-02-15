@@ -3,6 +3,7 @@
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface User {
   name?: string | null;
@@ -52,12 +53,15 @@ export function Header({ user }: HeaderProps) {
           {/* Placeholder for future breadcrumbs */}
         </div>
 
-        {/* Right side - User menu */}
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"
-          >
+        {/* Right side - Theme toggle and User menu */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"
+            >
             {/* Avatar */}
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-end">
@@ -123,6 +127,7 @@ export function Header({ user }: HeaderProps) {
               </div>
             </>
           )}
+          </div>
         </div>
       </div>
     </header>
