@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { TaskWithRelations, LabelBase } from '@repo/shared/types';
 import { ViewToggle } from './view-toggle';
 import { KanbanBoard } from './kanban-board';
@@ -20,6 +21,7 @@ interface TaskViewsProps {
 }
 
 export function TaskViews({ initialTasks, projectId, teamMembers, labels }: TaskViewsProps) {
+  const router = useRouter();
   const { data: session } = useSession();
   const [view, setView] = useState<'board' | 'list'>('board');
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
@@ -31,8 +33,8 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
-    // Force a router refresh to re-fetch data
-    window.location.reload();
+    // Use router.refresh() instead of window.location.reload() to avoid SSR session loss
+    router.refresh();
   };
 
   // Check if filters are active (client-side check)
