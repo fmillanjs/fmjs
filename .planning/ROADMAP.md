@@ -63,10 +63,20 @@ Plans:
   7. User can view activity feed for a project and searchable audit log (Admin only) showing who did what and when
   8. Demo workspace exists with seeded sample data ready for immediate recruiter interaction
 
-**Plans**: TBD
+**Plans:** 11 plans
 
 Plans:
-- [ ] TBD (to be created during `/gsd:plan-phase 2`)
+- [ ] 02-01-PLAN.md — Database schema (Organization, Membership, Project, Task, Label, Comment) + Shared types/validators
+- [ ] 02-02-PLAN.md — Teams API (NestJS module with org-scoped RBAC, membership management)
+- [ ] 02-03-PLAN.md — Projects API + Labels API (CRUD with org scoping, archive, admin-only delete)
+- [ ] 02-04-PLAN.md — Tasks API + Comments API (full CRUD, filtering, search, audit events, activity/audit endpoints)
+- [ ] 02-05-PLAN.md — Dashboard layout (sidebar, header) + Teams frontend (list, create, members, settings)
+- [ ] 02-06-PLAN.md — Projects frontend (list, create, edit, archive, delete, project detail page)
+- [ ] 02-07-PLAN.md — Task views: Kanban board (dnd-kit drag-drop) + List view (TanStack Table) + Task form
+- [ ] 02-08-PLAN.md — Task filters (status, priority, assignee, labels) + Search + Sort (nuqs URL state)
+- [ ] 02-09-PLAN.md — Task detail page (inline editing) + Comment thread + Task history timeline
+- [ ] 02-10-PLAN.md — Activity feed (infinite scroll) + Admin audit log (searchable, filterable)
+- [ ] 02-11-PLAN.md — Demo seed data (Faker) + Phase 2 end-to-end verification
 
 ### Phase 3: Real-Time Collaboration
 **Goal**: Transform task management into live collaborative experience with WebSocket-based real-time updates, presence indicators, and conflict resolution
@@ -117,6 +127,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 wo
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 7/7 | ✓ Complete | 2026-02-14 |
-| 2. Core Work Management | 0/TBD | Ready to plan | - |
+| 2. Core Work Management | 0/11 | Planned | - |
 | 3. Real-Time Collaboration | 0/TBD | Not started | - |
 | 4. Portfolio & Polish | 0/TBD | Not started | - |
