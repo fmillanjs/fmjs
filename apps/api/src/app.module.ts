@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { LabelsModule } from './modules/labels/labels.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { EventsModule } from './modules/events/events.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -28,6 +29,7 @@ import { AuditInterceptor } from './core/audit/interceptors/audit.interceptor';
     TeamsModule,     // Team/Organization management
     ProjectsModule,  // Project management
     LabelsModule,    // Label management
+    TasksModule,     // Task management with CRUD and filtering
     EventsModule,    // WebSocket real-time events
   ],
   controllers: [],

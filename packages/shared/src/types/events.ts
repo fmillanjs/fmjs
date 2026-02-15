@@ -49,3 +49,13 @@ export interface ProjectEvent extends AuditEventPayload {
   entityType: 'Project';
   action: 'PROJECT_CREATED' | 'PROJECT_UPDATED' | 'PROJECT_ARCHIVED' | 'PROJECT_DELETED';
 }
+
+export interface TaskEvent extends AuditEventPayload {
+  entityType: 'Task';
+  action: 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_STATUS_CHANGED' | 'TASK_DELETED';
+}
+
+export interface CommentEvent extends AuditEventPayload {
+  entityType: 'Comment';
+  action: 'COMMENT_CREATED' | 'COMMENT_UPDATED' | 'COMMENT_DELETED';
+}
