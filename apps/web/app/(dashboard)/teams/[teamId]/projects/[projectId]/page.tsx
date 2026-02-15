@@ -1,6 +1,9 @@
 import { auth } from '@/lib/auth';
+import { serverApi } from '@/lib/api';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { TaskWithRelations, LabelBase } from '@repo/shared/types';
+import { TaskViews } from '@/components/tasks/task-views';
 
 interface Project {
   id: string;
@@ -14,49 +17,16 @@ interface Project {
   };
 }
 
-interface Task {
+interface TeamMember {
   id: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'DONE' | 'BLOCKED';
-}
-
-async function getProject(projectId: string): Promise<Project | null> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-  try {
-    const response = await fetch(`${apiUrl}/api/projects/${projectId}`, {
-      cache: 'no-store',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching project:', error);
-    return null;
-  }
-}
-
-async function getProjectTasks(projectId: string): Promise<Task[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-  try {
-    const response = await fetch(`${apiUrl}/api/projects/${projectId}/tasks`, {
-      cache: 'no-store',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      return [];
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching tasks:', error);
-    return [];
-  }
+  userId: string;
+  role: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
 }
 
 export default async function ProjectDetailPage({
@@ -71,24 +41,37 @@ export default async function ProjectDetailPage({
   }
 
   const { teamId, projectId } = await params;
-  const project = await getProject(projectId);
+
+  // Fetch project, tasks, team members, and labels
+  const [project, tasks, members, labels] = await Promise.all([
+    serverApi.get<Project>(`/projects/${projectId}`).catch(() => null),
+    serverApi.get<TaskWithRelations[]>(`/projects/${projectId}/tasks`).catch(() => []),
+    serverApi.get<TeamMember[]>(`/teams/${teamId}/members`).catch(() => []),
+    serverApi.get<LabelBase[]>(`/teams/${teamId}/labels`).catch(() => []),
+  ]);
 
   if (!project) {
     redirect(`/teams/${teamId}/projects`);
   }
 
-  const tasks = await getProjectTasks(projectId);
+  // Transform team members for task forms
+  const teamMembers = members.map((m) => ({
+    id: m.user.id,
+    name: m.user.name,
+    image: m.user.image,
+  }));
 
   // Calculate task statistics
   const taskStats = {
     total: tasks.length,
-    todo: tasks.filter(t => t.status === 'TODO').length,
-    inProgress: tasks.filter(t => t.status === 'IN_PROGRESS').length,
-    done: tasks.filter(t => t.status === 'DONE').length,
-    blocked: tasks.filter(t => t.status === 'BLOCKED').length,
+    todo: tasks.filter((t) => t.status === 'TODO').length,
+    inProgress: tasks.filter((t) => t.status === 'IN_PROGRESS').length,
+    done: tasks.filter((t) => t.status === 'DONE').length,
+    blocked: tasks.filter((t) => t.status === 'BLOCKED').length,
   };
 
-  const statusColor = project.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+  const statusColor =
+    project.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
 
   return (
     <div className="space-y-6">
@@ -115,17 +98,25 @@ export default async function ProjectDetailPage({
                 {project.status}
               </span>
             </div>
-            {project.description && (
-              <p className="text-gray-600">{project.description}</p>
-            )}
+            {project.description && <p className="text-gray-600">{project.description}</p>}
           </div>
           <Link
             href={`/teams/${teamId}/projects/${projectId}/settings`}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </Link>
@@ -156,18 +147,13 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      {/* Task Views Placeholder */}
-      <div className="bg-white shadow rounded-lg p-12">
-        <div className="text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Task views coming in Plan 07</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Kanban board and list view will be available here once implemented
-          </p>
-        </div>
-      </div>
+      {/* Task Views */}
+      <TaskViews
+        initialTasks={tasks}
+        projectId={projectId}
+        teamMembers={teamMembers}
+        labels={labels}
+      />
     </div>
   );
 }
