@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { TaskWithRelations, LabelBase } from '@repo/shared/types';
 import { TaskViews } from '@/components/tasks/task-views';
+import { ProjectHeaderClient } from '@/components/project/project-header-client';
 
 interface Project {
   id: string;
@@ -144,6 +145,7 @@ export default async function ProjectDetailPage({
               <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
                 {project.status}
               </span>
+              <ProjectHeaderClient projectId={projectId} />
             </div>
             {project.description && <p className="text-gray-600">{project.description}</p>}
           </div>
