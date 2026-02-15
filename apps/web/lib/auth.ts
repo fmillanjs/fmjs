@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@repo/database';
 import { loginSchema } from '@repo/shared/validators';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { authConfig } from './auth.config';
 import { redis } from './redis';
 import { randomUUID } from 'crypto';
@@ -16,6 +17,7 @@ declare module 'next-auth' {
       name: string;
       role: string;
     };
+    accessToken?: string;
   }
 
   interface User {
@@ -184,6 +186,20 @@ const nextAuth: NextAuthResult = NextAuth({
           session.user.email = user.email;
           session.user.name = user.name || '';
           session.user.role = user.role;
+
+          // Generate JWT token for API authentication
+          const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
+          const accessToken = jwt.sign(
+            {
+              sub: user.id,
+              email: user.email,
+              role: user.role,
+            },
+            jwtSecret,
+            { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
+          );
+
+          session.accessToken = accessToken;
         }
       }
 
