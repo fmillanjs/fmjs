@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth';
 import Link from 'next/link';
 import { TeamMemberList } from '@/components/teams/team-member-list';
 import { InviteMemberForm } from '@/components/teams/invite-member-form';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FolderOpen } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -13,6 +15,16 @@ interface TeamMember {
     name: string | null;
     email: string;
     image: string | null;
+  };
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  status: 'ACTIVE' | 'ARCHIVED';
+  _count: {
+    tasks: number;
   };
 }
 
@@ -29,10 +41,16 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
   const { teamId } = await params;
 
   let team: Team | null = null;
+  let projects: Project[] = [];
   let error: string | null = null;
 
   try {
-    team = await serverApi.get<Team>(`/api/teams/${teamId}`);
+    const [teamData, projectsData] = await Promise.all([
+      serverApi.get<Team>(`/api/teams/${teamId}`),
+      serverApi.get<Project[]>(`/api/teams/${teamId}/projects`).catch(() => []),
+    ]);
+    team = teamData;
+    projects = projectsData;
   } catch (err) {
     console.error('Failed to fetch team:', err);
     error = err instanceof Error ? err.message : 'Failed to load team';
@@ -230,6 +248,73 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Projects Section */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg leading-6 font-medium text-gray-900">Projects</h3>
+          <Link
+            href={`/teams/${team.id}/projects/new`}
+            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            New Project
+          </Link>
+        </div>
+        {projects.length === 0 ? (
+          <div className="bg-white shadow rounded-lg p-8">
+            <EmptyState
+              icon={FolderOpen}
+              title="No projects"
+              description="Create a project to start organizing work and managing tasks for this team."
+              action={
+                <Link
+                  href={`/teams/${team.id}/projects/new`}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Create Project
+                </Link>
+              }
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.slice(0, 6).map((project) => (
+              <Link
+                key={project.id}
+                href={`/teams/${team.id}/projects/${project.id}`}
+                className="bg-white shadow rounded-lg p-5 hover:shadow-md transition"
+              >
+                <h4 className="text-lg font-semibold text-gray-900 mb-1">{project.name}</h4>
+                {project.description && (
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">{project.description}</p>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500">{project._count.tasks} tasks</span>
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${
+                      project.status === 'ACTIVE'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+        {projects.length > 6 && (
+          <div className="mt-4 text-center">
+            <Link
+              href={`/teams/${team.id}/projects`}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              View all {projects.length} projects →
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Invite Members (for Admin/Manager) */}

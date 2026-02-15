@@ -10,7 +10,8 @@ import { TaskListView } from './task-list-view';
 import { TaskForm } from './task-form';
 import { TaskSearch } from './task-search';
 import { TaskFilters } from './task-filters';
-import { Plus } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Plus, CheckSquare } from 'lucide-react';
 import { useRealTimeTasks } from '@/hooks/use-real-time-tasks';
 
 interface TaskViewsProps {
@@ -68,21 +69,38 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
         </button>
       </div>
 
-      {/* Empty state when filters are active but no results */}
+      {/* Empty states */}
       {isEmpty && hasActiveFilters ? (
-        <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+        <div className="bg-card dark:bg-gray-950 border border-border rounded-lg p-12 text-center">
           <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks match your filters</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-lg font-medium text-foreground mb-2">No tasks match your filters</h3>
+            <p className="text-muted-foreground mb-6">
               Try adjusting your search criteria or clearing some filters to see more results.
             </p>
             <a
               href={window.location.pathname}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
               Clear all filters
             </a>
           </div>
+        </div>
+      ) : isEmpty ? (
+        <div className="bg-card dark:bg-gray-950 border border-border rounded-lg p-12">
+          <EmptyState
+            icon={CheckSquare}
+            title="No tasks yet"
+            description="Create your first task to get started organizing work for this project."
+            action={
+              <button
+                onClick={() => setIsNewTaskOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Create Task
+              </button>
+            }
+          />
         </div>
       ) : (
         /* Task views */
