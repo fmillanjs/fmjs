@@ -129,4 +129,22 @@ export class TasksController {
 
     return this.tasksService.remove(id, user, metadata);
   }
+
+  @Get('projects/:projectId/activity')
+  @CheckAbility('read', 'Project')
+  @ApiOperation({ summary: 'Get project activity feed (audit log)' })
+  @ApiResponse({ status: 200, description: 'Activity feed retrieved successfully' })
+  async getProjectActivity(
+    @Param('projectId') projectId: string,
+    @Req() req: any,
+    @Query('offset') offset?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.tasksService.getProjectActivity(
+      projectId,
+      req.user.id,
+      parseInt(offset || '0', 10),
+      parseInt(limit || '20', 10),
+    );
+  }
 }

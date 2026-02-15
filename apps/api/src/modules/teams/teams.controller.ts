@@ -6,6 +6,7 @@ import {
   Param,
   Body,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -101,5 +102,32 @@ export class TeamsController {
   ) {
     const metadata = (req as any).auditMetadata;
     return this.teamsService.removeMember(id, userId, user, metadata);
+  }
+
+  @Get(':id/audit-log')
+  @CheckAbility('manage', 'AuditLog')
+  @ApiOperation({ summary: 'Get audit log for organization (ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Audit log retrieved successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden: Admin only' })
+  async getAuditLog(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Query('offset') offset?: string,
+    @Query('limit') limit?: string,
+    @Query('entityType') entityType?: string,
+    @Query('action') action?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.teamsService.getAuditLog(
+      id,
+      user.id,
+      parseInt(offset || '0', 10),
+      parseInt(limit || '20', 10),
+      entityType,
+      action,
+      startDate,
+      endDate,
+    );
   }
 }

@@ -377,4 +377,90 @@ export class TeamsService {
 
     return { success: true };
   }
+
+  /**
+   * Get audit log for organization (ADMIN only)
+   */
+  async getAuditLog(
+    organizationId: string,
+    userId: string,
+    offset: number = 0,
+    limit: number = 20,
+    entityType?: string,
+    action?: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
+    // Verify user is member of organization
+    const membership = await this.prisma.membership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId,
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('Forbidden: You are not a member of this organization');
+    }
+
+    // Only ADMIN can access audit logs
+    if (membership.role !== 'ADMIN') {
+      throw new ForbiddenException('Forbidden: Only admins can access audit logs');
+    }
+
+    // Build where clause
+    const where: any = {};
+
+    if (entityType) {
+      where.entityType = entityType;
+    }
+
+    if (action) {
+      where.action = {
+        contains: action,
+        mode: 'insensitive',
+      };
+    }
+
+    if (startDate || endDate) {
+      where.timestamp = {};
+      if (startDate) {
+        where.timestamp.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.timestamp.lte = new Date(endDate);
+      }
+    }
+
+    // Get total count
+    const total = await this.prisma.auditLog.count({ where });
+
+    // Get audit logs
+    const logs = await this.prisma.auditLog.findMany({
+      where,
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        timestamp: 'desc',
+      },
+      skip: offset,
+      take: limit,
+    });
+
+    return {
+      logs,
+      offset,
+      limit,
+      total,
+    };
+  }
 }

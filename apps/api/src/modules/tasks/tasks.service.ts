@@ -526,4 +526,84 @@ export class TasksService {
 
     return { success: true };
   }
+
+  /**
+   * Get project activity feed (audit log for tasks, comments, projects)
+   */
+  async getProjectActivity(
+    projectId: string,
+    userId: string,
+    offset: number = 0,
+    limit: number = 20,
+  ) {
+    // Verify project access
+    const project = await this.verifyProjectAccess(projectId, userId);
+
+    // Query audit log for entities related to this project
+    const activities = await this.prisma.auditLog.findMany({
+      where: {
+        OR: [
+          {
+            // Project-level events
+            entityType: 'Project',
+            entityId: projectId,
+          },
+          {
+            // Task events (need to check if task belongs to project via entityId)
+            entityType: 'Task',
+          },
+          {
+            // Comment events (need to check if comment's task belongs to project)
+            entityType: 'Comment',
+          },
+        ],
+      },
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        timestamp: 'desc',
+      },
+      skip: offset,
+      take: limit,
+    });
+
+    // Filter tasks and comments to only those belonging to this project
+    // (This is a simplified approach - in production, you'd denormalize or use a join)
+    const filteredActivities = [];
+    for (const activity of activities) {
+      if (activity.entityType === 'Project') {
+        filteredActivities.push(activity);
+      } else if (activity.entityType === 'Task' && activity.entityId) {
+        const task = await this.prisma.task.findUnique({
+          where: { id: activity.entityId },
+          select: { projectId: true },
+        });
+        if (task?.projectId === projectId) {
+          filteredActivities.push(activity);
+        }
+      } else if (activity.entityType === 'Comment' && activity.entityId) {
+        const comment = await this.prisma.comment.findUnique({
+          where: { id: activity.entityId },
+          include: { task: { select: { projectId: true } } },
+        });
+        if (comment?.task.projectId === projectId) {
+          filteredActivities.push(activity);
+        }
+      }
+    }
+
+    return {
+      activities: filteredActivities,
+      offset,
+      limit,
+      total: filteredActivities.length,
+    };
+  }
 }
