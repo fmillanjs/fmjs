@@ -33,16 +33,16 @@ export function TaskForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const schema = mode === 'create' ? createTaskSchema : updateTaskSchema;
-
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
     setValue,
-  } = useForm<CreateTaskInput | UpdateTaskInput>({
-    resolver: zodResolver(schema),
+  } = useForm({
+    resolver: mode === 'create'
+      ? zodResolver(createTaskSchema)
+      : zodResolver(updateTaskSchema),
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',
@@ -52,8 +52,8 @@ export function TaskForm({
       assigneeId: task?.assigneeId || undefined,
       labelIds: task?.labels.map((l) => l.id) || [],
       ...(mode === 'create' && { projectId }),
-    } as any,
-  });
+    },
+  } as any);
 
   const selectedLabelIds = watch('labelIds') || [];
 
@@ -73,7 +73,9 @@ export function TaskForm({
       if (mode === 'create') {
         await api.post(`/projects/${projectId}/tasks`, data, token);
       } else if (task) {
-        await api.patch(`/tasks/${task.id}`, data, token);
+        // Include version for conflict detection
+        const updateData = { ...data, version: task.version };
+        await api.patch(`/tasks/${task.id}`, updateData, token);
       }
 
       onSuccess();
@@ -90,7 +92,7 @@ export function TaskForm({
     if (current.includes(labelId)) {
       setValue(
         'labelIds',
-        current.filter((id) => id !== labelId)
+        current.filter((id: string) => id !== labelId)
       );
     } else {
       setValue('labelIds', [...current, labelId]);
@@ -140,7 +142,7 @@ export function TaskForm({
               placeholder="Task title"
             />
             {errors.title && (
-              <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
+              <p className="text-red-600 text-sm mt-1">{String(errors.title.message)}</p>
             )}
           </div>
 
@@ -156,7 +158,7 @@ export function TaskForm({
               placeholder="Task description (optional)"
             />
             {errors.description && (
-              <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
+              <p className="text-red-600 text-sm mt-1">{String(errors.description.message)}</p>
             )}
           </div>
 
@@ -176,7 +178,7 @@ export function TaskForm({
                 <option value={TaskStatus.BLOCKED}>Blocked</option>
               </select>
               {errors.status && (
-                <p className="text-red-600 text-sm mt-1">{errors.status.message}</p>
+                <p className="text-red-600 text-sm mt-1">{String(errors.status.message)}</p>
               )}
             </div>
 
@@ -194,7 +196,7 @@ export function TaskForm({
                 <option value={TaskPriority.URGENT}>Urgent</option>
               </select>
               {errors.priority && (
-                <p className="text-red-600 text-sm mt-1">{errors.priority.message}</p>
+                <p className="text-red-600 text-sm mt-1">{String(errors.priority.message)}</p>
               )}
             </div>
           </div>
@@ -211,7 +213,7 @@ export function TaskForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.dueDate && (
-                <p className="text-red-600 text-sm mt-1">{errors.dueDate.message}</p>
+                <p className="text-red-600 text-sm mt-1">{String(errors.dueDate.message)}</p>
               )}
             </div>
 
@@ -231,7 +233,7 @@ export function TaskForm({
                 ))}
               </select>
               {errors.assigneeId && (
-                <p className="text-red-600 text-sm mt-1">{errors.assigneeId.message}</p>
+                <p className="text-red-600 text-sm mt-1">{String(errors.assigneeId.message)}</p>
               )}
             </div>
           </div>
