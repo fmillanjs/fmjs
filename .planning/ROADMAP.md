@@ -35,10 +35,16 @@ Decimal phases appear between their surrounding integers in numeric order.
   6. WebSocket connections authenticate via JWT and reject unauthenticated clients
   7. Monorepo structure shares types and validation schemas between frontend and backend with API documentation available
 
-**Plans**: TBD
+**Plans:** 7 plans
 
 Plans:
-- [ ] TBD (to be created during `/gsd:plan-phase 1`)
+- [ ] 01-01-PLAN.md — Monorepo scaffold (Turborepo) + Docker infrastructure (Postgres, Redis)
+- [ ] 01-02-PLAN.md — Database schema (Prisma) + Shared Zod validators and TypeScript types
+- [ ] 01-03-PLAN.md — NestJS backend core (Swagger, health checks, validation, exception handling)
+- [ ] 01-04-PLAN.md — Next.js frontend + NextAuth v5 (login, signup, session, route protection)
+- [ ] 01-05-PLAN.md — Auth flows completion (password reset, profile view/edit, password change)
+- [ ] 01-06-PLAN.md — NestJS auth module + CASL RBAC (JWT strategy, three-role permissions)
+- [ ] 01-07-PLAN.md — Audit logging (event-driven) + WebSocket auth + Phase verification
 
 ### Phase 2: Core Work Management
 **Goal**: Deliver complete task management capability with teams, projects, tasks, views, filtering, and activity tracking using optimized data models
@@ -110,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 wo
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Authentication | 0/TBD | Not started | - |
+| 1. Foundation & Authentication | 0/7 | Planned | - |
 | 2. Core Work Management | 0/TBD | Not started | - |
 | 3. Real-Time Collaboration | 0/TBD | Not started | - |
 | 4. Portfolio & Polish | 0/TBD | Not started | - |
