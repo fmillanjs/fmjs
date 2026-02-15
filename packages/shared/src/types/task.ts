@@ -37,6 +37,7 @@ export interface TaskBase {
   createdById: string;
   createdAt: Date;
   updatedAt: Date;
+  version: number;
 }
 
 export interface TaskWithRelations extends TaskBase {
