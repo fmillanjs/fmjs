@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Phase: 2 of 4 (Core Work Management) — IN PROGRESS
-Plan: 10 of 11 complete in Phase 2
-Status: Executing Phase 2 plans
-Last activity: 2026-02-15 — Completed 02-10: Activity Feed and Audit Log UI
+Phase: 2 of 4 (Core Work Management) — COMPLETE
+Plan: 11 of 11 complete in Phase 2
+Status: Phase 2 Complete - Ready for Phase 3
+Last activity: 2026-02-15 — Completed 02-11: Demo Workspace & Portfolio Readiness
 
-Progress: [███████░░░] 55% (Phase 1 complete + 10/11 of Phase 2)
+Progress: [████████░░] 61% (Phase 1 complete + Phase 2 complete = 18/31 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 6.5 min/plan
+- Total plans completed: 18
+- Average duration: 6.3 min/plan
 - Total execution time: 1.9 hours
 
 **By Phase:**
@@ -29,11 +29,11 @@ Progress: [███████░░░] 55% (Phase 1 complete + 10/11 of Phas
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation-authentication | 7 | 61 min | 8.7 min |
-| 02-core-work-management | 10 | 60 min | 6.0 min |
+| 02-core-work-management | 11 | 62 min | 5.6 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-06 (8m), 02-07 (5m), 02-08 (5m), 02-09 (6m), 02-10 (4m)
-- Trend: UI plans averaging ~4-6 min, API plans ~7-12 min, schema plans ~3 min
+- Last 5 plans: 02-07 (5m), 02-08 (5m), 02-09 (6m), 02-10 (4m), 02-11 (2m)
+- Trend: Seed/demo plans ~2 min, UI plans ~4-6 min, API plans ~7-12 min
 
 *Updated after each plan completion*
 
@@ -107,6 +107,10 @@ Recent decisions affecting current work:
 - [Phase 02]: Server-side filtering via query params: All filtering happens on server for fresh data and shareable URLs (02-08)
 - [Phase 02-core-work-management]: Inline editing patterns: click-to-edit for title/description, immediate save for dropdowns (02-09)
 - [Phase 02-core-work-management]: Tab navigation for Comments/History instead of both visible (reduces scroll) (02-09)
+- [Phase 02-core-work-management]: Idempotent seed with upsert: Safe to run multiple times, uses unique keys for all entities (02-11)
+- [Phase 02-core-work-management]: Weighted random distribution: Realistic task status (30% TODO, 25% IN_PROGRESS, 30% DONE, 15% BLOCKED) and priority (20% LOW, 35% MEDIUM, 30% HIGH, 15% URGENT) (02-11)
+- [Phase 02-core-work-management]: Demo workspace identification: slug='demo-workspace' with green DEMO badge in sidebar (02-11)
+- [Phase 02-core-work-management]: 14-day timeline for demo data: Comments and audit logs spread over 2 weeks for realistic history (02-11)
 
 ### Pending Todos
 
@@ -118,8 +122,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15 (Phase 2 execution - Plan 10)
-Stopped at: Completed 02-10-PLAN.md (Activity Feed and Audit Log UI)
+Last session: 2026-02-15 (Phase 2 execution - Plan 11)
+Stopped at: Completed 02-11-PLAN.md (Demo Workspace & Portfolio Readiness) - Phase 2 Complete
 Resume file: None
 
 ---
