@@ -139,9 +139,9 @@ export function ClientProjectPage({
   }
 
   const teamMembers = members.map((m) => ({
-    id: m.user.id,
-    name: m.user.name,
-    image: m.user.image,
+    id: m.user?.id || m.userId,
+    name: m.user?.name || null,
+    image: m.user?.image || null,
   }));
 
   const taskStats = {
