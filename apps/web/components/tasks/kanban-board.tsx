@@ -19,6 +19,7 @@ import { KanbanColumn } from './kanban-column';
 import { TaskCard } from './task-card';
 import { TaskForm } from './task-form';
 import { api } from '@/lib/api';
+import { ConflictWarning } from '../ui/conflict-warning';
 
 interface KanbanBoardProps {
   initialTasks: TaskWithRelations[];
@@ -42,6 +43,8 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<TaskWithRelations | null>(null);
   const [prefilledStatus, setPrefilledStatus] = useState<TaskStatus>(TaskStatus.TODO);
+  const [showConflict, setShowConflict] = useState(false);
+  const [conflictMessage, setConflictMessage] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -92,13 +95,24 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
         throw new Error('Not authenticated');
       }
 
-      // Update task status via API
-      await api.patch(`/tasks/${taskId}/status`, { status: targetStatus }, token);
+      // Update task status via API with version
+      await api.patch(`/tasks/${taskId}/status`, {
+        status: targetStatus,
+        version: task.version
+      }, token);
 
       // Update actual state after successful API call
       setTasks((current) => current.map((t) => (t.id === taskId ? updatedTask : t)));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update task status:', error);
+
+      // Check if it's a 409 conflict error
+      if (error?.response?.status === 409) {
+        setConflictMessage('This task was modified by another user.');
+        setShowConflict(true);
+        // Refetch tasks to get latest state
+        handleFormSuccess();
+      }
       // Optimistic update will automatically revert on error
       // because we didn't update the actual tasks state
     }
@@ -183,6 +197,14 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
           onClose={() => setIsFormOpen(false)}
           onSuccess={handleFormSuccess}
           prefilledStatus={prefilledStatus}
+        />
+      )}
+
+      {showConflict && (
+        <ConflictWarning
+          message={conflictMessage}
+          onRefresh={handleFormSuccess}
+          onDismiss={() => setShowConflict(false)}
         />
       )}
     </>

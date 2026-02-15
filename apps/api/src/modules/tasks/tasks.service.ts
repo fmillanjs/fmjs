@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../core/database/prisma.service';
@@ -349,6 +350,11 @@ export class TasksService {
       throw new ForbiddenException('Forbidden: You do not have permission to update tasks');
     }
 
+    // Version conflict check
+    if (dto.version !== undefined && dto.version !== task.version) {
+      throw new ConflictException('Task was modified by another user. Please refresh to see the latest version.');
+    }
+
     // Capture previous state for audit diff
     const previous = {
       title: task.title,
@@ -460,6 +466,11 @@ export class TasksService {
     const ability = this.abilityFactory.createForUser(user);
     if (!ability.can('update', 'Task')) {
       throw new ForbiddenException('Forbidden: You do not have permission to update tasks');
+    }
+
+    // Version conflict check
+    if (dto.version !== undefined && dto.version !== task.version) {
+      throw new ConflictException('Task was modified by another user. Please refresh to see the latest version.');
     }
 
     const previousStatus = task.status;

@@ -13,6 +13,7 @@ import { TaskHistory } from './task-history';
 import { useRouter } from 'next/navigation';
 import { useRealTimeComments } from '@/hooks/use-real-time-comments';
 import { useWebSocket } from '@/hooks/use-websocket';
+import { ConflictWarning } from '../ui/conflict-warning';
 
 interface TaskDetailPanelProps {
   task: TaskDetail;
@@ -63,6 +64,8 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showConflict, setShowConflict] = useState(false);
+  const [conflictMessage, setConflictMessage] = useState('');
 
   const token = (session as any)?.accessToken;
   const currentUserId = session?.user?.id || '';
@@ -77,6 +80,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
     const handleTaskUpdated = (event: any) => {
       // Only update if it's this task and from another user
       if (event.task?.id === currentTask.id && event.userId !== currentUserId) {
+        // Update local state with the new version to prevent conflicts
         setCurrentTask(event.task);
         setEditedTitle(event.task.title);
         setEditedDescription(event.task.description || '');
@@ -97,17 +101,24 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
     try {
       const updated = await api.patch<TaskDetail>(
         `/tasks/${currentTask.id}`,
-        { [field]: value },
+        { [field]: value, version: currentTask.version },
         token
       );
       setCurrentTask(updated);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update task:', error);
-      alert('Failed to update task');
+
+      // Check if it's a 409 conflict error
+      if (error?.response?.status === 409) {
+        setConflictMessage('This task was modified by another user.');
+        setShowConflict(true);
+      } else {
+        alert('Failed to update task');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [currentTask.id, token]);
+  }, [currentTask.id, currentTask.version, token]);
 
   const handleTitleSave = async () => {
     if (editedTitle.trim() && editedTitle !== currentTask.title) {
@@ -159,6 +170,21 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
       setComments(updatedTask.comments);
     } catch (error) {
       console.error('Failed to fetch updated comments:', error);
+    }
+  };
+
+  const handleRefreshTask = async () => {
+    // Refetch the entire task to get the latest version
+    try {
+      const updatedTask = await api.get<TaskDetail>(`/tasks/${currentTask.id}`, token);
+      setCurrentTask(updatedTask);
+      setEditedTitle(updatedTask.title);
+      setEditedDescription(updatedTask.description || '');
+      setComments(updatedTask.comments);
+      setShowConflict(false);
+    } catch (error) {
+      console.error('Failed to refresh task:', error);
+      alert('Failed to refresh task');
     }
   };
 
@@ -425,6 +451,14 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
           </div>
         </div>
       </div>
+
+      {showConflict && (
+        <ConflictWarning
+          message={conflictMessage}
+          onRefresh={handleRefreshTask}
+          onDismiss={() => setShowConflict(false)}
+        />
+      )}
     </div>
   );
 }

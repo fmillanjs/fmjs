@@ -14,12 +14,15 @@ export const createTaskSchema = z.object({
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 
-export const updateTaskSchema = createTaskSchema.partial().omit({ projectId: true });
+export const updateTaskSchema = createTaskSchema.partial().omit({ projectId: true }).extend({
+  version: z.number().int().optional(),
+});
 
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 
 export const updateTaskStatusSchema = z.object({
   status: z.nativeEnum(TaskStatus),
+  version: z.number().int().optional(),
 });
 
 export type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;

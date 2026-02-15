@@ -10,6 +10,22 @@ import { auth } from './auth';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
+ * Custom error class that includes HTTP response details
+ */
+class ApiError extends Error {
+  response: {
+    status: number;
+    data: any;
+  };
+
+  constructor(message: string, status: number, data: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.response = { status, data };
+  }
+}
+
+/**
  * Client-side API client (use in Client Components)
  * Requires session to be available via useSession()
  */
@@ -25,7 +41,7 @@ export const api = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      throw new ApiError(error.message || `HTTP ${response.status}`, response.status, error);
     }
 
     return response.json();
@@ -43,7 +59,7 @@ export const api = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      throw new ApiError(error.message || `HTTP ${response.status}`, response.status, error);
     }
 
     return response.json();
@@ -61,7 +77,7 @@ export const api = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      throw new ApiError(error.message || `HTTP ${response.status}`, response.status, error);
     }
 
     return response.json();
@@ -78,7 +94,7 @@ export const api = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
+      throw new ApiError(error.message || `HTTP ${response.status}`, response.status, error);
     }
 
     // DELETE might return 204 No Content
