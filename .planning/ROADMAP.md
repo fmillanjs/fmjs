@@ -93,10 +93,13 @@ Plans:
   5. System detects concurrent edits and shows clear conflict resolution UI to user
   6. WebSocket events use Redis pub/sub enabling horizontal scaling across multiple server instances
 
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (to be created during `/gsd:plan-phase 3`)
+- [ ] 03-01-PLAN.md — Backend WebSocket infrastructure (Redis adapter, project rooms, task/comment event listeners, version field)
+- [ ] 03-02-PLAN.md — Frontend real-time task updates (WebSocket provider, hooks, Kanban/list integration)
+- [ ] 03-03-PLAN.md — Presence tracking + Real-time comments (presence indicator, live comment updates)
+- [ ] 03-04-PLAN.md — Conflict detection + End-to-end verification (version-based 409, conflict warning UI, full test)
 
 ### Phase 4: Portfolio & Polish
 **Goal**: Complete professional portfolio website showcasing TeamFlow, polish UX for production quality, implement testing, and deploy with CI/CD
@@ -128,5 +131,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (decimal phases like 2.1 wo
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 7/7 | ✓ Complete | 2026-02-14 |
 | 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
-| 3. Real-Time Collaboration | 0/TBD | Not started | - |
+| 3. Real-Time Collaboration | 0/4 | Not started | - |
 | 4. Portfolio & Polish | 0/TBD | Not started | - |
