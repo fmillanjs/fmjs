@@ -9,8 +9,9 @@ import { validateEnv } from './env.validation';
     NestConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnv,
-      // Load .env from project root (monorepo root, not apps/api)
-      envFilePath: join(__dirname, '../../../.env'),
+      // Load .env from project root (monorepo root)
+      // When compiled: dist/apps/api/src/core/config -> ../../../../../../../../.env
+      envFilePath: join(__dirname, '../../../../../../../../.env'),
     }),
   ],
 })

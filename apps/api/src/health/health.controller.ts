@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, MemoryHealthIndicator } from '@nestjs/terminus';
 import { PrismaHealthIndicator } from './indicators/prisma.indicator';
 import { RedisHealthIndicator } from './indicators/redis.indicator';
+import { Public } from '../modules/auth/decorators/public.decorator';
 
 @ApiTags('health')
 @Controller('health')
@@ -14,6 +15,7 @@ export class HealthController {
     private memory: MemoryHealthIndicator,
   ) {}
 
+  @Public()
   @Get()
   @HealthCheck()
   @ApiOperation({ summary: 'Health check endpoint' })

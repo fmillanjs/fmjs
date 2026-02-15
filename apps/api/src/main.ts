@@ -1,3 +1,6 @@
+// Register tsconfig paths for monorepo shared packages
+import 'tsconfig-paths/register';
+
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
