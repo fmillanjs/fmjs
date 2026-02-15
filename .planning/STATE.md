@@ -11,29 +11,29 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 2 of 4 (Core Work Management) — IN PROGRESS
-Plan: 4 of 11 complete in Phase 2
+Plan: 5 of 11 complete in Phase 2
 Status: Executing Phase 2 plans
-Last activity: 2026-02-15 — Completed 02-04: Tasks/Comments CRUD
+Last activity: 2026-02-15 — Completed 02-05: Teams Frontend (Dashboard + UI)
 
-Progress: [███░░░░░░░] 36% (Phase 1 complete + 4/11 of Phase 2)
+Progress: [████░░░░░░] 40% (Phase 1 complete + 5/11 of Phase 2)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 7.8 min/plan
-- Total execution time: 1.4 hours
+- Total plans completed: 12
+- Average duration: 7.3 min/plan
+- Total execution time: 1.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation-authentication | 7 | 61 min | 8.7 min |
-| 02-core-work-management | 4 | 26 min | 6.5 min |
+| 02-core-work-management | 5 | 32 min | 6.4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-07 (15m), 02-01 (3m), 02-02 (12m), 02-03 (4m), 02-04 (7m)
-- Trend: API feature plans averaging ~7-12 min, schema plans ~3 min
+- Last 5 plans: 02-01 (3m), 02-02 (12m), 02-03 (4m), 02-04 (7m), 02-05 (6m)
+- Trend: UI plans averaging ~6 min, API plans ~7-12 min, schema plans ~3 min
 
 *Updated after each plan completion*
 
@@ -89,6 +89,11 @@ Recent decisions affecting current work:
 - Admin-only audit log: Organization-wide audit log accessible only to ADMIN role (02-04)
 - Project activity feed: Project-scoped activity feed for focused task/project history (02-04)
 - Label organization verification: Labels must belong to same org as project (security) (02-04)
+- API client pattern: Separate client (api) and server (serverApi) utilities for frontend-backend calls (02-05)
+- Sidebar team list: Teams fetched in layout Server Component and passed as props to client Sidebar (02-05)
+- Role badge colors: Admin=red, Manager=blue, Member=green (NO purple per user requirement) (02-05)
+- Form validation: React Hook Form + Zod resolver using shared schemas from @repo/shared (02-05)
+- Role-based UI: Admin sees remove buttons, Admin/Manager see invite form, settings admin-only (02-05)
 
 ### Pending Todos
 
@@ -100,9 +105,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15 (Phase 2 execution - Plan 4)
-Stopped at: Completed 02-04-PLAN.md (Tasks/Comments CRUD)
+Last session: 2026-02-15 (Phase 2 execution - Plan 5)
+Stopped at: Completed 02-05-PLAN.md (Teams Frontend Dashboard + UI)
 Resume file: None
 
 ---
-*Next step: Execute 02-05-PLAN.md (next in wave)*
+*Next step: Execute next plan in wave sequence*
