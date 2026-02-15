@@ -44,3 +44,8 @@ export interface TeamEvent extends AuditEventPayload {
   entityType: 'Organization' | 'Membership';
   action: 'TEAM_CREATED' | 'MEMBER_INVITED' | 'MEMBER_REMOVED';
 }
+
+export interface ProjectEvent extends AuditEventPayload {
+  entityType: 'Project';
+  action: 'PROJECT_CREATED' | 'PROJECT_UPDATED' | 'PROJECT_ARCHIVED' | 'PROJECT_DELETED';
+}

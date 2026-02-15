@@ -30,6 +30,7 @@ async function bootstrap() {
     .addTag('auth', 'Authentication endpoints')
     .addTag('users', 'User management endpoints')
     .addTag('teams', 'Team/Organization management endpoints')
+    .addTag('projects', 'Project management endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
