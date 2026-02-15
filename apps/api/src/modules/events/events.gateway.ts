@@ -12,6 +12,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createAdapter } from '@socket.io/redis-adapter';
 import Redis from 'ioredis';
 import { PrismaService } from '../../core/database/prisma.service';
+import * as jwt from 'jsonwebtoken';
 
 @WebSocketGateway({
   cors: {
@@ -43,18 +44,70 @@ export class EventsGateway
 
   async handleConnection(client: Socket) {
     try {
+      console.log('\n========== WebSocket Connection Attempt ==========');
+
+      // Log complete handshake structure
+      console.log('[WS Handshake] Auth object:', {
+        hasAuth: !!client.handshake.auth,
+        authKeys: client.handshake.auth ? Object.keys(client.handshake.auth) : [],
+        hasToken: !!client.handshake.auth?.token,
+      });
+
+      console.log('[WS Handshake] Headers:', {
+        hasAuthorization: !!client.handshake.headers?.authorization,
+        authHeader: client.handshake.headers?.authorization?.substring(0, 30) + '...',
+      });
+
+      console.log('[WS Handshake] Query params:', {
+        queryKeys: Object.keys(client.handshake.query || {}),
+      });
+
       // Validate token (defense in depth — guard already checked, but validate again)
       const token =
         client.handshake.auth?.token ||
         client.handshake.headers?.authorization?.replace('Bearer ', '');
 
       if (!token) {
-        console.log('WS Connection rejected: No token');
+        console.log('[WS Auth] REJECTED: No token found in auth or headers');
+        console.log('================================================\n');
         client.disconnect();
         return;
       }
 
+      // Log token details (without exposing full token)
+      console.log('[WS Auth] Token received:', {
+        present: !!token,
+        type: typeof token,
+        length: token.length,
+        preview: token.substring(0, 20) + '...',
+      });
+
+      // Attempt to decode token WITHOUT verification to inspect structure
+      try {
+        const decoded = jwt.decode(token, { complete: true });
+        console.log('[WS Auth] Decoded token (unverified):', {
+          header: decoded?.header,
+          payload: decoded?.payload,
+          hasSignature: !!decoded?.signature,
+        });
+      } catch (decodeError: any) {
+        console.error('[WS Auth] Token decode error:', {
+          message: decodeError.message,
+          name: decodeError.name,
+        });
+      }
+
+      // Attempt verification
+      console.log('[WS Auth] Attempting verification with algorithm: HS256');
       const payload = await this.jwtService.verifyAsync(token);
+
+      console.log('[WS Auth] Verification SUCCESS:', {
+        sub: payload.sub,
+        email: payload.email,
+        role: payload.role,
+        exp: payload.exp,
+      });
+
       client.data.user = {
         id: payload.sub,
         email: payload.email,
@@ -64,9 +117,16 @@ export class EventsGateway
       // Join user-specific room for targeted events
       client.join(`user:${payload.sub}`);
 
-      console.log(`WS Connected: user ${payload.sub}`);
-    } catch (error) {
-      console.log('WS Connection rejected: Invalid token');
+      console.log(`[WS Auth] CONNECTED: user ${payload.sub}`);
+      console.log('================================================\n');
+    } catch (error: any) {
+      console.error('[WS Auth] Verification FAILED:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      });
+      console.log('[WS Auth] REJECTED: Invalid token');
+      console.log('================================================\n');
       client.disconnect();
     }
   }

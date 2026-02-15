@@ -17,10 +17,22 @@ import { JwtStrategy } from './strategies/jwt.strategy';
           throw new Error('JWT_SECRET is not defined in environment variables');
         }
         const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '15m';
+
+        console.log('[Auth Module] JWT configured:', {
+          secretPresent: !!secret,
+          secretLength: secret?.length,
+          expiresIn,
+          algorithm: 'HS256',
+        });
+
         return {
           secret,
           signOptions: {
             expiresIn: expiresIn as any, // JWT accepts string durations like '15m', '7d'
+            algorithm: 'HS256', // Explicit algorithm
+          },
+          verifyOptions: {
+            algorithms: ['HS256'], // CRITICAL: Must match signOptions
           },
         };
       },
