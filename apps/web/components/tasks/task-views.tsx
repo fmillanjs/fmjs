@@ -32,9 +32,9 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
   useRealTimeTasks(projectId, session?.user?.id || '', tasks, setTasks);
 
   const handleRefresh = () => {
+    // Increment refresh key to force re-render of task views
+    // WebSocket will handle the actual data update via useRealTimeTasks
     setRefreshKey((prev) => prev + 1);
-    // Use router.refresh() instead of window.location.reload() to avoid SSR session loss
-    router.refresh();
   };
 
   // Check if filters are active (client-side check)

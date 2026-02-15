@@ -31,10 +31,14 @@ export function useRealTimeTasks(
 
     // Handle task created
     const handleTaskCreated = (payload: TaskEventPayload) => {
-      // Prevent infinite loops - ignore events from current user
-      if (payload.userId === currentUserId) return;
-
-      setTasks([...tasks, payload.task]);
+      // Add task to list (including from current user to update UI immediately)
+      // Prevent duplicates by checking if task already exists
+      setTasks((current) => {
+        if (current.some((t) => t.id === payload.task.id)) {
+          return current; // Task already exists, skip
+        }
+        return [...current, payload.task];
+      });
     };
 
     // Handle task updated
@@ -73,7 +77,7 @@ export function useRealTimeTasks(
         }
 
         const updatedTasks = await api.get<TaskWithRelations[]>(
-          `/projects/${projectId}/tasks`,
+          `/api/projects/${projectId}/tasks`,
           token
         );
         setTasks(updatedTasks);
