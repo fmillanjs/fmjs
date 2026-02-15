@@ -1,0 +1,15 @@
+{
+  "extends": "../../packages/config/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@repo/shared": ["../../packages/shared/src"],
+      "@repo/shared/*": ["../../packages/shared/src/*"],
+      "@repo/database": ["../../packages/database/src"],
+      "@repo/database/*": ["../../packages/database/src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
