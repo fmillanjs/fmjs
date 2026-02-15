@@ -46,7 +46,7 @@ export function Header({ user }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-20">
+    <header className="h-16 bg-card dark:bg-gray-950 border-b border-border sticky top-0 z-20">
       <div className="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left side - could add breadcrumbs or search here */}
         <div className="flex-1">
@@ -60,12 +60,12 @@ export function Header({ user }: HeaderProps) {
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"
+              className="flex items-center gap-3 p-2 rounded-md hover:bg-accent"
             >
             {/* Avatar */}
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-end">
-                <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                <span className="text-sm font-medium text-foreground">{user.name}</span>
                 <span
                   className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getRoleBadgeColor(
                     user.role
@@ -74,12 +74,12 @@ export function Header({ user }: HeaderProps) {
                   {user.role}
                 </span>
               </div>
-              <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
                 {initials}
               </div>
             </div>
             <svg
-              className={`h-5 w-5 text-gray-400 transition-transform ${
+              className={`h-5 w-5 text-muted-foreground transition-transform ${
                 isDropdownOpen ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -100,26 +100,26 @@ export function Header({ user }: HeaderProps) {
                 className="fixed inset-0 z-10"
                 onClick={() => setIsDropdownOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+              <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card dark:bg-gray-950 border border-border z-20">
                 <div className="py-1">
                   {/* User info */}
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-medium text-foreground">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
 
                   {/* Menu items */}
                   <Link
                     href="/profile"
                     onClick={() => setIsDropdownOpen(false)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-accent"
                   >
                     Profile
                   </Link>
 
                   <button
                     onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-accent"
                   >
                     Logout
                   </button>

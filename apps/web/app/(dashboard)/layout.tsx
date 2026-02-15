@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/header';
 import { serverApi } from '@/lib/api';
 import { WebSocketProvider } from '@/providers/websocket-provider';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { CommandPalette } from '@/components/ui/command-palette';
 
 interface Team {
   id: string;
@@ -35,7 +36,7 @@ export default async function DashboardLayout({
   return (
     <NuqsAdapter>
       <WebSocketProvider>
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-background">
           {/* Sidebar */}
           <Sidebar teams={teams} />
 
@@ -51,11 +52,14 @@ export default async function DashboardLayout({
             />
 
             {/* Page content */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto bg-muted/20">
               <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{children}</div>
             </main>
           </div>
         </div>
+
+        {/* Command Palette */}
+        <CommandPalette />
       </WebSocketProvider>
     </NuqsAdapter>
   );

@@ -25,11 +25,11 @@ export function Sidebar({ teams }: SidebarProps) {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-lg"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-background border border-border shadow-lg"
         aria-label="Toggle menu"
       >
         <svg
-          className="w-6 h-6"
+          className="w-6 h-6 text-foreground"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -49,15 +49,15 @@ export function Sidebar({ teams }: SidebarProps) {
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-40
-          w-64 bg-white border-r border-gray-200
+          w-64 bg-card dark:bg-gray-950 border-r border-border
           transform transition-transform duration-200 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-200">
-            <Link href="/" className="text-xl font-bold text-gray-900">
+          <div className="flex items-center h-16 px-6 border-b border-border">
+            <Link href="/" className="text-xl font-bold text-foreground">
               TeamFlow
             </Link>
           </div>
@@ -73,8 +73,8 @@ export function Sidebar({ teams }: SidebarProps) {
                   flex items-center px-3 py-2 text-sm font-medium rounded-md
                   ${
                     pathname === '/'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }
                 `}
               >
@@ -95,13 +95,13 @@ export function Sidebar({ teams }: SidebarProps) {
               {/* Teams Section */}
               <div className="mt-6">
                 <div className="px-3 mb-2">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Teams
                   </h3>
                 </div>
 
                 {teams.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-gray-500">No teams yet</div>
+                  <div className="px-3 py-2 text-sm text-muted-foreground">No teams yet</div>
                 ) : (
                   <div className="space-y-1">
                     {teams
@@ -122,8 +122,8 @@ export function Sidebar({ teams }: SidebarProps) {
                               flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md
                               ${
                                 isActive(`/teams/${team.id}`)
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'text-gray-700 hover:bg-gray-50'
+                                  ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                               }
                             `}
                           >
@@ -155,7 +155,7 @@ export function Sidebar({ teams }: SidebarProps) {
                 <Link
                   href="/teams/new"
                   onClick={() => setIsMobileOpen(false)}
-                  className="mt-2 flex items-center px-3 py-2 text-sm font-medium text-blue-600 rounded-md hover:bg-blue-50"
+                  className="mt-2 flex items-center px-3 py-2 text-sm font-medium text-primary rounded-md hover:bg-primary/10 dark:hover:bg-primary/20"
                 >
                   <svg
                     className="mr-3 h-5 w-5"
@@ -179,7 +179,7 @@ export function Sidebar({ teams }: SidebarProps) {
       {/* Mobile overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-30 md:hidden"
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
