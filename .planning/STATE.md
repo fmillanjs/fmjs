@@ -11,28 +11,28 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 1 of 4 (Foundation & Authentication)
-Plan: 1 of TBD in current phase
+Plan: 2 of 7 in current phase
 Status: In progress
-Last activity: 2026-02-14 — Completed 01-01-PLAN.md (Project Foundation)
+Last activity: 2026-02-14 — Completed 01-02-PLAN.md (Data Foundation)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 4 min
-- Total execution time: 0.07 hours
+- Total plans completed: 2
+- Average duration: 4.5 min
+- Total execution time: 0.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation-authentication | 1 | 4 min | 4 min |
+| 01-foundation-authentication | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min)
-- Trend: Project just started
+- Last 5 plans: 01-01 (4 min), 01-02 (5 min)
+- Trend: Steady velocity
 
 *Updated after each plan completion*
 
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 - Raw TypeScript source imports: Prevents type drift between apps (01-01)
 - Redis port 6380: Avoids conflict with existing container (01-01)
 - Turborepo tasks field: Using 2.x syntax instead of pipeline (01-01)
+- Postgres port 5434: Avoids conflict with system Postgres (01-02)
+- Prisma db push for development: Faster iteration than migrations (01-02)
+- z.infer types from Zod schemas: Single source of truth for validation + types (01-02)
 
 ### Pending Todos
 
@@ -63,7 +66,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed 01-01-PLAN.md - Turborepo monorepo with Next.js, NestJS, Docker Compose
+Stopped at: Completed 01-02-PLAN.md - Prisma schema and shared validation packages
 Resume file: None
 
 ---
