@@ -31,8 +31,10 @@ interface TeamMember {
 
 export default async function ProjectDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ teamId: string; projectId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await auth();
 
@@ -41,11 +43,56 @@ export default async function ProjectDetailPage({
   }
 
   const { teamId, projectId } = await params;
+  const filters = await searchParams;
+
+  // Build query string for task filtering
+  const queryParams = new URLSearchParams();
+
+  // Status filter (multi-select)
+  if (filters.status) {
+    const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
+    statuses.forEach((s) => queryParams.append('status', s));
+  }
+
+  // Priority filter (multi-select)
+  if (filters.priority) {
+    const priorities = Array.isArray(filters.priority) ? filters.priority : [filters.priority];
+    priorities.forEach((p) => queryParams.append('priority', p));
+  }
+
+  // Assignee filter (single)
+  if (filters.assignee) {
+    queryParams.set('assigneeId', filters.assignee as string);
+  }
+
+  // Labels filter (multi-select)
+  if (filters.labels) {
+    const labelIds = Array.isArray(filters.labels) ? filters.labels : [filters.labels];
+    labelIds.forEach((l) => queryParams.append('labelId', l));
+  }
+
+  // Search filter
+  if (filters.search) {
+    queryParams.set('search', filters.search as string);
+  }
+
+  // Sort parameters
+  if (filters.sortBy) {
+    queryParams.set('sortBy', filters.sortBy as string);
+  }
+  if (filters.sortOrder) {
+    queryParams.set('sortOrder', filters.sortOrder as string);
+  }
+
+  const queryString = queryParams.toString();
+  const tasksUrl = queryString
+    ? `/projects/${projectId}/tasks?${queryString}`
+    : `/projects/${projectId}/tasks`;
 
   // Fetch project, tasks, team members, and labels
   const [project, tasks, members, labels] = await Promise.all([
     serverApi.get<Project>(`/projects/${projectId}`).catch(() => null),
-    serverApi.get<TaskWithRelations[]>(`/projects/${projectId}/tasks`).catch(() => []),
+    serverApi.get<TaskWithRelations[]>(tasksUrl).catch(() => []),
     serverApi.get<TeamMember[]>(`/teams/${teamId}/members`).catch(() => []),
     serverApi.get<LabelBase[]>(`/teams/${teamId}/labels`).catch(() => []),
   ]);
