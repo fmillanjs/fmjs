@@ -14,13 +14,15 @@ interface Project {
   };
 }
 
-async function getProjects(teamId: string): Promise<Project[]> {
+async function getProjects(teamId: string, accessToken: string): Promise<Project[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   try {
     const response = await fetch(`${apiUrl}/api/teams/${teamId}/projects`, {
       cache: 'no-store',
-      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
     });
 
     if (!response.ok) {
@@ -46,8 +48,13 @@ export default async function ProjectsPage({
     redirect('/login');
   }
 
+  const accessToken = (session as any)?.accessToken;
+  if (!accessToken) {
+    redirect('/login');
+  }
+
   const { teamId } = await params;
-  const projects = await getProjects(teamId);
+  const projects = await getProjects(teamId, accessToken);
 
   return (
     <div className="space-y-6">
