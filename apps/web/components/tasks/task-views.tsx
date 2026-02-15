@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { TaskWithRelations, LabelBase } from '@repo/shared/types';
 import { ViewToggle } from './view-toggle';
 import { KanbanBoard } from './kanban-board';
@@ -9,6 +10,7 @@ import { TaskForm } from './task-form';
 import { TaskSearch } from './task-search';
 import { TaskFilters } from './task-filters';
 import { Plus } from 'lucide-react';
+import { useRealTimeTasks } from '@/hooks/use-real-time-tasks';
 
 interface TaskViewsProps {
   initialTasks: TaskWithRelations[];
@@ -18,9 +20,14 @@ interface TaskViewsProps {
 }
 
 export function TaskViews({ initialTasks, projectId, teamMembers, labels }: TaskViewsProps) {
+  const { data: session } = useSession();
   const [view, setView] = useState<'board' | 'list'>('board');
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [tasks, setTasks] = useState(initialTasks);
+
+  // Real-time task updates from other users
+  useRealTimeTasks(projectId, session?.user?.id || '', tasks, setTasks);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
@@ -37,7 +44,7 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
       window.location.search.includes('labels=') ||
       window.location.search.includes('search='));
 
-  const isEmpty = initialTasks.length === 0;
+  const isEmpty = tasks.length === 0;
 
   return (
     <div className="space-y-6">
@@ -81,7 +88,7 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
           {view === 'board' ? (
             <KanbanBoard
               key={refreshKey}
-              initialTasks={initialTasks}
+              initialTasks={tasks}
               projectId={projectId}
               teamMembers={teamMembers}
               labels={labels}
@@ -89,7 +96,7 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
           ) : (
             <TaskListView
               key={refreshKey}
-              tasks={initialTasks}
+              tasks={tasks}
               projectId={projectId}
               teamMembers={teamMembers}
               labels={labels}
