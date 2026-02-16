@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Milestone: v1.0 COMPLETE (88%) → v1.1 IN PROGRESS
-Phase: 6 (Authentication Fixes) — IN PROGRESS (1/2 plans complete)
-Status: JWT_SECRET configuration fixed, ready for WebSocket integration testing
-Last activity: 2026-02-16 — Completed 06-01 JWT_SECRET consistency fix
+Phase: 6.1 (User Flow & Architecture Audit) — IN PROGRESS (1/3 plans complete)
+Status: Runtime API response validation implemented with Zod schemas
+Last activity: 2026-02-16 — Completed 06.1-02 Runtime API Response Validation
 
-Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1: 1/2 (50%)
+Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1: 1/2 (50%) | Phase 6.1: 1/3 (33%)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 34
-- Average duration: 6.3 min/plan
-- Total execution time: 3.6 hours
+- Total plans completed: 35
+- Average duration: 6.2 min/plan
+- Total execution time: 3.7 hours
 
 **By Phase:**
 
@@ -34,10 +34,11 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | 04-portfolio-polish | 10 | 77 min | 7.7 min |
 | 05.1-authentication-investigation | 2 | 11 min | 5.5 min |
 | 06-authentication-fixes | 1 | 3 min | 3.0 min |
+| 06.1-user-flow-architecture-audit | 1 | 5 min | 5.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-09 (3m), 04-10 (8m), 05.1-01 (5m), 05.1-02 (6m), 06-01 (3m)
-- Trend: Fast execution on focused authentication fixes
+- Last 5 plans: 04-10 (8m), 05.1-01 (5m), 05.1-02 (6m), 06-01 (3m), 06.1-02 (5m)
+- Trend: Consistent fast execution on focused infrastructure improvements
 
 *Updated after each plan completion*
 | Phase 04-portfolio-polish P04-03 | 8 | 2 tasks | 7 files |
@@ -50,6 +51,8 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | Phase 05.1 P01 | 5 | 3 tasks | 5 files |
 | Phase 05.1 P02 | 6 | 3 tasks | 2 files |
 | Phase 06 P01 | 3 | 3 tasks | 3 files |
+| Phase 06.1 P02 | 5 | 3 tasks | 4 files |
+| Phase 06.1 P02 | 5 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -169,10 +172,13 @@ Recent decisions affecting current work:
 - [Phase 06-01]: 512-bit JWT_SECRET for cryptographic strength exceeding 256-bit minimum
 - [Phase 06-01]: Fail-fast validation instead of fallback secrets for immediate error surfacing
 - [Phase 06-01]: SHA256 fingerprint logging for secret verification without exposure
+- [Phase 06.1-02]: Runtime API response validation with environment-aware strict/graceful modes (dev throws, prod logs)
+- [Phase 06.1-02]: Separate response schemas from request validators for Date coercion and optional relations
 
 ### Roadmap Evolution
 
 - Phase 6 added: Authentication Fixes
+- Phase 6.1 inserted after Phase 6: User Flow & Architecture Audit (URGENT)
 
 ### Pending Todos
 
@@ -195,9 +201,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-16T00:17:15Z (Phase 06-01 execution)
-Stopped at: Completed 06-01-PLAN.md (JWT_SECRET configuration fix)
-Resume file: None (ready for 06-02 WebSocket integration testing)
+Last session: 2026-02-16T03:12:45Z (Phase 06.1-02 execution)
+Stopped at: Completed 06.1-02-PLAN.md (Runtime API Response Validation)
+Resume file: None (ready for 06.1-03 User Journey Validation)
 
 ---
 *v1.0 complete (88%). Starting v1.1 to activate real-time features.*
