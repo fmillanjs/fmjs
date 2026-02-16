@@ -212,15 +212,16 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
           {history.map((entry) => (
             <div key={entry.id} className="flex gap-4 relative">
               {/* Avatar/Icon */}
+              {/* WCAG Contrast Fix (Phase 07.1-03): Changed border-white to border-gray-200 for visibility */}
               <div className="flex-shrink-0 z-10">
                 {entry.actor.image ? (
                   <img
                     src={entry.actor.image}
                     alt={entry.actor.name || 'User'}
-                    className="w-8 h-8 rounded-full border-2 border-white"
+                    className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium border-2 border-white">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium border-2 border-gray-200 dark:border-gray-700">
                     {entry.actor.name?.[0]?.toUpperCase() || '?'}
                   </div>
                 )}
