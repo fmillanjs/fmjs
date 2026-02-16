@@ -23,7 +23,7 @@ test.describe('Permission Edge Cases', () => {
     await page.getByRole('button', { name: 'Log In' }).click();
 
     // Wait for redirect
-    await page.waitForURL('/');
+    await page.waitForURL('/teams');
 
     // Try to access audit log directly
     // First, need to get a team ID - navigate to teams
@@ -74,7 +74,7 @@ test.describe('Permission Edge Cases', () => {
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: 'Log In' }).click();
 
-    await page.waitForURL('/');
+    await page.waitForURL('/teams');
     await page.goto('/teams');
 
     // Navigate to a project
@@ -117,7 +117,7 @@ test.describe('Permission Edge Cases', () => {
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: 'Log In' }).click();
 
-    await page.waitForURL('/');
+    await page.waitForURL('/teams');
     await page.goto('/teams');
 
     const firstTeamLink = page.getByRole('link', { name: /view|go to/i }).first();
@@ -159,7 +159,7 @@ test.describe('Permission Edge Cases', () => {
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: 'Log In' }).click();
 
-    await page.waitForURL('/');
+    await page.waitForURL('/teams');
     await page.goto('/teams');
 
     const firstTeamLink = page.getByRole('link', { name: /view|go to/i }).first();
@@ -191,7 +191,7 @@ test.describe('Permission Edge Cases', () => {
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: 'Log In' }).click();
 
-    await page.waitForURL('/');
+    await page.waitForURL('/teams');
 
     // Try to access a team the user is not a member of
     // Note: This requires knowing a team ID the user doesn't belong to
