@@ -209,9 +209,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 → 6 (decimal phas
   9. No data inconsistencies: orphaned records, stale cache, API-DB mismatches resolved
   10. Authentication works seamlessly across portfolio ↔ TeamFlow boundaries
 
-**Plans:** 3/3 plans complete
+**Plans:** 6 plans (3 complete, 3 gap closure)
 
 Plans:
-- [ ] 06.1-01-PLAN.md — E2E user journey tests (complete flow, auth boundaries, navigation state)
-- [ ] 06.1-02-PLAN.md — API response validation (Zod schemas, runtime validation, integration tests)
-- [ ] 06.1-03-PLAN.md — Edge case audit (loading/error/empty states, permission errors, checklist)
+- [x] 06.1-01-PLAN.md — E2E user journey tests (complete flow, auth boundaries, navigation state)
+- [x] 06.1-02-PLAN.md — API response validation (Zod schemas, runtime validation, integration tests)
+- [x] 06.1-03-PLAN.md — Edge case audit (loading/error/empty states, permission errors, checklist)
+- [ ] 06.1-04-PLAN.md — Fix permission test redirect URLs (Gap 1 - BLOCKER)
+- [ ] 06.1-05-PLAN.md — Investigate and fix task creation error UX (Gap 2 - WARNING)
+- [ ] 06.1-06-PLAN.md — Integrate validation infrastructure (Gap 3 - WARNING)
