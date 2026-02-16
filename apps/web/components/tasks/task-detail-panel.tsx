@@ -94,14 +94,20 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
     };
   }, [socket, currentTask.id, currentUserId]);
 
-  const updateField = useCallback(async (field: string, value: any) => {
+  const updateField = useCallback(async (field: string, value: any, useVersionCheck = false) => {
     if (!token) return;
 
     setIsSaving(true);
     try {
+      // Only use version checking for deliberate text edits (title, description)
+      // Dropdown changes (status, priority, assignee, labels) don't need OCC
+      const payload = useVersionCheck
+        ? { [field]: value, version: currentTask.version }
+        : { [field]: value };
+
       const updated = await api.patch<TaskDetail>(
-        `/tasks/${currentTask.id}`,
-        { [field]: value, version: currentTask.version },
+        `/api/tasks/${currentTask.id}`,
+        payload,
         token
       );
       setCurrentTask(updated);
@@ -122,7 +128,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
   const handleTitleSave = async () => {
     if (editedTitle.trim() && editedTitle !== currentTask.title) {
-      await updateField('title', editedTitle.trim());
+      await updateField('title', editedTitle.trim(), true); // Use version check for text edits
     } else {
       setEditedTitle(currentTask.title);
     }
@@ -141,7 +147,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
   const handleDescriptionSave = async () => {
     if (editedDescription !== (currentTask.description || '')) {
-      await updateField('description', editedDescription || null);
+      await updateField('description', editedDescription || null, true); // Use version check for text edits
     }
     setIsEditingDescription(false);
   };
