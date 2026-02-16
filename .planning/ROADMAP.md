@@ -188,3 +188,30 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 → 6 (decimal phas
 | 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
 | 5.1. Authentication Investigation | 2/2 | ✓ Complete | 2026-02-15 |
 | 6. Authentication Fixes | 0/2 | Planning | - |
+
+### Phase 6.1: User Flow & Architecture Audit (INSERTED)
+
+**Goal**: Audit and fix the complete user journey from portfolio through TeamFlow, ensuring consistent navigation, data integrity between API and database, proper authentication at all boundaries, and comprehensive edge case handling
+
+**Depends on**: Phase 6
+
+**Requirements**: None (cross-cutting fixes across existing requirements)
+
+**Success Criteria** (what must be TRUE):
+  1. User can navigate entire portfolio (home, about, resume, contact, projects) without broken links or auth errors
+  2. User can view project showcase and access TeamFlow project detail page from portfolio
+  3. User can log in from portfolio project page and land in TeamFlow dashboard with proper session
+  4. First-time authenticated user (admin) can create team → project → tasks through complete flow
+  5. User can navigate to project board and interact with Kanban (drag-drop, filters, task details)
+  6. API responses match database schema (no field mismatches, type errors, or missing data)
+  7. Navigation structure is consistent: breadcrumbs, back buttons, sidebar state preserved
+  8. All edge cases handled: empty states, loading states, error states, invalid routes, missing permissions
+  9. No data inconsistencies: orphaned records, stale cache, API-DB mismatches resolved
+  10. Authentication works seamlessly across portfolio ↔ TeamFlow boundaries
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06.1-01-PLAN.md — E2E user journey tests (complete flow, auth boundaries, navigation state)
+- [ ] 06.1-02-PLAN.md — API response validation (Zod schemas, runtime validation, integration tests)
+- [ ] 06.1-03-PLAN.md — Edge case audit (loading/error/empty states, permission errors, checklist)
