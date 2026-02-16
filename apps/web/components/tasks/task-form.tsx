@@ -139,7 +139,7 @@ export function TaskForm({
             <input
               {...register('title')}
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Task title"
             />
             {errors.title && (
@@ -155,7 +155,7 @@ export function TaskForm({
             <textarea
               {...register('description')}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Task description (optional)"
             />
             {errors.description && (
@@ -171,7 +171,7 @@ export function TaskForm({
               </label>
               <select
                 {...register('status')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value={TaskStatus.TODO}>To Do</option>
                 <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
@@ -189,7 +189,7 @@ export function TaskForm({
               </label>
               <select
                 {...register('priority')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value={TaskPriority.LOW}>Low</option>
                 <option value={TaskPriority.MEDIUM}>Medium</option>
@@ -211,7 +211,7 @@ export function TaskForm({
               <input
                 {...register('dueDate')}
                 type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
               {errors.dueDate && (
                 <p className="text-red-600 text-sm mt-1">{String(errors.dueDate.message)}</p>
@@ -224,7 +224,7 @@ export function TaskForm({
               </label>
               <select
                 {...register('assigneeId')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               >
                 <option value="">Unassigned</option>
                 {teamMembers.map((member) => (
@@ -263,7 +263,7 @@ export function TaskForm({
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: label.color }}
                   />
-                  <span className="text-sm">{label.name}</span>
+                  <span className="text-sm text-gray-900">{label.name}</span>
                 </button>
               ))}
               {labels.length === 0 && (
