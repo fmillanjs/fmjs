@@ -33,23 +33,9 @@ export class EventsGateway
   ) {}
 
   afterInit(server: Server) {
-    // Create Redis clients for pub/sub
-    const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
-    const subClient = pubClient.duplicate();
-
-    // Set up Redis adapter for horizontal scaling (must be set synchronously)
-    const redisAdapter = createAdapter(pubClient, subClient);
-    server.adapter(redisAdapter);
-
-    // Wait for Redis connection asynchronously (don't block afterInit)
-    Promise.all([
-      new Promise(resolve => pubClient.on('ready', resolve)),
-      new Promise(resolve => subClient.on('ready', resolve))
-    ]).then(() => {
-      console.log('WebSocket server initialized with Redis adapter enabled');
-    }).catch(err => {
-      console.error('Redis adapter connection error:', err);
-    });
+    // Redis adapter is configured via custom RedisIoAdapter in main.ts
+    // This ensures proper initialization before Socket.IO server is created
+    console.log('WebSocket server initialized with Redis adapter (configured in main.ts)');
   }
 
   async handleConnection(client: Socket) {
