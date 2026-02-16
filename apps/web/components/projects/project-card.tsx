@@ -44,7 +44,7 @@ export function ProjectCard({ project, teamId }: ProjectCardProps) {
 
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>
-          {project._count.tasks} {project._count.tasks === 1 ? 'task' : 'tasks'}
+          {project._count?.tasks ?? 0} {(project._count?.tasks ?? 0) === 1 ? 'task' : 'tasks'}
         </span>
         <span>
           Created {formatDistanceToNow(new Date(project.createdAt), { addSuffix: true })}

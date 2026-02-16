@@ -290,7 +290,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
                   <p className="text-sm text-gray-500 mb-3 line-clamp-2">{project.description}</p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">{project._count.tasks} tasks</span>
+                  <span className="text-xs text-gray-500">{project._count?.tasks ?? 0} tasks</span>
                   <span
                     className={`text-xs px-2 py-1 rounded ${
                       project.status === 'ACTIVE'

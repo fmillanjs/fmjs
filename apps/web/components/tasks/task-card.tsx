@@ -115,10 +115,10 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
               <span>{formatDistanceToNow(new Date(task.dueDate), { addSuffix: true })}</span>
             </div>
           )}
-          {task._count.comments > 0 && (
+          {(task._count?.comments ?? 0) > 0 && (
             <div className="flex items-center gap-1">
               <MessageSquare className="w-3 h-3" />
-              <span>{task._count.comments}</span>
+              <span>{task._count?.comments}</span>
             </div>
           )}
         </div>
