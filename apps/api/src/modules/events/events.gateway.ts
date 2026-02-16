@@ -32,18 +32,24 @@ export class EventsGateway
     private prisma: PrismaService,
   ) {}
 
-  async afterInit(server: Server) {
+  afterInit(server: Server) {
+    // Create Redis clients for pub/sub
     const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
     const subClient = pubClient.duplicate();
 
-    // CRITICAL: Wait for both clients to connect before setting adapter
-    await Promise.all([
-      new Promise(resolve => pubClient.on('connect', resolve)),
-      new Promise(resolve => subClient.on('connect', resolve))
-    ]);
+    // Set up Redis adapter for horizontal scaling (must be set synchronously)
+    const redisAdapter = createAdapter(pubClient, subClient);
+    server.adapter(redisAdapter);
 
-    server.adapter(createAdapter(pubClient, subClient));
-    console.log('WebSocket server initialized with Redis adapter enabled');
+    // Wait for Redis connection asynchronously (don't block afterInit)
+    Promise.all([
+      new Promise(resolve => pubClient.on('ready', resolve)),
+      new Promise(resolve => subClient.on('ready', resolve))
+    ]).then(() => {
+      console.log('WebSocket server initialized with Redis adapter enabled');
+    }).catch(err => {
+      console.error('Redis adapter connection error:', err);
+    });
   }
 
   async handleConnection(client: Socket) {
@@ -331,7 +337,7 @@ export class EventsGateway
       const activeUsers = Array.from(userMap.values());
 
       // [DEBUG] Log results
-      console.log(`[Presence] Found ${sockets.length} sockets in ${roomName}`);
+      console.log(`[Presence] Found ${socketsInRoom.length} sockets in ${roomName}`);
 
       return {
         activeUsers,
