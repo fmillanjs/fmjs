@@ -12,8 +12,8 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v1.0 COMPLETE (88%) → v1.1 IN PROGRESS
 Phase: 6.1 (User Flow & Architecture Audit) — IN PROGRESS (1/3 plans complete)
-Status: Runtime API response validation implemented with Zod schemas
-Last activity: 2026-02-16 — Completed 06.1-02 Runtime API Response Validation
+Status: User journey E2E tests created - complete flow, auth boundaries, navigation state
+Last activity: 2026-02-16 — Completed 06.1-01 User Journey E2E Tests
 
 Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1: 1/2 (50%) | Phase 6.1: 1/3 (33%)
 
@@ -37,8 +37,8 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | 06.1-user-flow-architecture-audit | 1 | 5 min | 5.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-10 (8m), 05.1-01 (5m), 05.1-02 (6m), 06-01 (3m), 06.1-02 (5m)
-- Trend: Consistent fast execution on focused infrastructure improvements
+- Last 5 plans: 05.1-01 (5m), 05.1-02 (6m), 06-01 (3m), 06.1-02 (5m), 06.1-01 (20m)
+- Trend: E2E test creation takes longer than focused fixes, but comprehensive coverage
 
 *Updated after each plan completion*
 | Phase 04-portfolio-polish P04-03 | 8 | 2 tasks | 7 files |
@@ -52,6 +52,7 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | Phase 05.1 P02 | 6 | 3 tasks | 2 files |
 | Phase 06 P01 | 3 | 3 tasks | 3 files |
 | Phase 06.1 P02 | 5 | 3 tasks | 4 files |
+| Phase 06.1 P01 | 20 | 3 tasks | 4 files |
 | Phase 06.1 P02 | 5 | 3 tasks | 4 files |
 
 ## Accumulated Context
