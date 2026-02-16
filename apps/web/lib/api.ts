@@ -12,7 +12,13 @@
 import { z } from 'zod';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const VALIDATE_RESPONSES = process.env.NODE_ENV !== 'production';
+
+/**
+ * Environment-aware validation mode:
+ * - 'strict' (development): Throws errors on validation failures - catches schema drift early
+ * - 'graceful' (production): Logs errors but returns data - prevents UX breakage
+ */
+const VALIDATION_MODE = process.env.NODE_ENV === 'production' ? 'graceful' : 'strict';
 
 /**
  * Custom error class that includes HTTP response details
@@ -137,15 +143,21 @@ export const validatedApi = {
     const result = schema.safeParse(data);
 
     if (!result.success) {
-      console.error('API response validation failed:', {
+      // Structured error logging for debugging schema drift
+      console.error('API validation failed:', {
         path,
+        mode: VALIDATION_MODE,
         errors: result.error.format(),
         received: data,
       });
 
-      if (VALIDATE_RESPONSES) {
+      // Strict mode (development): throw error to surface issues immediately
+      if (VALIDATION_MODE === 'strict') {
         throw new Error(`API response does not match expected schema for ${path}: ${result.error.message}`);
       }
+
+      // Graceful mode (production): log and continue with unvalidated data
+      // This prevents user-facing errors while still capturing schema drift in logs
     }
 
     return result.success ? result.data : data;
@@ -170,15 +182,21 @@ export const validatedApi = {
     const result = schema.safeParse(data);
 
     if (!result.success) {
-      console.error('API response validation failed:', {
+      // Structured error logging for debugging schema drift
+      console.error('API validation failed:', {
         path,
+        mode: VALIDATION_MODE,
         errors: result.error.format(),
         received: data,
       });
 
-      if (VALIDATE_RESPONSES) {
+      // Strict mode (development): throw error to surface issues immediately
+      if (VALIDATION_MODE === 'strict') {
         throw new Error(`API response does not match expected schema for ${path}: ${result.error.message}`);
       }
+
+      // Graceful mode (production): log and continue with unvalidated data
+      // This prevents user-facing errors while still capturing schema drift in logs
     }
 
     return result.success ? result.data : data;
@@ -203,15 +221,21 @@ export const validatedApi = {
     const result = schema.safeParse(data);
 
     if (!result.success) {
-      console.error('API response validation failed:', {
+      // Structured error logging for debugging schema drift
+      console.error('API validation failed:', {
         path,
+        mode: VALIDATION_MODE,
         errors: result.error.format(),
         received: data,
       });
 
-      if (VALIDATE_RESPONSES) {
+      // Strict mode (development): throw error to surface issues immediately
+      if (VALIDATION_MODE === 'strict') {
         throw new Error(`API response does not match expected schema for ${path}: ${result.error.message}`);
       }
+
+      // Graceful mode (production): log and continue with unvalidated data
+      // This prevents user-facing errors while still capturing schema drift in logs
     }
 
     return result.success ? result.data : data;
@@ -240,15 +264,21 @@ export const validatedApi = {
     const result = schema.safeParse(data);
 
     if (!result.success) {
-      console.error('API response validation failed:', {
+      // Structured error logging for debugging schema drift
+      console.error('API validation failed:', {
         path,
+        mode: VALIDATION_MODE,
         errors: result.error.format(),
         received: data,
       });
 
-      if (VALIDATE_RESPONSES) {
+      // Strict mode (development): throw error to surface issues immediately
+      if (VALIDATION_MODE === 'strict') {
         throw new Error(`API response does not match expected schema for ${path}: ${result.error.message}`);
       }
+
+      // Graceful mode (production): log and continue with unvalidated data
+      // This prevents user-facing errors while still capturing schema drift in logs
     }
 
     return result.success ? result.data : data;
