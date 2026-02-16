@@ -57,7 +57,7 @@ export function Sidebar({ teams }: SidebarProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-border">
-            <Link href="/" className="text-xl font-bold text-foreground">
+            <Link href="/teams" className="text-xl font-bold text-foreground">
               TeamFlow
             </Link>
           </div>
@@ -67,12 +67,12 @@ export function Sidebar({ teams }: SidebarProps) {
             <div className="px-3 space-y-1">
               {/* Dashboard */}
               <Link
-                href="/"
+                href="/teams"
                 onClick={() => setIsMobileOpen(false)}
                 className={`
                   flex items-center px-3 py-2 text-sm font-medium rounded-md
                   ${
-                    pathname === '/'
+                    pathname === '/teams'
                       ? 'bg-primary/10 text-primary dark:bg-primary/20'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }
