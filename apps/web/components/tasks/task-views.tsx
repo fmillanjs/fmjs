@@ -14,11 +14,12 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Plus, CheckSquare } from 'lucide-react';
 import { useRealTimeTasks } from '@/hooks/use-real-time-tasks';
 
+// Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskViewsProps {
   initialTasks: TaskWithRelations[];
   projectId: string;
   orgSlug: string;
-  teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
+  teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
 }
 

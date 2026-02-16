@@ -9,11 +9,12 @@ import { LabelBase, TaskWithRelations } from '@repo/shared/types';
 import { api } from '@/lib/api';
 import { X } from 'lucide-react';
 
+// Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskFormProps {
   mode: 'create' | 'edit';
   task?: TaskWithRelations;
   projectId: string;
-  teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
+  teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
   onClose: () => void;
   onSuccess: () => void;
@@ -228,7 +229,7 @@ export function TaskForm({
                 <option value="">Unassigned</option>
                 {teamMembers.map((member) => (
                   <option key={member.id} value={member.id}>
-                    {member.name || 'Unknown User'}
+                    {member.name || member.email}
                   </option>
                 ))}
               </select>

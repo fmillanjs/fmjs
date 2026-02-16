@@ -7,8 +7,9 @@ import { LabelBase } from '@repo/shared/types';
 import { ChevronDown, X } from 'lucide-react';
 import { useState } from 'react';
 
+// Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskFiltersProps {
-  teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
+  teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
 }
 

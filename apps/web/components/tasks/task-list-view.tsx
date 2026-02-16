@@ -15,10 +15,11 @@ import { formatDistanceToNow } from 'date-fns';
 import { Calendar, MessageSquare, ChevronUp, ChevronDown } from 'lucide-react';
 import { TaskForm } from './task-form';
 
+// Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskListViewProps {
   tasks: TaskWithRelations[];
   projectId: string;
-  teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
+  teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
   onRefresh: () => void;
 }

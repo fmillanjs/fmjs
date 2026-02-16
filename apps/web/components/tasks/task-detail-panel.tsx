@@ -15,9 +15,10 @@ import { useRealTimeComments } from '@/hooks/use-real-time-comments';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { ConflictWarning } from '../ui/conflict-warning';
 
+// Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskDetailPanelProps {
   task: TaskDetail;
-  teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
+  teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
   teamId: string;
   projectId: string;
@@ -348,7 +349,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
               <option value="">Unassigned</option>
               {teamMembers.map((member) => (
                 <option key={member.id} value={member.id}>
-                  {member.name || member.id}
+                  {member.name || member.email}
                 </option>
               ))}
             </select>

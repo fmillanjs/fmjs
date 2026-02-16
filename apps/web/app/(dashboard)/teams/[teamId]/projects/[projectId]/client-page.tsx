@@ -138,9 +138,11 @@ export function ClientProjectPage({
     );
   }
 
+  // Phase 07.1-03 Fix: Include email for fallback display when name is null
   const teamMembers = members.map((m) => ({
     id: m.user?.id || m.userId,
     name: m.user?.name || null,
+    email: m.user?.email || '',
     image: m.user?.image || null,
   }));
 
