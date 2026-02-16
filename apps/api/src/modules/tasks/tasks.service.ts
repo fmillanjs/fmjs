@@ -350,11 +350,6 @@ export class TasksService {
       throw new ForbiddenException('Forbidden: You do not have permission to update tasks');
     }
 
-    // Version conflict check
-    if (dto.version !== undefined && dto.version !== task.version) {
-      throw new ConflictException('Task was modified by another user. Please refresh to see the latest version.');
-    }
-
     // Capture previous state for audit diff
     const previous = {
       title: task.title,
@@ -395,35 +390,116 @@ export class TasksService {
       }
     }
 
-    // Update task
-    const updatedTask = await this.prisma.task.update({
-      where: { id: taskId },
-      data: {
-        title: dto.title,
-        description: dto.description,
-        status: dto.status,
-        priority: dto.priority,
-        dueDate: dto.dueDate,
-        assigneeId: dto.assigneeId,
-        version: { increment: 1 },
-        labels: dto.labelIds
-          ? {
+    // Optimistic concurrency control with version field
+    let updatedTask;
+    if (dto.version !== undefined) {
+      // Client provided version - use atomic updateMany for conflict detection
+      const result = await this.prisma.task.updateMany({
+        where: {
+          id: taskId,
+          version: dto.version, // Only update if version matches
+        },
+        data: {
+          title: dto.title,
+          description: dto.description,
+          status: dto.status,
+          priority: dto.priority,
+          dueDate: dto.dueDate,
+          assigneeId: dto.assigneeId,
+          version: { increment: 1 }, // Atomic increment
+        },
+      });
+
+      // Conflict detection - updateMany returns count of affected rows
+      if (result.count === 0) {
+        // Version mismatch = concurrent edit detected
+        const currentTask = await this.prisma.task.findUnique({
+          where: { id: taskId },
+          select: { version: true },
+        });
+
+        throw new ConflictException({
+          message: 'Task was modified by another user',
+          code: 'CONCURRENT_MODIFICATION',
+          expectedVersion: dto.version,
+          currentVersion: currentTask?.version,
+        });
+      }
+
+      // Fetch updated task with relations (updateMany doesn't return data)
+      const fetchedTask = await this.prisma.task.findUnique({
+        where: { id: taskId },
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          labels: true,
+        },
+      });
+
+      if (!fetchedTask) {
+        throw new NotFoundException('Task not found after update');
+      }
+
+      // Update labels separately (updateMany doesn't support relation operations)
+      if (dto.labelIds) {
+        updatedTask = await this.prisma.task.update({
+          where: { id: taskId },
+          data: {
+            labels: {
               set: [], // Disconnect all
               connect: dto.labelIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
-      include: {
-        assignee: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
+            },
           },
+          include: {
+            assignee: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+            labels: true,
+          },
+        });
+      } else {
+        updatedTask = fetchedTask;
+      }
+    } else {
+      // No version provided - fall back to regular update without conflict detection
+      updatedTask = await this.prisma.task.update({
+        where: { id: taskId },
+        data: {
+          title: dto.title,
+          description: dto.description,
+          status: dto.status,
+          priority: dto.priority,
+          dueDate: dto.dueDate,
+          assigneeId: dto.assigneeId,
+          version: { increment: 1 },
+          labels: dto.labelIds
+            ? {
+                set: [], // Disconnect all
+                connect: dto.labelIds.map((id) => ({ id })),
+              }
+            : undefined,
         },
-        labels: true,
-      },
-    });
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          labels: true,
+        },
+      });
+    }
 
     // Emit task.updated event
     const taskEvent: TaskEvent = {
@@ -468,30 +544,79 @@ export class TasksService {
       throw new ForbiddenException('Forbidden: You do not have permission to update tasks');
     }
 
-    // Version conflict check
-    if (dto.version !== undefined && dto.version !== task.version) {
-      throw new ConflictException('Task was modified by another user. Please refresh to see the latest version.');
-    }
-
     const previousStatus = task.status;
 
-    const updatedTask = await this.prisma.task.update({
-      where: { id: taskId },
-      data: {
-        status: dto.status,
-        version: { increment: 1 },
-      },
-      include: {
-        assignee: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
+    // Optimistic concurrency control with version field
+    let updatedTask;
+    if (dto.version !== undefined) {
+      // Client provided version - use atomic updateMany for conflict detection
+      const result = await this.prisma.task.updateMany({
+        where: {
+          id: taskId,
+          version: dto.version, // Only update if version matches
         },
-        labels: true,
-      },
-    });
+        data: {
+          status: dto.status,
+          version: { increment: 1 }, // Atomic increment
+        },
+      });
+
+      // Conflict detection - updateMany returns count of affected rows
+      if (result.count === 0) {
+        // Version mismatch = concurrent edit detected
+        const currentTask = await this.prisma.task.findUnique({
+          where: { id: taskId },
+          select: { version: true },
+        });
+
+        throw new ConflictException({
+          message: 'Task was modified by another user',
+          code: 'CONCURRENT_MODIFICATION',
+          expectedVersion: dto.version,
+          currentVersion: currentTask?.version,
+        });
+      }
+
+      // Fetch updated task with relations (updateMany doesn't return data)
+      const fetchedTask = await this.prisma.task.findUnique({
+        where: { id: taskId },
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          labels: true,
+        },
+      });
+
+      if (!fetchedTask) {
+        throw new NotFoundException('Task not found after update');
+      }
+
+      updatedTask = fetchedTask;
+    } else {
+      // No version provided - fall back to regular update without conflict detection
+      updatedTask = await this.prisma.task.update({
+        where: { id: taskId },
+        data: {
+          status: dto.status,
+          version: { increment: 1 },
+        },
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          labels: true,
+        },
+      });
+    }
 
     // Emit task.status_changed event
     const taskEvent: TaskEvent = {
