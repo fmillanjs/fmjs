@@ -11,13 +11,16 @@ setup('authenticate', async ({ page }) => {
   await page.getByLabel('Password').fill('Password123')
 
   // Submit form
-  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByRole('button', { name: 'Log In' }).click()
 
-  // Wait for redirect to dashboard
-  await page.waitForURL(/\/teams/)
+  // Wait for redirect to home page (login form redirects to /)
+  await page.waitForURL('/')
 
-  // Verify we're logged in by checking for dashboard content
-  await expect(page.getByText(/Dashboard|Projects|Tasks/i)).toBeVisible()
+  // Navigate to dashboard to verify authentication worked
+  await page.goto('/teams')
+
+  // Verify we're logged in by checking for teams page content
+  await expect(page.getByRole('heading', { name: /teams/i, level: 1 })).toBeVisible()
 
   // Save signed-in state to reuse in tests
   await page.context().storageState({ path: authFile })
