@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v1.1 - Phase 5.1 - Authentication Investigation (planning)
+**Current focus:** v1.1 - Phase 6 - Authentication Fixes (in progress)
 
 ## Current Position
 
 Milestone: v1.0 COMPLETE (88%) → v1.1 IN PROGRESS
-Phase: 5.1 (Authentication Investigation) — COMPLETE (2/2 plans complete)
-Status: Investigation complete - JWT_SECRET mismatch + SSR audit confirms no code issues
-Last activity: 2026-02-15 — Completed 05.1-02 SSR audit with diagnostic logging
+Phase: 6 (Authentication Fixes) — IN PROGRESS (1/2 plans complete)
+Status: JWT_SECRET configuration fixed, ready for WebSocket integration testing
+Last activity: 2026-02-16 — Completed 06-01 JWT_SECRET consistency fix
 
-Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1: 0% (planning)
+Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1: 1/2 (50%)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
-- Average duration: 6.4 min/plan
-- Total execution time: 3.5 hours
+- Total plans completed: 34
+- Average duration: 6.3 min/plan
+- Total execution time: 3.6 hours
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | 03-real-time-collaboration | 3 | 18 min | 6.0 min |
 | 04-portfolio-polish | 10 | 77 min | 7.7 min |
 | 05.1-authentication-investigation | 2 | 11 min | 5.5 min |
+| 06-authentication-fixes | 1 | 3 min | 3.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-06 (4m), 04-09 (3m), 04-10 (8m), 05.1-01 (5m), 05.1-02 (6m)
-- Trend: Consistent execution, Phase 5.1 investigation complete averaging 5.5 min/plan
+- Last 5 plans: 04-09 (3m), 04-10 (8m), 05.1-01 (5m), 05.1-02 (6m), 06-01 (3m)
+- Trend: Fast execution on focused authentication fixes
 
 *Updated after each plan completion*
 | Phase 04-portfolio-polish P04-03 | 8 | 2 tasks | 7 files |
@@ -48,6 +49,7 @@ Progress: [████████░░] v1.0: 88% (59/67 requirements) | v1.1
 | Phase 04-portfolio-polish P04-10 | 8 | 3 tasks | 6 files |
 | Phase 05.1 P01 | 5 | 3 tasks | 5 files |
 | Phase 05.1 P02 | 6 | 3 tasks | 2 files |
+| Phase 06 P01 | 3 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -164,6 +166,9 @@ Recent decisions affecting current work:
 - [Phase 05.1-02]: SSR diagnostic logging in session callback (typeof window detection) for server vs client visibility
 - [Phase 05.1-02]: Static code audit confirms 100% Next.js 15 async compliance (11/11 auth() calls properly awaited)
 - [Phase 05.1-02]: Three-tier auth patterns identified: layout-level protection (primary), defensive double-check, server action error return
+- [Phase 06-01]: 512-bit JWT_SECRET for cryptographic strength exceeding 256-bit minimum
+- [Phase 06-01]: Fail-fast validation instead of fallback secrets for immediate error surfacing
+- [Phase 06-01]: SHA256 fingerprint logging for secret verification without exposure
 
 ### Roadmap Evolution
 
@@ -175,19 +180,24 @@ None yet.
 
 ### Blockers/Concerns
 
-**Phase 3 Verification - Investigation Complete** (updated 2026-02-15):
+**Phase 3 Verification - JWT_SECRET Fix Complete** (updated 2026-02-16):
 - All Phase 3 code complete and committed (conflict detection, real-time updates, presence, comments)
 - Investigation findings (Phase 5.1):
   1. ✅ SSR session code is CORRECT - static audit confirms 100% Next.js 15 compliance, no code issues
   2. ✅ WebSocket auth failure ROOT CAUSE IDENTIFIED - JWT_SECRET mismatch between frontend and backend
-- **Resolution Path**: Phase 5.2 will fix JWT_SECRET consistency, then verify all Phase 3 features work
+- **Fix Applied (Phase 06-01)**: JWT_SECRET consistency established
+  - Rotated to 512-bit cryptographic secret
+  - Added to apps/web/.env.local for NextAuth
+  - Implemented fail-fast validation
+  - Verified fingerprints match across frontend and backend
+- **Next Step (Phase 06-02)**: WebSocket integration testing to confirm Phase 3 features operational
 - Phase 3 implementation quality confirmed solid through code audit
 
 ## Session Continuity
 
-Last session: 2026-02-15T22:59:09Z (Phase 5.1-02 execution)
-Stopped at: Completed 05.1-02-PLAN.md (SSR session audit - Phase 5.1 investigation complete)
-Resume file: None (phase complete, ready for Phase 5.2 implementation)
+Last session: 2026-02-16T00:17:15Z (Phase 06-01 execution)
+Stopped at: Completed 06-01-PLAN.md (JWT_SECRET configuration fix)
+Resume file: None (ready for 06-02 WebSocket integration testing)
 
 ---
 *v1.0 complete (88%). Starting v1.1 to activate real-time features.*
