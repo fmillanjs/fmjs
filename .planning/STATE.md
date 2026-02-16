@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Milestone: v1.0 INCOMPLETE (76%) — Phase 3 verification gaps found
-Phase: 7 (Phase 3 Verification) — COMPLETE (1/1 plans complete)
-Status: Phase 3 real-time features verified - CRITICAL session isolation blocker identified
-Last activity: 2026-02-16 — Completed 07-01 Phase 3 Verification
+Milestone: v1.0 INCOMPLETE (79%) — Phase 3 gap closure in progress
+Phase: 07.1 (Phase 3 Gap Closure - Real-Time Collaboration Fixes) — IN PROGRESS (2/3 plans complete)
+Status: Wave 2 complete - Conflict detection logic fixed and verified
+Last activity: 2026-02-16 — Completed 07.1-02 Conflict Detection Logic Fixes
 
-Progress: [███████░░░] v1.0: 76% (53/67 requirements) | v1.0-gaps: 3 plans needed | Phase 7: 1/1 (100%)
+Progress: [████████░░] v1.0: 79% (55/67 requirements) | Phase 07.1: 2/3 (67%)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 40
-- Average duration: 9.6 min/plan
-- Total execution time: 6.6 hours
+- Total plans completed: 42
+- Average duration: 9.7 min/plan
+- Total execution time: 6.8 hours
 
 **By Phase:**
 
@@ -36,10 +36,11 @@ Progress: [███████░░░] v1.0: 76% (53/67 requirements) | v1.0
 | 06-authentication-fixes | 1 | 3 min | 3.0 min |
 | 06.1-user-flow-architecture-audit | 6 | 158 min | 26.3 min |
 | 07-phase-3-verification | 1 | 36 min | 36.0 min |
+| 07.1-phase-3-gap-closure-real-time-collaboration-fixes | 2 | 50 min | 25.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 06.1-03 (90m), 06.1-06 (3m), 06.1-04 (5m), 06.1-05 (35m), 07-01 (36m)
-- Trend: Manual verification checkpoints take 20-90m, gap closure plans 35-40m
+- Last 5 plans: 06.1-06 (3m), 06.1-04 (5m), 06.1-05 (35m), 07-01 (36m), 07.1-01 (25m), 07.1-02 (25m)
+- Trend: Gap closure plans with checkpoints: 25-40m, verification plans: 36m
 
 *Updated after each plan completion*
 | Phase 04-portfolio-polish P04-03 | 8 | 2 tasks | 7 files |
@@ -60,6 +61,8 @@ Progress: [███████░░░] v1.0: 76% (53/67 requirements) | v1.0
 | Phase 06.1 P06 | 3 | 3 tasks | 4 files |
 | Phase 06.1 P05 | 35 | 2 tasks | 4 files |
 | Phase 07 P01 | 36 | 2 tasks | 1 file |
+| Phase 07.1 P01 | 25 | 3 tasks | 4 files |
+| Phase 07.1 P02 | 25 | 4 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -192,6 +195,12 @@ Recent decisions affecting current work:
 - [Phase 07-01]: Truthful gap reporting documents actual state vs aspirational claims
 - [Phase 07-01]: Verification status field (passed/failed/gaps_found) reflects real test outcomes
 - [Phase 07-01]: Root cause hypothesis documented for each failure to guide gap closure planning
+- [Phase 07.1-01]: Redis adapter with pub/sub for WebSocket horizontal scaling across server instances
+- [Phase 07.1-01]: Project-level room isolation with membership verification prevents cross-tenant data leaks
+- [Phase 07.1-01]: Dual listener pattern: EventEmitter2 events caught by both audit and WebSocket listeners
+- [Phase 07.1-02]: Selective version-based OCC: text edits use conflict detection, dropdowns use last-write-wins
+- [Phase 07.1-02]: Self-update filtering before version comparison prevents false conflict warnings
+- [Phase 07.1-02]: Amber conflict warning UI with WCAG-compliant contrast and user-driven resolution
 
 ### Roadmap Evolution
 
@@ -205,31 +214,31 @@ None - All Phase 6.1 issues resolved.
 
 ### Blockers/Concerns
 
-**Phase 3 Verification - GAPS FOUND (CRITICAL)** (updated 2026-02-16):
-- ✅ Phase 7 Plan 1 COMPLETE: Comprehensive manual testing across 10 scenarios
-- ❌ **CRITICAL BLOCKER IDENTIFIED**: Session isolation prevents multi-user real-time collaboration
-  - Test Results: 3/10 PASS, 5/10 FAIL, 2/10 UNCERTAIN
-  - WebSocket auth works (Test 1 PASS)
-  - Drag-drop works in same session (Test 3 PASS)
-  - Redis infrastructure operational (Test 10 PASS)
-  - **Task creation sync FAILS across sessions** (Test 2) - incognito Tab B never receives events
-  - **Comments sync FAILS** (Test 5)
-  - **Presence indicators FAIL** (Test 6)
-  - **Conflict detection FAILS** (Test 7)
-  - False conflict warnings for same user (Test 4)
-- **Root Cause**: Incognito Tab B not receiving WebSocket events - likely room join or event broadcasting issue
-- **Impact on v1.0**: Requirement count drops from 88% (59/67) to 76% (53/67) - Phase 3 now 2/8 satisfied instead of 8/8
-- **Additional Issues Found**: White-on-white text (accessibility), "unknown user" during task creation
-- **Next Steps**: Create 3 gap closure plans:
-  1. Priority 1 (CRITICAL): Session isolation fix - investigate WebSocket room join and event broadcasting
-  2. Priority 2 (HIGH): Conflict detection fix - resolve false positives and false negatives
-  3. Priority 3 (HIGH): UI/UX fixes - color contrast, unknown user display
+**Phase 3 Gap Closure - IN PROGRESS** (updated 2026-02-16):
+- ✅ **Wave 1 COMPLETE (Plan 07.1-01)**: Redis adapter working, WebSocket events broadcast across sessions
+  - Test Results: Session isolation FIXED, multi-user real-time collaboration working
+  - Redis pub/sub adapter enables horizontal scaling
+  - Project-level room isolation with membership verification
+- ✅ **Wave 2 COMPLETE (Plan 07.1-02)**: Conflict detection logic fixed and verified
+  - Test Results: 3/3 PASS (Tests 4, 7, 8 all passing)
+  - Self-update filtering eliminates false conflict warnings (Test 4 PASS)
+  - Version-based OCC detects legitimate conflicts (Test 7 PASS)
+  - Optimistic rollback working (Test 8 PASS)
+  - Selective version checking: text edits use OCC, dropdowns use last-write-wins
+- 🔄 **Wave 3 PENDING (Plan 07.1-03)**: UI/UX Fixes
+  - White-on-white text (accessibility issue)
+  - "Unknown user" display during task creation
+  - Visual polish for conflict detection UI
+- **Impact on v1.0**: Requirement count improved from 76% (53/67) to 79% (55/67)
+  - REAL-06 (Conflict detection): 0/8 → 3/8 satisfied
+  - REAL-05 (Optimistic UI): Partial → Complete
+  - REAL-02 (Live updates): Improved
 
 ## Session Continuity
 
-Last session: 2026-02-16T08:48:35Z (Phase 07-01 execution)
-Stopped at: Completed 07-01-PLAN.md (Phase 3 Verification - GAPS FOUND, 3 gap closure plans needed)
-Resume file: None (Phase 7 complete - 1/1 plans complete, awaiting gap closure planning)
+Last session: 2026-02-16T22:25:09Z (Phase 07.1-02 execution)
+Stopped at: Completed 07.1-02-PLAN.md (Wave 2: Conflict Detection Logic Fixes - ALL TESTS PASSED)
+Resume file: .planning/phases/07.1-phase-3-gap-closure-real-time-collaboration-fixes/07.1-03-PLAN.md (Wave 3: UI/UX Fixes)
 
 ---
 *v1.0 complete (88%). Starting v1.1 to activate real-time features.*
