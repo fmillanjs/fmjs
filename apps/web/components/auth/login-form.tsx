@@ -38,8 +38,8 @@ export function LoginForm() {
         return;
       }
 
-      // Redirect to dashboard
-      router.push('/');
+      // Redirect to dashboard (teams page)
+      router.push('/teams');
       router.refresh();
     } catch (error) {
       setServerError('An unexpected error occurred. Please try again.');
