@@ -46,29 +46,41 @@ export function useRealTimeTasks(
 
     // Handle task updated
     const handleTaskUpdated = (payload: TaskEventPayload) => {
-      // [DEBUG] Log event receipt
-      console.log('[Real-time Tasks] Received task:updated:', payload.task.id, 'self-update:', payload.userId === currentUserId);
+      // CRITICAL: Filter self-updates FIRST, before any conflict detection
+      if (payload.userId === currentUserId) {
+        console.log('[Real-time] Ignoring self-update for task', payload.task.id);
+        return; // User already has optimistic update
+      }
 
-      // Prevent infinite loops - ignore events from current user
-      if (payload.userId === currentUserId) return;
+      // [DEBUG] Log event receipt from other user
+      console.log('[Real-time Tasks] Received task:updated:', payload.task.id, 'from user:', payload.userId);
 
-      setTasks(tasks.map((t) => (t.id === payload.task.id ? payload.task : t)));
+      // Update from OTHER user - apply to local state
+      setTasks((current) => current.map((t) => (t.id === payload.task.id ? payload.task : t)));
     };
 
     // Handle task status changed
     const handleTaskStatusChanged = (payload: TaskEventPayload) => {
-      // Prevent infinite loops - ignore events from current user
-      if (payload.userId === currentUserId) return;
+      // CRITICAL: Filter self-updates FIRST, before any conflict detection
+      if (payload.userId === currentUserId) {
+        console.log('[Real-time] Ignoring self-update for task status change', payload.task.id);
+        return; // User already has optimistic update
+      }
 
-      setTasks(tasks.map((t) => (t.id === payload.task.id ? payload.task : t)));
+      // Update from OTHER user - apply to local state
+      setTasks((current) => current.map((t) => (t.id === payload.task.id ? payload.task : t)));
     };
 
     // Handle task deleted
     const handleTaskDeleted = (payload: TaskDeletedPayload) => {
-      // Prevent infinite loops - ignore events from current user
-      if (payload.userId === currentUserId) return;
+      // CRITICAL: Filter self-updates FIRST
+      if (payload.userId === currentUserId) {
+        console.log('[Real-time] Ignoring self-update for task deletion', payload.taskId);
+        return; // User already has optimistic update
+      }
 
-      setTasks(tasks.filter((t) => t.id !== payload.taskId));
+      // Delete from OTHER user - apply to local state
+      setTasks((current) => current.filter((t) => t.id !== payload.taskId));
     };
 
     // Handle reconnection - refetch all tasks to reconcile missed events
