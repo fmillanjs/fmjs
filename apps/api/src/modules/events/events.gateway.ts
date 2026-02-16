@@ -33,13 +33,17 @@ export class EventsGateway
   ) {}
 
   async afterInit(server: Server) {
-    // TODO: Redis adapter - temporarily disabled due to Socket.IO v4 API changes
-    // Will fix in next iteration - works fine without Redis for single instance
-    // const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
-    // const subClient = pubClient.duplicate();
-    // server.adapter(createAdapter(pubClient, subClient));
+    const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
+    const subClient = pubClient.duplicate();
 
-    console.log('WebSocket server initialized (Redis adapter temporarily disabled)');
+    // CRITICAL: Wait for both clients to connect before setting adapter
+    await Promise.all([
+      new Promise(resolve => pubClient.on('connect', resolve)),
+      new Promise(resolve => subClient.on('connect', resolve))
+    ]);
+
+    server.adapter(createAdapter(pubClient, subClient));
+    console.log('WebSocket server initialized with Redis adapter enabled');
   }
 
   async handleConnection(client: Socket) {
