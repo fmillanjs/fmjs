@@ -101,10 +101,11 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
         throw new Error('Not authenticated');
       }
 
-      // Update task status via API with version
+      // Update task status via API without version (rapid drag-drop doesn't need OCC)
+      // Version checking disabled for status updates to prevent false conflicts
+      // during rapid sequential drags by same user
       await api.patch(`/api/tasks/${taskId}/status`, {
-        status: targetStatus,
-        version: task.version
+        status: targetStatus
       }, token);
 
       // Update actual state after successful API call
@@ -149,7 +150,7 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
       }
 
       const updatedTasks = await api.get<TaskWithRelations[]>(
-        `/organizations/${orgSlug}/projects/${projectId}/tasks`,
+        `/api/projects/${projectId}/tasks`,
         token
       );
       setTasks(updatedTasks);
