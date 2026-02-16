@@ -49,7 +49,7 @@ export default function TeamFlowCaseStudy() {
 
         <div className="flex gap-4">
           <a
-            href="/dashboard"
+            href="/teams"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -527,7 +527,7 @@ export default function TeamFlowCaseStudy() {
             50+ tasks.
           </p>
           <a
-            href="/dashboard"
+            href="/teams"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
