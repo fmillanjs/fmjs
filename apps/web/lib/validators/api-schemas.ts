@@ -62,6 +62,18 @@ export const OrganizationSchema = z.object({
 
 export type Organization = z.infer<typeof OrganizationSchema>;
 
+/**
+ * Organization with member count (used in teams list)
+ * Extends base OrganizationSchema with _count relation
+ */
+export const OrganizationWithCountSchema = OrganizationSchema.extend({
+  _count: z.object({
+    members: z.number().int(),
+  }).optional(),
+});
+
+export type OrganizationWithCount = z.infer<typeof OrganizationWithCountSchema>;
+
 // ============================================================================
 // Membership Schema
 // ============================================================================

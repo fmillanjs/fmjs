@@ -1,25 +1,35 @@
 import { serverApi } from '@/lib/api';
+import { validatedApi } from '@/lib/api';
+import { OrganizationWithCountSchema } from '@/lib/validators/api-schemas';
+import { z } from 'zod';
 import Link from 'next/link';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Users } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-interface Team {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  _count?: {
-    members: number;
-  };
-}
+// Type inferred from validated schema
+type Team = z.infer<typeof OrganizationWithCountSchema>;
 
 export default async function TeamsPage() {
   let teams: Team[] = [];
 
   try {
-    teams = await serverApi.get<Team[]>('/api/teams');
+    // Get auth token for validated API call
+    const { auth } = await import('@/lib/auth');
+    const session = await auth();
+    const token = (session as any)?.accessToken;
+
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+
+    // Use validatedApi with runtime schema validation
+    teams = await validatedApi.get(
+      '/api/teams',
+      z.array(OrganizationWithCountSchema),
+      token
+    );
   } catch (error) {
     console.error('Failed to fetch teams:', error);
   }
@@ -120,7 +130,7 @@ export default async function TeamsPage() {
                   >
                     <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  Created {new Date(team.createdAt).toLocaleDateString()}
+                  Created {team.createdAt.toLocaleDateString()}
                 </div>
               </div>
             </Link>
