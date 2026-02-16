@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import { authConfig } from './auth.config';
 import { redis } from './redis';
-import { randomUUID } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 
 // Extend NextAuth types
 declare module 'next-auth' {
@@ -201,7 +201,29 @@ const nextAuthResult = NextAuth({
           session.user.role = user.role;
 
           // Generate JWT token for API authentication
-          const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
+          // Fail-fast validation: JWT_SECRET is REQUIRED for WebSocket authentication
+          const jwtSecret = process.env.JWT_SECRET;
+
+          if (!jwtSecret) {
+            throw new Error(
+              'JWT_SECRET environment variable is required for WebSocket authentication. ' +
+              'Add JWT_SECRET to apps/web/.env.local with the same value as the root .env file.'
+            );
+          }
+
+          if (jwtSecret.length < 32) {
+            throw new Error(
+              `JWT_SECRET must be at least 32 characters (256 bits). Current length: ${jwtSecret.length}. ` +
+              `Generate a secure secret with: node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"`
+            );
+          }
+
+          // Log secret fingerprint for verification (NOT the full secret)
+          const secretHash = createHash('sha256').update(jwtSecret).digest('hex');
+          console.log('[NextAuth Session] JWT Secret validated:', {
+            length: jwtSecret.length,
+            fingerprint: secretHash.substring(0, 16), // First 16 chars of SHA256 hash
+          });
 
           const accessToken = jwt.sign(
             {
