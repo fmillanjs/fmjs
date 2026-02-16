@@ -16,7 +16,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Core Work Management** - Build teams, projects, tasks, and views with proper data modeling (completed 2026-02-14)
 - [x] **Phase 3: Real-Time Collaboration** - Add live updates, presence indicators, and conflict resolution (completed 2026-02-15)
 - [x] **Phase 4: Portfolio & Polish** - Integrate portfolio website, polish UX, testing, and deploy to production (completed 2026-02-15)
-- [ ] **Phase 5.1: Authentication Investigation** - Debug WebSocket and SSR authentication issues blocking real-time features (in progress)
+- [x] **Phase 5.1: Authentication Investigation** - Debug WebSocket and SSR authentication issues blocking real-time features (completed 2026-02-15)
+- [ ] **Phase 6: Authentication Fixes** - Fix JWT_SECRET configuration to unblock Phase 3 real-time features (in planning)
 
 ## Phase Details
 
@@ -146,16 +147,38 @@ Plans:
 4. SSR session access pattern documented for Next.js 15 + NextAuth v5
 5. Clear understanding of what needs to change where
 
+**Plans:** 2 plans (2/2 complete)
+
+Plans:
+- [x] 05.1-01-PLAN.md — WebSocket authentication debugging (comprehensive logging, explicit algorithm config, findings documentation)
+- [x] 05.1-02-PLAN.md — SSR session access verification (audit Server Components, test SSR patterns, document findings)
+
+### Phase 6: Authentication Fixes
+
+**Goal**: Fix JWT_SECRET configuration mismatch to unblock all Phase 3 real-time collaboration features
+
+**Depends on**: Phase 5.1
+
+**Requirements**: REAL-01, REAL-02, REAL-03, REAL-04, REAL-05, REAL-06, REAL-07 (unblock all Phase 3 real-time features)
+
+**Success Criteria** (what must be TRUE):
+1. Frontend and backend load identical JWT_SECRET from environment variables
+2. Application fails fast with clear errors if JWT_SECRET is missing or too short
+3. JWT_SECRET is cryptographically secure (512-bit minimum)
+4. WebSocket authentication succeeds without "Invalid token" errors
+5. All Phase 3 real-time features work: presence indicators, live task updates, real-time comments, conflict detection
+6. E2E test verifies WebSocket authentication flow automatically
+
 **Plans:** 2 plans
 
 Plans:
-- [ ] 05.1-01-PLAN.md — WebSocket authentication debugging (comprehensive logging, explicit algorithm config, findings documentation)
-- [ ] 05.1-02-PLAN.md — SSR session access verification (audit Server Components, test SSR patterns, document findings)
+- [ ] 06-01-PLAN.md — JWT configuration fix (add to .env.local, remove fallback, validation, rotate secret)
+- [ ] 06-02-PLAN.md — End-to-end verification (manual WebSocket test + Phase 3 features validation + E2E test)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 (decimal phases like 2.1 would execute between 2 and 3)
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 → 6 (decimal phases like 2.1 would execute between 2 and 3)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -163,13 +186,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 (decimal phases lik
 | 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
 | 3. Real-Time Collaboration | 4/4 | ✓ Complete | 2026-02-15 |
 | 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
-| 5.1. Authentication Investigation | 0/2 | In Progress | - |
-
-### Phase 6: Authentication Fixes
-
-**Goal:** [To be planned]
-**Depends on:** Phase 5
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 6 to break down)
+| 5.1. Authentication Investigation | 2/2 | ✓ Complete | 2026-02-15 |
+| 6. Authentication Fixes | 0/2 | Planning | - |
