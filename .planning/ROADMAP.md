@@ -247,3 +247,28 @@ Plans:
 
 Plans:
 - [ ] 07-01-PLAN.md — Phase 3 comprehensive verification (VERIFICATION.md creation, manual testing, requirements validation)
+
+### Phase 07.1: Phase 3 Gap Closure - Real-Time Collaboration Fixes (INSERTED)
+
+**Goal:** Fix critical session isolation, conflict detection logic errors, and UI/UX issues preventing multi-user real-time collaboration from functioning correctly
+
+**Depends on:** Phase 7
+
+**Requirements:** REAL-02, REAL-03, REAL-04, REAL-05, REAL-06 (gap closure to bring Phase 3 from 2/8 to 8/8 satisfied)
+
+**Success Criteria** (what must be TRUE):
+  1. Redis adapter enabled with async initialization for cross-session event broadcasting
+  2. User sees live task creation updates when another user creates a task (Test 2 → PASS)
+  3. User sees live comment updates when another user adds a comment (Test 5 → PASS)
+  4. User sees presence indicators showing active viewers on project page (Test 6 → PASS)
+  5. User does NOT see false conflict warnings when moving their own task (Test 4 → PASS)
+  6. User DOES see conflict warning when another user modifies same task concurrently (Test 7 → PASS)
+  7. All text elements meet WCAG AA 4.5:1 minimum contrast ratio (white-on-white fixed)
+  8. Assignee field shows user name during task creation (no "unknown user" placeholder)
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07.1-01-PLAN.md — Redis adapter re-enablement + WebSocket debugging (Priority 1 - CRITICAL)
+- [ ] 07.1-02-PLAN.md — Conflict detection logic fixes (Priority 2 - HIGH)
+- [ ] 07.1-03-PLAN.md — UI/UX fixes: WCAG compliance + "unknown user" fix (Priority 3 - HIGH)
