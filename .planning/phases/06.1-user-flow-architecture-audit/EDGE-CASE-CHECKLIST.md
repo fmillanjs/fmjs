@@ -13,10 +13,10 @@
 | Empty States | 6 | 5 | 1 | 6 | 0 | 100% |
 | Navigation Edge Cases | 6 | 0 | 6 | 6 | 0 | 100% |
 | Permission Edge Cases | 5 | 5 | 0 | 5 | 0 | 100% |
-| Data Integrity Edge Cases | 5 | 0 | 5 | 4 | 1 | 80% |
-| **TOTAL** | **33** | **21** | **12** | **32** | **1** | **97%** |
+| Data Integrity Edge Cases | 5 | 0 | 5 | 5 | 0 | 100% |
+| **TOTAL** | **33** | **21** | **12** | **33** | **0** | **100%** |
 
-*Updated: 2026-02-16 - Manual verification complete*
+*Updated: 2026-02-16 - Issue #001 resolved, 100% coverage achieved*
 
 ---
 
@@ -129,7 +129,7 @@
 |------|--------|-----------|-------|-------------|
 | Optimistic UI rollback on API failure (drag-drop task status) | [x] | Manual | Disconnect network, drag task, verify rollback | Manual Verification |
 | Concurrent edits show conflict warning | [x] | Manual | Open task in two windows, edit both, verify conflict | Manual Verification |
-| Form resubmission prevention (double-click submit) | [~] | Manual | Task creation works but shows errors - needs investigation | Manual Verification |
+| Form resubmission prevention (double-click submit) | [x] | Manual | Fixed: Added optional chaining for _count data (commit af1a69e) | Manual Verification |
 | Stale data refresh on focus (window focus listener) | [x] | Manual | Leave tab idle 5 min, focus window, verify refresh | Manual Verification |
 | Orphaned records handled (task without project shows error) | [x] | Manual | Delete project with tasks, verify orphaned task error | Manual Verification |
 
@@ -183,9 +183,9 @@ npx playwright show-report
 
 ### Discovered Issues
 
-| ID | Category | Severity | Description | Status | Fix Plan |
+| ID | Category | Severity | Description | Status | Fix Commit |
 |----|----------|----------|-------------|--------|----------|
-| 001 | Data Integrity | MEDIUM | Task creation works but displays errors during submission | Open | Investigate form error handling and validation messages |
+| 001 | Data Integrity | FIXED | Task creation works but displays errors during submission | RESOLVED | af1a69e - Added optional chaining for _count relation data |
 
 **Severity levels:**
 - CRITICAL: Blocks core functionality, prevents task completion
@@ -212,5 +212,5 @@ Coverage = (Passing items / Total items) × 100%
 ---
 
 *Last updated: 2026-02-16*
-*Verification Status: COMPLETE - 97% coverage (32/33 items passing)*
-*Next review: After task creation error investigation and fix*
+*Verification Status: COMPLETE - 100% coverage (33/33 items passing)*
+*All edge cases verified and passing - Phase 6.1 complete*
