@@ -25,7 +25,10 @@ export default function HomePage() {
 
           {/* TeamFlow Card */}
           <div className="max-w-4xl mx-auto">
-            <div className="border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow">
+            <Link
+              href="/projects/teamflow"
+              className="block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow"
+            >
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
@@ -69,10 +72,10 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <div className="text-muted-foreground text-sm">
-                Full case study coming soon
+              <div className="text-primary font-medium hover:underline">
+                Read full case study →
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
