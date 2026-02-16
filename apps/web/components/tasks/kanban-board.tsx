@@ -45,6 +45,7 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
   const [prefilledStatus, setPrefilledStatus] = useState<TaskStatus>(TaskStatus.TODO);
   const [showConflict, setShowConflict] = useState(false);
   const [conflictMessage, setConflictMessage] = useState('');
+  const [conflictTaskId, setConflictTaskId] = useState<string>('');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -108,6 +109,7 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
 
       // Check if it's a 409 conflict error
       if (error?.response?.status === 409) {
+        setConflictTaskId(taskId);
         setConflictMessage('This task was modified by another user.');
         setShowConflict(true);
         // Refetch tasks to get latest state
@@ -200,10 +202,11 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
         />
       )}
 
-      {showConflict && (
+      {showConflict && conflictTaskId && (
         <ConflictWarning
+          taskId={conflictTaskId}
           message={conflictMessage}
-          onRefresh={handleFormSuccess}
+          onReload={handleFormSuccess}
           onDismiss={() => setShowConflict(false)}
         />
       )}

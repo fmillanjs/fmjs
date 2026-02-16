@@ -454,8 +454,9 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
       {showConflict && (
         <ConflictWarning
+          taskId={task.id}
           message={conflictMessage}
-          onRefresh={handleRefreshTask}
+          onReload={handleRefreshTask}
           onDismiss={() => setShowConflict(false)}
         />
       )}
