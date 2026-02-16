@@ -66,7 +66,7 @@ export function LoginForm() {
             id="email"
             type="email"
             {...register('email')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             disabled={isLoading}
           />
           {errors.email && (
@@ -82,7 +82,7 @@ export function LoginForm() {
             id="password"
             type="password"
             {...register('password')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             disabled={isLoading}
           />
           {errors.password && (

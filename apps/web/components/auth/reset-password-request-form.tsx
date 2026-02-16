@@ -49,7 +49,7 @@ export function ResetPasswordRequestForm() {
           {...register('email')}
           id="email"
           type="email"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="you@example.com"
         />
         {errors.email && (

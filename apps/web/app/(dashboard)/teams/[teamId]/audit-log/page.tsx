@@ -64,7 +64,7 @@ export default async function AuditLogPage({
     return (
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-500">
+        <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
           <Link href="/teams" className="hover:text-gray-700">
             Teams
           </Link>
@@ -121,7 +121,7 @@ export default async function AuditLogPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-500">
+      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
         <Link href="/teams" className="hover:text-gray-700">
           Teams
         </Link>

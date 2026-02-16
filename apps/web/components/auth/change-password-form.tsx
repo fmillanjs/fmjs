@@ -72,7 +72,7 @@ export function ChangePasswordForm() {
           {...register('currentPassword')}
           id="currentPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter current password"
         />
         {errors.currentPassword && (
@@ -88,7 +88,7 @@ export function ChangePasswordForm() {
           {...register('newPassword')}
           id="newPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter new password"
         />
         {errors.newPassword && (
@@ -104,7 +104,7 @@ export function ChangePasswordForm() {
           {...register('confirmPassword')}
           id="confirmPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Confirm new password"
         />
         {errors.confirmPassword && (

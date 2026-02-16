@@ -53,7 +53,7 @@ export default async function TaskDetailPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-500">
+      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
         <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
           Team
         </Link>

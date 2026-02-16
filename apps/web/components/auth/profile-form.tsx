@@ -67,7 +67,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="email"
           value={user.email}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-500 cursor-not-allowed"
         />
         <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
       </div>
@@ -81,7 +81,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="text"
           value={user.role}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-500 cursor-not-allowed"
         />
         <p className="text-xs text-gray-500 mt-1">Role is managed by administrators</p>
       </div>
@@ -94,7 +94,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           {...register('name')}
           id="name"
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Your name"
         />
         {errors.name && (
@@ -110,7 +110,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           {...register('image')}
           id="image"
           type="url"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://example.com/avatar.jpg"
         />
         {errors.image && (
