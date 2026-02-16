@@ -28,6 +28,9 @@ export function useRealTimeComments(
 
     // Listen for comment:created events
     const handleCommentCreated = (event: CommentEvent) => {
+      // [DEBUG] Log event receipt
+      console.log('[Real-time Comments] Received comment:created:', event.comment?.id, 'from user:', event.userId);
+
       // Only update if it's for this task and from another user
       if (event.taskId === taskId && event.userId !== currentUserId && event.comment) {
         setComments((current) => [...current, event.comment!]);

@@ -31,12 +31,17 @@ export function useProjectPresence(projectId: string) {
 
     // Request current presence on mount
     socket.emit('presence:request', { projectId }, (response: { activeUsers: ActiveUser[]; count: number }) => {
+      // [DEBUG] Log presence update
+      console.log('[Presence] Active users count:', response.count);
       setActiveUsers(response.activeUsers);
       setCount(response.count);
     });
 
     // Listen for presence:join events
     const handlePresenceJoin = (event: PresenceJoinEvent) => {
+      // [DEBUG] Log event receipt
+      console.log('[Presence] User joined:', event.name || event.email);
+
       if (event.projectId === projectId) {
         setActiveUsers((current) => {
           // Avoid duplicates - check if user already in list

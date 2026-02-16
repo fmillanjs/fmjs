@@ -31,6 +31,9 @@ export function useRealTimeTasks(
 
     // Handle task created
     const handleTaskCreated = (payload: TaskEventPayload) => {
+      // [DEBUG] Log event receipt
+      console.log('[Real-time Tasks] Received task:created:', payload.task.id, 'from user:', payload.userId);
+
       // Add task to list (including from current user to update UI immediately)
       // Prevent duplicates by checking if task already exists
       setTasks((current) => {
@@ -43,6 +46,9 @@ export function useRealTimeTasks(
 
     // Handle task updated
     const handleTaskUpdated = (payload: TaskEventPayload) => {
+      // [DEBUG] Log event receipt
+      console.log('[Real-time Tasks] Received task:updated:', payload.task.id, 'self-update:', payload.userId === currentUserId);
+
       // Prevent infinite loops - ignore events from current user
       if (payload.userId === currentUserId) return;
 

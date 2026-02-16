@@ -210,6 +210,14 @@ export class EventsGateway
       const roomName = `project:${projectId}`;
       client.join(roomName);
 
+      // [DEBUG] Log room join confirmation
+      console.log(`[Room] Client ${client.id} (user: ${user.id}) joined ${roomName}`);
+      console.log('[Room] Client rooms:', Array.from(client.rooms));
+
+      // [DEBUG] Verify room membership with socket count
+      const sockets = await this.server.in(roomName).fetchSockets();
+      console.log(`[Room] Total sockets in ${roomName}:`, sockets.length);
+
       // Fetch user name for presence
       const userData = await this.prisma.user.findUnique({
         where: { id: user.id },
@@ -226,7 +234,7 @@ export class EventsGateway
 
       return {
         event: 'joined',
-        data: { projectId, room: roomName },
+        data: { projectId, room: roomName, socketCount: sockets.length },
       };
     } catch (error) {
       console.error('Error joining project room:', error);
@@ -294,6 +302,9 @@ export class EventsGateway
       const { projectId } = payload;
       const roomName = `project:${projectId}`;
 
+      // [DEBUG] Log presence request
+      console.log('[Presence] Request for room:', roomName);
+
       // Get all sockets in the project room
       const socketsInRoom = await this.server.in(roomName).fetchSockets();
 
@@ -318,6 +329,9 @@ export class EventsGateway
       }
 
       const activeUsers = Array.from(userMap.values());
+
+      // [DEBUG] Log results
+      console.log(`[Presence] Found ${sockets.length} sockets in ${roomName}`);
 
       return {
         activeUsers,
