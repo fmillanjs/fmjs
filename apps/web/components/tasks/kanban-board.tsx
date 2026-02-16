@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useOptimistic } from 'react';
+import { useState, useOptimistic, startTransition } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -24,6 +24,7 @@ import { ConflictWarning } from '../ui/conflict-warning';
 interface KanbanBoardProps {
   initialTasks: TaskWithRelations[];
   projectId: string;
+  orgSlug: string;
   teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
   labels: LabelBase[];
 }
@@ -35,7 +36,7 @@ const STATUS_COLUMNS = [
   { id: TaskStatus.BLOCKED, title: 'Blocked' },
 ] as const;
 
-export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: KanbanBoardProps) {
+export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, labels }: KanbanBoardProps) {
   const [tasks, setTasks] = useState(initialTasks);
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(tasks);
   const [activeTask, setActiveTask] = useState<TaskWithRelations | null>(null);
@@ -76,16 +77,20 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
-    // Determine target status from the column
-    const targetStatus = over.data.current?.status || over.id;
+    // Determine target status from the column or task
+    // When dropping on a column: over.data.current.status contains the status
+    // When dropping on a task: over.data.current.task.status contains the status
+    const targetStatus = over.data.current?.status || over.data.current?.task?.status;
 
     if (task.status === targetStatus) return;
 
     // Optimistically update the UI
     const updatedTask = { ...task, status: targetStatus as TaskStatus };
-    setOptimisticTasks((current) =>
-      current.map((t) => (t.id === taskId ? updatedTask : t))
-    );
+    startTransition(() => {
+      setOptimisticTasks((current) =>
+        current.map((t) => (t.id === taskId ? updatedTask : t))
+      );
+    });
 
     try {
       // Fetch access token
@@ -144,7 +149,7 @@ export function KanbanBoard({ initialTasks, projectId, teamMembers, labels }: Ka
       }
 
       const updatedTasks = await api.get<TaskWithRelations[]>(
-        `/projects/${projectId}/tasks`,
+        `/organizations/${orgSlug}/projects/${projectId}/tasks`,
         token
       );
       setTasks(updatedTasks);

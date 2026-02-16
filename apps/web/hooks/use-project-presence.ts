@@ -24,7 +24,6 @@ interface PresenceLeaveEvent {
 export function useProjectPresence(projectId: string) {
   const { socket } = useWebSocket();
   const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
-  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!socket || !projectId) return;
@@ -34,7 +33,6 @@ export function useProjectPresence(projectId: string) {
       // [DEBUG] Log presence update
       console.log('[Presence] Active users count:', response.count);
       setActiveUsers(response.activeUsers);
-      setCount(response.count);
     });
 
     // Listen for presence:join events
@@ -48,9 +46,7 @@ export function useProjectPresence(projectId: string) {
           if (current.some((u) => u.userId === event.userId)) {
             return current;
           }
-          const newUsers = [...current, { userId: event.userId, email: event.email, name: event.name }];
-          setCount(newUsers.length);
-          return newUsers;
+          return [...current, { userId: event.userId, email: event.email, name: event.name }];
         });
       }
     };
@@ -58,11 +54,7 @@ export function useProjectPresence(projectId: string) {
     // Listen for presence:leave events
     const handlePresenceLeave = (event: PresenceLeaveEvent) => {
       if (event.projectId === projectId) {
-        setActiveUsers((current) => {
-          const newUsers = current.filter((u) => u.userId !== event.userId);
-          setCount(newUsers.length);
-          return newUsers;
-        });
+        setActiveUsers((current) => current.filter((u) => u.userId !== event.userId));
       }
     };
 
@@ -76,5 +68,6 @@ export function useProjectPresence(projectId: string) {
     };
   }, [socket, projectId]);
 
-  return { activeUsers, count };
+  // Derive count from activeUsers length (single source of truth)
+  return { activeUsers, count: activeUsers.length };
 }

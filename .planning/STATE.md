@@ -197,6 +197,7 @@ Recent decisions affecting current work:
 
 - Phase 6 added: Authentication Fixes
 - Phase 6.1 inserted after Phase 6: User Flow & Architecture Audit (URGENT)
+- Phase 7.1 inserted after Phase 7: Phase 3 Gap Closure - Real-Time Collaboration Fixes (URGENT)
 
 ### Pending Todos
 

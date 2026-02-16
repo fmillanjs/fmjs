@@ -250,6 +250,7 @@ export function ClientProjectPage({
       <TaskViews
         initialTasks={tasks}
         projectId={projectId}
+        orgSlug={teamId}
         teamMembers={teamMembers}
         labels={labels}
       />

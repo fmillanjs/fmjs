@@ -17,11 +17,12 @@ import { useRealTimeTasks } from '@/hooks/use-real-time-tasks';
 interface TaskViewsProps {
   initialTasks: TaskWithRelations[];
   projectId: string;
+  orgSlug: string;
   teamMembers: Array<{ id: string; name: string | null; image: string | null }>;
   labels: LabelBase[];
 }
 
-export function TaskViews({ initialTasks, projectId, teamMembers, labels }: TaskViewsProps) {
+export function TaskViews({ initialTasks, projectId, orgSlug, teamMembers, labels }: TaskViewsProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [view, setView] = useState<'board' | 'list'>('board');
@@ -110,6 +111,7 @@ export function TaskViews({ initialTasks, projectId, teamMembers, labels }: Task
               key={refreshKey}
               initialTasks={tasks}
               projectId={projectId}
+              orgSlug={orgSlug}
               teamMembers={teamMembers}
               labels={labels}
             />
