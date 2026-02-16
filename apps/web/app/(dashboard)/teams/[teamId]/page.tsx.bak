@@ -71,7 +71,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
         <h3 className="mt-4 text-lg font-medium text-gray-900">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{error || 'Team not found'}</p>
+        <p className="mt-2 text-sm text-gray-500">{error || 'Team not found'}</p>
         <div className="mt-6">
           <Link
             href="/teams"
@@ -97,7 +97,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
           <li>
-            <Link href="/teams" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+            <Link href="/teams" className="text-gray-400 hover:text-gray-500">
               <span className="text-sm font-medium">Teams</span>
             </Link>
           </li>
@@ -114,7 +114,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="ml-4 text-sm font-medium text-gray-900 dark:text-white">{team.name}</span>
+              <span className="ml-4 text-sm font-medium text-gray-500">{team.name}</span>
             </div>
           </li>
         </ol>
@@ -124,7 +124,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{team.name}</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-1 text-sm text-gray-500">
             Team created on {new Date(team.createdAt).toLocaleDateString()}
           </p>
         </div>
@@ -189,7 +189,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Members</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Members</dt>
                   <dd className="text-lg font-semibold text-gray-900">{team.members.length}</dd>
                 </dl>
               </div>
@@ -215,7 +215,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Projects</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Projects</dt>
                   <dd className="text-lg font-semibold text-gray-900">0</dd>
                 </dl>
               </div>
@@ -241,7 +241,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Tasks</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Tasks</dt>
                   <dd className="text-lg font-semibold text-gray-900">0</dd>
                 </dl>
               </div>
@@ -287,10 +287,10 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               >
                 <h4 className="text-lg font-semibold text-gray-900 mb-1">{project.name}</h4>
                 {project.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{project.description}</p>
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">{project.description}</p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600 dark:text-gray-300">{project._count?.tasks ?? 0} tasks</span>
+                  <span className="text-xs text-gray-500">{project._count?.tasks ?? 0} tasks</span>
                   <span
                     className={`text-xs px-2 py-1 rounded ${
                       project.status === 'ACTIVE'

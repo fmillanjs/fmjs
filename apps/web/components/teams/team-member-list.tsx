@@ -106,7 +106,7 @@ export function TeamMemberList({
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 truncate">{member.user.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{member.user.email}</p>
                 </div>
 
                 {/* Role Badge */}

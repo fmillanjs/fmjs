@@ -15,7 +15,7 @@ export default function AboutPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             About Me
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Senior Full-Stack Engineer with a passion for building exceptional software
           </p>
         </div>
@@ -25,7 +25,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-foreground mb-6">
             Professional Summary
           </h2>
-          <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
+          <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 space-y-4">
             <p>
               I'm a senior full-stack engineer specializing in building production-ready
               SaaS applications with modern JavaScript/TypeScript stacks. My expertise
@@ -65,7 +65,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-foreground mb-3">
                 Clean Architecture
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600 dark:text-gray-300">
                 Well-structured codebases with clear separation of concerns, making systems
                 maintainable and extensible over time.
               </p>
@@ -74,7 +74,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-foreground mb-3">
                 Type Safety
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600 dark:text-gray-300">
                 Leveraging TypeScript's type system to catch errors early and provide
                 excellent developer experience with autocomplete and refactoring.
               </p>
@@ -83,7 +83,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-foreground mb-3">
                 Production Readiness
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600 dark:text-gray-300">
                 Building with security, performance, monitoring, and error handling in mind
                 from day one, not as afterthoughts.
               </p>
@@ -92,7 +92,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-foreground mb-3">
                 Developer Experience
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600 dark:text-gray-300">
                 Creating tools, documentation, and workflows that make the team productive
                 and the codebase a joy to work with.
               </p>
@@ -105,7 +105,7 @@ export default function AboutPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             Interested in working together?
           </h2>
-          <p className="text-lg text-muted-foreground mb-6">
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
             I'm currently open to senior full-stack engineering opportunities.
           </p>
           <a

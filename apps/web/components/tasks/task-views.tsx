@@ -76,7 +76,7 @@ export function TaskViews({ initialTasks, projectId, orgSlug, teamMembers, label
         <div className="bg-card dark:bg-gray-950 border border-border rounded-lg p-12 text-center">
           <div className="max-w-md mx-auto">
             <h3 className="text-lg font-medium text-foreground mb-2">No tasks match your filters</h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Try adjusting your search criteria or clearing some filters to see more results.
             </p>
             <a

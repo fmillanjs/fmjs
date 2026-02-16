@@ -68,17 +68,17 @@ export function CommandPalette() {
       >
         <Command.Input
           placeholder="Type a command or search..."
-          className="w-full px-4 py-3 text-lg border-b bg-transparent outline-none placeholder:text-muted-foreground"
+          className="w-full px-4 py-3 text-lg border-b bg-transparent outline-none placeholder:text-gray-600 dark:text-gray-300"
         />
         <Command.List className="max-h-[400px] overflow-y-auto p-2">
-          <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
+          <Command.Empty className="py-6 text-center text-sm text-gray-600 dark:text-gray-300">
             No results found.
           </Command.Empty>
 
           {/* Portfolio Navigation */}
           <Command.Group
             heading="Portfolio Navigation"
-            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase"
+            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-gray-600 dark:text-gray-300 [&_[cmdk-group-heading]]:uppercase"
           >
             <Command.Item
               onSelect={() => handleSelect(() => router.push('/'))}
@@ -120,7 +120,7 @@ export function CommandPalette() {
           {/* TeamFlow */}
           <Command.Group
             heading="TeamFlow"
-            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase mt-2"
+            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-gray-600 dark:text-gray-300 [&_[cmdk-group-heading]]:uppercase mt-2"
           >
             <Command.Item
               onSelect={() => handleSelect(() => router.push('/teams'))}
@@ -143,7 +143,7 @@ export function CommandPalette() {
           {/* Quick Actions */}
           <Command.Group
             heading="Quick Actions"
-            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:uppercase mt-2"
+            className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-gray-600 dark:text-gray-300 [&_[cmdk-group-heading]]:uppercase mt-2"
           >
             <Command.Item
               onSelect={() => handleSelect(cycleTheme)}

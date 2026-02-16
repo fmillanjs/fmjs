@@ -227,7 +227,7 @@ export function ClientProjectPage({
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="text-2xl font-bold text-gray-900">{taskStats.total}</div>
-            <div className="text-sm text-gray-500">Total Tasks</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Total Tasks</div>
           </div>
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="text-2xl font-bold text-blue-900">{taskStats.todo}</div>

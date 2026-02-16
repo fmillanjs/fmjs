@@ -8,7 +8,7 @@ export default function NewTeamPage() {
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
           <li>
-            <Link href="/teams" className="text-gray-400 hover:text-gray-500">
+            <Link href="/teams" className="text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
               <span className="text-sm font-medium">Teams</span>
             </Link>
           </li>
@@ -25,7 +25,7 @@ export default function NewTeamPage() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="ml-4 text-sm font-medium text-gray-500">New Team</span>
+              <span className="ml-4 text-sm font-medium text-gray-600 dark:text-gray-300">New Team</span>
             </div>
           </li>
         </ol>
@@ -34,7 +34,7 @@ export default function NewTeamPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Create a New Team</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
           Set up a team to collaborate with others on projects and tasks.
         </p>
       </div>

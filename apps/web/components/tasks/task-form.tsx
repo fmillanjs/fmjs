@@ -116,7 +116,7 @@ export function TaskForm({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-600 transition-colors"
             type="button"
           >
             <X className="w-5 h-5" />
@@ -267,7 +267,7 @@ export function TaskForm({
                 </button>
               ))}
               {labels.length === 0 && (
-                <p className="text-sm text-gray-500">No labels available</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">No labels available</p>
               )}
             </div>
           </div>

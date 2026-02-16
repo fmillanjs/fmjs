@@ -26,7 +26,7 @@ export function TechStack() {
           key={tech.name}
           className="border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all bg-card"
         >
-          <div className="text-sm font-medium text-muted-foreground mb-1">
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
             {tech.category}
           </div>
           <div className="text-lg font-semibold text-foreground">

@@ -41,13 +41,13 @@ export function PortfolioNav() {
                   'text-sm font-medium transition-colors hover:text-primary',
                   pathname === link.href
                     ? 'text-primary'
-                    : 'text-muted-foreground'
+                    : 'text-gray-600 dark:text-gray-300'
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-gray-600 dark:text-gray-300">
               <span className="text-xs">⌘</span>K
             </kbd>
             <ThemeToggle />
@@ -84,7 +84,7 @@ export function PortfolioNav() {
                   'block px-3 py-2 rounded-lg text-base font-medium transition-colors',
                   pathname === link.href
                     ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-muted'
                 )}
               >
                 {link.label}

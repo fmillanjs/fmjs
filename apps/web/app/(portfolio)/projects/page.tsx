@@ -10,7 +10,7 @@ export default function ProjectsPage() {
     <div className="container mx-auto max-w-6xl px-4 py-16">
       <div className="mb-12">
         <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl">Projects</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400">Things I've built</p>
+        <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-300">Things I've built</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <ProjectCard

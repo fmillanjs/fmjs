@@ -251,7 +251,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 className="text-gray-600 cursor-pointer hover:bg-gray-50 rounded px-3 py-2 min-h-[60px]"
                 onClick={() => setIsEditingDescription(true)}
               >
-                {currentTask.description || <span className="text-gray-400 italic">Click to add a description...</span>}
+                {currentTask.description || <span className="text-gray-600 dark:text-gray-300 italic">Click to add a description...</span>}
               </div>
             )}
           </div>
@@ -267,7 +267,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'comments'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 Comments ({comments.length})
@@ -277,7 +277,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'history'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 History

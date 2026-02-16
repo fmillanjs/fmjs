@@ -57,7 +57,7 @@ export function ActivityFeed({ projectId, initialActivities }: ActivityFeedProps
     return (
       <div className="bg-white shadow rounded-lg p-12 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400"
+          className="mx-auto h-12 w-12 text-gray-600 dark:text-gray-300"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -70,7 +70,7 @@ export function ActivityFeed({ projectId, initialActivities }: ActivityFeedProps
           />
         </svg>
         <h3 className="mt-4 text-sm font-medium text-gray-900">No activity yet</h3>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
           Start by creating tasks to see activity here.
         </p>
       </div>
@@ -85,11 +85,11 @@ export function ActivityFeed({ projectId, initialActivities }: ActivityFeedProps
         hasMore={hasMore}
         loader={
           <div className="flex justify-center py-4">
-            <div className="text-sm text-gray-500">Loading more...</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Loading more...</div>
           </div>
         }
         endMessage={
-          <div className="text-center py-4 text-sm text-gray-500">
+          <div className="text-center py-4 text-sm text-gray-600 dark:text-gray-300">
             You&apos;ve reached the beginning of this project&apos;s history
           </div>
         }

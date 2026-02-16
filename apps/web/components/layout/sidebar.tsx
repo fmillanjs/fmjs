@@ -95,13 +95,13 @@ export function Sidebar({ teams }: SidebarProps) {
               {/* Teams Section */}
               <div className="mt-6">
                 <div className="px-3 mb-2">
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                     Teams
                   </h3>
                 </div>
 
                 {teams.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-muted-foreground">No teams yet</div>
+                  <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-300">No teams yet</div>
                 ) : (
                   <div className="space-y-1">
                     {teams

@@ -40,7 +40,7 @@ export default async function TeamsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Teams</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             Manage your teams and collaborate with team members
           </p>
         </div>
@@ -97,16 +97,16 @@ export default async function TeamsPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Team</dt>
+                      <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Team</dt>
                       <dd className="text-lg font-semibold text-gray-900 truncate">
                         {team.name}
                       </dd>
                     </dl>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm text-gray-500">
+                <div className="mt-4 flex items-center text-sm text-gray-600 dark:text-gray-300">
                   <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-600 dark:text-gray-300"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -118,9 +118,9 @@ export default async function TeamsPage() {
                   </svg>
                   {team._count?.members || 1} member{team._count?.members !== 1 ? 's' : ''}
                 </div>
-                <div className="mt-1 flex items-center text-sm text-gray-500">
+                <div className="mt-1 flex items-center text-sm text-gray-600 dark:text-gray-300">
                   <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-600 dark:text-gray-300"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"

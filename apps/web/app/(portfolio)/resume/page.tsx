@@ -16,7 +16,7 @@ export default function ResumePage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-2 text-gray-900 dark:text-white">
             Resume
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-300">
             Full-stack Engineer
           </p>
         </div>
@@ -113,11 +113,11 @@ export default function ResumePage() {
                   <h3 className="font-semibold text-xl text-gray-900 dark:text-white">
                     Full-Stack Engineer
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     Personal Projects & Portfolio
                   </p>
                 </div>
-                <p className="text-gray-500 dark:text-gray-500">2023 - Present</p>
+                <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 dark:text-gray-300">2023 - Present</p>
               </div>
               <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
@@ -149,11 +149,11 @@ export default function ResumePage() {
                   <h3 className="font-semibold text-xl text-gray-900 dark:text-white">
                     Software Developer
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     Previous Experience (customizable)
                   </p>
                 </div>
-                <p className="text-gray-500 dark:text-gray-500">2020 - 2023</p>
+                <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 dark:text-gray-300">2020 - 2023</p>
               </div>
               <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
@@ -178,11 +178,11 @@ export default function ResumePage() {
                 <h3 className="font-semibold text-xl text-gray-900 dark:text-white">
                   Bachelor of Science in Computer Science
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
                   University Name (customizable)
                 </p>
               </div>
-              <p className="text-gray-500 dark:text-gray-500">Graduation Year</p>
+              <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 dark:text-gray-300">Graduation Year</p>
             </div>
             <p className="text-gray-700 dark:text-gray-300">
               Relevant coursework in software engineering, data structures, algorithms,
@@ -202,7 +202,7 @@ export default function ResumePage() {
                 <h3 className="font-semibold text-xl text-gray-900 dark:text-white">
                   TeamFlow
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
                   Work Management SaaS Application
                 </p>
               </div>
@@ -226,7 +226,7 @@ export default function ResumePage() {
 
         {/* Note about PDF */}
         <div className="mt-12 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
             <strong>Note:</strong> This is a customizable placeholder resume. To add your
             PDF resume, place{' '}
             <code className="text-sm bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded">

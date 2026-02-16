@@ -55,7 +55,7 @@ export function Header({ user }: HeaderProps) {
 
         {/* Right side - Theme toggle and User menu */}
         <div className="flex items-center gap-2">
-          <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
+          <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-gray-600 dark:text-gray-300">
             <span className="text-xs">⌘</span>K
           </kbd>
           <ThemeToggle />
@@ -82,7 +82,7 @@ export function Header({ user }: HeaderProps) {
               </div>
             </div>
             <svg
-              className={`h-5 w-5 text-muted-foreground transition-transform ${
+              className={`h-5 w-5 text-gray-600 dark:text-gray-300 transition-transform ${
                 isDropdownOpen ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -108,7 +108,7 @@ export function Header({ user }: HeaderProps) {
                   {/* User info */}
                   <div className="px-4 py-3 border-b border-border">
                     <p className="text-sm font-medium text-foreground">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{user.email}</p>
                   </div>
 
                   {/* Menu items */}

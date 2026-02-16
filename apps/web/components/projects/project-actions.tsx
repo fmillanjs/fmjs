@@ -183,7 +183,7 @@ export function ProjectActions({
       )}
 
       {!isAdmin && (
-        <div className="text-sm text-gray-500 italic">
+        <div className="text-sm text-gray-600 dark:text-gray-300 italic">
           Only administrators can delete projects.
         </div>
       )}

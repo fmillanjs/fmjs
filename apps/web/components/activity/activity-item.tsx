@@ -154,7 +154,7 @@ export function ActivityItem({ activity }: ActivityItemProps) {
           {' '}
           <span className="text-gray-600">{formatActivityDescription(activity)}</span>
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
           {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
         </p>
       </div>

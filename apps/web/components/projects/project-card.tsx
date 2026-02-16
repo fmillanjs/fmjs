@@ -42,7 +42,7 @@ export function ProjectCard({ project, teamId }: ProjectCardProps) {
         </p>
       )}
 
-      <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
         <span>
           {project._count?.tasks ?? 0} {(project._count?.tasks ?? 0) === 1 ? 'task' : 'tasks'}
         </span>

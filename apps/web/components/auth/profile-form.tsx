@@ -67,9 +67,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="email"
           value={user.email}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-500 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-600 dark:text-gray-300 cursor-not-allowed"
         />
-        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Email cannot be changed</p>
       </div>
 
       <div>
@@ -81,9 +81,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="text"
           value={user.role}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-500 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-600 dark:text-gray-300 cursor-not-allowed"
         />
-        <p className="text-xs text-gray-500 mt-1">Role is managed by administrators</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Role is managed by administrators</p>
       </div>
 
       <div>

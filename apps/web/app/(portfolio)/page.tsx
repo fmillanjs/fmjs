@@ -18,7 +18,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Featured Project
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-gray-600 dark:text-gray-300">
               Real-time collaboration platform showcasing full-stack expertise
             </p>
           </div>
@@ -34,7 +34,7 @@ export default function HomePage() {
                   <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                     TeamFlow
                   </h3>
-                  <p className="text-base text-muted-foreground">
+                  <p className="text-base text-gray-600 dark:text-gray-300">
                     Production-Ready SaaS Collaboration Platform
                   </p>
                 </div>
@@ -65,7 +65,7 @@ export default function HomePage() {
                 ].map((tech) => (
                   <span
                     key={tech}
-                    className="px-3 py-1 rounded-md bg-muted text-muted-foreground text-sm font-medium"
+                    className="px-3 py-1 rounded-md bg-muted text-gray-600 dark:text-gray-300 text-sm font-medium"
                   >
                     {tech}
                   </span>
@@ -88,7 +88,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 30+
               </div>
-              <div className="text-lg text-muted-foreground">
+              <div className="text-lg text-gray-600 dark:text-gray-300">
                 Features Built
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 Real-Time
               </div>
-              <div className="text-lg text-muted-foreground">
+              <div className="text-lg text-gray-600 dark:text-gray-300">
                 Collaboration
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 Production
               </div>
-              <div className="text-lg text-muted-foreground">
+              <div className="text-lg text-gray-600 dark:text-gray-300">
                 Ready Code
               </div>
             </div>

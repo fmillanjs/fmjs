@@ -17,7 +17,7 @@ export default function NotFound() {
         </h2>
 
         {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
           The page you're looking for doesn't exist or has been moved.
         </p>
 

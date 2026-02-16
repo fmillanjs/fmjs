@@ -14,7 +14,7 @@ export default function ContactPage() {
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             Get in Touch
           </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-600 dark:text-gray-300">
             Have a question or want to work together? Send me a message.
           </p>
         </div>
@@ -36,11 +36,11 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="mb-2 font-medium text-gray-900 dark:text-gray-100">Location</h3>
-                <p className="text-gray-600 dark:text-gray-400">Remote / Flexible Timezone</p>
+                <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">Remote / Flexible Timezone</p>
               </div>
               <div>
                 <h3 className="mb-2 font-medium text-gray-900 dark:text-gray-100">Response Time</h3>
-                <p className="text-gray-600 dark:text-gray-400">Within 24 hours</p>
+                <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">Within 24 hours</p>
               </div>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default function TeamFlowCaseStudy() {
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
           TeamFlow
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">
           A production-ready work management SaaS
         </p>
 
@@ -83,7 +83,7 @@ export default function TeamFlowCaseStudy() {
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               v1.0
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               Production Ready
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function TeamFlowCaseStudy() {
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               88%
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               Features Complete
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function TeamFlowCaseStudy() {
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               8
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               Technologies
             </div>
           </div>
@@ -300,7 +300,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Separate Next.js + NestJS</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. Next.js API routes
                   </span>
                 </td>
@@ -314,7 +314,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>WebSockets over Pusher</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. third-party service
                   </span>
                 </td>
@@ -329,7 +329,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>CASL for RBAC</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. manual permission checks
                   </span>
                 </td>
@@ -343,7 +343,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Redis session + pub/sub</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. in-memory storage
                   </span>
                 </td>
@@ -357,7 +357,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Monorepo with Turborepo</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. separate repos
                   </span>
                 </td>
@@ -371,7 +371,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Server Components for data fetching</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. client-side only
                   </span>
                 </td>
@@ -385,7 +385,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Optimistic UI with automatic rollback</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
                     vs. loading states
                   </span>
                 </td>
@@ -419,7 +419,7 @@ export default function TeamFlowCaseStudy() {
               detection) but blocked at the authentication layer. HTTP-based task
               management works perfectly. v1.1 will resolve the auth integration.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               <strong>Learning:</strong> Bleeding-edge framework versions (Next.js 15,
               NextAuth v5) can have integration challenges with other frameworks.
               Sometimes the most valuable learning comes from hitting architectural
@@ -442,7 +442,7 @@ export default function TeamFlowCaseStudy() {
               Prisma queries. Guards enforce at controller layer, services verify
               ownership, and centralized AbilityFactory defines all rules.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               <strong>Learned:</strong> Authorization is easier to audit and maintain
               when centralized. CASL&apos;s declarative approach prevents security bugs
               from scattered permission checks.
@@ -464,7 +464,7 @@ export default function TeamFlowCaseStudy() {
               forms and backend validators use the same schemas. TypeScript compiler
               catches breaking changes across the monorepo.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
               <strong>Learned:</strong> Monorepos enable powerful type safety when
               structured correctly. Zod provides both runtime validation and static
               types from a single source.

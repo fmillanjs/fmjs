@@ -269,7 +269,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
             <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg max-h-80 overflow-y-auto">
               <div className="p-2 space-y-1">
                 {labels.length === 0 ? (
-                  <div className="px-2 py-1.5 text-sm text-gray-500">No labels available</div>
+                  <div className="px-2 py-1.5 text-sm text-gray-600 dark:text-gray-300">No labels available</div>
                 ) : (
                   labels.map((label) => (
                     <label

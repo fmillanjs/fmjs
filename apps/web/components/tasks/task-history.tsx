@@ -179,7 +179,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
   if (isLoading && offset === 0) {
     return (
       <div className="flex justify-center py-8">
-        <div className="text-gray-500">Loading history...</div>
+        <div className="text-gray-600 dark:text-gray-300">Loading history...</div>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 italic">
+      <div className="text-center py-8 text-gray-600 dark:text-gray-300 italic">
         No history yet.
       </div>
     );
@@ -234,7 +234,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
                   {' '}
                   <span className="text-gray-600">{formatActivityDescription(entry)}</span>
                 </div>
-                <div className="text-xs text-gray-500 mt-0.5">
+                <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                   {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true })}
                 </div>
               </div>
@@ -249,7 +249,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
-            className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400"
+            className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-600 dark:text-gray-300"
           >
             {isLoading ? 'Loading...' : 'Load more'}
           </button>

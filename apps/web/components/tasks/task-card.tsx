@@ -82,7 +82,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
       )}
 
       {/* Assignee and metadata */}
-      <div className="flex items-center justify-between text-xs text-gray-500 mt-3">
+      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-3">
         <div className="flex items-center gap-2">
           {/* Assignee */}
           {task.assignee ? (
@@ -101,7 +101,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
               <span className="text-xs">{task.assignee.name}</span>
             </div>
           ) : (
-            <span className="text-xs text-gray-400">Unassigned</span>
+            <span className="text-xs text-gray-600 dark:text-gray-300">Unassigned</span>
           )}
         </div>
 

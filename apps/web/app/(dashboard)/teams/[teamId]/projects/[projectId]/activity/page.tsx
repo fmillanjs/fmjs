@@ -80,7 +80,7 @@ export default async function ProjectActivityPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Activity</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             Recent activity for {project.name}
           </p>
         </div>

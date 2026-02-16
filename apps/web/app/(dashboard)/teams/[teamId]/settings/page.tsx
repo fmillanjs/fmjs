@@ -58,7 +58,7 @@ export default async function TeamSettingsPage({
           <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
         <h3 className="mt-4 text-lg font-medium text-gray-900">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-gray-500">{error || 'Team not found'}</p>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{error || 'Team not found'}</p>
         <div className="mt-6">
           <Link
             href="/teams"
@@ -88,7 +88,7 @@ export default async function TeamSettingsPage({
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
           <li>
-            <Link href="/teams" className="text-gray-400 hover:text-gray-500">
+            <Link href="/teams" className="text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
               <span className="text-sm font-medium">Teams</span>
             </Link>
           </li>
@@ -107,7 +107,7 @@ export default async function TeamSettingsPage({
               </svg>
               <Link
                 href={`/teams/${team.id}`}
-                className="ml-4 text-sm font-medium text-gray-400 hover:text-gray-500"
+                className="ml-4 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
               >
                 {team.name}
               </Link>
@@ -126,7 +126,7 @@ export default async function TeamSettingsPage({
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="ml-4 text-sm font-medium text-gray-500">Settings</span>
+              <span className="ml-4 text-sm font-medium text-gray-600 dark:text-gray-300">Settings</span>
             </div>
           </li>
         </ol>
@@ -135,7 +135,7 @@ export default async function TeamSettingsPage({
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Team Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
           Manage team members and permissions
         </p>
       </div>

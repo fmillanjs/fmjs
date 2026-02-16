@@ -26,7 +26,7 @@ export function KanbanColumn({ id, title, tasks, count, onTaskClick, onAddTask }
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">
           {title}
-          <span className="ml-2 text-sm font-normal text-gray-500">({count})</span>
+          <span className="ml-2 text-sm font-normal text-gray-600 dark:text-gray-300">({count})</span>
         </h3>
         <button
           onClick={onAddTask}
@@ -47,7 +47,7 @@ export function KanbanColumn({ id, title, tasks, count, onTaskClick, onAddTask }
       >
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.length === 0 ? (
-            <p className="text-gray-400 text-sm">Drop tasks here</p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">Drop tasks here</p>
           ) : (
             tasks.map((task) => (
               <SortableTaskCard key={task.id} task={task} onClick={() => onTaskClick(task)} />

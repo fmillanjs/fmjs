@@ -34,7 +34,7 @@ export function TaskSearch() {
 
   return (
     <div className="relative">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300">
         <Search className="w-5 h-5" />
       </div>
       <input
@@ -47,7 +47,7 @@ export function TaskSearch() {
       {inputValue && (
         <button
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300 hover:text-gray-600 transition-colors"
           aria-label="Clear search"
         >
           <X className="w-4 h-4" />

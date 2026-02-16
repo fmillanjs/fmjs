@@ -240,22 +240,22 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Timestamp
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Actor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Action
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Entity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Outcome
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                   Details
                 </th>
               </tr>
@@ -263,7 +263,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
             <tbody className="bg-white divide-y divide-gray-200">
               {entries.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-600 dark:text-gray-300">
                     No audit log entries found
                   </td>
                 </tr>
@@ -305,7 +305,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                           {entry.outcome}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                         <button className="text-blue-600 hover:text-blue-800">
                           {expandedRow === entry.id ? 'Hide' : 'Show'}
                         </button>
@@ -358,14 +358,14 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
             <button
               onClick={handlePrevious}
               disabled={offset === 0 || isLoading}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
             >
               Previous
             </button>
             <button
               onClick={handleNext}
               disabled={offset + limit >= total || isLoading}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
             >
               Next
             </button>
@@ -383,7 +383,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                 <button
                   onClick={handlePrevious}
                   disabled={offset === 0 || isLoading}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
                 >
                   Previous
                 </button>
@@ -393,7 +393,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                 <button
                   onClick={handleNext}
                   disabled={offset + limit >= total || isLoading}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
                 >
                   Next
                 </button>

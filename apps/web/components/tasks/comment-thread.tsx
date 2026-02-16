@@ -59,7 +59,7 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
 
   if (comments.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 italic">
+      <div className="text-center py-8 text-gray-600 dark:text-gray-300 italic">
         No comments yet. Be the first to comment.
       </div>
     );
@@ -99,7 +99,7 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
                 <span className="font-medium text-sm text-gray-900">
                   {comment.author.name || 'Unknown User'}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-600 dark:text-gray-300">
                   {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                 </span>
               </div>

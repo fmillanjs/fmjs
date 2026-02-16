@@ -51,7 +51,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
       </div>
 
       {/* User count text */}
-      <span className="text-sm text-gray-600 dark:text-gray-400">
+      <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
         {count} active {count === 1 ? 'user' : 'users'}
       </span>
     </div>

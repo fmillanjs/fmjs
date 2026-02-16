@@ -88,7 +88,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
       cell: (info) => {
         const assignee = info.getValue();
         if (!assignee) {
-          return <span className="text-gray-400 text-sm">Unassigned</span>;
+          return <span className="text-gray-600 dark:text-gray-300 text-sm">Unassigned</span>;
         }
         return (
           <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
       header: 'Due Date',
       cell: (info) => {
         const dueDate = info.getValue();
-        if (!dueDate) return <span className="text-gray-400 text-sm">-</span>;
+        if (!dueDate) return <span className="text-gray-600 dark:text-gray-300 text-sm">-</span>;
 
         const isOverdue = new Date(dueDate) < new Date() && info.row.original.status !== 'DONE';
         return (
@@ -187,7 +187,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
   if (tasks.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-500">No tasks yet. Create your first task.</p>
+        <p className="text-gray-600 dark:text-gray-300">No tasks yet. Create your first task.</p>
       </div>
     );
   }
@@ -202,7 +202,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
-                        <span className="text-gray-400">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {header.column.getIsSorted() === 'asc' ? (
                             <ChevronUp className="w-4 h-4" />
                           ) : header.column.getIsSorted() === 'desc' ? (

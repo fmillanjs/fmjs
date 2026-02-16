@@ -13,7 +13,7 @@ export function PortfolioFooter() {
             <h3 className="text-lg font-bold text-foreground mb-2">
               Fernando Millan
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Full-Stack Engineer building production-ready SaaS applications
             </p>
           </div>
@@ -27,7 +27,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   Home
                 </Link>
@@ -35,7 +35,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   About
                 </Link>
@@ -43,7 +43,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/projects"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   Projects
                 </Link>
@@ -51,7 +51,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   Contact
                 </Link>
@@ -69,7 +69,7 @@ export function PortfolioFooter() {
                 href="https://github.com/fernandomillan"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
@@ -78,7 +78,7 @@ export function PortfolioFooter() {
                 href="https://www.linkedin.com/in/fernandomillan"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
@@ -89,7 +89,7 @@ export function PortfolioFooter() {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t">
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-300">
             &copy; {currentYear} Fernando Millan. All rights reserved.
           </p>
         </div>

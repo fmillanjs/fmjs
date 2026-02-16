@@ -26,7 +26,7 @@ export default function ProjectError({
           <AlertTriangle className="w-16 h-16 text-red-500" />
         </div>
         <h2 className="text-2xl font-bold text-foreground mb-2">Failed to load project</h2>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
           {error.message || 'An unexpected error occurred while loading this project.'}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

@@ -28,7 +28,7 @@ export default function Error({
         </h1>
 
         {/* Error Message */}
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
           {error.message || 'An unexpected error occurred. Please try again.'}
         </p>
 

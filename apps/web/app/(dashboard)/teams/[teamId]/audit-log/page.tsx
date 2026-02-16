@@ -92,7 +92,7 @@ export default async function AuditLogPage({
             />
           </svg>
           <h3 className="mt-4 text-lg font-medium text-gray-900">Access Denied</h3>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Only administrators can access the audit log.
           </p>
           <div className="mt-6">
@@ -149,7 +149,7 @@ export default async function AuditLogPage({
               Admin Only
             </span>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             Organization-wide audit trail for {team.name}
           </p>
         </div>
