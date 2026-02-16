@@ -142,7 +142,7 @@ export function ClientProjectPage({
   const teamMembers = members.map((m) => ({
     id: m.user?.id || m.userId,
     name: m.user?.name || null,
-    email: m.user?.email || '',
+    email: m.user?.email || `User ${m.userId.slice(0, 8)}`,
     image: m.user?.image || null,
   }));
 

@@ -46,7 +46,7 @@ export default async function TaskDetailPage({
   const teamMembers = members.map((m) => ({
     id: m.user.id,
     name: m.user.name,
-    email: m.user.email,
+    email: m.user.email || `User ${m.user.id.slice(0, 8)}`,
     image: m.user.image,
   }));
 

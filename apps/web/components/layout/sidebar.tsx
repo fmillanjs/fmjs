@@ -74,7 +74,7 @@ export function Sidebar({ teams }: SidebarProps) {
                   ${
                     pathname === '/teams'
                       ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-accent hover:text-accent-foreground'
                   }
                 `}
               >
@@ -123,7 +123,7 @@ export function Sidebar({ teams }: SidebarProps) {
                               ${
                                 isActive(`/teams/${team.id}`)
                                   ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                  : 'text-gray-700 dark:text-gray-200 hover:bg-accent hover:text-accent-foreground'
                               }
                             `}
                           >
