@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 11 - Form Components & Validation
-Plan: 11-04 auto-tasks complete — task-form migrated (3 Shadcn Selects), axe WCAG AA tests passing, awaiting human verification checkpoint
-Status: Phase 11 in progress — Plan 04 of 4 at human-verify checkpoint
-Last activity: 2026-02-17 — Completed 11-04 Tasks 1+2 (task-form.tsx with FormField + 3 Shadcn Select dropdowns; form-accessibility.spec.ts 6 axe tests all passing; auto-fixed WCAG contrast on reset-password link)
+Plan: 11-04 complete — task-form migrated (3 Shadcn Selects), 6 axe WCAG AA tests passing, human verification approved with fixes
+Status: Phase 11 complete — all 4 plans done (COMP-03 satisfied)
+Last activity: 2026-02-17 — Completed 11-04 Task 3 post-human-verify fixes: autocomplete attrs on 4 auth forms, explicit defaultValues on 7 forms, dueDate/assigneeId defaults fixed in task-form
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -79,7 +79,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 11-form-components-validation P01 | 5 | 1 task | 4 files |
 | Phase 11-form-components-validation P02 | 2 | 2 tasks | 6 files |
 | Phase 11-form-components-validation P03 | 2 | 2 tasks | 5 files |
-| Phase 11-form-components-validation P04 | 2 | 2 tasks (checkpoint) | 3 files |
+| Phase 11-form-components-validation P04 | 35 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -267,6 +267,9 @@ Recent decisions affecting current work:
 - [Phase 11-03]: comment-form alert() replaced with console.error — no toast required per plan spec
 - [Phase 11-04]: task-form labels toggle: role=group + aria-labelledby for accessible multi-select button group (not FormField — uses setValue pattern)
 - [Phase 11-04]: Links on muted backgrounds: text-foreground + underline instead of text-primary when blue-11 (#0d74ce) on bg-muted (#f0f0f3) yields 4.18:1, below WCAG AA 4.5:1
+- [Phase 11-04]: autoComplete attributes: current-password for login fields, new-password for signup/reset/change-new fields, email for email inputs — follows HTML spec for password managers
+- [Phase 11-04]: useForm defaultValues must be explicit empty strings (not undefined) for all text-like inputs — prevents React uncontrolled→controlled warnings on first render
+- [Phase 11-04]: task-form optional fields (dueDate, assigneeId): default to '' not undefined when bound to Shadcn Select or Input type=date
 
 ### Roadmap Evolution
 
@@ -279,7 +282,7 @@ Recent decisions affecting current work:
 
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
 **Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
-**Phase 11 - Form Components & Validation**: In progress (3.5 of 4 plans done — Plan 04 at checkpoint). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). ✅ All 5 dashboard/portfolio forms migrated (11-03). ✅ task-form.tsx migrated with 3 Shadcn Selects (11-04 Task 1). ✅ form-accessibility.spec.ts: 6 axe WCAG AA tests passing, zero violations (11-04 Task 2). Awaiting: Task 3 human-verify checkpoint (keyboard nav + ARIA attributes in browser).
+**Phase 11 - Form Components & Validation**: ✅ Complete (all 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). ✅ All 5 dashboard/portfolio forms migrated (11-03). ✅ task-form.tsx migrated with 3 Shadcn Selects + role=group labels toggle (11-04). ✅ 6 axe WCAG AA tests passing (11-04). ✅ Human-verified: keyboard navigation, ARIA attributes, zero browser console warnings. COMP-03 satisfied.
 
 ### Blockers/Concerns
 
@@ -305,10 +308,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 11 Form Components — 11-04 Tasks 1+2 complete, at checkpoint)
-Stopped at: Plan 11-04 Task 3 checkpoint — human-verify keyboard navigation and ARIA attributes
-Status: Phase 11 in progress. Plans 01-03 done. Plan 04 at human-verify checkpoint.
-Next action: Human verifies keyboard navigation and ARIA attributes, then resume 11-04 to complete checkpoint
+Last session: 2026-02-17 (Phase 11 Form Components — 11-04 complete, all tasks done)
+Stopped at: Completed 11-04-SUMMARY.md — Phase 11 fully complete
+Status: Phase 11 complete. All 4 plans done. COMP-03 satisfied.
+Next action: Begin Phase 12 planning
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
