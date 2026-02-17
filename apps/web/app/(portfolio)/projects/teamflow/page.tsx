@@ -110,7 +110,7 @@ export default function TeamFlowCaseStudy() {
 
         <div className="mt-6 space-y-4">
           <div>
-            <p className="font-semibold text-green-700 dark:text-green-400 mb-2">
+            <p className="font-semibold text-[var(--green-11)] mb-2">
               ✓ Available in v1.0:
             </p>
             <p>
