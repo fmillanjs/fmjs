@@ -17,18 +17,18 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
       <div className="text-center space-y-6 max-w-md px-4">
         {/* Icon */}
         <AlertTriangle className="w-24 h-24 mx-auto text-[var(--red-9)]" />
 
         {/* Error Heading */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-3xl font-bold text-foreground">
           Something went wrong
         </h1>
 
         {/* Error Message */}
-        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300">
+        <p className="text-muted-foreground">
           {error.message || 'An unexpected error occurred. Please try again.'}
         </p>
 
@@ -42,7 +42,7 @@ export default function Error({
           </button>
           <Link
             href="/"
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg font-medium transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+            className="px-6 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors"
           >
             Go Home
           </Link>
