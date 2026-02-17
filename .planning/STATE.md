@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-01 complete — AlertDialog, Tabs, and Popover Shadcn components installed (COMP-04 + MIG-02 prerequisites satisfied)
-Status: Phase 12 in progress — 1/9 plans done
-Last activity: 2026-02-17 — Completed 12-01: installed alert-dialog.tsx, tabs.tsx, popover.tsx via shadcn CLI; @radix-ui packages added to package.json
+Plan: 12-02 complete — TaskForm migrated from custom overlay div to Shadcn Dialog; all three callers updated to open/onOpenChange API
+Status: Phase 12 in progress — 2/9 plans done
+Last activity: 2026-02-17 — Completed 12-02: task-form.tsx uses Dialog/DialogContent/DialogTitle/DialogDescription; kanban-board, task-list-view, task-views use open/onOpenChange
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -81,6 +81,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 11-form-components-validation P03 | 2 | 2 tasks | 5 files |
 | Phase 11-form-components-validation P04 | 35 | 3 tasks | 9 files |
 | Phase 12 P01 | 2 | 1 tasks | 5 files |
+| Phase 12 P02 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -273,6 +274,9 @@ Recent decisions affecting current work:
 - [Phase 11-04]: task-form optional fields (dueDate, assigneeId): default to '' not undefined when bound to Shadcn Select or Input type=date
 - [Phase 12-01]: Piped N to shadcn overwrite prompt to preserve Phase 10/11 migrated button.tsx
 - [Phase 12-01]: tabs.tsx and popover.tsx were pre-existing from uncommitted session — shadcn skipped as identical; alert-dialog.tsx newly created
+- [Phase 12-02]: TaskForm always rendered with Dialog controlling visibility — replaces conditional {isFormOpen && <TaskForm>} pattern with Radix-managed mount/unmount
+- [Phase 12-02]: selectedTask guard in task-list-view: open={isFormOpen && !!selectedTask} — preserves safety check without needing conditional render wrapper
+- [Phase 12-02]: Dialog open/onOpenChange is the established interface for all future modal components in this codebase
 
 ### Roadmap Evolution
 
@@ -311,10 +315,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-01 complete)
-Stopped at: Completed 12-01-SUMMARY.md — AlertDialog, Tabs, Popover installed
-Status: Phase 12 in progress. Plan 12-01 done. COMP-04 + MIG-02 prerequisites satisfied.
-Next action: Execute Phase 12 Plan 02
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-02 complete)
+Stopped at: Completed 12-02-SUMMARY.md — TaskForm migrated to Shadcn Dialog with open/onOpenChange interface
+Status: Phase 12 in progress. Plans 12-01, 12-02 done. TaskForm COMP-04 satisfied.
+Next action: Execute Phase 12 Plan 03
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
