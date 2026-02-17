@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-03 complete — TaskDetailPanel migrated to Shadcn Select/Tabs/Input/Textarea/AlertDialog; activeTab and showDeleteConfirm states removed
-Status: Phase 12 in progress — 3/9 plans done
-Last activity: 2026-02-17 — Completed 12-03: task-detail-panel.tsx uses Select/Tabs/Input/Textarea/Button/AlertDialog; MIG-02+MIG-03+COMP-04 satisfied
+Plan: 12-04 complete — TaskFilters migrated to Shadcn Popover/Button/Badge; TaskSearch migrated to Shadcn Input; openDropdown state removed
+Status: Phase 12 in progress — 4/9 plans done
+Last activity: 2026-02-17 — Completed 12-04: task-filters.tsx uses 5 independent Popovers + Button triggers; task-search.tsx uses Shadcn Input; MIG-02+MIG-03 satisfied
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -83,6 +83,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 12 P01 | 2 | 1 tasks | 5 files |
 | Phase 12 P02 | 4 | 2 tasks | 4 files |
 | Phase 12 P03 | 2 | 2 tasks | 1 file |
+| Phase 12 P04 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -282,6 +283,9 @@ Recent decisions affecting current work:
 - [Phase 12-03]: Tabs defaultValue replaces activeTab useState — Radix manages internal tab state
 - [Phase 12-03]: AlertDialog with AlertDialogTrigger asChild replaces showDeleteConfirm inline confirm div — no extra state variable
 - [Phase 12-03]: Inline-edit UX (onBlur save, Enter/Escape handling) preserved when swapping to Shadcn Input/Textarea
+- [Phase 12-04]: Each filter dropdown is an independent Popover — no shared openDropdown state needed; Radix Popover handles open/close per instance
+- [Phase 12-04]: Badge variant=default for active filter count badges inside PopoverTrigger buttons
+- [Phase 12-04]: Shadcn Input pl-10 pr-10 preserves search icon and clear button absolute positioning; hardcoded focus-ring styles removed
 
 ### Roadmap Evolution
 
@@ -320,10 +324,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-03 complete)
-Stopped at: Completed 12-03-SUMMARY.md — TaskDetailPanel migrated to Shadcn Select/Tabs/Input/Textarea/AlertDialog
-Status: Phase 12 in progress. Plans 12-01, 12-02, 12-03 done. MIG-02+MIG-03+COMP-04 satisfied for task-detail-panel.
-Next action: Execute Phase 12 Plan 04
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-04 complete)
+Stopped at: Completed 12-04-SUMMARY.md — TaskFilters to Popover/Button/Badge; TaskSearch to Shadcn Input
+Status: Phase 12 in progress. Plans 12-01, 12-02, 12-03, 12-04 done. MIG-02+MIG-03 satisfied for task-filters and task-search.
+Next action: Execute Phase 12 Plan 05
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
