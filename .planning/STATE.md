@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 10 - Component Migration Portfolio
-Plan: 1 of 3 complete
+Plan: 2 of 3 complete
 Status: In progress
-Last activity: 2026-02-17 — Completed 10-01 Portfolio Component Migration (Textarea + 6 components)
+Last activity: 2026-02-17 — Completed 10-02 Visual Regression and Accessibility Tests (@axe-core/playwright + 2 test files)
 
 Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1: 50% (8/16 requirements)
 
@@ -73,6 +73,7 @@ Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 09-design-system-foundation P03 | 2 | 2 tasks | 2 files |
 | Phase 09-design-system-foundation P04 | 10 | 3 tasks | 9 files |
 | Phase 10-component-migration-portfolio P01 | 2 | 2 tasks | 7 files |
+| Phase 10-component-migration-portfolio P02 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -238,6 +239,8 @@ Recent decisions affecting current work:
 - [Phase 10-01]: Badge variant=secondary for tech stack tags — neutral appearance vs variant=default which signals primary action
 - [Phase 10-01]: Button asChild size=lg pattern for Link CTAs, Button asChild variant=outline for external links
 - [Phase 10-01]: Button variant=ghost size=icon for mobile hamburger toggle replacing raw button element
+- [Phase 10-component-migration-portfolio]: Dark mode via classList.add('dark') class injection — not colorScheme which sets media query not Radix Colors class
+- [Phase 10-component-migration-portfolio]: AxeBuilder with wcag2a + wcag2aa + wcag21aa tags for full WCAG AA accessibility coverage in portfolio tests
 
 ### Roadmap Evolution
 
@@ -249,7 +252,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
-**Phase 10 - Component Migration Portfolio**: 🔄 In progress (1 of 3 plans). ✅ Portfolio components migrated (10-01). Proceed with 10-02 dashboard components.
+**Phase 10 - Component Migration Portfolio**: 🔄 In progress (2 of 3 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). Proceed with 10-03 dashboard component migration.
 
 ### Blockers/Concerns
 
@@ -276,9 +279,9 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-17 (Phase 10 Component Migration Portfolio)
-Stopped at: Completed 10-01-PLAN.md - Portfolio Component Migration (Textarea install + 6 components migrated)
-Status: Phase 10 in progress (1 of 3 plans done) — Textarea installed, all 6 portfolio components migrated to Shadcn primitives with zero hardcoded color classes
-Next action: Proceed to Phase 10 Plan 02 - dashboard component migration
+Stopped at: Completed 10-02-PLAN.md - Visual Regression and Accessibility Tests (@axe-core/playwright installed + visual-regression.spec.ts + accessibility.spec.ts)
+Status: Phase 10 in progress (2 of 3 plans done) — @axe-core/playwright installed, 12 visual regression tests and 12 WCAG AA accessibility tests ready for all 6 portfolio pages
+Next action: Proceed to Phase 10 Plan 03 - dashboard component migration
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
