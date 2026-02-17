@@ -231,21 +231,21 @@ export function ClientProjectPage({
             <div className="text-2xl font-bold text-foreground">{taskStats.total}</div>
             <div className="text-sm text-muted-foreground">Total Tasks</div>
           </div>
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">{taskStats.todo}</div>
-            <div className="text-sm text-blue-600">To Do</div>
+          <div className="bg-[var(--blue-3)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[var(--blue-12)]">{taskStats.todo}</div>
+            <div className="text-sm text-[var(--blue-11)]">To Do</div>
           </div>
-          <div className="bg-yellow-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">{taskStats.inProgress}</div>
-            <div className="text-sm text-yellow-600">In Progress</div>
+          <div className="bg-[var(--amber-3)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[var(--amber-12)]">{taskStats.inProgress}</div>
+            <div className="text-sm text-[var(--amber-11)]">In Progress</div>
           </div>
-          <div className="bg-green-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-900 dark:text-green-200">{taskStats.done}</div>
-            <div className="text-sm text-green-600">Done</div>
+          <div className="bg-[var(--green-3)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[var(--green-12)]">{taskStats.done}</div>
+            <div className="text-sm text-[var(--green-11)]">Done</div>
           </div>
-          <div className="bg-red-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-red-900 dark:text-red-200">{taskStats.blocked}</div>
-            <div className="text-sm text-red-600">Blocked</div>
+          <div className="bg-[var(--red-3)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[var(--red-12)]">{taskStats.blocked}</div>
+            <div className="text-sm text-[var(--red-11)]">Blocked</div>
           </div>
         </div>
       </div>
