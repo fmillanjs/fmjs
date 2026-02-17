@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-07 complete — ProjectCard (Card+Badge), ProjectList (Tabs), ProjectActions (AlertDialog archive + controlled Dialog delete) migrated to Shadcn
-Status: Phase 12 in progress — 7/9 plans done
-Last activity: 2026-02-17 — Completed 12-07: all three project components migrated; showArchiveConfirm/showDeleteConfirm/getElementById DOM manipulation deleted; MIG-02+MIG-03+COMP-04 satisfied
+Plan: 12-08 complete — Team page, settings page, project client-page route pages migrated; inline SVGs replaced with lucide-react, raw divs replaced with Card+Button asChild
+Status: Phase 12 in progress — 8/9 plans done
+Last activity: 2026-02-17 — Completed 12-08: three route pages migrated; all inline SVG blocks deleted; MIG-02+MIG-03 satisfied for team/settings/project pages
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -87,6 +87,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 12 P05 | 1 | 2 tasks | 2 files |
 | Phase 12 P06 | 1 | 1 task | 1 file |
 | Phase 12 P07 | 2 | 2 tasks | 3 files |
+| Phase 12 P08 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -297,6 +298,9 @@ Recent decisions affecting current work:
 - [Phase 12-07]: Controlled Dialog (not AlertDialog) for delete with name verification — AlertDialog does not support Input inside it; controlled Dialog required
 - [Phase 12-07]: deleteOpen + confirmName states replace showDeleteConfirm + DOM getElementById pattern — React-controlled instead of DOM mutation
 - [Phase 12-07]: Tabs defaultValue=ACTIVE replaces filter useState — Radix manages tab state internally, filteredProjects derived state deleted
+- [Phase 12-08]: Button size=sm asChild for compact header navigation links — matches plan spec for outline variant nav buttons in team/project headers
+- [Phase 12-08]: projects.length used for Projects stat instead of hardcoded 0 — pre-existing bug fixed during migration
+- [Phase 12-08]: projects.reduce for Tasks stat instead of hardcoded 0 — correctly aggregates task counts from project _count relation
 
 ### Roadmap Evolution
 
@@ -335,10 +339,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-07 complete)
-Stopped at: Completed 12-07-SUMMARY.md — ProjectCard/ProjectList/ProjectActions Shadcn migration
-Status: Phase 12 in progress. Plans 12-01 through 12-07 done. MIG-02+MIG-03+COMP-04 satisfied for all project management components.
-Next action: Execute Phase 12 Plan 08
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-08 complete)
+Stopped at: Completed 12-08-SUMMARY.md — Team/Settings/Project client-page route pages Shadcn migration
+Status: Phase 12 in progress. Plans 12-01 through 12-08 done. MIG-02+MIG-03 satisfied for team and project route pages.
+Next action: Execute Phase 12 Plan 09
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
