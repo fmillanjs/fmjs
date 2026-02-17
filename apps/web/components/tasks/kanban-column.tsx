@@ -41,7 +41,7 @@ export function KanbanColumn({ id, title, tasks, count, onTaskClick, onAddTask }
         ref={setNodeRef}
         className={`
           flex-1 space-y-3 rounded-lg transition-colors
-          ${isOver ? 'bg-blue-50 border-2 border-blue-300 border-dashed' : 'border-2 border-transparent'}
+          ${isOver ? 'bg-accent border-2 border-primary/30 border-dashed' : 'border-2 border-transparent'}
           ${tasks.length === 0 ? 'border-2 border-dashed border-border flex items-center justify-center' : ''}
         `}
       >

@@ -8,7 +8,7 @@ export function ConnectionStatus() {
   return (
     <div className="flex items-center gap-2">
       <div
-        className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-muted-foreground'}`}
+        className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[var(--green-9)]' : 'bg-muted-foreground'}`}
         title={isConnected ? 'Connected' : 'Disconnected'}
       />
       <span className="text-xs text-muted-foreground">
