@@ -3,6 +3,7 @@
 import { useTransition, useEffect, useState } from 'react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Search, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export function TaskSearch() {
   const [isPending, startTransition] = useTransition();
@@ -37,12 +38,12 @@ export function TaskSearch() {
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
         <Search className="w-5 h-5" />
       </div>
-      <input
+      <Input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Search tasks..."
-        className="w-full pl-10 pr-10 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="pl-10 pr-10"
       />
       {inputValue && (
         <button
