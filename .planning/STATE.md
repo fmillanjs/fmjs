@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Milestone: v1.1 - UI/Design System Overhaul
-Phase: 11 - Form Components & Validation
-Plan: 11-04 complete — task-form migrated (3 Shadcn Selects), 6 axe WCAG AA tests passing, human verification approved with fixes
-Status: Phase 11 complete — all 4 plans done (COMP-03 satisfied)
-Last activity: 2026-02-17 — Completed 11-04 Task 3 post-human-verify fixes: autocomplete attrs on 4 auth forms, explicit defaultValues on 7 forms, dueDate/assigneeId defaults fixed in task-form
+Phase: 12 - Critical Route Migration
+Plan: 12-01 complete — AlertDialog, Tabs, and Popover Shadcn components installed (COMP-04 + MIG-02 prerequisites satisfied)
+Status: Phase 12 in progress — 1/9 plans done
+Last activity: 2026-02-17 — Completed 12-01: installed alert-dialog.tsx, tabs.tsx, popover.tsx via shadcn CLI; @radix-ui packages added to package.json
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -80,6 +80,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 11-form-components-validation P02 | 2 | 2 tasks | 6 files |
 | Phase 11-form-components-validation P03 | 2 | 2 tasks | 5 files |
 | Phase 11-form-components-validation P04 | 35 | 3 tasks | 9 files |
+| Phase 12 P01 | 2 | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -270,6 +271,8 @@ Recent decisions affecting current work:
 - [Phase 11-04]: autoComplete attributes: current-password for login fields, new-password for signup/reset/change-new fields, email for email inputs — follows HTML spec for password managers
 - [Phase 11-04]: useForm defaultValues must be explicit empty strings (not undefined) for all text-like inputs — prevents React uncontrolled→controlled warnings on first render
 - [Phase 11-04]: task-form optional fields (dueDate, assigneeId): default to '' not undefined when bound to Shadcn Select or Input type=date
+- [Phase 12-01]: Piped N to shadcn overwrite prompt to preserve Phase 10/11 migrated button.tsx
+- [Phase 12-01]: tabs.tsx and popover.tsx were pre-existing from uncommitted session — shadcn skipped as identical; alert-dialog.tsx newly created
 
 ### Roadmap Evolution
 
@@ -308,10 +311,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 11 Form Components — 11-04 complete, all tasks done)
-Stopped at: Completed 11-04-SUMMARY.md — Phase 11 fully complete
-Status: Phase 11 complete. All 4 plans done. COMP-03 satisfied.
-Next action: Begin Phase 12 planning
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-01 complete)
+Stopped at: Completed 12-01-SUMMARY.md — AlertDialog, Tabs, Popover installed
+Status: Phase 12 in progress. Plan 12-01 done. COMP-04 + MIG-02 prerequisites satisfied.
+Next action: Execute Phase 12 Plan 02
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
