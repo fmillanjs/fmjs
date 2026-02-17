@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 14 in progress
+**Current focus:** v2.0 DevCollab — Phase 14 COMPLETE, Phase 15 next
 
 ## Current Position
 
 Phase: 14 of 21 (Monorepo Scaffold + Infrastructure)
-Plan: 3 of 4 in Phase 14
-Status: In progress
-Last activity: 2026-02-17 — 14-03 complete: docker-compose.yml extended with DevCollab + MinIO services on isolated devcollab-network
+Plan: 4 of 4 in Phase 14 — COMPLETE
+Status: Phase 14 complete
+Last activity: 2026-02-17 — 14-04 complete: CI/CD pipeline extended with build-and-push-devcollab job for devcollab-web and devcollab-api images to GHCR
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 2 plans complete)
 
@@ -35,10 +35,10 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 06.1-user-flow-architecture-audit | 6 | 158 min | 26.3 min |
 | 12-critical-route-migration | 9 | 37 min | 4.1 min |
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
-| 14-monorepo-scaffold-infrastructure | 3 | 3 min | 1.0 min |
+| 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-P02 (1m), 14-P01 (1m), 13-P01 (4m), 13-P02 (25m), 13-P03 (10m)
+- Last 5 plans: 14-P04 (1m), 14-P03 (1m), 14-P02 (1m), 14-P01 (1m), 13-P03 (10m)
 - Trend: Stable — infra/scaffold plans run fast
 
 *Updated after each plan completion*
@@ -68,6 +68,8 @@ Key decisions for v2.0:
 - devcollab-network isolates all DevCollab services; TeamFlow services remain on teamflow-network only (14-03)
 - MinIO --console-address ":9001" flag required — without it console binds to a random port (14-03)
 - Default env var values (:-devcollab, :-minioadmin) allow docker compose up without .env for local dev (14-03)
+- [Phase 14]: build-and-push-devcollab uses needs: [test] only — DevCollab images build independently from Lighthouse CI check
+- [Phase 14]: Both devcollab images built in same CI job as sequential steps — saves CI minutes by sharing checkout, buildx setup, and GHCR login (14-04)
 
 ### Pending Todos
 
@@ -89,6 +91,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 14-03 complete — docker-compose.yml extended with DevCollab + MinIO services (devcollab-postgres:5435, devcollab-migrate, devcollab-api:3003, devcollab-web:3002, devcollab-minio:9002/9003) on devcollab-network
+Stopped at: 14-04 complete — Phase 14 all 4 plans done: Prisma client isolation, app workspaces, Docker Compose services, CI/CD image pipeline
 Resume file: None
-Next action: Execute 14-04 plan
+Next action: Execute Phase 15 plans (DevCollab authentication)
