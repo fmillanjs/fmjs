@@ -48,25 +48,25 @@ export function LoginForm() {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <div className="bg-card shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
       <h2 className="text-2xl font-bold text-center mb-6">Log In</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
             {serverError}
           </div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-1">
             Email
           </label>
           <input
             id="email"
             type="email"
             {...register('email')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
             disabled={isLoading}
           />
           {errors.email && (
@@ -75,14 +75,14 @@ export function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-1">
             Password
           </label>
           <input
             id="password"
             type="password"
             {...register('password')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
             disabled={isLoading}
           />
           {errors.password && (
@@ -110,7 +110,7 @@ export function LoginForm() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
         <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
           Sign up

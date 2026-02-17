@@ -67,9 +67,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="email"
           value={user.email}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-600 dark:text-gray-300 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-border rounded-md text-muted-foreground bg-muted cursor-not-allowed"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Email cannot be changed</p>
+        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
       </div>
 
       <div>
@@ -81,9 +81,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
           type="text"
           value={user.role}
           disabled
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white bg-gray-50 text-gray-600 dark:text-gray-300 cursor-not-allowed"
+          className="w-full px-3 py-2 border border-border rounded-md text-muted-foreground bg-muted cursor-not-allowed"
         />
-        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Role is managed by administrators</p>
+        <p className="text-xs text-muted-foreground mt-1">Role is managed by administrators</p>
       </div>
 
       <div>
@@ -94,7 +94,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           {...register('name')}
           id="name"
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Your name"
         />
         {errors.name && (
@@ -110,7 +110,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           {...register('image')}
           id="image"
           type="url"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://example.com/avatar.jpg"
         />
         {errors.image && (
@@ -119,14 +119,14 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       {errorMessage && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-700 text-sm">{errorMessage}</p>
+        <div className="p-3 bg-[var(--red-3)] border border-[var(--red-6)] rounded-md">
+          <p className="text-[var(--red-11)] text-sm">{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-700 text-sm">{successMessage}</p>
+        <div className="p-3 bg-[var(--green-3)] border border-[var(--green-6)] rounded-md">
+          <p className="text-[var(--green-11)] text-sm">{successMessage}</p>
         </div>
       )}
 

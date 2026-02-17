@@ -72,7 +72,7 @@ export function ChangePasswordForm() {
           {...register('currentPassword')}
           id="currentPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter current password"
         />
         {errors.currentPassword && (
@@ -88,7 +88,7 @@ export function ChangePasswordForm() {
           {...register('newPassword')}
           id="newPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter new password"
         />
         {errors.newPassword && (
@@ -104,7 +104,7 @@ export function ChangePasswordForm() {
           {...register('confirmPassword')}
           id="confirmPassword"
           type="password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Confirm new password"
         />
         {errors.confirmPassword && (
@@ -113,14 +113,14 @@ export function ChangePasswordForm() {
       </div>
 
       {errorMessage && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-700 text-sm">{errorMessage}</p>
+        <div className="p-3 bg-[var(--red-3)] border border-[var(--red-6)] rounded-md">
+          <p className="text-[var(--red-11)] text-sm">{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-700 text-sm">{successMessage}</p>
+        <div className="p-3 bg-[var(--green-3)] border border-[var(--green-6)] rounded-md">
+          <p className="text-[var(--green-11)] text-sm">{successMessage}</p>
         </div>
       )}
 
