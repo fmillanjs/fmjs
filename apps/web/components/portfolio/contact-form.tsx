@@ -6,9 +6,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema, type ContactFormData } from '@/lib/validations/contact';
 import { submitContactForm } from '@/app/actions/contact';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,14 +24,9 @@ export function ContactForm() {
     message: string;
   } | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    setError,
-  } = useForm<ContactFormData>({
+  const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: ContactFormData) => {
@@ -45,7 +47,7 @@ export function ContactForm() {
         type: 'success',
         message: "Message sent! I'll get back to you soon.",
       });
-      reset();
+      form.reset();
     } else {
       if ('_form' in result.errors && result.errors._form) {
         setSubmitStatus({
@@ -57,7 +59,7 @@ export function ContactForm() {
       if (result.errors) {
         Object.entries(result.errors).forEach(([field, messages]) => {
           if (field !== '_form' && messages) {
-            setError(field as keyof ContactFormData, {
+            form.setError(field as keyof ContactFormData, {
               message: messages[0],
             });
           }
@@ -67,67 +69,79 @@ export function ContactForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {submitStatus && (
-        <div
-          className={`rounded-md border px-4 py-3 text-sm ${
-            submitStatus.type === 'success'
-              ? 'border-[var(--green-6)] bg-[var(--green-3)] text-[var(--green-11)]'
-              : 'border-destructive/20 bg-destructive/10 text-destructive'
-          }`}
-        >
-          {submitStatus.message}
-        </div>
-      )}
-
-      <div>
-        <Label htmlFor="name" className="mb-2 block">
-          Name
-        </Label>
-        <Input
-          id="name"
-          type="text"
-          {...register('name')}
-          disabled={isSubmitting}
-        />
-        {errors.name && (
-          <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {submitStatus && (
+          <div
+            role={submitStatus.type === 'error' ? 'alert' : 'status'}
+            className={`rounded-md border px-4 py-3 text-sm ${
+              submitStatus.type === 'success'
+                ? 'border-[var(--green-6)] bg-[var(--green-3)] text-[var(--green-11)]'
+                : 'border-destructive/20 bg-destructive/10 text-destructive'
+            }`}
+          >
+            {submitStatus.message}
+          </div>
         )}
-      </div>
 
-      <div>
-        <Label htmlFor="email" className="mb-2 block">
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          {...register('email')}
-          disabled={isSubmitting}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="text"
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {errors.email && (
-          <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
-        )}
-      </div>
 
-      <div>
-        <Label htmlFor="message" className="mb-2 block">
-          Message
-        </Label>
-        <Textarea
-          id="message"
-          rows={5}
-          {...register('message')}
-          disabled={isSubmitting}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {errors.message && (
-          <p className="mt-1 text-sm text-destructive">{errors.message.message}</p>
-        )}
-      </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? 'Sending...' : 'Send Message'}
-      </Button>
-    </form>
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Message</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  rows={5}
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? 'Sending...' : 'Send Message'}
+        </Button>
+      </form>
+    </Form>
   );
 }

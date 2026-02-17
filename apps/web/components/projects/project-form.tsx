@@ -6,6 +6,17 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 const projectSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be less than 100 characters'),
@@ -28,12 +39,9 @@ export function ProjectForm({ mode, teamId, projectId, defaultValues, onSuccess 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProjectFormData>({
+  const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
+    mode: 'onBlur',
     defaultValues: defaultValues || {
       name: '',
       description: '',
@@ -88,62 +96,66 @@ export function ProjectForm({ mode, teamId, projectId, defaultValues, onSuccess 
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {error && (
-        <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
-          {error}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {error && (
+          <div role="alert" className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Project Name <span className="text-[var(--red-11)]">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder="Enter project name"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  rows={4}
+                  placeholder="Enter project description (optional)"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Project' : 'Save Changes'}
+          </Button>
         </div>
-      )}
-
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-muted-foreground mb-1">
-          Project Name <span className="text-[var(--red-11)]">*</span>
-        </label>
-        <input
-          {...register('name')}
-          type="text"
-          id="name"
-          className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter project name"
-        />
-        {errors.name && (
-          <p className="mt-1 text-sm text-[var(--red-11)]">{errors.name.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-muted-foreground mb-1">
-          Description
-        </label>
-        <textarea
-          {...register('description')}
-          id="description"
-          rows={4}
-          className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter project description (optional)"
-        />
-        {errors.description && (
-          <p className="mt-1 text-sm text-[var(--red-11)]">{errors.description.message}</p>
-        )}
-      </div>
-
-      <div className="flex justify-end gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
-          disabled={isSubmitting}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Project' : 'Save Changes'}
-        </button>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }
