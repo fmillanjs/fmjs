@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 15 of 21 (Authentication System)
-Plan: 2 of 4 in Phase 15 — Plan 02 complete
+Plan: 2 of 5 in Phase 15 — Plans 01 and 02 complete
 Status: Phase 15 in progress
-Last activity: 2026-02-17 — 15-02 complete: Auth dependencies declared, cookie-parser/CORS middleware, @CheckAbility/@CurrentUser decorators, JWT CaslAuthGuard upgraded
+Last activity: 2026-02-17 — 15-01 complete: password column added to User schema, Prisma migration created, DEVCOLLAB_JWT_SECRET and DEVCOLLAB_WEB_URL wired into .env.example and docker-compose.yml
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 4 plans complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 5 plans complete)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -36,10 +36,10 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 12-critical-route-migration | 9 | 37 min | 4.1 min |
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
-| 15-authentication-system | 2 (of 4) | 2 min | 1.0 min |
+| 15-authentication-system | 2 (of 5) | 10 min | 5.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-P02 (2m), 14-P04 (1m), 14-P03 (1m), 14-P02 (1m), 14-P01 (1m)
+- Last 5 plans: 15-P01 (8m), 15-P02 (2m), 14-P04 (1m), 14-P03 (1m), 14-P02 (1m)
 - Trend: Stable — infra/scaffold plans run fast
 
 *Updated after each plan completion*
@@ -71,6 +71,7 @@ Key decisions for v2.0:
 - Default env var values (:-devcollab, :-minioadmin) allow docker compose up without .env for local dev (14-03)
 - [Phase 14]: build-and-push-devcollab uses needs: [test] only — DevCollab images build independently from Lighthouse CI check
 - [Phase 14]: Both devcollab images built in same CI job as sequential steps — saves CI minutes by sharing checkout, buildx setup, and GHCR login (14-04)
+- [Phase 15]: prisma migrate diff --from-empty generates migration SQL without database connection — used when devcollab-postgres not running locally (15-01)
 - [Phase 15]: import * as cookieParser (CommonJS style) required for NestJS cookie-parser — NOT default import (15-02)
 - [Phase 15]: CORS origin uses DEVCOLLAB_WEB_URL env var with localhost:3002 fallback; credentials:true required for httpOnly cookie cross-origin (15-02)
 - [Phase 15]: CaslAuthGuard injects JwtService — DI wiring completes in Plan 03 when AppModule registers global JwtModule (15-02)
@@ -96,6 +97,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 15-02 complete — Auth dependencies, cookie-parser middleware, CORS, @CheckAbility/@CurrentUser decorators, upgraded CaslAuthGuard with JWT verification
+Stopped at: 15-01 complete — Prisma User model with password field, migration file created, DEVCOLLAB_JWT_SECRET and DEVCOLLAB_WEB_URL wired into environment files
 Resume file: None
 Next action: Execute 15-03 (auth feature module: AuthModule, AuthController, login/logout/me endpoints)
