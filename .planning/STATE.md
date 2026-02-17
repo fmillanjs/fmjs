@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-06 complete — TeamMemberList inline confirm div replaced with AlertDialog; role badge spans replaced with Shadcn Badge; showConfirm state deleted
-Status: Phase 12 in progress — 6/9 plans done
-Last activity: 2026-02-17 — Completed 12-06: team-member-list.tsx uses AlertDialog for remove confirmation; Badge for role labels; COMP-04+MIG-02+MIG-03 satisfied
+Plan: 12-07 complete — ProjectCard (Card+Badge), ProjectList (Tabs), ProjectActions (AlertDialog archive + controlled Dialog delete) migrated to Shadcn
+Status: Phase 12 in progress — 7/9 plans done
+Last activity: 2026-02-17 — Completed 12-07: all three project components migrated; showArchiveConfirm/showDeleteConfirm/getElementById DOM manipulation deleted; MIG-02+MIG-03+COMP-04 satisfied
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -86,6 +86,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 12 P04 | 2 | 2 tasks | 2 files |
 | Phase 12 P05 | 1 | 2 tasks | 2 files |
 | Phase 12 P06 | 1 | 1 task | 1 file |
+| Phase 12 P07 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -293,6 +294,9 @@ Recent decisions affecting current work:
 - [Phase 12-06]: AlertDialogTrigger asChild wraps Button for Remove — single trigger element, no wrapper div, correct ARIA wiring
 - [Phase 12-06]: showConfirm state deleted entirely — AlertDialog manages open/close state internally via Radix, no extra boolean needed
 - [Phase 12-06]: Badge variant=outline border-0 override preserves CVA base styles while applying Radix Color tokens via cn()
+- [Phase 12-07]: Controlled Dialog (not AlertDialog) for delete with name verification — AlertDialog does not support Input inside it; controlled Dialog required
+- [Phase 12-07]: deleteOpen + confirmName states replace showDeleteConfirm + DOM getElementById pattern — React-controlled instead of DOM mutation
+- [Phase 12-07]: Tabs defaultValue=ACTIVE replaces filter useState — Radix manages tab state internally, filteredProjects derived state deleted
 
 ### Roadmap Evolution
 
@@ -331,10 +335,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-06 complete)
-Stopped at: Completed 12-06-SUMMARY.md — TeamMemberList AlertDialog + Badge migration; COMP-04 satisfied
-Status: Phase 12 in progress. Plans 12-01 through 12-06 done. COMP-04+MIG-02+MIG-03 satisfied for team-member-list.
-Next action: Execute Phase 12 Plan 07
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-07 complete)
+Stopped at: Completed 12-07-SUMMARY.md — ProjectCard/ProjectList/ProjectActions Shadcn migration
+Status: Phase 12 in progress. Plans 12-01 through 12-07 done. MIG-02+MIG-03+COMP-04 satisfied for all project management components.
+Next action: Execute Phase 12 Plan 08
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
