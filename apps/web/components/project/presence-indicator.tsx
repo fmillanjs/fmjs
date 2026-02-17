@@ -33,7 +33,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
           return (
             <div
               key={user.userId}
-              className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200 dark:border-gray-700`}
+              className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center text-white text-xs font-medium border-2 border-border`}
               title={displayName}
             >
               {initial}
@@ -42,7 +42,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
         })}
         {remainingCount > 0 && (
           <div
-            className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200 dark:border-gray-700"
+            className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-medium border-2 border-border"
             title={`${remainingCount} more ${remainingCount === 1 ? 'user' : 'users'}`}
           >
             +{remainingCount}
@@ -51,7 +51,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
       </div>
 
       {/* User count text */}
-      <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+      <span className="text-sm text-muted-foreground">
         {count} active {count === 1 ? 'user' : 'users'}
       </span>
     </div>
