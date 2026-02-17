@@ -7,7 +7,7 @@ import { createTaskSchema, updateTaskSchema, CreateTaskInput, UpdateTaskInput } 
 import { TaskStatus, TaskPriority } from '@repo/shared/types/enums';
 import { LabelBase, TaskWithRelations } from '@repo/shared/types';
 import { api } from '@/lib/api';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +27,8 @@ interface TaskFormProps {
   projectId: string;
   teamMembers: Array<{ id: string; name: string | null; email: string; image: string | null }>;
   labels: LabelBase[];
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   prefilledStatus?: TaskStatus;
 }
@@ -38,7 +39,8 @@ export function TaskForm({
   projectId,
   teamMembers,
   labels,
-  onClose,
+  open,
+  onOpenChange,
   onSuccess,
   prefilledStatus,
 }: TaskFormProps) {
@@ -84,7 +86,7 @@ export function TaskForm({
       }
 
       onSuccess();
-      onClose();
+      onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save task');
     } finally {
@@ -105,31 +107,22 @@ export function TaskForm({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-foreground">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
             {mode === 'create' ? 'Create Task' : 'Edit Task'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            type="button"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+          </DialogTitle>
+          <DialogDescription>
+            {mode === 'create'
+              ? 'Add a new task to this project.'
+              : 'Update the task details below.'}
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {error && (
               <div role="alert" className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
                 {error}
@@ -259,14 +252,14 @@ export function TaskForm({
 
             {/* Actions */}
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Task' : 'Save Changes'}
               </Button>
             </div>
           </form>
         </Form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
