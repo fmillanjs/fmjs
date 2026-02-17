@@ -6,18 +6,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPasswordRequestSchema, type ResetPasswordRequestDto } from '@repo/shared/validators';
 import { requestPasswordReset } from '@/app/(auth)/reset-password/actions';
 import Link from 'next/link';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export function ResetPasswordRequestForm() {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordRequestDto>({
+  const form = useForm<ResetPasswordRequestDto>({
     resolver: zodResolver(resetPasswordRequestSchema),
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: ResetPasswordRequestDto) => {
@@ -40,48 +40,44 @@ export function ResetPasswordRequestForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email Address
-        </label>
-        <input
-          {...register('email')}
-          id="email"
-          type="email"
-          className="w-full px-3 py-2 border border-border rounded-md text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="you@example.com"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email Address</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {errors.email && (
-          <p className="text-[var(--red-11)] text-sm mt-1">{errors.email.message}</p>
+
+        {errorMessage && (
+          <div role="alert" className="p-3 bg-[var(--red-3)] border border-[var(--red-6)] rounded-md">
+            <p className="text-[var(--red-11)] text-sm">{errorMessage}</p>
+          </div>
         )}
-      </div>
 
-      {errorMessage && (
-        <div className="p-3 bg-[var(--red-3)] border border-[var(--red-6)] rounded-md">
-          <p className="text-[var(--red-11)] text-sm">{errorMessage}</p>
+        {successMessage && (
+          <div role="status" className="p-3 bg-[var(--green-3)] border border-[var(--green-6)] rounded-md">
+            <p className="text-[var(--green-11)] text-sm">{successMessage}</p>
+          </div>
+        )}
+
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+        </Button>
+
+        <div className="text-center text-sm">
+          <Link href="/login" className="text-primary hover:text-primary/80">
+            Back to Login
+          </Link>
         </div>
-      )}
-
-      {successMessage && (
-        <div className="p-3 bg-[var(--green-3)] border border-[var(--green-6)] rounded-md">
-          <p className="text-[var(--green-11)] text-sm">{successMessage}</p>
-        </div>
-      )}
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isSubmitting ? 'Sending...' : 'Send Reset Link'}
-      </button>
-
-      <div className="text-center text-sm">
-        <Link href="/login" className="text-primary hover:text-primary/80">
-          Back to Login
-        </Link>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }
