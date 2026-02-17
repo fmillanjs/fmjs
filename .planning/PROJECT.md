@@ -8,6 +8,19 @@ A professional portfolio website showcasing TeamFlow—a production-quality work
 
 Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
+## Current Milestone: v1.1 - UI/Design System Overhaul
+
+**Goal:** Establish a production-ready design system foundation with WCAG AA compliance and accessibility-first components.
+
+**Target features:**
+- WCAG AA color compliance (4.5:1 text contrast, 3:1 UI element contrast)
+- Fix Tailwind v4 configuration (CSS pipeline working correctly)
+- Shadcn UI integration (adopt as design system foundation)
+- Semantic design tokens (CSS variables for consistent theming)
+- Accessibility-first component library (forms, buttons, modals, all core UI)
+
+**Context:** Addresses critical blocker from Phase 07.1-03 where spot fixes failed due to systemic design issues. Establishes proper foundations that make WCAG compliance built-in rather than retrofitted.
+
 ## Requirements
 
 ### Validated
@@ -16,22 +29,24 @@ Prove senior full-stack engineering skills through a deployed, production-ready 
 
 ### Active
 
-- [ ] TeamFlow authentication with NextAuth
-- [ ] RBAC system (Admin, Manager, Member roles)
-- [ ] Team management and workspace creation
-- [ ] Project creation and management
-- [ ] Kanban board with drag-and-drop
-- [ ] Task CRUD operations
-- [ ] Real-time updates via WebSockets
-- [ ] Audit log (activity tracking)
-- [ ] Seeded demo workspace with sample data
-- [ ] Portfolio website with professional design
-- [ ] TeamFlow case study page (problem, solution, architecture, tech decisions)
-- [ ] Production polish (dark mode, loading states, error handling, empty states)
-- [ ] Responsive design (mobile-friendly)
-- [ ] Clean GitHub repository
-- [ ] API documentation
-- [ ] Proper 404/500 error pages
+**v1.1 Requirements (UI/Design System Overhaul):**
+- [ ] WCAG AA color palette implementation
+- [ ] Semantic design token system (CSS variables)
+- [ ] Shadcn UI integration and configuration
+- [ ] Tailwind v4 configuration fixes (CSS pipeline)
+- [ ] Accessibility-first form components (inputs, selects, textareas)
+- [ ] Accessibility-first button components with focus states
+- [ ] Accessibility-first modal/dialog components
+- [ ] Comprehensive dark mode implementation
+- [ ] Component library documentation
+- [ ] Regression testing suite (ensure no feature breakage)
+
+### Deferred (Post-v1.1)
+
+**v1.0 Incomplete Requirements** (deferred until design system complete):
+- Real-time collaboration UI fixes (conflict indicators, presence avatars with proper contrast)
+- WCAG compliance retrofitting (superseded by v1.1 design system)
+- Additional v1.0 polish items requiring design system foundation
 
 ### Out of Scope
 
@@ -72,4 +87,4 @@ Prove senior full-stack engineering skills through a deployed, production-ready 
 | Demo workspace seeding | Recruiters can immediately interact without setup friction | — Pending |
 
 ---
-*Last updated: 2026-02-14 after initialization*
+*Last updated: 2026-02-16 after milestone v1.1 started*

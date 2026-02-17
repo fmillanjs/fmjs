@@ -6,14 +6,15 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v1.1 - Phase 6 - Authentication Fixes (in progress)
+**Current focus:** v1.1 - UI/Design System Overhaul
 
 ## Current Position
 
-Milestone: v1.0 INCOMPLETE (79%) — Phase 3 gap closure in progress
-Phase: 07.1 (Phase 3 Gap Closure - Real-Time Collaboration Fixes) — IN PROGRESS (2/3 plans complete)
-Status: Wave 2 complete - Conflict detection logic fixed and verified
-Last activity: 2026-02-16 — Completed 07.1-02 Conflict Detection Logic Fixes
+Milestone: v1.1 - UI/Design System Overhaul
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-16 — Milestone v1.1 started
 
 Progress: [████████░░] v1.0: 79% (55/67 requirements) | Phase 07.1: 2/3 (67%)
 
