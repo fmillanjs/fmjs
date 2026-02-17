@@ -122,7 +122,7 @@ export function Header({ user }: HeaderProps) {
 
                   <button
                     onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-accent"
+                    className="block w-full text-left px-4 py-2 text-sm text-[var(--red-11)] hover:bg-accent"
                   >
                     Logout
                   </button>

@@ -63,7 +63,7 @@ export function TeamForm() {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-red-400"
+                className="h-5 w-5 text-[var(--red-9)]"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -87,7 +87,7 @@ export function TeamForm() {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-green-400"
+                className="h-5 w-5 text-[var(--green-9)]"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >

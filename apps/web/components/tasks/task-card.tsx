@@ -109,7 +109,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
         <div className="flex items-center gap-3">
           {task.dueDate && (
             <div
-              className={`flex items-center gap-1 ${isOverdue ? 'text-red-600 font-medium' : ''}`}
+              className={`flex items-center gap-1 ${isOverdue ? 'text-[var(--red-11)] font-medium' : ''}`}
             >
               <Calendar className="w-3 h-3" />
               <span>{formatDistanceToNow(new Date(task.dueDate), { addSuffix: true })}</span>
