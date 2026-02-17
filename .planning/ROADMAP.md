@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: Component Migration (Portfolio)** - Migrate low-risk portfolio pages to validate new components (completed 2026-02-17)
 - [x] **Phase 11: Form Components & Validation** - Replace all forms with accessible Shadcn Form components (completed 2026-02-17)
 - [x] **Phase 12: Critical Route Migration** - Migrate team/task features to new components and remove old code (completed 2026-02-17)
-- [ ] **Phase 13: Automation & Optimization** - Add automated accessibility testing and bundle optimization
+- [x] **Phase 13: Automation & Optimization** - Add automated accessibility testing and bundle optimization (completed 2026-02-17)
 
 ## Phase Details
 
@@ -378,12 +378,12 @@ Plans:
   4. Playwright visual regression suite captures screenshots of all major routes in both themes
   5. Lighthouse performance score ≥90 for all critical routes
 
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 13-01-PLAN.md — Dashboard visual regression spec + CI split into named accessibility/visual regression steps (MIG-04)
-- [ ] 13-02-PLAN.md — Fix 3 deprecated task imports + ESLint governance hardening + @next/bundle-analyzer integration (COMP-05)
-- [ ] 13-03-PLAN.md — Lighthouse CI config + lighthouse job in deploy.yml + human verification checkpoint (MIG-04)
+- [x] 13-01-PLAN.md — Dashboard visual regression spec + CI split into named accessibility/visual regression steps (MIG-04)
+- [x] 13-02-PLAN.md — Fix 3 deprecated task imports + ESLint governance hardening + @next/bundle-analyzer integration (COMP-05)
+- [x] 13-03-PLAN.md — Lighthouse CI config + lighthouse job in deploy.yml + human verification checkpoint (MIG-04)
 
 ## Progress
 
@@ -408,4 +408,4 @@ Decimal phases like 2.1 execute between their surrounding integers.
 | 10. Component Migration (Portfolio) | 0/4 | Complete    | 2026-02-17 |
 | 11. Form Components & Validation | 0/0 | Complete    | 2026-02-17 |
 | 12. Critical Route Migration | 0/9 | Complete    | 2026-02-17 |
-| 13. Automation & Optimization | 0/0 | Not started | - |
+| 13. Automation & Optimization | 3/3 | ✓ Complete | 2026-02-17 |
