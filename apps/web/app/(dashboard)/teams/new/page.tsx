@@ -33,7 +33,7 @@ export default function NewTeamPage() {
 
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Create a New Team</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create a New Team</h1>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
           Set up a team to collaborate with others on projects and tasks.
         </p>

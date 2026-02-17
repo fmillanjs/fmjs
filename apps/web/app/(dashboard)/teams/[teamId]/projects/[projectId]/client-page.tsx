@@ -169,7 +169,7 @@ export function ClientProjectPage({
           Projects
         </Link>
         <span>›</span>
-        <span className="text-gray-900 font-medium">{project.name}</span>
+        <span className="text-gray-900 dark:text-white font-medium">{project.name}</span>
       </nav>
 
       {/* Project Header */}
@@ -177,7 +177,7 @@ export function ClientProjectPage({
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
               <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
                 {project.status}
               </span>
@@ -226,23 +226,23 @@ export function ClientProjectPage({
         {/* Task Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
           <div className="bg-gray-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-gray-900">{taskStats.total}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{taskStats.total}</div>
             <div className="text-sm text-gray-600 dark:text-gray-300">Total Tasks</div>
           </div>
           <div className="bg-blue-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-900">{taskStats.todo}</div>
+            <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">{taskStats.todo}</div>
             <div className="text-sm text-blue-600">To Do</div>
           </div>
           <div className="bg-yellow-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-yellow-900">{taskStats.inProgress}</div>
+            <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">{taskStats.inProgress}</div>
             <div className="text-sm text-yellow-600">In Progress</div>
           </div>
           <div className="bg-green-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-900">{taskStats.done}</div>
+            <div className="text-2xl font-bold text-green-900 dark:text-green-200">{taskStats.done}</div>
             <div className="text-sm text-green-600">Done</div>
           </div>
           <div className="bg-red-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-red-900">{taskStats.blocked}</div>
+            <div className="text-2xl font-bold text-red-900 dark:text-red-200">{taskStats.blocked}</div>
             <div className="text-sm text-red-600">Blocked</div>
           </div>
         </div>

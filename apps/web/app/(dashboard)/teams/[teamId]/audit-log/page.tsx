@@ -73,7 +73,7 @@ export default async function AuditLogPage({
             {team.name}
           </Link>
           <span>›</span>
-          <span className="text-gray-900 font-medium">Audit Log</span>
+          <span className="text-gray-900 dark:text-white font-medium">Audit Log</span>
         </nav>
 
         {/* Access Denied */}
@@ -91,7 +91,7 @@ export default async function AuditLogPage({
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Access Denied</h3>
+          <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">Access Denied</h3>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Only administrators can access the audit log.
           </p>
@@ -130,14 +130,14 @@ export default async function AuditLogPage({
           {team.name}
         </Link>
         <span>›</span>
-        <span className="text-gray-900 font-medium">Audit Log</span>
+        <span className="text-gray-900 dark:text-white font-medium">Audit Log</span>
       </nav>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">Audit Log</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Log</h1>
             <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded flex items-center gap-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path

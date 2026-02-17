@@ -39,7 +39,7 @@ export default async function TeamsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Teams</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Teams</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             Manage your teams and collaborate with team members
           </p>
@@ -98,7 +98,7 @@ export default async function TeamsPage() {
                   <div className="ml-5 w-0 flex-1">
                     <dl>
                       <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Team</dt>
-                      <dd className="text-lg font-semibold text-gray-900 truncate">
+                      <dd className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                         {team.name}
                       </dd>
                     </dl>

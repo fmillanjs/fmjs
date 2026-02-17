@@ -73,13 +73,13 @@ export default async function ProjectActivityPage({
           {project.name}
         </Link>
         <span>›</span>
-        <span className="text-gray-900 font-medium">Activity</span>
+        <span className="text-gray-900 dark:text-white font-medium">Activity</span>
       </nav>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Activity</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Activity</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             Recent activity for {project.name}
           </p>
