@@ -86,6 +86,8 @@ services:
       NODE_ENV: production
       PORT: 3003
       DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER:-devcollab}:${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB:-devcollab}
+      DEVCOLLAB_JWT_SECRET: ${DEVCOLLAB_JWT_SECRET}
+      DEVCOLLAB_WEB_URL: ${DEVCOLLAB_WEB_URL:-http://localhost:3002}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
       interval: 10s
