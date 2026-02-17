@@ -133,7 +133,7 @@ export function ClientProjectPage({
   if (loading || !project) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">Loading project...</div>
+        <div className="text-muted-foreground">Loading project...</div>
       </div>
     );
   }
@@ -155,40 +155,42 @@ export function ClientProjectPage({
   };
 
   const statusColor =
-    project.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+    project.status === 'ACTIVE'
+      ? 'bg-[var(--green-3)] text-[var(--green-11)]'
+      : 'bg-muted text-muted-foreground';
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-        <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href={`/teams/${teamId}`} className="hover:text-foreground">
           Team
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects`} className="hover:text-foreground">
           Projects
         </Link>
         <span>›</span>
-        <span className="text-gray-900 dark:text-white font-medium">{project.name}</span>
+        <span className="text-foreground font-medium">{project.name}</span>
       </nav>
 
       {/* Project Header */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-card shadow rounded-lg p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{project.name}</h1>
               <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
                 {project.status}
               </span>
               <ProjectHeaderClient projectId={projectId} />
             </div>
-            {project.description && <p className="text-gray-600">{project.description}</p>}
+            {project.description && <p className="text-muted-foreground">{project.description}</p>}
           </div>
           <div className="flex gap-2">
             <Link
               href={`/teams/${teamId}/projects/${projectId}/activity`}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -202,7 +204,7 @@ export function ClientProjectPage({
             </Link>
             <Link
               href={`/teams/${teamId}/projects/${projectId}/settings`}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -225,9 +227,9 @@ export function ClientProjectPage({
 
         {/* Task Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{taskStats.total}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Tasks</div>
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-2xl font-bold text-foreground">{taskStats.total}</div>
+            <div className="text-sm text-muted-foreground">Total Tasks</div>
           </div>
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">{taskStats.todo}</div>

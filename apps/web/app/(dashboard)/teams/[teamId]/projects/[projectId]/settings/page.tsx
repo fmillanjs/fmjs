@@ -56,20 +56,20 @@ export default async function ProjectSettingsPage({
   return (
     <div className="max-w-3xl space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-        <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href={`/teams/${teamId}`} className="hover:text-foreground">
           Team
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects`} className="hover:text-foreground">
           Projects
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects/${projectId}`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects/${projectId}`} className="hover:text-foreground">
           {project.name}
         </Link>
         <span>›</span>
-        <span className="text-gray-900 font-medium">Settings</span>
+        <span className="text-foreground font-medium">Settings</span>
       </nav>
 
       {/* Back Link */}
@@ -83,8 +83,8 @@ export default async function ProjectSettingsPage({
       </div>
 
       {/* Edit Form */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Project Settings</h1>
+      <div className="bg-card shadow rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-foreground mb-6">Project Settings</h1>
         <ProjectForm
           mode="edit"
           projectId={projectId}
@@ -97,7 +97,7 @@ export default async function ProjectSettingsPage({
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white shadow rounded-lg p-6 border-2 border-red-200">
+      <div className="bg-card shadow rounded-lg p-6 border-2 border-red-200">
         <h2 className="text-xl font-bold text-red-900 mb-4">Danger Zone</h2>
         <ProjectActions
           projectId={projectId}
