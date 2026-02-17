@@ -60,8 +60,8 @@ export default async function ProjectsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Projects</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Manage your team's projects and tasks
           </p>
         </div>

@@ -27,8 +27,8 @@ export default async function NewProjectPage({
         </Link>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">New Project</h1>
+      <div className="bg-card shadow rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-foreground mb-6">New Project</h1>
         <ProjectForm mode="create" teamId={teamId} />
       </div>
     </div>
