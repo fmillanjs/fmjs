@@ -45,7 +45,7 @@ export default async function TeamSettingsPage({
 
   if (error || !team) {
     return (
-      <div className="bg-white shadow rounded-lg p-8 text-center">
+      <div className="bg-card shadow rounded-lg p-8 text-center">
         <svg
           className="mx-auto h-12 w-12 text-red-400"
           fill="none"
@@ -57,8 +57,8 @@ export default async function TeamSettingsPage({
         >
           <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{error || 'Team not found'}</p>
+        <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
         <div className="mt-6">
           <Link
             href="/teams"
@@ -88,14 +88,14 @@ export default async function TeamSettingsPage({
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
           <li>
-            <Link href="/teams" className="text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
+            <Link href="/teams" className="text-muted-foreground hover:text-foreground">
               <span className="text-sm font-medium">Teams</span>
             </Link>
           </li>
           <li>
             <div className="flex items-center">
               <svg
-                className="flex-shrink-0 h-5 w-5 text-gray-300"
+                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -107,7 +107,7 @@ export default async function TeamSettingsPage({
               </svg>
               <Link
                 href={`/teams/${team.id}`}
-                className="ml-4 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
+                className="ml-4 text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 {team.name}
               </Link>
@@ -116,7 +116,7 @@ export default async function TeamSettingsPage({
           <li>
             <div className="flex items-center">
               <svg
-                className="flex-shrink-0 h-5 w-5 text-gray-300"
+                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -126,7 +126,7 @@ export default async function TeamSettingsPage({
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="ml-4 text-sm font-medium text-gray-600 dark:text-gray-300">Settings</span>
+              <span className="ml-4 text-sm font-medium text-muted-foreground">Settings</span>
             </div>
           </li>
         </ol>
@@ -134,16 +134,16 @@ export default async function TeamSettingsPage({
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Team Settings</h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+        <h1 className="text-2xl font-bold text-foreground">Team Settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage team members and permissions
         </p>
       </div>
 
       {/* Member Management */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-card shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
             Invite Team Members
           </h3>
           <InviteMemberForm teamId={team.id} />
@@ -152,7 +152,7 @@ export default async function TeamSettingsPage({
 
       {/* Team Members List */}
       <div>
-        <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
           Team Members ({team.members.length})
         </h3>
         <TeamMemberList

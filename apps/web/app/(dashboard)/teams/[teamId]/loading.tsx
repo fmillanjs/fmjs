@@ -4,7 +4,7 @@ export default function TeamLoading() {
   return (
     <div>
       {/* Team header skeleton */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-6 mb-6">
         <Skeleton className="h-8 w-64 mb-2" />
         <Skeleton className="h-4 w-48" />
       </div>
@@ -16,11 +16,11 @@ export default function TeamLoading() {
       </div>
 
       {/* Member list skeletons */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-card rounded-lg border border-border">
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+            className="flex items-center justify-between p-4 border-b border-border last:border-b-0"
           >
             <div className="flex items-center gap-3">
               <Skeleton className="h-10 w-10 rounded-full" />

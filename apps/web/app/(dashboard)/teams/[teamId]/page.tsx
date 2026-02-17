@@ -58,7 +58,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
   if (error || !team) {
     return (
-      <div className="bg-white shadow rounded-lg p-8 text-center">
+      <div className="bg-card shadow rounded-lg p-8 text-center">
         <svg
           className="mx-auto h-12 w-12 text-red-400"
           fill="none"
@@ -70,8 +70,8 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
         >
           <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{error || 'Team not found'}</p>
+        <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
         <div className="mt-6">
           <Link
             href="/teams"
@@ -97,14 +97,14 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
           <li>
-            <Link href="/teams" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+            <Link href="/teams" className="text-muted-foreground hover:text-foreground">
               <span className="text-sm font-medium">Teams</span>
             </Link>
           </li>
           <li>
             <div className="flex items-center">
               <svg
-                className="flex-shrink-0 h-5 w-5 text-gray-300"
+                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -114,7 +114,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="ml-4 text-sm font-medium text-gray-900 dark:text-white dark:text-white">{team.name}</span>
+              <span className="ml-4 text-sm font-medium text-foreground">{team.name}</span>
             </div>
           </li>
         </ol>
@@ -123,8 +123,8 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{team.name}</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <h1 className="text-2xl font-bold text-foreground">{team.name}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Team created on {new Date(team.createdAt).toLocaleDateString()}
           </p>
         </div>
@@ -132,7 +132,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           {currentUserRole === 'ADMIN' && (
             <Link
               href={`/teams/${team.id}/audit-log`}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
             >
               <svg
                 className="-ml-1 mr-2 h-5 w-5"
@@ -150,7 +150,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           )}
           <Link
             href={`/teams/${team.id}/settings`}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
           >
             <svg
               className="-ml-1 mr-2 h-5 w-5"
@@ -171,7 +171,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -189,15 +189,15 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Members</dt>
-                  <dd className="text-lg font-semibold text-gray-900 dark:text-white">{team.members.length}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Members</dt>
+                  <dd className="text-lg font-semibold text-foreground">{team.members.length}</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -215,15 +215,15 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Projects</dt>
-                  <dd className="text-lg font-semibold text-gray-900 dark:text-white">0</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Projects</dt>
+                  <dd className="text-lg font-semibold text-foreground">0</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -241,8 +241,8 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Tasks</dt>
-                  <dd className="text-lg font-semibold text-gray-900 dark:text-white">0</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Tasks</dt>
+                  <dd className="text-lg font-semibold text-foreground">0</dd>
                 </dl>
               </div>
             </div>
@@ -253,7 +253,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
       {/* Projects Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Projects</h3>
+          <h3 className="text-lg leading-6 font-medium text-foreground">Projects</h3>
           <Link
             href={`/teams/${team.id}/projects/new`}
             className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
@@ -262,7 +262,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           </Link>
         </div>
         {projects.length === 0 ? (
-          <div className="bg-white shadow rounded-lg p-8">
+          <div className="bg-card shadow rounded-lg p-8">
             <EmptyState
               icon={FolderOpen}
               title="No projects"
@@ -283,19 +283,19 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               <Link
                 key={project.id}
                 href={`/teams/${team.id}/projects/${project.id}`}
-                className="bg-white shadow rounded-lg p-5 hover:shadow-md transition"
+                className="bg-card shadow rounded-lg p-5 hover:shadow-md transition"
               >
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{project.name}</h4>
+                <h4 className="text-lg font-semibold text-foreground mb-1">{project.name}</h4>
                 {project.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{project.description}</p>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{project.description}</p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600 dark:text-gray-300">{project._count?.tasks ?? 0} tasks</span>
+                  <span className="text-xs text-muted-foreground">{project._count?.tasks ?? 0} tasks</span>
                   <span
                     className={`text-xs px-2 py-1 rounded ${
                       project.status === 'ACTIVE'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-[var(--green-3)] text-[var(--green-11)]'
+                        : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {project.status}
@@ -319,9 +319,9 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
       {/* Invite Members (for Admin/Manager) */}
       {canInvite && (
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-card shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+            <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
               Invite Team Members
             </h3>
             <InviteMemberForm teamId={team.id} />
@@ -331,7 +331,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
       {/* Team Members */}
       <div>
-        <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Team Members</h3>
+        <h3 className="text-lg leading-6 font-medium text-foreground mb-4">Team Members</h3>
         <TeamMemberList
           teamId={team.id}
           members={team.members}
