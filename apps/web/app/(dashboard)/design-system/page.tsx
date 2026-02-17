@@ -146,20 +146,20 @@ export default function DesignSystemPage() {
         <h2 className="text-xl font-semibold text-foreground">Color Tokens</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { name: "background", bg: "bg-background", border: true },
-            { name: "card", bg: "bg-card", border: true },
-            { name: "primary", bg: "bg-primary" },
-            { name: "secondary", bg: "bg-secondary", border: true },
-            { name: "muted", bg: "bg-muted", border: true },
-            { name: "accent", bg: "bg-accent", border: true },
-            { name: "destructive", bg: "bg-destructive" },
-            { name: "border", bg: "bg-border" },
-          ].map(({ name, bg, border }) => (
+            { name: "background", bg: "bg-background", border: true, label: "text-foreground" },
+            { name: "card", bg: "bg-card", border: true, label: "text-foreground" },
+            { name: "primary", bg: "bg-primary", label: "text-primary-foreground" },
+            { name: "secondary", bg: "bg-secondary", border: true, label: "text-secondary-foreground" },
+            { name: "muted", bg: "bg-muted", border: true, label: "text-muted-foreground" },
+            { name: "accent", bg: "bg-accent", border: true, label: "text-accent-foreground" },
+            { name: "destructive", bg: "bg-destructive", label: "text-destructive-foreground" },
+            { name: "border", bg: "bg-border", label: "text-foreground" },
+          ].map(({ name, bg, border, label }) => (
             <div
               key={name}
               className={`h-16 rounded-md flex items-center justify-center text-xs font-medium ${bg} ${border ? "border border-border" : ""}`}
             >
-              <span className="text-foreground mix-blend-difference">{name}</span>
+              <span className={label}>{name}</span>
             </div>
           ))}
         </div>
