@@ -23,7 +23,7 @@ const statusOptions = [
 const priorityOptions = [
   { value: TaskPriority.LOW, label: 'Low', color: 'bg-muted text-muted-foreground' },
   { value: TaskPriority.MEDIUM, label: 'Medium', color: 'bg-[var(--amber-3)] text-[var(--amber-11)]' },
-  { value: TaskPriority.HIGH, label: 'High', color: 'bg-orange-100 text-orange-700' },
+  { value: TaskPriority.HIGH, label: 'High', color: 'bg-[var(--amber-3)] text-[var(--amber-11)]' },
   { value: TaskPriority.URGENT, label: 'Urgent', color: 'bg-[var(--red-3)] text-[var(--red-11)]' },
 ];
 
@@ -133,7 +133,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
           >
             Status
             {filters.status && filters.status.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+              <span className="px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
                 {filters.status.length}
               </span>
             )}
@@ -171,7 +171,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
           >
             Priority
             {filters.priority && filters.priority.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+              <span className="px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
                 {filters.priority.length}
               </span>
             )}
@@ -209,7 +209,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
           >
             Assignee
             {filters.assignee && (
-              <span className="px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded-full">1</span>
+              <span className="px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">1</span>
             )}
             <ChevronDown className="w-4 h-4" />
           </button>
@@ -219,7 +219,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
                 <button
                   onClick={() => setAssignee('')}
                   className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded text-left ${
-                    !filters.assignee ? 'bg-blue-50' : ''
+                    !filters.assignee ? 'bg-accent' : ''
                   }`}
                 >
                   <span className="text-sm text-muted-foreground">All Assignees</span>
@@ -229,7 +229,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
                     key={member.id}
                     onClick={() => setAssignee(member.id)}
                     className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded ${
-                      filters.assignee === member.id ? 'bg-blue-50' : ''
+                      filters.assignee === member.id ? 'bg-accent' : ''
                     }`}
                   >
                     {member.image ? (
@@ -239,7 +239,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
                         className="w-6 h-6 rounded-full"
                       />
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
+                      <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
                         {member.name?.charAt(0).toUpperCase() || 'U'}
                       </div>
                     )}
@@ -259,7 +259,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
           >
             Labels
             {filters.labels && filters.labels.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+              <span className="px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
                 {filters.labels.length}
               </span>
             )}
@@ -312,7 +312,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
                     key={option.value}
                     onClick={() => setSortBy(option.value)}
                     className={`w-full text-left px-2 py-1.5 hover:bg-muted/50 rounded text-sm ${
-                      filters.sortBy === option.value ? 'bg-blue-50 text-blue-700' : 'text-muted-foreground'
+                      filters.sortBy === option.value ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
                     }`}
                   >
                     {option.label}
@@ -345,7 +345,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
 
         {/* Active Filter Count Badge */}
         {hasActiveFilters && (
-          <div className="ml-auto px-2 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded">
+          <div className="ml-auto px-2 py-1 bg-accent text-accent-foreground text-sm font-medium rounded">
             {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} active
           </div>
         )}

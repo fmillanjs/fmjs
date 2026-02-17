@@ -141,7 +141,7 @@ export function ActivityItem({ activity }: ActivityItemProps) {
             className="w-8 h-8 rounded-full"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
             {activity.actor.name?.[0]?.toUpperCase() || '?'}
           </div>
         )}

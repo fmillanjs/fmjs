@@ -287,7 +287,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                               className="w-6 h-6 rounded-full mr-2"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs mr-2">
+                            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs mr-2">
                               {entry.actor.name?.[0]?.toUpperCase() || '?'}
                             </div>
                           )}

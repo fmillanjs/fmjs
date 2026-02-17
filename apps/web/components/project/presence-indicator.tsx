@@ -7,7 +7,8 @@ interface PresenceIndicatorProps {
   projectId: string;
 }
 
-const AVATAR_COLORS = ['bg-blue-500', 'bg-green-500', 'bg-orange-500'];
+const AVATAR_COLORS = ['bg-primary', 'bg-[var(--green-9)]', 'bg-[var(--amber-9)]'];
+const AVATAR_TEXT_COLORS = ['text-primary-foreground', 'text-white', 'text-white'];
 
 export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
   const { activeUsers, count } = useProjectPresence(projectId);
@@ -27,13 +28,14 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
       <div className="flex -space-x-2">
         {displayedUsers.map((user, index) => {
           const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
+          const textClass = AVATAR_TEXT_COLORS[index % AVATAR_TEXT_COLORS.length];
           const initial = (user.name?.[0] || user.email[0] || '?').toUpperCase();
           const displayName = user.name || user.email;
 
           return (
             <div
               key={user.userId}
-              className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center text-white text-xs font-medium border-2 border-border`}
+              className={`w-8 h-8 rounded-full ${colorClass} ${textClass} flex items-center justify-center text-xs font-medium border-2 border-border`}
               title={displayName}
             >
               {initial}

@@ -221,7 +221,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
                     className="w-8 h-8 rounded-full border-2 border-border"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium border-2 border-border">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium border-2 border-border">
                     {entry.actor.name?.[0]?.toUpperCase() || '?'}
                   </div>
                 )}
