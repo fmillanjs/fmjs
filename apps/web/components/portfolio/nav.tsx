@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -41,13 +42,13 @@ export function PortfolioNav() {
                   'text-sm font-medium transition-colors hover:text-primary',
                   pathname === link.href
                     ? 'text-primary'
-                    : 'text-gray-600 dark:text-gray-300'
+                    : 'text-muted-foreground'
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-gray-600 dark:text-gray-300">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
               <span className="text-xs">⌘</span>K
             </kbd>
             <ThemeToggle />
@@ -56,9 +57,10 @@ export function PortfolioNav() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
             <ThemeToggle />
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? (
@@ -66,7 +68,7 @@ export function PortfolioNav() {
               ) : (
                 <Menu className="w-6 h-6" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -84,7 +86,7 @@ export function PortfolioNav() {
                   'block px-3 py-2 rounded-lg text-base font-medium transition-colors',
                   pathname === link.href
                     ? 'bg-primary/10 text-primary'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-muted'
+                    : 'text-muted-foreground hover:bg-muted'
                 )}
               >
                 {link.label}

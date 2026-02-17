@@ -1,3 +1,5 @@
+import { Card, CardContent } from '@/components/ui/card';
+
 const technologies = [
   // Frontend
   { name: 'Next.js', category: 'Frontend' },
@@ -22,17 +24,19 @@ export function TechStack() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {technologies.map((tech) => (
-        <div
+        <Card
           key={tech.name}
-          className="border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all bg-card"
+          className="hover:border-primary/50 hover:shadow-md transition-all"
         >
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {tech.category}
-          </div>
-          <div className="text-lg font-semibold text-foreground">
-            {tech.name}
-          </div>
-        </div>
+          <CardContent className="p-4">
+            <div className="text-sm font-medium text-muted-foreground mb-1">
+              {tech.category}
+            </div>
+            <div className="text-lg font-semibold text-foreground">
+              {tech.name}
+            </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

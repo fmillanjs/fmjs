@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export function HeroSection() {
   return (
@@ -11,26 +12,20 @@ export function HeroSection() {
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-12">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
           Specializing in Next.js, NestJS, TypeScript, and real-time collaboration systems.
           I build scalable, production-ready applications with clean architecture and type safety.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/about"
-            className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Learn More
-          </Link>
-          <a
-            href="https://github.com/fernandomillan"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            View GitHub
-          </a>
+          <Button asChild size="lg">
+            <Link href="/about">Learn More</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <a href="https://github.com/fernandomillan" target="_blank" rel="noopener noreferrer">
+              View GitHub
+            </a>
+          </Button>
         </div>
       </div>
     </section>
