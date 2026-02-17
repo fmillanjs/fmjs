@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { AuditLogTable } from '@/components/activity/audit-log-table';
 import { AuditOutcome } from '@repo/shared/types';
+import { Lock, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Team {
   id: string;
@@ -78,30 +80,18 @@ export default async function AuditLogPage({
 
         {/* Access Denied */}
         <div className="bg-card shadow rounded-lg p-12 text-center">
-          <svg
+          <Lock
             className="mx-auto h-12 w-12 text-[var(--red-9)]"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
+            strokeWidth={1.5}
+          />
           <h3 className="mt-4 text-lg font-medium text-foreground">Access Denied</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Only administrators can access the audit log.
           </p>
           <div className="mt-6">
-            <Link
-              href={`/teams/${teamId}`}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-            >
-              Back to Team
-            </Link>
+            <Button asChild>
+              <Link href={`/teams/${teamId}`}>Back to Team</Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -139,13 +129,7 @@ export default async function AuditLogPage({
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">Audit Log</h1>
             <span className="px-2 py-1 text-xs font-medium bg-[var(--red-3)] text-[var(--red-11)] rounded flex items-center gap-1">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <Lock className="w-3 h-3" />
               Admin Only
             </span>
           </div>
@@ -153,25 +137,12 @@ export default async function AuditLogPage({
             Organization-wide audit trail for {team.name}
           </p>
         </div>
-        <Link
-          href={`/teams/${teamId}`}
-          className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
-        >
-          <svg
-            className="-ml-1 mr-2 h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Team
-        </Link>
+        <Button asChild variant="outline">
+          <Link href={`/teams/${teamId}`}>
+            <ArrowLeft className="-ml-1 mr-2 h-5 w-5" />
+            Back to Team
+          </Link>
+        </Button>
       </div>
 
       {/* Audit Log Table */}

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { Home, Users, Plus, Menu, X } from 'lucide-react';
 
 interface Team {
   id: string;
@@ -28,21 +29,11 @@ export function Sidebar({ teams }: SidebarProps) {
         className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-background border border-border shadow-lg"
         aria-label="Toggle menu"
       >
-        <svg
-          className="w-6 h-6 text-foreground"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          {isMobileOpen ? (
-            <path d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
+        {isMobileOpen ? (
+          <X className="w-6 h-6 text-foreground" />
+        ) : (
+          <Menu className="w-6 h-6 text-foreground" />
+        )}
       </button>
 
       {/* Sidebar */}
@@ -73,22 +64,12 @@ export function Sidebar({ teams }: SidebarProps) {
                   flex items-center px-3 py-2 text-sm font-medium rounded-md
                   ${
                     pathname === '/teams'
-                      ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                      ? 'bg-primary/10 text-foreground dark:bg-primary/20 dark:text-foreground'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }
                 `}
               >
-                <svg
-                  className="mr-3 h-5 w-5"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
+                <Home className="mr-3 h-5 w-5" />
                 Dashboard
               </Link>
 
@@ -122,27 +103,17 @@ export function Sidebar({ teams }: SidebarProps) {
                               flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md
                               ${
                                 isActive(`/teams/${team.id}`)
-                                  ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                  ? 'bg-primary/10 text-foreground dark:bg-primary/20 dark:text-foreground'
                                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                               }
                             `}
                           >
                             <div className="flex items-center min-w-0">
-                              <svg
-                                className="mr-3 h-5 w-5 flex-shrink-0"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                              </svg>
+                              <Users className="mr-3 h-5 w-5 flex-shrink-0" />
                               <span className="truncate">{team.name}</span>
                             </div>
                             {isDemoWorkspace && (
-                              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-[var(--green-3)] text-[var(--green-11)] rounded-full flex-shrink-0">
+                              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-[var(--green-3)] text-[var(--green-12)] rounded-full flex-shrink-0">
                                 DEMO
                               </span>
                             )}
@@ -157,17 +128,7 @@ export function Sidebar({ teams }: SidebarProps) {
                   onClick={() => setIsMobileOpen(false)}
                   className="mt-2 flex items-center px-3 py-2 text-sm font-medium text-primary rounded-md hover:bg-primary/10 dark:hover:bg-primary/20"
                 >
-                  <svg
-                    className="mr-3 h-5 w-5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M12 4v16m8-8H4" />
-                  </svg>
+                  <Plus className="mr-3 h-5 w-5" />
                   Create Team
                 </Link>
               </div>

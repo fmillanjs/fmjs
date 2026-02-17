@@ -3,6 +3,8 @@ import { serverApi } from '@/lib/api';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ActivityFeed } from '@/components/activity/activity-feed';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Project {
   id: string;
@@ -84,25 +86,12 @@ export default async function ProjectActivityPage({
             Recent activity for {project.name}
           </p>
         </div>
-        <Link
-          href={`/teams/${teamId}/projects/${projectId}`}
-          className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
-        >
-          <svg
-            className="-ml-1 mr-2 h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Project
-        </Link>
+        <Button asChild variant="outline">
+          <Link href={`/teams/${teamId}/projects/${projectId}`}>
+            <ArrowLeft className="-ml-1 mr-2 h-5 w-5" />
+            Back to Project
+          </Link>
+        </Button>
       </div>
 
       {/* Activity Feed */}

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { TaskDetail, LabelBase } from '@repo/shared/types';
 import { TaskDetailPanel } from '@/components/tasks/task-detail-panel';
+import { ArrowLeft } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -74,9 +75,7 @@ export default async function TaskDetailPage({
         href={`/teams/${teamId}/projects/${projectId}`}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
+        <ArrowLeft className="w-4 h-4" />
         Back to Project
       </Link>
 

@@ -4,7 +4,8 @@ import { OrganizationWithCountSchema } from '@/lib/validators/api-schemas';
 import { z } from 'zod';
 import Link from 'next/link';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Users } from 'lucide-react';
+import { Users, Plus, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,23 +45,12 @@ export default async function TeamsPage() {
             Manage your teams and collaborate with team members
           </p>
         </div>
-        <Link
-          href="/teams/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-        >
-          <svg
-            className="-ml-1 mr-2 h-5 w-5"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M12 4v16m8-8H4" />
-          </svg>
-          Create Team
-        </Link>
+        <Button asChild>
+          <Link href="/teams/new">
+            <Plus className="-ml-1 mr-2 h-5 w-5" />
+            Create Team
+          </Link>
+        </Button>
       </div>
 
       {/* Teams List */}
@@ -71,12 +61,9 @@ export default async function TeamsPage() {
             title="No teams yet"
             description="Create your first team to get started with collaboration and organize your work."
             action={
-              <Link
-                href="/teams/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-              >
-                Create Team
-              </Link>
+              <Button asChild>
+                <Link href="/teams/new">Create Team</Link>
+              </Button>
             }
           />
         </div>
@@ -105,31 +92,11 @@ export default async function TeamsPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                  <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
+                  <Users className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground" />
                   {team._count?.members || 1} member{team._count?.members !== 1 ? 's' : ''}
                 </div>
                 <div className="mt-1 flex items-center text-sm text-muted-foreground">
-                  <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+                  <Calendar className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground" />
                   Created {team.createdAt.toLocaleDateString()}
                 </div>
               </div>
