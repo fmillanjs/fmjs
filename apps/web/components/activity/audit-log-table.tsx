@@ -129,24 +129,24 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
   const outcomeColor = (outcome: AuditOutcome) => {
     switch (outcome) {
       case 'SUCCESS':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[var(--green-3)] text-[var(--green-11)]';
       case 'DENIED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[var(--red-3)] text-[var(--red-11)]';
       case 'FAILURE':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[var(--amber-3)] text-[var(--amber-11)]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg p-4">
+      <div className="bg-card shadow rounded-lg p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="search" className="block text-sm font-medium text-muted-foreground mb-1">
               Search Action
             </label>
             <input
@@ -155,20 +155,20 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="e.g., TASK_CREATED"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-border rounded-md text-sm"
             />
           </div>
 
           {/* Entity Type Filter */}
           <div>
-            <label htmlFor="entityType" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="entityType" className="block text-sm font-medium text-muted-foreground mb-1">
               Entity Type
             </label>
             <select
               id="entityType"
               value={entityTypeFilter}
               onChange={(e) => setEntityTypeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-border rounded-md text-sm"
             >
               <option value="">All</option>
               <option value="User">User</option>
@@ -182,14 +182,14 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
 
           {/* Outcome Filter */}
           <div>
-            <label htmlFor="outcome" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="outcome" className="block text-sm font-medium text-muted-foreground mb-1">
               Outcome
             </label>
             <select
               id="outcome"
               value={outcomeFilter}
               onChange={(e) => setOutcomeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-border rounded-md text-sm"
             >
               <option value="">All</option>
               <option value="SUCCESS">Success</option>
@@ -200,7 +200,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
 
           {/* Date Range */}
           <div>
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="startDate" className="block text-sm font-medium text-muted-foreground mb-1">
               Date Range
             </label>
             <div className="flex gap-2">
@@ -209,14 +209,14 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="flex-1 px-3 py-2 border border-border rounded-md text-sm"
               />
               <input
                 id="endDate"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="flex-1 px-3 py-2 border border-border rounded-md text-sm"
               />
             </div>
           </div>
@@ -227,7 +227,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
           <button
             onClick={handleSearch}
             disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground"
           >
             {isLoading ? 'Searching...' : 'Apply Filters'}
           </button>
@@ -235,35 +235,35 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
       </div>
 
       {/* Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card shadow rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Timestamp
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Actor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Action
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Entity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Outcome
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Details
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {entries.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-600 dark:text-gray-300">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     No audit log entries found
                   </td>
                 </tr>
@@ -273,9 +273,9 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                     <tr
                       key={entry.id}
                       onClick={() => toggleRowExpansion(entry.id)}
-                      className="hover:bg-gray-50 cursor-pointer"
+                      className="hover:bg-muted/50 cursor-pointer"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                         {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true })}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -291,13 +291,13 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                               {entry.actor.name?.[0]?.toUpperCase() || '?'}
                             </div>
                           )}
-                          <span className="text-sm text-gray-900">{entry.actor.name || 'Unknown'}</span>
+                          <span className="text-sm text-foreground">{entry.actor.name || 'Unknown'}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                         {entry.action.replace(/_/g, ' ')}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                         {entry.entityType}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -305,7 +305,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                           {entry.outcome}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         <button className="text-blue-600 hover:text-blue-800">
                           {expandedRow === entry.id ? 'Hide' : 'Show'}
                         </button>
@@ -313,32 +313,32 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                     </tr>
                     {expandedRow === entry.id && (
                       <tr>
-                        <td colSpan={6} className="px-6 py-4 bg-gray-50">
+                        <td colSpan={6} className="px-6 py-4 bg-muted">
                           <div className="space-y-2 text-sm">
                             <div>
-                              <span className="font-medium text-gray-700">Entity ID:</span>{' '}
-                              <span className="text-gray-900">{entry.entityId}</span>
+                              <span className="font-medium text-muted-foreground">Entity ID:</span>{' '}
+                              <span className="text-foreground">{entry.entityId}</span>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700">Changes:</span>{' '}
-                              <span className="text-gray-900">{formatChanges(entry.changes)}</span>
+                              <span className="font-medium text-muted-foreground">Changes:</span>{' '}
+                              <span className="text-foreground">{formatChanges(entry.changes)}</span>
                             </div>
                             {entry.metadata?.ip && (
                               <div>
-                                <span className="font-medium text-gray-700">IP Address:</span>{' '}
-                                <span className="text-gray-900">{entry.metadata.ip}</span>
+                                <span className="font-medium text-muted-foreground">IP Address:</span>{' '}
+                                <span className="text-foreground">{entry.metadata.ip}</span>
                               </div>
                             )}
                             {entry.metadata?.userAgent && (
                               <div>
-                                <span className="font-medium text-gray-700">User Agent:</span>{' '}
+                                <span className="font-medium text-muted-foreground">User Agent:</span>{' '}
                                 <span className="text-gray-900 break-all">{entry.metadata.userAgent}</span>
                               </div>
                             )}
                             {entry.metadata?.requestId && (
                               <div>
-                                <span className="font-medium text-gray-700">Request ID:</span>{' '}
-                                <span className="text-gray-900">{entry.metadata.requestId}</span>
+                                <span className="font-medium text-muted-foreground">Request ID:</span>{' '}
+                                <span className="text-foreground">{entry.metadata.requestId}</span>
                               </div>
                             )}
                           </div>
@@ -353,26 +353,26 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
         </div>
 
         {/* Pagination */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div className="bg-card px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
           <div className="flex-1 flex justify-between sm:hidden">
             <button
               onClick={handlePrevious}
               disabled={offset === 0 || isLoading}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
+              className="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50 disabled:bg-muted disabled:text-muted-foreground"
             >
               Previous
             </button>
             <button
               onClick={handleNext}
               disabled={offset + limit >= total || isLoading}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50 disabled:bg-muted disabled:text-muted-foreground"
             >
               Next
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 Showing <span className="font-medium">{offset + 1}</span> to{' '}
                 <span className="font-medium">{Math.min(offset + limit, total)}</span> of{' '}
                 <span className="font-medium">{total}</span> results
@@ -383,17 +383,17 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                 <button
                   onClick={handlePrevious}
                   disabled={offset === 0 || isLoading}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/50 disabled:bg-muted disabled:text-muted-foreground"
                 >
                   Previous
                 </button>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span className="relative inline-flex items-center px-4 py-2 border border-border bg-card text-sm font-medium text-muted-foreground">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={handleNext}
                   disabled={offset + limit >= total || isLoading}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-600 dark:text-gray-300"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/50 disabled:bg-muted disabled:text-muted-foreground"
                 >
                   Next
                 </button>

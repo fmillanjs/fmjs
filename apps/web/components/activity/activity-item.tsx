@@ -131,7 +131,7 @@ export function ActivityItem({ activity }: ActivityItemProps) {
   };
 
   return (
-    <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg transition-colors">
+    <div className="flex items-start gap-3 py-3 px-4 hover:bg-muted/50 rounded-lg transition-colors">
       {/* Avatar */}
       <div className="flex-shrink-0">
         {activity.actor.image ? (
@@ -149,12 +149,12 @@ export function ActivityItem({ activity }: ActivityItemProps) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-900">
+        <p className="text-sm text-foreground">
           <span className="font-medium">{activity.actor.name || 'Unknown User'}</span>
           {' '}
-          <span className="text-gray-600">{formatActivityDescription(activity)}</span>
+          <span className="text-muted-foreground">{formatActivityDescription(activity)}</span>
         </p>
-        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
         </p>
       </div>
