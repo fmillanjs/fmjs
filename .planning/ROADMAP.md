@@ -42,7 +42,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 **Milestone Goal:** Build and deploy DevCollab — a developer collaboration platform combining GitHub-style technical content with Discord-style workspace organization, added to the portfolio alongside TeamFlow.
 
-- [ ] **Phase 14: Monorepo Scaffold + Infrastructure** - Two new Turborepo apps, separate Postgres, Docker compose extended, deny-by-default CASL guard established before any controllers
+- [x] **Phase 14: Monorepo Scaffold + Infrastructure** - Two new Turborepo apps, separate Postgres, Docker compose extended, deny-by-default CASL guard established before any controllers (completed 2026-02-17)
 - [ ] **Phase 15: Authentication System** - DevCollab-specific JWT auth (DEVCOLLAB_JWT_SECRET, completely separate from TeamFlow), httpOnly cookie session, deny-by-default RBAC guard with unit tests
 - [ ] **Phase 16: Workspaces + Membership + RBAC** - Workspace CRUD with slug routing, invite-link flow, Admin/Contributor/Viewer roles enforced at guard level, last-admin protection
 - [ ] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start)
@@ -168,7 +168,7 @@ Plans:
 | 11. Form Components & Validation | v1.1 | 4/4 | Complete | 2026-02-17 |
 | 12. Critical Route Migration | v1.1 | 9/9 | Complete | 2026-02-17 |
 | 13. Automation & Optimization | v1.1 | 3/3 | Complete | 2026-02-17 |
-| 14. Monorepo Scaffold + Infrastructure | v2.0 | 0/4 | Not started | - |
+| 14. Monorepo Scaffold + Infrastructure | v2.0 | Complete    | 2026-02-17 | - |
 | 15. Authentication System | v2.0 | 0/TBD | Not started | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 0/TBD | Not started | - |
 | 17. Content Creation — Snippets + Posts | v2.0 | 0/TBD | Not started | - |
