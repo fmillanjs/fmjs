@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 11 - Form Components & Validation
-Plan: 11-01 complete — Shadcn Form and Select components installed
-Status: Phase 11 in progress — Plan 01 of 4 complete
-Last activity: 2026-02-17 — Completed 11-01 (Shadcn Form ARIA automation layer + Radix Select installed via CLI, zero TS errors)
+Plan: 11-02 complete — All 6 auth forms migrated to Shadcn FormField pattern
+Status: Phase 11 in progress — Plan 02 of 4 complete
+Last activity: 2026-02-17 — Completed 11-02 (All 6 auth forms: FormField pattern, mode onBlur, role=alert, Button component, zero TS errors)
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -77,6 +77,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 10-component-migration-portfolio P03 | 3 | 2 tasks | 6 files |
 | Phase 10-component-migration-portfolio P04 | 75 | 2 tasks | 70+ files |
 | Phase 11-form-components-validation P01 | 5 | 1 task | 4 files |
+| Phase 11-form-components-validation P02 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -254,6 +255,11 @@ Recent decisions affecting current work:
 - [Phase 10-04]: Status/badge colors use Radix CSS variables directly (bg-[var(--green-3)] text-[var(--green-11)]) for dark mode compatible status indicators
 - [Phase 11-01]: Shadcn CLI --yes flag still prompts for overwrites on existing files — pipe N to preserve Phase 9/10 migrated button.tsx and label.tsx
 - [Phase 11-01]: Form ARIA automation via FormItemContext: React.useId() generates IDs, FormControl sets aria-invalid on error, aria-describedby links to description + message
+- [Phase 11-02]: FormField render prop replaces register() spread — automatic aria-invalid + aria-describedby wiring activated
+- [Phase 11-02]: mode: 'onBlur' across all 6 auth forms — validation fires on field exit, not every keystroke
+- [Phase 11-02]: role=alert for errors (assertive), role=status for success (polite) — correct ARIA live region semantics
+- [Phase 11-02]: Hidden token field in reset-password-form uses form.register('token') directly — appropriate for non-UI hidden inputs outside FormField context
+- [Phase 11-02]: profile-form image field: value={field.value ?? ''} coercion required — updateProfileSchema infers null but Input expects string | undefined
 
 ### Roadmap Evolution
 
@@ -266,7 +272,7 @@ Recent decisions affecting current work:
 
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
 **Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
-**Phase 11 - Form Components & Validation**: In progress (1 of 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). Plans 02-04 pending.
+**Phase 11 - Form Components & Validation**: In progress (2 of 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). Plans 03-04 pending.
 
 ### Blockers/Concerns
 
@@ -292,10 +298,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 11 Form Components — 11-01 complete)
-Stopped at: Plan 11-01 complete — Shadcn Form and Select components installed, committed 21b961e.
-Status: Phase 11 in progress. Plan 01 done (Form + Select installed). Plans 02 and 03 can proceed in parallel.
-Next action: Execute Phase 11 Plan 02 (form ARIA migration) and Plan 03 (select migration) in parallel
+Last session: 2026-02-17 (Phase 11 Form Components — 11-02 complete)
+Stopped at: Plan 11-02 complete — All 6 auth forms migrated to Shadcn FormField pattern, committed 8614de4.
+Status: Phase 11 in progress. Plans 01-02 done. Plans 03 and 04 pending.
+Next action: Execute Phase 11 Plan 03 (select component migration) and Plan 04
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
