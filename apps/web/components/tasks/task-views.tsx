@@ -129,16 +129,15 @@ export function TaskViews({ initialTasks, projectId, orgSlug, teamMembers, label
         </>
       )}
 
-      {isNewTaskOpen && (
-        <TaskForm
-          mode="create"
-          projectId={projectId}
-          teamMembers={teamMembers}
-          labels={labels}
-          onClose={() => setIsNewTaskOpen(false)}
-          onSuccess={handleRefresh}
-        />
-      )}
+      <TaskForm
+        open={isNewTaskOpen}
+        onOpenChange={setIsNewTaskOpen}
+        mode="create"
+        projectId={projectId}
+        teamMembers={teamMembers}
+        labels={labels}
+        onSuccess={handleRefresh}
+      />
     </div>
   );
 }

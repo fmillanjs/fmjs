@@ -244,17 +244,16 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
         </table>
       </div>
 
-      {isFormOpen && selectedTask && (
-        <TaskForm
-          mode="edit"
-          task={selectedTask}
-          projectId={projectId}
-          teamMembers={teamMembers}
-          labels={labels}
-          onClose={() => setIsFormOpen(false)}
-          onSuccess={handleFormSuccess}
-        />
-      )}
+      <TaskForm
+        open={isFormOpen && !!selectedTask}
+        onOpenChange={setIsFormOpen}
+        mode="edit"
+        task={selectedTask || undefined}
+        projectId={projectId}
+        teamMembers={teamMembers}
+        labels={labels}
+        onSuccess={handleFormSuccess}
+      />
     </>
   );
 }

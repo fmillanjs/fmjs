@@ -196,18 +196,17 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
         </DragOverlay>
       </DndContext>
 
-      {isFormOpen && (
-        <TaskForm
-          mode={formMode}
-          task={selectedTask || undefined}
-          projectId={projectId}
-          teamMembers={teamMembers}
-          labels={labels}
-          onClose={() => setIsFormOpen(false)}
-          onSuccess={handleFormSuccess}
-          prefilledStatus={prefilledStatus}
-        />
-      )}
+      <TaskForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        mode={formMode}
+        task={selectedTask || undefined}
+        projectId={projectId}
+        teamMembers={teamMembers}
+        labels={labels}
+        onSuccess={handleFormSuccess}
+        prefilledStatus={prefilledStatus}
+      />
 
       {showConflict && conflictTaskId && (
         <ConflictWarning
