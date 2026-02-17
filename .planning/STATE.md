@@ -6,17 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** Planning v1.2 — Deployment & Polish (v1.1 shipped 2026-02-17)
+**Current focus:** v2.0 — DevCollab (v1.1 shipped 2026-02-17)
 
 ## Current Position
 
-Milestone: v1.1 - UI/Design System Overhaul — COMPLETE
-Phase: 13 - Automation & Optimization — COMPLETE
-Plan: 13-03 complete — lighthouserc.json created, Lighthouse CI job added to deploy.yml, full Phase 13 automation layer human-verified. MIG-04 satisfied.
-Status: Phase 13 complete — 3/3 plans done. v1.1 milestone complete.
-Last activity: 2026-02-17 — 13-03: lighthouserc.json asserting performance >=0.9 on 5 public routes; Lighthouse CI job added; build-and-push now needs [test, lighthouse]; human verified all 7 automation checks
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v2.0 — DevCollab
+Last activity: 2026-02-17 — Milestone v2.0 started
 
-Progress: [██████████] v1.0: 79% (55/67 requirements) | v1.1: 100% (16/16 requirements)
+Previous: v1.1 COMPLETE (16/16 requirements) | v1.0: 79% (55/67 requirements)
 
 ## Performance Metrics
 

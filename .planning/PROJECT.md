@@ -8,12 +8,18 @@ A professional portfolio website showcasing TeamFlow—a production-quality work
 
 Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-## Current Milestone: Planning Next (v1.2)
+## Current Milestone: v2.0 DevCollab
 
-v1.1 is complete. The design system foundation is established. The next milestone should focus on:
-- Deploying to production (Coolify deployment, custom domains, environment setup)
-- v1.0 completion items deferred from the original roadmap (real-time UI polish, presence avatars)
-- Portfolio content polish (real resume PDF, case study refinement)
+**Goal:** Build and deploy DevCollab — a developer collaboration platform combining GitHub-style technical content with Discord-style workspace organization, added to the portfolio alongside TeamFlow.
+
+**Target features:**
+- New monorepo apps: devcollab-web (Next.js 15) + devcollab-api (NestJS 11) with own auth
+- Workspaces with invite-based membership and RBAC (Admin / Contributor / Viewer)
+- Code snippets with syntax highlighting, Markdown posts, file uploads (S3/R2)
+- Threaded discussions, activity feed, mention notifications
+- Full-text search across workspace content
+- Deployed to Coolify with seed data, live demo accessible to recruiters
+- Portfolio site updated: new project card, case study, live demo link
 
 ## Requirements
 
@@ -32,21 +38,33 @@ v1.1 is complete. The design system foundation is established. The next mileston
 
 ### Active
 
-**Next Milestone Requirements (v1.2):**
-- [ ] Production deployment to Coolify (custom domains, environment variables, HTTPS)
-- [ ] Real resume PDF at /resume.pdf
-- [ ] Seed data for demo workspace (Faker-generated tasks, projects, users)
-- [ ] E2E test coverage for task form submission and Kanban drag-and-drop
-- [ ] TypeScript error cleanup (5 pre-existing errors in e2e/user-journey and api.test.ts)
+**v2.0 Requirements (DevCollab):**
+- [ ] DevCollab monorepo setup: devcollab-web + devcollab-api apps in existing Turborepo
+- [ ] Own auth system for DevCollab (separate from TeamFlow accounts)
+- [ ] Workspace creation, invite-based membership management
+- [ ] RBAC: Admin / Contributor / Viewer roles with enforced permissions
+- [ ] Code snippet posts with syntax highlighting
+- [ ] Markdown-based posts (documentation, proposals)
+- [ ] File uploads with S3/R2 storage integration
+- [ ] Threaded discussions on posts and snippets
+- [ ] Workspace activity feed (track member changes)
+- [ ] Mention notifications (in-app)
+- [ ] Full-text search across workspace content
+- [ ] Seed data (demo workspace with realistic content)
+- [ ] Deployed to Coolify with live demo
+- [ ] Portfolio site: DevCollab project card, case study, live demo link
 
-### Deferred (Post-v1.2)
+### Deferred (Post-v2.0)
 
-- Real-time collaboration UI fixes (conflict indicators, presence avatars with proper contrast) — design system now supports this
-- Team invitation via email — manual team setup for v1
-- File attachments — defer to future version
-- Comment threads on tasks — keep tasks simple initially
-- Storybook / component playground — README + /design-system page sufficient
-- Mobile native app — web-first approach
+- TeamFlow deployment to Coolify (deferred from v1.2)
+- Real resume PDF at /resume.pdf (deferred from v1.2)
+- TypeScript error cleanup in test files (deferred from v1.2)
+- Real-time collaboration UI fixes (conflict indicators, presence avatars)
+- Team invitation via email for TeamFlow
+- File attachments on TeamFlow tasks
+- Comment threads on TeamFlow tasks
+- Storybook / component playground
+- Mobile native app
 
 ### Out of Scope
 
@@ -94,4 +112,4 @@ v1.1 is complete. The design system foundation is established. The next mileston
 | v1.1 before deployment | Design system needed before production launch for professionalism | ✓ Good — application now WCAG AA compliant |
 
 ---
-*Last updated: 2026-02-17 after v1.1 milestone completion*
+*Last updated: 2026-02-17 after v2.0 milestone started — DevCollab*
