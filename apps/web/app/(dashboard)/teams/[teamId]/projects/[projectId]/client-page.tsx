@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { TaskWithRelations, LabelBase } from '@repo/shared/types';
 import { TaskViews } from '@/components/tasks/task-views';
 import { ProjectHeaderClient } from '@/components/project/project-header-client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Clock, Settings } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -175,80 +178,60 @@ export function ClientProjectPage({
       </nav>
 
       {/* Project Header */}
-      <div className="bg-card shadow rounded-lg p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-foreground">{project.name}</h1>
-              <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
-                {project.status}
-              </span>
-              <ProjectHeaderClient projectId={projectId} />
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl font-bold text-foreground">{project.name}</h1>
+                <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
+                  {project.status}
+                </span>
+                <ProjectHeaderClient projectId={projectId} />
+              </div>
+              {project.description && <p className="text-muted-foreground">{project.description}</p>}
             </div>
-            {project.description && <p className="text-muted-foreground">{project.description}</p>}
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/teams/${teamId}/projects/${projectId}/activity`}>
+                  <Clock className="mr-2 h-4 w-4" />
+                  Activity
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/teams/${teamId}/projects/${projectId}/settings`}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Link>
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Link
-              href={`/teams/${teamId}/projects/${projectId}/activity`}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Activity
-            </Link>
-            <Link
-              href={`/teams/${teamId}/projects/${projectId}/settings`}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              Settings
-            </Link>
-          </div>
-        </div>
 
-        {/* Task Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
-          <div className="bg-muted rounded-lg p-4">
-            <div className="text-2xl font-bold text-foreground">{taskStats.total}</div>
-            <div className="text-sm text-muted-foreground">Total Tasks</div>
+          {/* Task Statistics */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+            <div className="bg-muted rounded-lg p-4">
+              <div className="text-2xl font-bold text-foreground">{taskStats.total}</div>
+              <div className="text-sm text-muted-foreground">Total Tasks</div>
+            </div>
+            <div className="bg-[var(--blue-3)] rounded-lg p-4">
+              <div className="text-2xl font-bold text-[var(--blue-12)]">{taskStats.todo}</div>
+              <div className="text-sm text-[var(--blue-11)]">To Do</div>
+            </div>
+            <div className="bg-[var(--amber-3)] rounded-lg p-4">
+              <div className="text-2xl font-bold text-[var(--amber-12)]">{taskStats.inProgress}</div>
+              <div className="text-sm text-[var(--amber-11)]">In Progress</div>
+            </div>
+            <div className="bg-[var(--green-3)] rounded-lg p-4">
+              <div className="text-2xl font-bold text-[var(--green-12)]">{taskStats.done}</div>
+              <div className="text-sm text-[var(--green-11)]">Done</div>
+            </div>
+            <div className="bg-[var(--red-3)] rounded-lg p-4">
+              <div className="text-2xl font-bold text-[var(--red-12)]">{taskStats.blocked}</div>
+              <div className="text-sm text-[var(--red-11)]">Blocked</div>
+            </div>
           </div>
-          <div className="bg-[var(--blue-3)] rounded-lg p-4">
-            <div className="text-2xl font-bold text-[var(--blue-12)]">{taskStats.todo}</div>
-            <div className="text-sm text-[var(--blue-11)]">To Do</div>
-          </div>
-          <div className="bg-[var(--amber-3)] rounded-lg p-4">
-            <div className="text-2xl font-bold text-[var(--amber-12)]">{taskStats.inProgress}</div>
-            <div className="text-sm text-[var(--amber-11)]">In Progress</div>
-          </div>
-          <div className="bg-[var(--green-3)] rounded-lg p-4">
-            <div className="text-2xl font-bold text-[var(--green-12)]">{taskStats.done}</div>
-            <div className="text-sm text-[var(--green-11)]">Done</div>
-          </div>
-          <div className="bg-[var(--red-3)] rounded-lg p-4">
-            <div className="text-2xl font-bold text-[var(--red-12)]">{taskStats.blocked}</div>
-            <div className="text-sm text-[var(--red-11)]">Blocked</div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Task Views */}
       <TaskViews

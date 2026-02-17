@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { TeamMemberList } from '@/components/teams/team-member-list';
 import { InviteMemberForm } from '@/components/teams/invite-member-form';
 import { redirect } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { AlertTriangle, ChevronRight } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -45,29 +48,18 @@ export default async function TeamSettingsPage({
 
   if (error || !team) {
     return (
-      <div className="bg-card shadow rounded-lg p-8 text-center">
-        <svg
-          className="mx-auto h-12 w-12 text-[var(--red-9)]"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
-        <div className="mt-6">
-          <Link
-            href="/teams"
-            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-          >
-            Back to Teams
-          </Link>
-        </div>
-      </div>
+      <Card className="p-8 text-center">
+        <CardContent className="pt-6">
+          <AlertTriangle className="mx-auto h-12 w-12 text-[var(--red-9)]" />
+          <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
+          <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
+          <div className="mt-6">
+            <Button asChild>
+              <Link href="/teams">Back to Teams</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -94,17 +86,7 @@ export default async function TeamSettingsPage({
           </li>
           <li>
             <div className="flex items-center">
-              <svg
-                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <ChevronRight className="flex-shrink-0 h-5 w-5 text-muted-foreground" />
               <Link
                 href={`/teams/${team.id}`}
                 className="ml-4 text-sm font-medium text-muted-foreground hover:text-foreground"
@@ -115,17 +97,7 @@ export default async function TeamSettingsPage({
           </li>
           <li>
             <div className="flex items-center">
-              <svg
-                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <ChevronRight className="flex-shrink-0 h-5 w-5 text-muted-foreground" />
               <span className="ml-4 text-sm font-medium text-muted-foreground">Settings</span>
             </div>
           </li>
@@ -141,14 +113,14 @@ export default async function TeamSettingsPage({
       </div>
 
       {/* Member Management */}
-      <div className="bg-card shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
+      <Card>
+        <CardContent className="p-6">
           <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
             Invite Team Members
           </h3>
           <InviteMemberForm teamId={team.id} />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Team Members List */}
       <div>
