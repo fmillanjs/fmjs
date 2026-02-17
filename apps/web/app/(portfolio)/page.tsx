@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { HeroSection } from '@/components/portfolio/hero-section';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Featured Project
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
+            <p className="text-lg text-muted-foreground">
               Real-time collaboration platform showcasing full-stack expertise
             </p>
           </div>
@@ -34,13 +35,11 @@ export default function HomePage() {
                   <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                     TeamFlow
                   </h3>
-                  <p className="text-base text-gray-600 dark:text-gray-300">
+                  <p className="text-base text-muted-foreground">
                     Production-Ready SaaS Collaboration Platform
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-sm font-semibold">
-                  Featured
-                </span>
+                <Badge variant="default">Featured</Badge>
               </div>
 
               <p className="text-foreground mb-6 leading-relaxed">
@@ -63,12 +62,9 @@ export default function HomePage() {
                   'Docker',
                   'Tailwind',
                 ].map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1 rounded-md bg-muted text-gray-600 dark:text-gray-300 text-sm font-medium"
-                  >
+                  <Badge key={tech} variant="secondary">
                     {tech}
-                  </span>
+                  </Badge>
                 ))}
               </div>
 
@@ -88,7 +84,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 30+
               </div>
-              <div className="text-lg text-gray-600 dark:text-gray-300">
+              <div className="text-lg text-muted-foreground">
                 Features Built
               </div>
             </div>
@@ -96,7 +92,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 Real-Time
               </div>
-              <div className="text-lg text-gray-600 dark:text-gray-300">
+              <div className="text-lg text-muted-foreground">
                 Collaboration
               </div>
             </div>
@@ -104,7 +100,7 @@ export default function HomePage() {
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                 Production
               </div>
-              <div className="text-lg text-gray-600 dark:text-gray-300">
+              <div className="text-lg text-muted-foreground">
                 Ready Code
               </div>
             </div>

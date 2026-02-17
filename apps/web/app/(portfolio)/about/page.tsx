@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { TechStack } from '@/components/portfolio/tech-stack';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -15,7 +17,7 @@ export default function AboutPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             About Me
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
+          <p className="text-xl text-muted-foreground">
             Senior Full-Stack Engineer with a passion for building exceptional software
           </p>
         </div>
@@ -25,9 +27,9 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-foreground mb-6">
             Professional Summary
           </h2>
-          <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 space-y-4">
+          <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
             <p>
-              I'm a senior full-stack engineer specializing in building production-ready
+              I&apos;m a senior full-stack engineer specializing in building production-ready
               SaaS applications with modern JavaScript/TypeScript stacks. My expertise
               spans the entire development lifecycle, from architecture design and database
               modeling to real-time features and deployment automation.
@@ -41,7 +43,7 @@ export default function AboutPage() {
             <p>
               With deep experience in Next.js, NestJS, PostgreSQL, and modern DevOps tooling,
               I build systems that recruiters and users can interact with immediately.
-              I'm currently seeking opportunities to apply my skills in a senior engineering
+              I&apos;m currently seeking opportunities to apply my skills in a senior engineering
               role where I can contribute to complex technical challenges and mentor growing teams.
             </p>
           </div>
@@ -61,42 +63,50 @@ export default function AboutPage() {
             What I Value
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="border rounded-lg p-6 bg-card hover:border-primary/50 transition-colors">
-              <h3 className="text-xl font-semibold text-foreground mb-3">
-                Clean Architecture
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Well-structured codebases with clear separation of concerns, making systems
-                maintainable and extensible over time.
-              </p>
-            </div>
-            <div className="border rounded-lg p-6 bg-card hover:border-primary/50 transition-colors">
-              <h3 className="text-xl font-semibold text-foreground mb-3">
-                Type Safety
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Leveraging TypeScript's type system to catch errors early and provide
-                excellent developer experience with autocomplete and refactoring.
-              </p>
-            </div>
-            <div className="border rounded-lg p-6 bg-card hover:border-primary/50 transition-colors">
-              <h3 className="text-xl font-semibold text-foreground mb-3">
-                Production Readiness
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Building with security, performance, monitoring, and error handling in mind
-                from day one, not as afterthoughts.
-              </p>
-            </div>
-            <div className="border rounded-lg p-6 bg-card hover:border-primary/50 transition-colors">
-              <h3 className="text-xl font-semibold text-foreground mb-3">
-                Developer Experience
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Creating tools, documentation, and workflows that make the team productive
-                and the codebase a joy to work with.
-              </p>
-            </div>
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle>Clean Architecture</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Well-structured codebases with clear separation of concerns, making systems
+                  maintainable and extensible over time.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle>Type Safety</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Leveraging TypeScript&apos;s type system to catch errors early and provide
+                  excellent developer experience with autocomplete and refactoring.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle>Production Readiness</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Building with security, performance, monitoring, and error handling in mind
+                  from day one, not as afterthoughts.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle>Developer Experience</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Creating tools, documentation, and workflows that make the team productive
+                  and the codebase a joy to work with.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
@@ -105,15 +115,12 @@ export default function AboutPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             Interested in working together?
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-            I'm currently open to senior full-stack engineering opportunities.
+          <p className="text-lg text-muted-foreground mb-6">
+            I&apos;m currently open to senior full-stack engineering opportunities.
           </p>
-          <a
-            href="mailto:hello@fernandomillan.dev"
-            className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Get in Touch
-          </a>
+          <Button asChild size="lg">
+            <Link href="/contact">Get In Touch</Link>
+          </Button>
         </section>
       </div>
     </div>
