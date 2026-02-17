@@ -8,6 +8,17 @@ import { TaskStatus, TaskPriority } from '@repo/shared/types/enums';
 import { LabelBase, TaskWithRelations } from '@repo/shared/types';
 import { api } from '@/lib/api';
 import { X } from 'lucide-react';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskFormProps {
@@ -34,16 +45,9 @@ export function TaskForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm({
-    resolver: mode === 'create'
-      ? zodResolver(createTaskSchema)
-      : zodResolver(updateTaskSchema),
+  const form = useForm({
+    resolver: mode === 'create' ? zodResolver(createTaskSchema) : zodResolver(updateTaskSchema),
+    mode: 'onBlur',
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',
@@ -56,7 +60,7 @@ export function TaskForm({
     },
   } as any);
 
-  const selectedLabelIds = watch('labelIds') || [];
+  const selectedLabelIds = form.watch('labelIds') || [];
 
   const onSubmit = async (data: CreateTaskInput | UpdateTaskInput) => {
     setIsSubmitting(true);
@@ -91,12 +95,12 @@ export function TaskForm({
   const toggleLabel = (labelId: string) => {
     const current = selectedLabelIds || [];
     if (current.includes(labelId)) {
-      setValue(
+      form.setValue(
         'labelIds',
         current.filter((id: string) => id !== labelId)
       );
     } else {
-      setValue('labelIds', [...current, labelId]);
+      form.setValue('labelIds', [...current, labelId]);
     }
   };
 
@@ -124,173 +128,144 @@ export function TaskForm({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          {error && (
-            <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Title <span className="text-[var(--red-11)]">*</span>
-            </label>
-            <input
-              {...register('title')}
-              type="text"
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              placeholder="Task title"
-            />
-            {errors.title && (
-              <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.title.message)}</p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-4">
+            {error && (
+              <div role="alert" className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
+                {error}
+              </div>
             )}
-          </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Description
-            </label>
-            <textarea
-              {...register('description')}
-              rows={4}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              placeholder="Task description (optional)"
-            />
-            {errors.description && (
-              <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.description.message)}</p>
-            )}
-          </div>
+            {/* Title */}
+            <FormField control={form.control} name="title" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title <span className="text-[var(--red-11)]">*</span></FormLabel>
+                <FormControl><Input type="text" {...field} placeholder="Task title" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-          {/* Status and Priority */}
-          <div className="grid grid-cols-2 gap-4">
+            {/* Description */}
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl><Textarea rows={4} {...field} placeholder="Task description (optional)" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            {/* Status and Priority */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={TaskStatus.TODO}>To Do</SelectItem>
+                      <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
+                      <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
+                      <SelectItem value={TaskStatus.BLOCKED}>Blocked</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="priority" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={TaskPriority.LOW}>Low</SelectItem>
+                      <SelectItem value={TaskPriority.MEDIUM}>Medium</SelectItem>
+                      <SelectItem value={TaskPriority.HIGH}>High</SelectItem>
+                      <SelectItem value={TaskPriority.URGENT}>Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Due Date and Assignee */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="dueDate" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="assigneeId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Assignee</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">Unassigned</SelectItem>
+                      {teamMembers.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name || member.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Labels */}
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Status
-              </label>
-              <select
-                {...register('status')}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              >
-                <option value={TaskStatus.TODO}>To Do</option>
-                <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
-                <option value={TaskStatus.DONE}>Done</option>
-                <option value={TaskStatus.BLOCKED}>Blocked</option>
-              </select>
-              {errors.status && (
-                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.status.message)}</p>
-              )}
+              <div role="group" aria-labelledby="labels-heading">
+                <p id="labels-heading" className="text-sm font-medium text-muted-foreground mb-2">Labels</p>
+                <div className="flex flex-wrap gap-2">
+                  {labels.map((label) => (
+                    <button
+                      key={label.id}
+                      type="button"
+                      onClick={() => toggleLabel(label.id)}
+                      className={`
+                        flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-colors
+                        ${
+                          selectedLabelIds.includes(label.id)
+                            ? 'border-primary bg-accent'
+                            : 'border-border bg-card hover:border-foreground'
+                        }
+                      `}
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: label.color }}
+                      />
+                      <span className="text-sm text-foreground">{label.name}</span>
+                    </button>
+                  ))}
+                  {labels.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No labels available</p>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Priority
-              </label>
-              <select
-                {...register('priority')}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              >
-                <option value={TaskPriority.LOW}>Low</option>
-                <option value={TaskPriority.MEDIUM}>Medium</option>
-                <option value={TaskPriority.HIGH}>High</option>
-                <option value={TaskPriority.URGENT}>Urgent</option>
-              </select>
-              {errors.priority && (
-                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.priority.message)}</p>
-              )}
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Task' : 'Save Changes'}
+              </Button>
             </div>
-          </div>
-
-          {/* Due Date and Assignee */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Due Date
-              </label>
-              <input
-                {...register('dueDate')}
-                type="date"
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              />
-              {errors.dueDate && (
-                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.dueDate.message)}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Assignee
-              </label>
-              <select
-                {...register('assigneeId')}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-              >
-                <option value="">Unassigned</option>
-                {teamMembers.map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.name || member.email}
-                  </option>
-                ))}
-              </select>
-              {errors.assigneeId && (
-                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.assigneeId.message)}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Labels */}
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Labels
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {labels.map((label) => (
-                <button
-                  key={label.id}
-                  type="button"
-                  onClick={() => toggleLabel(label.id)}
-                  className={`
-                    flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-colors
-                    ${
-                      selectedLabelIds.includes(label.id)
-                        ? 'border-primary bg-accent'
-                        : 'border-border bg-card hover:border-foreground'
-                    }
-                  `}
-                >
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: label.color }}
-                  />
-                  <span className="text-sm text-foreground">{label.name}</span>
-                </button>
-              ))}
-              {labels.length === 0 && (
-                <p className="text-sm text-muted-foreground">No labels available</p>
-              )}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-muted-foreground bg-muted rounded-md hover:bg-accent transition-colors"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Task' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
+          </form>
+        </Form>
       </div>
     </div>
   );
