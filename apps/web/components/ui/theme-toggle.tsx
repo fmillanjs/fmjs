@@ -16,7 +16,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="p-2 rounded-lg hover:bg-accent transition-colors"
         disabled
       >
         <div className="w-5 h-5" />
@@ -49,7 +49,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      className="p-2 rounded-lg hover:bg-accent transition-colors"
       title={getLabel()}
       aria-label={`Switch theme (current: ${getLabel()})`}
     >
