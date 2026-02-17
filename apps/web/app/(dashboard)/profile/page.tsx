@@ -37,18 +37,18 @@ export default async function ProfilePage() {
     <div className="max-w-2xl mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Profile Settings</h1>
-        <p className="text-gray-600">Member since {memberSince}</p>
+        <p className="text-muted-foreground">Member since {memberSince}</p>
       </div>
 
       <div className="space-y-8">
         {/* Profile Information Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
           <ProfileForm user={user} />
         </div>
 
         {/* Change Password Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Change Password</h2>
           <ChangePasswordForm />
         </div>

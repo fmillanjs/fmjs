@@ -13,7 +13,7 @@ export default function TeamsLoading() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+            className="bg-card rounded-lg border border-border p-6"
           >
             <Skeleton className="h-6 w-40 mb-4" />
             <div className="space-y-2">

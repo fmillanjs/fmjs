@@ -39,8 +39,8 @@ export default async function TeamsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Teams</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <h1 className="text-2xl font-bold text-foreground">Teams</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage your teams and collaborate with team members
           </p>
         </div>
@@ -65,7 +65,7 @@ export default async function TeamsPage() {
 
       {/* Teams List */}
       {teams.length === 0 ? (
-        <div className="bg-card dark:bg-gray-950 border border-border shadow rounded-lg p-12">
+        <div className="bg-card border border-border shadow rounded-lg p-12">
           <EmptyState
             icon={Users}
             title="No teams yet"
@@ -86,7 +86,7 @@ export default async function TeamsPage() {
             <Link
               key={team.id}
               href={`/teams/${team.id}`}
-              className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition"
+              className="bg-card overflow-hidden shadow rounded-lg hover:shadow-md transition"
             >
               <div className="px-4 py-5 sm:p-6">
                 <div className="flex items-center">
@@ -97,16 +97,16 @@ export default async function TeamsPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">Team</dt>
-                      <dd className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                      <dt className="text-sm font-medium text-muted-foreground truncate">Team</dt>
+                      <dd className="text-lg font-semibold text-foreground truncate">
                         {team.name}
                       </dd>
                     </dl>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <div className="mt-4 flex items-center text-sm text-muted-foreground">
                   <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-600 dark:text-gray-300"
+                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -118,9 +118,9 @@ export default async function TeamsPage() {
                   </svg>
                   {team._count?.members || 1} member{team._count?.members !== 1 ? 's' : ''}
                 </div>
-                <div className="mt-1 flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <div className="mt-1 flex items-center text-sm text-muted-foreground">
                   <svg
-                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-600 dark:text-gray-300"
+                    className="flex-shrink-0 mr-1.5 h-5 w-5 text-muted-foreground"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
