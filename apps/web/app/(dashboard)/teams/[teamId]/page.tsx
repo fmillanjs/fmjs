@@ -4,7 +4,18 @@ import Link from 'next/link';
 import { TeamMemberList } from '@/components/teams/team-member-list';
 import { InviteMemberForm } from '@/components/teams/invite-member-form';
 import { EmptyState } from '@/components/ui/empty-state';
-import { FolderOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  FolderOpen,
+  Settings,
+  ClipboardList,
+  Users,
+  FolderOpen as FolderIcon,
+  ClipboardCheck,
+  AlertTriangle,
+  ChevronRight,
+} from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -58,29 +69,18 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
   if (error || !team) {
     return (
-      <div className="bg-card shadow rounded-lg p-8 text-center">
-        <svg
-          className="mx-auto h-12 w-12 text-[var(--red-9)]"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
-        <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
-        <div className="mt-6">
-          <Link
-            href="/teams"
-            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-          >
-            Back to Teams
-          </Link>
-        </div>
-      </div>
+      <Card className="p-8 text-center">
+        <CardContent className="pt-6">
+          <AlertTriangle className="mx-auto h-12 w-12 text-[var(--red-9)]" />
+          <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
+          <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
+          <div className="mt-6">
+            <Button asChild>
+              <Link href="/teams">Back to Teams</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -103,17 +103,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           </li>
           <li>
             <div className="flex items-center">
-              <svg
-                className="flex-shrink-0 h-5 w-5 text-muted-foreground"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <ChevronRight className="flex-shrink-0 h-5 w-5 text-muted-foreground" />
               <span className="ml-4 text-sm font-medium text-foreground">{team.name}</span>
             </div>
           </li>
@@ -130,62 +120,29 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
         </div>
         <div className="flex gap-2">
           {currentUserRole === 'ADMIN' && (
-            <Link
-              href={`/teams/${team.id}/audit-log`}
-              className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
-            >
-              <svg
-                className="-ml-1 mr-2 h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Audit Log
-            </Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/teams/${team.id}/audit-log`}>
+                <ClipboardList className="mr-2 h-4 w-4" />
+                Audit Log
+              </Link>
+            </Button>
           )}
-          <Link
-            href={`/teams/${team.id}/settings`}
-            className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
-          >
-            <svg
-              className="-ml-1 mr-2 h-5 w-5"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Settings
-          </Link>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/teams/${team.id}/settings`}>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </Link>
+          </Button>
         </div>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <div className="bg-card overflow-hidden shadow rounded-lg">
-          <div className="p-5">
+        <Card>
+          <CardContent className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-primary"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+                <Users className="h-6 w-6 text-primary" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
@@ -194,113 +151,91 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
                 </dl>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-card overflow-hidden shadow rounded-lg">
-          <div className="p-5">
+        <Card>
+          <CardContent className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-[var(--green-9)]"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
+                <FolderIcon className="h-6 w-6 text-[var(--green-9)]" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-muted-foreground truncate">Projects</dt>
-                  <dd className="text-lg font-semibold text-foreground">0</dd>
+                  <dd className="text-lg font-semibold text-foreground">{projects.length}</dd>
                 </dl>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-card overflow-hidden shadow rounded-lg">
-          <div className="p-5">
+        <Card>
+          <CardContent className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-[var(--amber-9)]"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+                <ClipboardCheck className="h-6 w-6 text-[var(--amber-9)]" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-muted-foreground truncate">Tasks</dt>
-                  <dd className="text-lg font-semibold text-foreground">0</dd>
+                  <dd className="text-lg font-semibold text-foreground">
+                    {projects.reduce((sum, p) => sum + (p._count?.tasks ?? 0), 0)}
+                  </dd>
                 </dl>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Projects Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg leading-6 font-medium text-foreground">Projects</h3>
-          <Link
-            href={`/teams/${team.id}/projects/new`}
-            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-          >
-            New Project
-          </Link>
+          <Button size="sm" asChild>
+            <Link href={`/teams/${team.id}/projects/new`}>New Project</Link>
+          </Button>
         </div>
         {projects.length === 0 ? (
-          <div className="bg-card shadow rounded-lg p-8">
-            <EmptyState
-              icon={FolderOpen}
-              title="No projects"
-              description="Create a project to start organizing work and managing tasks for this team."
-              action={
-                <Link
-                  href={`/teams/${team.id}/projects/new`}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
-                >
-                  Create Project
-                </Link>
-              }
-            />
-          </div>
+          <Card className="p-8">
+            <CardContent className="pt-0">
+              <EmptyState
+                icon={FolderOpen}
+                title="No projects"
+                description="Create a project to start organizing work and managing tasks for this team."
+                action={
+                  <Button asChild>
+                    <Link href={`/teams/${team.id}/projects/new`}>Create Project</Link>
+                  </Button>
+                }
+              />
+            </CardContent>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.slice(0, 6).map((project) => (
-              <Link
-                key={project.id}
-                href={`/teams/${team.id}/projects/${project.id}`}
-                className="bg-card shadow rounded-lg p-5 hover:shadow-md transition"
-              >
-                <h4 className="text-lg font-semibold text-foreground mb-1">{project.name}</h4>
-                {project.description && (
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{project.description}</p>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{project._count?.tasks ?? 0} tasks</span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded ${
-                      project.status === 'ACTIVE'
-                        ? 'bg-[var(--green-3)] text-[var(--green-11)]'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {project.status}
-                  </span>
-                </div>
+              <Link key={project.id} href={`/teams/${team.id}/projects/${project.id}`} className="block group">
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <h4 className="text-lg font-semibold text-foreground mb-1">{project.name}</h4>
+                    {project.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{project.description}</p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">{project._count?.tasks ?? 0} tasks</span>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          project.status === 'ACTIVE'
+                            ? 'bg-[var(--green-3)] text-[var(--green-11)]'
+                            : 'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        {project.status}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
               </Link>
             ))}
           </div>
@@ -319,14 +254,12 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
       {/* Invite Members (for Admin/Manager) */}
       {canInvite && (
-        <div className="bg-card shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
-              Invite Team Members
-            </h3>
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg leading-6 font-medium text-foreground mb-4">Invite Team Members</h3>
             <InviteMemberForm teamId={team.id} />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Team Members */}
