@@ -40,13 +40,13 @@ export function TeamMemberList({
   const getRoleBadgeColor = (role: string) => {
     switch (role.toUpperCase()) {
       case 'ADMIN':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[var(--red-3)] text-[var(--red-11)]';
       case 'MANAGER':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[var(--blue-3)] text-[var(--blue-11)]';
       case 'MEMBER':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[var(--green-3)] text-[var(--green-11)]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -81,8 +81,8 @@ export function TeamMemberList({
   };
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-md">
-      <ul className="divide-y divide-gray-200">
+    <div className="bg-card shadow overflow-hidden sm:rounded-md">
+      <ul className="divide-y divide-border">
         {members.map((member) => (
           <li key={member.id}>
             <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
@@ -97,16 +97,16 @@ export function TeamMemberList({
                 {/* User Info */}
                 <div className="ml-4 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {member.user.name || 'Unknown User'}
                     </p>
                     {member.userId === currentUserId && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
                         You
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{member.user.email}</p>
+                  <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
                 </div>
 
                 {/* Role Badge */}
@@ -136,7 +136,7 @@ export function TeamMemberList({
                       <button
                         onClick={() => setShowConfirm(null)}
                         disabled={removingId === member.userId}
-                        className="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50"
+                        className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-accent disabled:opacity-50"
                       >
                         Cancel
                       </button>

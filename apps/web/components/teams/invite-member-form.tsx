@@ -113,7 +113,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Email Field */}
         <div className="sm:col-span-2">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="block text-sm font-medium text-muted-foreground">
             Email Address
           </label>
           <div className="mt-1">
@@ -122,7 +122,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
               type="email"
               id="email"
               placeholder="member@example.com"
-              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
           {errors.email && (
@@ -132,7 +132,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
 
         {/* Role Select */}
         <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="role" className="block text-sm font-medium text-muted-foreground">
             Role
           </label>
           <div className="mt-1">

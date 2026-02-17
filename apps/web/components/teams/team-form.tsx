@@ -107,7 +107,7 @@ export function TeamForm() {
 
       {/* Team Name Field */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-sm font-medium text-muted-foreground">
           Team Name
         </label>
         <div className="mt-1">
@@ -116,7 +116,7 @@ export function TeamForm() {
             type="text"
             id="name"
             placeholder="e.g., Marketing Team"
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         {errors.name && (
