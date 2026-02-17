@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-02 complete — TaskForm migrated from custom overlay div to Shadcn Dialog; all three callers updated to open/onOpenChange API
-Status: Phase 12 in progress — 2/9 plans done
-Last activity: 2026-02-17 — Completed 12-02: task-form.tsx uses Dialog/DialogContent/DialogTitle/DialogDescription; kanban-board, task-list-view, task-views use open/onOpenChange
+Plan: 12-03 complete — TaskDetailPanel migrated to Shadcn Select/Tabs/Input/Textarea/AlertDialog; activeTab and showDeleteConfirm states removed
+Status: Phase 12 in progress — 3/9 plans done
+Last activity: 2026-02-17 — Completed 12-03: task-detail-panel.tsx uses Select/Tabs/Input/Textarea/Button/AlertDialog; MIG-02+MIG-03+COMP-04 satisfied
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -82,6 +82,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 11-form-components-validation P04 | 35 | 3 tasks | 9 files |
 | Phase 12 P01 | 2 | 1 tasks | 5 files |
 | Phase 12 P02 | 4 | 2 tasks | 4 files |
+| Phase 12 P03 | 2 | 2 tasks | 1 file |
 
 ## Accumulated Context
 
@@ -277,6 +278,10 @@ Recent decisions affecting current work:
 - [Phase 12-02]: TaskForm always rendered with Dialog controlling visibility — replaces conditional {isFormOpen && <TaskForm>} pattern with Radix-managed mount/unmount
 - [Phase 12-02]: selectedTask guard in task-list-view: open={isFormOpen && !!selectedTask} — preserves safety check without needing conditional render wrapper
 - [Phase 12-02]: Dialog open/onOpenChange is the established interface for all future modal components in this codebase
+- [Phase 12-03]: Shadcn Select onValueChange replaces native <select> onChange — no spread needed, color className preserved
+- [Phase 12-03]: Tabs defaultValue replaces activeTab useState — Radix manages internal tab state
+- [Phase 12-03]: AlertDialog with AlertDialogTrigger asChild replaces showDeleteConfirm inline confirm div — no extra state variable
+- [Phase 12-03]: Inline-edit UX (onBlur save, Enter/Escape handling) preserved when swapping to Shadcn Input/Textarea
 
 ### Roadmap Evolution
 
@@ -315,10 +320,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-02 complete)
-Stopped at: Completed 12-02-SUMMARY.md — TaskForm migrated to Shadcn Dialog with open/onOpenChange interface
-Status: Phase 12 in progress. Plans 12-01, 12-02 done. TaskForm COMP-04 satisfied.
-Next action: Execute Phase 12 Plan 03
+Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-03 complete)
+Stopped at: Completed 12-03-SUMMARY.md — TaskDetailPanel migrated to Shadcn Select/Tabs/Input/Textarea/AlertDialog
+Status: Phase 12 in progress. Plans 12-01, 12-02, 12-03 done. MIG-02+MIG-03+COMP-04 satisfied for task-detail-panel.
+Next action: Execute Phase 12 Plan 04
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
