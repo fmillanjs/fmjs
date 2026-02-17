@@ -217,6 +217,48 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/api:latest
           cache-to: type=inline
 
+  build-and-push-devcollab:
+    name: Build and Push DevCollab Docker Images
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push devcollab-web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/devcollab-web/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/devcollab-web:latest
+            ghcr.io/${{ github.repository }}/devcollab-web:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcollab-web:latest
+          cache-to: type=inline
+
+      - name: Build and push devcollab-api image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/devcollab-api/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/devcollab-api:latest
+            ghcr.io/${{ github.repository }}/devcollab-api:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcollab-api:latest
+          cache-to: type=inline
+
   deploy:
     name: Deploy to Coolify
     runs-on: ubuntu-latest
