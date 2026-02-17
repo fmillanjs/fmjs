@@ -279,9 +279,15 @@ Plans:
   2. 5-8 primitive components installed (Button, Card, Input, Label, Dialog) and rendering correctly in both light and dark modes
   3. All installed components have WCAG AA compliant colors (verified via axe DevTools showing 0 contrast violations)
   4. ESLint rules prevent importing old component patterns (build fails if developer uses deprecated components)
-  5. Each component renders correctly in Storybook showing both light and dark mode variants
+  5. Components verified in-app at /design-system route showing both light and dark mode (Storybook skipped per user decision)
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Shadcn init + foundation dependency installation (@radix-ui/colors, tw-animate-css, components.json)
+- [ ] 09-02-PLAN.md — globals.css Radix Colors migration (COLOR-01/02/03/04 — replaces OKLCH tokens, fixes all 10 WCAG violations)
+- [ ] 09-03-PLAN.md — ESLint governance rules + DESIGN-SYSTEM.md component catalog (COMP-05)
+- [ ] 09-04-PLAN.md — Install 8 Shadcn primitives + in-app verification page with human checkpoint (COMP-02)
 
 ### Phase 10: Component Migration (Portfolio)
 
