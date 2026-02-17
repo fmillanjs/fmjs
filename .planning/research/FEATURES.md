@@ -1,321 +1,364 @@
-# Feature Landscape
+# Feature Research: Design System & WCAG AA Compliance
 
-**Domain:** Work Management SaaS
-**Researched:** 2026-02-14
-**Confidence:** MEDIUM-HIGH
+**Domain:** Design Systems & Web Accessibility
+**Researched:** 2026-02-16
+**Confidence:** HIGH
 
-## Table Stakes
+## Feature Landscape
 
-Features users expect. Missing = product feels incomplete or recruiters won't be impressed.
+### Table Stakes (Users Expect These)
+
+Features users assume exist. Missing these = product feels incomplete or unprofessional.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Task CRUD (Create/Read/Update/Delete) | Foundation of any work management tool | Low | Must include title, description, status, assignee, due date |
-| Multiple view types (List, Board/Kanban) | Users expect to visualize work their way. Linear, Asana, Jira all have this | Medium | List view is easier, Board view demonstrates drag-and-drop state management |
-| User authentication & authorization | Basic security requirement for multi-user SaaS | Low-Medium | Session management, JWT tokens, password hashing |
-| Task filtering & search | Users need to find relevant tasks quickly | Medium | Filter by status, assignee, labels. Search by title/description |
-| Task priority levels | Users need to indicate urgency (High/Medium/Low) | Low | Simple enum or number field with visual indicators |
-| Labels/Tags | Flexible categorization system (bug, feature, documentation) | Low | Many-to-many relationship, color coding |
-| User profiles | Basic identity and personalization | Low | Avatar, name, email, role |
-| Responsive UI | Users expect mobile-friendly interfaces in 2026 | Medium | Demonstrates modern CSS/responsive design skills |
-| Activity feed/timeline | Users expect to see "what happened" on tasks | Medium | Shows task updates, comments, status changes chronologically |
-| Task assignment | Ability to assign tasks to team members | Low | Foreign key relationship to users table |
+| **WCAG AA Color Compliance** | Legal requirement (ADA Title II 2026), professional standard | MEDIUM | 4.5:1 text, 3:1 UI elements. Not negotiable for production apps. |
+| **Semantic Design Tokens** | Industry standard for design systems | LOW | CSS variables for colors, spacing, typography. Foundation for theming. |
+| **Accessible Forms** | WCAG Level A requirement, table stakes for any app | MEDIUM | Label association, aria-invalid, aria-describedby, error messaging. |
+| **Keyboard Navigation** | WCAG 2.1.1 (Level A) - all functionality keyboard operable | MEDIUM | Focus management, roving tabindex for complex widgets, visible focus indicators. |
+| **Dark Mode** | User expectation in 2026, reduces eye strain | MEDIUM | Paired color scales, CSS variable switching, not just color inversion. |
+| **Focus Indicators** | WCAG 2.4.7 (Level AA) - visible keyboard focus | LOW | Must be visible and high contrast. Default browser focus often insufficient. |
+| **Component Documentation** | Developers expect usage guides and examples | LOW | When/how to use components, props API, accessibility notes. |
+| **Consistent Theming** | Users notice inconsistency, feels broken | LOW | Global tokens applied consistently, no one-off color values. |
 
-## Differentiators
+### Differentiators (Competitive Advantage)
 
-Features that set product apart. Not expected, but demonstrate advanced skills to technical recruiters.
+Features that set the product apart. Not required, but valuable for showcasing engineering quality.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Real-time collaboration (WebSocket) | Shows real-time updates when others make changes. Demonstrates WebSocket implementation | High | **Critical for job hunting**: proves you can build real-time features. Use Socket.io or native WebSocket. Include presence indicators ("User X is viewing this") |
-| Role-Based Access Control (RBAC) | Shows understanding of enterprise security patterns. Roles like Admin, Manager, Member with different permissions | High | **Critical for senior roles**: demonstrates authorization patterns, policy enforcement, separation of duties. Must show multiple permission levels |
-| Comprehensive audit logging | Tracks all user actions for security/compliance. Shows production-ready thinking | Medium-High | **Critical for production credibility**: logs who did what when. Separate from application logs. Include filtering, search by date/user/action |
-| Task dependencies/blocking | Visual representation of task relationships ("Task A blocks Task B") | Medium-High | Shows graph data modeling skills. Prevents circular dependencies |
-| Optimistic UI updates | UI updates instantly before server confirms, demonstrating advanced UX patterns | Medium | Shows performance optimization thinking. Rollback on failure |
-| Drag-and-drop task reordering | Smooth drag-and-drop for priority ordering and status changes | Medium | Demonstrates interactive UI skills. HTML5 drag-and-drop or library like dnd-kit |
-| Keyboard shortcuts | Power user features (j/k navigation, / for search, c for create) | Low-Medium | Shows attention to UX details. Document in help modal |
-| Dark mode | Modern UI expectation, shows CSS skills | Low-Medium | CSS variables, local storage persistence |
-| Batch operations | Select multiple tasks, bulk update status/assignee | Medium | Shows thinking about efficiency at scale |
-| Advanced filtering (saved views) | Save custom filter combinations as named views | Medium | Shows state management, persistence |
+| **Automated Accessibility Testing** | Catches ~30% of issues in CI/CD pipeline | MEDIUM | Component-level testing with axe-core prevents regressions. Shows engineering maturity. |
+| **Accessibility Regression Testing** | Tracks baselines, detects new violations in PRs | MEDIUM | Chromatic-style approach: test components, not just pages. Impressive for portfolio. |
+| **Radix UI Primitives Foundation** | WAI-ARIA compliant primitives, professional-grade | LOW | Shadcn/ui already uses Radix. Shows knowledge of accessibility architecture. |
+| **Tailwind v4 CSS-First Configuration** | Modern approach, 5x faster builds, runtime theming | MEDIUM | @theme directive, native CSS variables, eliminates JS config duplication. |
+| **Component-Level Accessibility** | Design system enforces accessibility by default | HIGH | Prevents issues at source, not remediation. Engineering-first approach. |
+| **Semantic Component API** | Props describe purpose, not appearance | LOW | button-primary vs blue-button. Makes system maintainable and themeable. |
+| **Design-Development Alignment** | Figma mirrors code structure, reduces handoff friction | LOW | Optional but impressive. Shows understanding of design systems at scale. |
 
-## Anti-Features
+### Anti-Features (Commonly Requested, Often Problematic)
 
-Features to explicitly NOT build for a portfolio project.
+Features that seem good but create problems.
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Email notifications | Explicitly out of scope. Adds complexity (SMTP, queuing, templates) without demonstrating core skills | Show in-app notification center/activity feed instead. Add "Email would be sent here" placeholder in audit log |
-| File attachments/uploads | Explicitly out of scope. Requires file storage (S3), security scanning, size limits | Use task descriptions with markdown support and external link fields instead |
-| Mobile native app | Explicitly out of scope. Wrong tech stack for 3-4 week timeline | Build responsive web UI that works on mobile browsers |
-| Real billing/payments | Explicitly out of scope. PCI compliance, Stripe integration adds no technical value | Mock different subscription tiers with role-based features instead |
-| Advanced analytics/reporting | Explicitly out of scope. Data visualization, complex queries, caching | Simple activity feed and basic task counts are sufficient |
-| Gantt charts/timeline view | High complexity, limited value for portfolio | List and Board views are sufficient to demonstrate skills |
-| Time tracking | Adds complexity without core value for demonstration | Priority and status are sufficient for work management demo |
-| Calendar integration | External API dependencies, authentication flows | Due dates with visual indicators are sufficient |
-| Custom fields/forms | Over-engineering for MVP. Leads to complex schema | Fixed schema with labels for flexibility |
-| Multi-workspace/tenancy | Adds significant complexity for limited demo value | Single workspace with team concept is sufficient |
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| **Over-Customization of Pre-Built Components** | "Make it look slightly different" | Kills reusability, adds bloat, creates bugs, defeats library purpose | Use composition patterns, variant props, or custom components following library patterns |
+| **Pure Black (#000000) Dark Mode** | Seems like "true" dark mode | Eye strain, accessibility issues, harsh contrast | Use soft dark grays (e.g., #1a1a1a), reduces eye strain per 2026 best practices |
+| **Automated Testing as Sole Accessibility Validation** | "We have axe-core" | Catches only ~30% of issues, manual testing required for remaining 70% | Automated baseline + manual testing with assistive tech |
+| **Placeholder-Only Form Labels** | Cleaner visual design | WCAG violation, disappears on focus, screen reader issues | Always use explicit labels with for/id association, placeholders optional |
+| **Real-Time Validation on Every Keystroke** | Feels responsive | Announces too frequently for screen readers, annoying UX | Validate on blur or form submit, use aria-live carefully |
+| **Hardcoded Dark Mode Color Changes** | Quick implementation | Unmaintainable, breaks theming, creates tech debt | CSS variables with theme switching at root level |
+| **Token Names Describing Appearance** | Intuitive to name blue-500 | Breaks when brand colors change, not semantic | Use purpose-based names: button-primary-bg, not blue-button |
+| **Treating Component Library as Full Design System** | Seems equivalent | Missing governance, documentation, design principles | Component library is implementation layer, design system includes strategy, tokens, patterns, documentation |
 
 ## Feature Dependencies
 
 ```
-User Authentication
-    └──requires──> User CRUD
-                       └──enables──> Task Assignment
-                                         └──enables──> RBAC
-                                                           └──enables──> Audit Logging
+[Design Tokens (CSS Variables)]
+    ├──requires──> [Tailwind v4 Configuration]
+    └──enables──> [Dark Mode]
+                  └──requires──> [Paired Color Scales]
+                                └──requires──> [WCAG Color Compliance]
 
-Board View
-    └──requires──> Task CRUD
-                       └──requires──> Task Status
-                                         └──enhances with──> Drag-and-drop
+[Accessible Component Library]
+    ├──requires──> [Radix UI Primitives]
+    │             └──provides──> [WAI-ARIA Patterns]
+    │                           └──provides──> [Keyboard Navigation]
+    │                                         └──provides──> [Focus Management]
+    ├──requires──> [Design Tokens]
+    └──enables──> [Component Documentation]
 
-Real-time Collaboration (WebSocket)
-    ├──requires──> Task CRUD
-    ├──requires──> User Authentication
-    └──enhances──> Activity Feed
+[Accessibility Testing]
+    ├──requires──> [Accessible Component Library]
+    └──prevents──> [Accessibility Regressions]
 
-Task Dependencies
-    └──requires──> Task CRUD
-                       └──conflicts with──> circular dependencies (must prevent)
-
-Filtering & Search
-    └──requires──> Task CRUD
-                       └──enhances with──> Saved Views
-                                              └──requires──> User Authentication (to save per-user)
-
-RBAC
-    └──requires──> User Authentication
-                       └──requires──> Role assignment
-                                         └──enables──> Permission checks on all actions
+[Shadcn UI Integration]
+    ├──requires──> [Tailwind v4 Configuration]
+    ├──requires──> [Radix UI Primitives] (already included)
+    └──provides──> [Component Templates]
+                  └──requires──> [Customization via Design Tokens]
 ```
 
 ### Dependency Notes
 
-- **RBAC requires User Authentication**: Can't assign roles without authenticated users. Must implement users/sessions first
-- **Audit Logging enhances with RBAC**: Logs are more valuable when they include role context (e.g., "Admin deleted task")
-- **Real-time updates enhance Activity Feed**: WebSocket pushes make activity feed live instead of requiring refresh
-- **Drag-and-drop requires Board View**: No point in drag-and-drop without visual board layout
-- **Task Dependencies conflict with circular dependencies**: Must validate and prevent cycles (A blocks B blocks A)
-- **Saved Views require Authentication**: Can't persist user preferences without user identity
+- **Design Tokens require Tailwind v4 Configuration:** Tailwind v4's @theme directive makes tokens available as CSS variables, eliminating JS/CSS duplication.
+- **Dark Mode requires Paired Color Scales:** Not just inverted colors. Each mode needs separate scales designed for legibility and contrast.
+- **WCAG Compliance blocks Dark Mode:** Color scales must meet 4.5:1 (text) and 3:1 (UI) contrast in BOTH modes before shipping.
+- **Radix UI provides WAI-ARIA patterns:** Keyboard navigation, focus management, aria attributes handled by primitives. Don't reinvent.
+- **Component Testing must be component-level:** Testing at page level drowns in duplicates. Test reusable components at source.
+- **Accessibility Regression Testing requires baselines:** Must establish "last known good state" before tracking new violations.
 
-## MVP Recommendation
+## MVP Definition
 
-### Launch With (Portfolio v1)
+### Launch With (v1.1)
 
-Prioritize demonstrating the three key requirements from project context:
+Minimum viable design system - what's needed to unblock development and meet compliance.
 
-1. **Real-time collaboration (WebSocket)** - HIGH PRIORITY
-   - Live task updates when anyone changes status, title, assignee
-   - Presence indicators ("3 users viewing this project")
-   - Must be visible in demo without page refresh
-   - **Why essential**: Explicitly required for job hunting showcase
+- [x] **Tailwind v4 Configuration** — Foundation for everything else, currently broken
+- [ ] **WCAG AA Color Palette** — Legal requirement, blocks dark mode and all UI
+- [ ] **Semantic Design Tokens (CSS Variables)** — Theming foundation, enables dark mode
+- [ ] **Dark Mode Implementation** — User expectation, demonstrates token system works
+- [ ] **Shadcn UI Integration** — Professional component foundation, accelerates development
+- [ ] **Accessible Form Components** — Highest usage, most WCAG violations happen here
+- [ ] **Accessible Button Components** — Core interaction, must have focus states
+- [ ] **Accessible Modal/Dialog Components** — Common pattern, focus trap required
+- [ ] **Basic Component Documentation** — Developers need to know when/how to use components
+- [ ] **Regression Testing** — Ensure no existing features break during overhaul
 
-2. **RBAC implementation** - HIGH PRIORITY
-   - At minimum 3 roles: Admin (full access), Manager (create/edit all tasks), Member (edit own tasks only)
-   - Visible permission checks in UI (disable buttons user can't use)
-   - Show different UIs for different roles
-   - **Why essential**: Explicitly required for job hunting showcase
+### Add After Validation (v1.x - Post-Design System)
 
-3. **Audit logging** - HIGH PRIORITY
-   - Log all task mutations (create, update, delete, status change, reassignment)
-   - Searchable log UI with filters (by user, action type, date range)
-   - Show who did what when
-   - **Why essential**: Explicitly required for job hunting showcase
+Features to add once core design system is working and validated.
 
-4. **Task CRUD with List View** - FOUNDATION
-   - Create, read, update, delete tasks
-   - List view with sorting
-   - **Why essential**: Can't demonstrate other features without basic task management
+- [ ] **Automated Accessibility Testing** — CI/CD integration, catch issues early (after components stable)
+- [ ] **Accessibility Regression Testing** — Track violations over time (after baseline established)
+- [ ] **Advanced Component Variants** — Loading states, disabled states, sizes (as needed per feature)
+- [ ] **Component-Level Accessibility Tests** — Storybook + axe integration (when component library stabilizes)
+- [ ] **Design-Development Alignment** — Figma component library mirroring code (nice to have, not critical)
+- [ ] **Toast/Notification Components** — Accessible live regions (defer until needed by features)
+- [ ] **Tooltip Components** — Hover + keyboard patterns (defer, not critical path)
 
-5. **Board/Kanban View** - FOUNDATION
-   - Visualize tasks by status columns
-   - Drag-and-drop to change status
-   - **Why essential**: Expected in all modern work management tools, demonstrates UI skills
+### Future Consideration (v2+)
 
-6. **User Authentication** - FOUNDATION
-   - Login/logout, session management
-   - Required for RBAC and audit logging
-   - **Why essential**: Foundation for multi-user features
+Features to defer until design system is proven in production.
 
-7. **Task Assignment & Priority** - TABLE STAKES
-   - Assign tasks to team members
-   - Set priority levels (High/Medium/Low)
-   - **Why essential**: Basic work management functionality
-
-8. **Filtering & Search** - TABLE STAKES
-   - Filter by status, assignee, priority, labels
-   - Search by title/description
-   - **Why essential**: Users expect to find tasks quickly
-
-9. **Labels/Tags** - TABLE STAKES
-   - Categorize tasks flexibly
-   - Color coding
-   - **Why essential**: Simple but demonstrates many-to-many relationships
-
-10. **Activity Feed** - ENHANCES REAL-TIME
-    - Shows recent task changes
-    - Enhanced by WebSocket (updates live)
-    - **Why essential**: Makes real-time collaboration visible
-
-### Add After Core (v1.1 Polish)
-
-Features to add if time permits after core demonstration features are solid:
-
-- **Dark mode** - Shows CSS skills, quick win
-- **Keyboard shortcuts** - Power user features, shows UX thinking
-- **Optimistic UI updates** - Performance optimization, advanced UX
-- **Saved filter views** - User convenience, shows state management
-
-### Explicitly Defer (Out of Scope)
-
-Do NOT build these for portfolio:
-
-- Email notifications (out of scope per requirements)
-- File attachments (out of scope per requirements)
-- Mobile native app (out of scope per requirements)
-- Real billing (out of scope per requirements)
-- Advanced analytics (out of scope per requirements)
-- Gantt charts
-- Time tracking
-- Calendar integration
-- Custom fields
-- Multi-workspace
+- [ ] **Component Versioning System** — Track breaking changes (only needed at scale)
+- [ ] **Multi-Brand Theming** — Multiple theme tokens (not needed for single product)
+- [ ] **Component Usage Analytics** — Track which components used where (optimization, not launch)
+- [ ] **Advanced Animation System** — Motion design tokens (polish, not foundation)
+- [ ] **Accessibility Statement Generator** — Auto-generate WCAG conformance report (nice to have)
+- [ ] **Internationalization Support** — RTL layouts, locale-specific patterns (future markets)
 
 ## Feature Prioritization Matrix
 
-| Feature | User Value | Implementation Cost | Demo Value to Recruiters | Priority |
-|---------|------------|---------------------|--------------------------|----------|
-| Real-time collaboration (WebSocket) | HIGH | HIGH | CRITICAL | P1 |
-| RBAC | HIGH | HIGH | CRITICAL | P1 |
-| Audit logging | MEDIUM | MEDIUM-HIGH | CRITICAL | P1 |
-| Task CRUD + List View | HIGH | LOW | HIGH | P1 |
-| Board/Kanban View | HIGH | MEDIUM | HIGH | P1 |
-| User Authentication | HIGH | LOW-MEDIUM | HIGH | P1 |
-| Task Assignment | HIGH | LOW | MEDIUM | P1 |
-| Priority levels | MEDIUM | LOW | MEDIUM | P1 |
-| Filtering & Search | HIGH | MEDIUM | MEDIUM | P1 |
-| Labels/Tags | MEDIUM | LOW | MEDIUM | P1 |
-| Activity Feed | MEDIUM | MEDIUM | HIGH | P1 |
-| Drag-and-drop | MEDIUM | MEDIUM | MEDIUM | P2 |
-| Dark mode | LOW | LOW-MEDIUM | LOW | P2 |
-| Keyboard shortcuts | LOW | LOW | MEDIUM | P2 |
-| Optimistic UI | LOW | MEDIUM | MEDIUM | P2 |
-| Saved Views | MEDIUM | MEDIUM | LOW | P2 |
-| Task Dependencies | LOW | MEDIUM-HIGH | MEDIUM | P3 |
-| Batch Operations | MEDIUM | MEDIUM | LOW | P3 |
+| Feature | User Value | Implementation Cost | Priority |
+|---------|------------|---------------------|----------|
+| WCAG AA Color Compliance | HIGH | MEDIUM | P1 |
+| Semantic Design Tokens | HIGH | LOW | P1 |
+| Tailwind v4 Configuration | HIGH | MEDIUM | P1 |
+| Accessible Forms | HIGH | MEDIUM | P1 |
+| Dark Mode | HIGH | MEDIUM | P1 |
+| Shadcn UI Integration | HIGH | LOW | P1 |
+| Keyboard Navigation | HIGH | MEDIUM | P1 |
+| Focus Indicators | HIGH | LOW | P1 |
+| Button Components | HIGH | LOW | P1 |
+| Modal/Dialog Components | MEDIUM | MEDIUM | P1 |
+| Component Documentation | MEDIUM | LOW | P1 |
+| Regression Testing | HIGH | LOW | P1 |
+| Automated Accessibility Testing | MEDIUM | MEDIUM | P2 |
+| Accessibility Regression Testing | MEDIUM | MEDIUM | P2 |
+| Toast/Notification Components | MEDIUM | LOW | P2 |
+| Tooltip Components | LOW | LOW | P2 |
+| Component Versioning | LOW | HIGH | P3 |
+| Multi-Brand Theming | LOW | HIGH | P3 |
+| Design-Development Alignment | LOW | MEDIUM | P3 |
+| Animation System | LOW | MEDIUM | P3 |
 
 **Priority key:**
-- **P1 (Must have for launch)**: Required to demonstrate core value proposition and technical requirements (real-time, RBAC, audit logging)
-- **P2 (Should have, add when possible)**: Polish features that enhance demo but aren't critical
-- **P3 (Nice to have, future consideration)**: Complex features with limited demo value for 3-4 week timeline
+- P1: Must have for v1.1 launch (design system foundation)
+- P2: Should have, add when possible (post-foundation enhancements)
+- P3: Nice to have, future consideration (scale/optimization features)
+
+## Implementation Patterns by Category
+
+### Color System
+
+**WCAG AA Requirements:**
+- Normal text: 4.5:1 contrast minimum
+- Large text (18pt/24px or 14pt bold/19px): 3:1 contrast minimum
+- UI components (borders, icons, focus indicators): 3:1 contrast minimum
+- Do not round contrast ratios (4.499:1 fails 4.5:1 requirement)
+
+**Dark Mode Best Practices:**
+- Avoid pure black (#000000), use soft dark grays (#1a1a1a, #121212)
+- Desaturate colors for dark mode (vibrant colors cause eye strain on dark backgrounds)
+- Use lighter borders or soft glows for elevation (shadows less visible in dark mode)
+- Test WCAG compliance in BOTH light and dark modes
+
+**Design Token Structure:**
+- Global tokens: Platform-agnostic base values (--color-gray-900: #1a1a1a)
+- Semantic tokens: Purpose-based aliases (--button-primary-bg: var(--color-blue-600))
+- Naming pattern: {context}-{role}-{modifier} (e.g., button-primary-bg-hover)
+
+### Accessible Forms
+
+**Required Patterns:**
+- Explicit label association: `<label for="email">` + `<input id="email">`
+- Never use placeholder-only labels (WCAG violation)
+- Required fields: Indicate in label text ("Email (required)")
+- Error states: aria-invalid="true" + aria-describedby pointing to error message
+- Error messages: Clear, actionable ("Email must be valid format" not "Invalid")
+- Validation timing: On blur or submit, not every keystroke (reduces screen reader noise)
+
+**ARIA Patterns:**
+- aria-live="polite" for non-critical updates
+- aria-live="assertive" (or role="alert") for critical errors
+- aria-describedby for linking help text and error messages to inputs
+- aria-invalid="true" when field has validation error
+
+### Keyboard Navigation
+
+**WCAG Requirements:**
+- 2.1.1 Keyboard (Level A): All functionality keyboard-operable
+- 2.1.2 No Keyboard Trap (Level A): Users can navigate away from any component
+- 2.4.3 Focus Order (Level A): Logical and meaningful sequence
+- 2.4.7 Focus Visible (Level AA): Visible focus indicator required
+
+**Patterns:**
+- Roving tabindex for complex widgets (tablists, menus, radio groups)
+- Only one item has tabindex="0" at a time, others tabindex="-1"
+- Arrow keys navigate within component, Tab/Shift+Tab exit component
+- Focus trapping for modals (Tab wraps within dialog)
+- Escape key closes modals and dropdowns
+
+**Radix UI Primitives Handle:**
+- WAI-ARIA role/aria attributes
+- Focus management and keyboard navigation
+- Screen reader announcements
+- Use primitives, don't reinvent
+
+### Component Testing
+
+**Automated Testing (catches ~30%):**
+- axe-core integration in unit tests
+- Run on component level, not just pages
+- Catches: missing alt text, insufficient contrast, missing labels, invalid ARIA
+
+**Manual Testing Required (remaining ~70%):**
+- Screen reader testing (NVDA, JAWS, VoiceOver)
+- Keyboard-only navigation
+- Focus order and visibility
+- Live region announcements
+- Error message clarity
+
+**Regression Testing Pattern:**
+- Establish baseline: "last known good state"
+- Scan on PRs: detect new violations, ignore existing debt
+- Component-level testing: prevents issues at source, not page-level duplication
+
+### Shadcn UI Integration
+
+**Architecture:**
+- Built on Radix UI primitives (accessibility handled)
+- Styled with Tailwind CSS (customizable via tokens)
+- Components copied into project (full ownership, no dependency lock-in)
+- Two-layer architecture: logic layer (Radix) + style layer (Tailwind)
+
+**Best Practices:**
+- Install specific components as needed (don't install everything)
+- Use Tailwind tokens for theming (color, spacing, typography)
+- Apply branding via theme overrides in CSS
+- Add variants using class-variance-authority pattern
+- Mirror structure in Figma for design-dev alignment (optional)
+
+**Customization Pattern:**
+- Base layer: Radix primitive (behavior, accessibility)
+- Style layer: Tailwind classes (appearance)
+- Theme layer: CSS variables (tokens for colors, spacing)
+- Variant layer: CVA for size/state variants
 
 ## Competitor Feature Analysis
 
-| Feature | Linear | Asana | Jira | Our Approach |
-|---------|--------|-------|------|--------------|
-| Real-time updates | Yes (instant, no refresh) | Limited (polling) | Limited | WebSocket for instant updates - DIFFERENTIATOR |
-| RBAC | Basic (workspace roles) | Advanced (multiple permission levels) | Advanced (highly customizable) | 3 roles (Admin/Manager/Member) - demonstrates concept without over-engineering |
-| Audit trail | Limited activity log | Basic activity log | Comprehensive audit | Searchable audit log with filters - matches enterprise expectation |
-| Views | List, Board, Timeline, Roadmap | List, Board, Timeline, Calendar, Gantt | List, Board, Calendar, Timeline | List + Board (sufficient to demonstrate skills) |
-| Task dependencies | Yes (visual graph) | Yes (timeline view) | Advanced (issue linking) | Defer to v2 (complex, limited value for demo) |
-| Custom fields | Limited (predefined) | Extensive | Highly customizable | Fixed schema + labels (avoids over-engineering) |
-| Integrations | Git, Slack, Figma | 200+ apps | 3000+ apps | Not needed for portfolio demo |
-| Search/filter | Fast, keyboard-driven | Robust, saved searches | JQL (advanced query language) | Standard filters + search (table stakes) |
-| Notifications | In-app + email | In-app + email + mobile | In-app + email + mobile | In-app only (email out of scope) |
-| Mobile | Responsive web + native app | Responsive web + native app | Responsive web + native app | Responsive web only (native out of scope) |
+| Feature | Material UI | Chakra UI | Shadcn UI (Our Choice) |
+|---------|------------|-----------|------------------------|
+| Accessibility | WAI-ARIA compliant | Built-in a11y | Radix primitives (best-in-class) |
+| Theming | Emotion/styled-components | CSS-in-JS theme | Tailwind + CSS vars (fastest) |
+| Component Ownership | Dependency-based | Dependency-based | Copy to project (full control) |
+| Customization | Override styles | Theme tokens | Direct code editing |
+| Bundle Size | Large | Medium | Minimal (only what you use) |
+| Dark Mode | Built-in | Built-in | Manual implementation required |
+| TypeScript | Excellent | Good | Excellent |
+| Documentation | Comprehensive | Comprehensive | Community-driven |
 
-## Production Quality Markers for Recruiters
-
-Based on research, technical recruiters evaluating portfolio projects look for:
-
-### Code Quality Markers
-- Clean, well-commented, structured codebase with proper separation of concerns
-- Modern best practices (proper error handling, input validation, security)
-- Proper authentication/authorization implementation
-
-### Production-Grade Features
-- Real-time capabilities (proves async/event-driven architecture skills)
-- Security features (RBAC, audit logging - shows enterprise thinking)
-- Data handling polish (optimistic updates, loading states, error states)
-- UI polish (responsive, accessible, consistent design)
-
-### Documentation & Presentation
-- Comprehensive README with setup instructions
-- Screenshots or live demo
-- Clear explanation of technical decisions
-- Architecture diagrams showing system design
-
-### What Impresses for Senior Roles
-- WebSocket implementation (real-time is advanced)
-- Proper RBAC (not just "admin" flag - actual role-permission system)
-- Audit logging (shows compliance/security awareness)
-- Performance optimization thinking (caching, optimistic UI)
-- Scalability considerations in architecture
-
-## Timeline Considerations (3-4 Weeks, Solo Developer)
-
-**Week 1: Foundation**
-- User authentication
-- Task CRUD with List view
-- Basic UI framework
-- Database schema
-
-**Week 2: Core Features**
-- Board/Kanban view with drag-and-drop
-- Task assignment, priority, labels
-- Filtering & search
-- Activity feed
-
-**Week 3: Showcase Features (Required)**
-- Real-time collaboration (WebSocket)
-- RBAC implementation (3 roles)
-- Audit logging with search
-
-**Week 4: Polish & Demo Prep**
-- UI polish, responsive design
-- Error handling, loading states
-- README, documentation
-- Deployment, demo preparation
-- Optional: Dark mode, keyboard shortcuts if time permits
-
-This timeline ensures the three critical showcase features (real-time, RBAC, audit) are completed with buffer for polish.
+**Our Approach:**
+- Use Shadcn UI for component templates (Radix + Tailwind foundation)
+- Customize via design tokens in CSS (semantic naming, purpose-based)
+- Tailwind v4 @theme directive for token management
+- Manual dark mode implementation (demonstrates understanding)
+- Component-level accessibility testing (engineering-first)
+- Focus on portfolio value: shows architectural thinking, not just library usage
 
 ## Sources
 
-**Work Management Feature Research:**
-- [Top 15 SaaS Management Platforms in 2026](https://www.josys.com/article/saas-management-platforms) - MEDIUM confidence (general SaaS features)
-- [Linear vs Jira: Project Management Comparison (2026)](https://efficient.app/compare/linear-vs-jira) - HIGH confidence (current product features)
-- [Linear vs Jira vs Asana APIs in 2026](https://bytepulse.io/linear-vs-jira-vs-asana-apis-in-2026/) - HIGH confidence (current product comparison)
-- [Linear vs Asana: A Battle of the Best Project Management Tools](https://everhour.com/blog/linear-vs-asana/) - HIGH confidence (feature comparison)
+### Design Systems & Best Practices
+- [What is a Design System? A 2026 Guide](https://www.untitledui.com/blog/what-is-a-design-system)
+- [10 UX Best Practices to Follow in 2026](https://uxpilot.ai/blogs/ux-best-practices)
+- [Best Design System Examples for 2026](https://www.designrush.com/best-designs/websites/trends/design-system-examples)
+- [Best design system examples in 2026](https://www.adhamdannaway.com/blog/design-systems/design-system-examples)
 
-**Real-time Collaboration:**
-- [How to Build a Real-Time Collaboration Tool with WebSockets](https://blog.4geeks.io/how-to-build-a-real-time-collaboration-tool-with-websockets/) - MEDIUM confidence (technical implementation patterns)
-- [Using Websockets for implementing real-time collaboration](https://www.ensolvers.com/post/using-websockets-for-implementing-real-time-collaboration) - MEDIUM confidence (implementation guide)
+### WCAG AA Compliance
+- [ADA Title II Digital Accessibility 2026: WCAG 2.1 AA](https://www.sdettech.com/blogs/ada-title-ii-digital-accessibility-2026-wcag-2-1-aa)
+- [2026 WCAG & ADA Website Compliance Requirements](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/)
+- [WCAG 2.1 AA Compliance: Complete Checklist (2026)](https://www.webability.io/blog/wcag-2-1-aa-the-standard-for-accessible-web-design)
+- [WCAG Color Contrast Ratios](https://www.accessibilitychecker.org/wcag-guides/ensure-the-contrast-between-foreground-and-background-colors-meets-wcag-2-aa-minimum-contrast-ratio-thresholds/)
+- [WebAIM: Contrast and Color Accessibility](https://webaim.org/articles/contrast/)
+- [Understanding Success Criterion 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 
-**RBAC Best Practices:**
-- [Role-Based Access Control Best Practices for 2026](https://www.techprescient.com/blogs/role-based-access-control-best-practices/) - HIGH confidence (current best practices)
-- [What Is Role-Based Access Control (RBAC) in Project Management Tools?](https://planfix.com/blog/industry-insights/what-is-role-based-access-control-rbac-in-project-management-tools/) - HIGH confidence (PM-specific RBAC)
-- [Role-Based Access Control Best Practices: 11 Top Tips | Cerbos](https://www.cerbos.dev/blog/role-based-access-control-best-practices) - HIGH confidence (implementation tips)
+### Shadcn UI & Component Architecture
+- [The Anatomy of shadcn/ui Components](https://vercel.com/academy/shadcn-ui/extending-shadcn-ui-with-custom-components)
+- [The Foundation for your Design System - shadcn/ui](https://ui.shadcn.com/)
+- [shadcn/ui Introduction](https://ui.shadcn.com/docs)
+- [The complete beginner's guide to shadcn/ui](https://shadcraft.com/blog/the-complete-beginner-s-guide-to-shadcn-ui)
+- [The anatomy of shadcn/ui](https://manupa.dev/blog/anatomy-of-shadcn-ui)
 
-**Audit Logging:**
-- [Audit Logging Best Practices, Components & Challenges | Sonar](https://www.sonarsource.com/resources/library/audit-logging/) - HIGH confidence (industry standards)
-- [Audit Logging: What It Is & How It Works | Datadog](https://www.datadoghq.com/knowledge-center/audit-logging/) - HIGH confidence (technical implementation)
-- [Audit Logging: Examples, Best Practices, and More](https://www.strongdm.com/blog/audit-logging) - HIGH confidence (best practices)
+### Design Tokens & Semantic Naming
+- [Design Token Naming Best Practices](https://www.netguru.com/blog/design-token-naming-best-practices)
+- [Best Practices For Naming Design Tokens, Components And Variables](https://www.smashingmagazine.com/2024/05/naming-best-practices/)
+- [How To Name Design Tokens in Design Systems](https://smart-interface-design-patterns.com/articles/naming-design-tokens/)
+- [Design tokens - The Design System Guide](https://thedesignsystem.guide/design-tokens)
+- [Naming Tokens in Design Systems](https://medium.com/eightshapes-llc/naming-tokens-in-design-systems-9e86c7444676)
 
-**Portfolio Project Quality:**
-- [Selecting Projects for Your Portfolio: What Recruiters Look For](https://www.nucamp.co/blog/coding-bootcamp-job-hunting-selecting-projects-for-your-portfolio-what-recruiters-look-for) - MEDIUM confidence (recruiter perspective)
-- [3 Reasons Why a Project Portfolio is Essential for Landing a Tech Job](https://www.techelevator.com/3-reasons-why-a-project-portfolio-is-essential-for-landing-a-tech-job/) - MEDIUM confidence (hiring insights)
-- [What Recruiters Look for in Developer Portfolios](https://pesto.tech/resources/what-recruiters-look-for-in-developer-portfolios) - MEDIUM confidence (recruiter expectations)
+### Dark Mode Implementation
+- [Dark mode UI design: Best practices and examples](https://blog.logrocket.com/ux-design/dark-mode-ui-design-best-practices-and-examples/)
+- [Designing a Scalable and Accessible Dark Theme](https://www.fourzerothree.in/p/scalable-accessible-dark-mode)
+- [Dark Mode Design Systems: A Practical Guide](https://medium.com/design-bootcamp/dark-mode-design-systems-a-practical-guide-13bc67e43774)
+- [Complete Dark Mode Design Guide (2025)](https://ui-deploy.com/blog/complete-dark-mode-design-guide-ui-patterns-and-implementation-best-practices-2025)
 
-**Anti-Patterns:**
-- [Eight project management anti-patterns and how to avoid them](https://www.catalyte.io/insights/project-management-anti-patterns/) - MEDIUM confidence (common mistakes)
-- [Project Management AntiPatterns](https://sourcemaking.com/antipatterns/software-project-management-antipatterns) - HIGH confidence (established anti-patterns)
+### Accessibility Testing & Regression
+- [Sneak peek: Accessibility Regression Testing](https://www.chromatic.com/blog/sneak-peek-accessibility-regression-testing/)
+- [Testing a Component System Like Infrastructure](https://hackernoon.com/testing-a-component-system-like-infrastructure-contract-tests-visual-regression-and-accessibility-gates)
+- [Testing the accessibility of pattern libraries](https://hidde.blog/testing-the-accessibility-of-pattern-libraries/)
+- [Accessibility testing for components and pages](https://www.chromatic.com/features/accessibility-test)
+- [Using Automated Test Results To Improve Accessibility](https://www.smashingmagazine.com/2022/11/automated-test-results-improve-accessibility/)
+- [Accessibility in Design Systems — Build Accessible Components](https://www.accesify.io/blog/accessibility-design-systems-component-libraries/)
 
-**Feature Patterns:**
-- [What is a kanban board? | Atlassian](https://www.atlassian.com/agile/kanban/boards) - HIGH confidence (official documentation)
-- [Linear Task Management: Organize, Prioritize, and Deliver [2026]](https://everhour.com/blog/linear-task-management/) - HIGH confidence (current product features)
+### Tailwind v4 & CSS Variables
+- [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4)
+- [A First Look at Setting Up Tailwind CSS v4.0](https://bryananthonio.com/blog/configuring-tailwind-css-v4/)
+- [Theme variables - Core concepts - Tailwind CSS](https://tailwindcss.com/docs/theme)
+- [What's New in Tailwind CSS 4.0: Migration Guide (2026)](https://designrevision.com/blog/tailwind-4-migration)
+- [Tailwind CSS 4 @theme: The Future of Design Tokens](https://medium.com/@sureshdotariya/tailwind-css-4-theme-the-future-of-design-tokens-at-2025-guide-48305a26af06)
+- [Upgrading to Tailwind CSS v4: A Migration Guide](https://typescript.tv/hands-on/upgrading-to-tailwind-css-v4-a-migration-guide/)
+
+### Accessible Forms & ARIA
+- [A Guide To Accessible Form Validation](https://www.smashingmagazine.com/2023/02/guide-accessible-form-validation/)
+- [How to Build Accessible Form Validation and Errors](https://216digital.com/how-to-build-accessible-form-validation-and-errors/)
+- [Accessible Dynamic Forms — Labels, Errors & Real-Time Validation](https://www.accesify.io/blog/accessible-dynamic-forms-labels-errors-validation/)
+- [How to Create Accessible Forms: HTML5 & ARIA Tutorial](https://testparty.ai/blog/create-accessible-forms)
+- [WebAIM: Usable and Accessible Form Validation](https://webaim.org/techniques/formvalidation/)
+- [ARIA Labels Guide: When and How to Use ARIA](https://testparty.ai/blog/aria-labels-guide)
+- [ARIA21: Using aria-invalid to Indicate An Error Field](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA21)
+
+### Keyboard Navigation & Focus Management
+- [Focus & Keyboard Operability](https://usability.yale.edu/web-accessibility/articles/focus-keyboard-operability)
+- [Developing a Keyboard Interface - W3C ARIA APG](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/)
+- [Keyboard Navigation Patterns for Complex Widgets](https://www.uxpin.com/studio/blog/keyboard-navigation-patterns-complex-widgets/)
+- [Complete Guide to Accessibility for Keyboard Interaction & Focus Management](https://blog.greeden.me/en/2025/11/10/complete-guide-to-accessibility-for-keyboard-interaction-focus-management-order-visibility-roving-tabindex-shortcuts-and-patterns-for-modals-tabs-menus/)
+- [Keyboard focus - web.dev](https://web.dev/learn/accessibility/focus)
+- [Keyboard Navigation & Focus — Ensuring Operability (WCAG)](https://www.accesify.io/blog/keyboard-navigation-focus-wcag/)
+
+### Radix UI & Accessibility Primitives
+- [What are Radix Primitives?](https://vercel.com/academy/shadcn-ui/what-are-radix-primitives)
+- [Accessibility – Radix Primitives](https://www.radix-ui.com/primitives/docs/overview/accessibility)
+- [Radix UI vs Shadcn UI: A Clear Comparison](https://shadcnstudio.com/blog/radix-ui-vs-shadcn-ui)
+- [Anatomy of a Primitive](https://vercel.com/academy/shadcn-ui/anatomy-of-a-primitive)
+- [Radix Primitives](https://www.radix-ui.com/primitives)
+
+### Component Library Pitfalls
+- [Common Problems with Design Pattern Libraries](https://www.uxpin.com/studio/blog/common-problems-with-design-pattern-libraries/)
+- [Design System vs Component Library: Key Differences](https://www.ramotion.com/blog/design-system-vs-component-library/)
+- [Top Mistakes Developers Make When Using React UI Component Library](https://www.sencha.com/blog/top-mistakes-developers-make-when-using-react-ui-component-library-and-how-to-avoid-them/)
+- [Your Component Library Isn't a Design System (But it Could Be)](https://www.telerik.com/blogs/your-component-library-isnt-design-system-but-could-be)
+- [The Dark Side of Design Systems - Mistakes, Missteps, and Lessons Learned](https://sakalim.com/content/the-dark-side-of-design-systems-mistakes-missteps-and-lessons-learned)
 
 ---
-*Feature research for: TeamFlow Work Management SaaS*
-*Researched: 2026-02-14*
-*Overall confidence: MEDIUM-HIGH (verified with multiple current sources, portfolio-specific recommendations based on medium-confidence recruiter insights)*
+*Feature research for: Design System & WCAG AA Compliance (TeamFlow v1.1)*
+*Researched: 2026-02-16*

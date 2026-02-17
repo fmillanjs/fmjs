@@ -1,364 +1,264 @@
 # Project Research Summary
 
-**Project:** TeamFlow
-**Domain:** Work Management SaaS
-**Researched:** 2026-02-14
+**Project:** TeamFlow - Design System & WCAG AA Compliance (v1.1)
+**Domain:** Design System Retrofit to Existing Work Management SaaS
+**Researched:** 2026-02-16
 **Confidence:** HIGH
 
 ## Executive Summary
 
-TeamFlow is a work management SaaS application designed to showcase enterprise-grade technical skills for job hunting, with specific focus on real-time collaboration, role-based access control (RBAC), and comprehensive audit logging. Based on research, the optimal approach uses Next.js 15 (App Router) for the frontend, NestJS 10 for the backend API, Prisma 7 with PostgreSQL 16 for data persistence, and Socket.io 4 with Redis for real-time collaboration. This stack represents industry standards for 2026 and demonstrates production-ready patterns that technical recruiters explicitly look for.
+This research covers retrofitting a professional design system and WCAG AA compliance to TeamFlow, an existing Next.js 15 + Tailwind v4 work management application. The recommended approach uses Shadcn UI (built on Radix UI primitives) as the component foundation, with semantic design tokens defined via Tailwind v4's @theme directive. This provides WAI-ARIA compliant components by default, reducing accessibility implementation burden.
 
-The recommended architecture follows a layered approach with defense-in-depth RBAC enforcement, event-driven audit logging, and WebSocket-based real-time updates using Redis pub/sub for horizontal scalability. The three critical showcase features (real-time collaboration, RBAC, and audit logging) must be implemented early and correctly, as retrofitting these patterns later is extremely difficult. The highest risks are WebSocket authentication bypass, RBAC enforcement inconsistency, and audit log incompleteness—all preventable with proper patterns established in Phase 1.
+The critical insight from Phase 07.1-03 failure analysis is that WCAG compliance requires systemic design token fixes BEFORE component-level changes. Attempting spot fixes (58 files modified, 7 commits, 0 problems solved) fails because the root cause is improper color token configuration, not incorrect class usage. The foundation must be WCAG AA compliant first, then components can be migrated incrementally using validated tokens.
 
-Based on feature dependencies and pitfall analysis, the roadmap should prioritize authentication foundation (Phase 1), core task management with proper data modeling (Phase 2), and real-time collaboration features (Phase 3), ensuring each phase builds on validated patterns from the previous phase. This sequence prevents the most critical pitfalls while delivering a demonstrable MVP within the 3-4 week timeline.
+Key risks center on incomplete migration creating parallel style systems (increasing bundle size 30-50%), dark mode implemented as afterthought (causing theme-switching bugs), and design system adoption without governance (teams continuing to use old components). Mitigation requires incremental-but-complete migration strategy, dual-mode design from day 1, and ESLint enforcement preventing old component imports.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The research strongly recommends a TypeScript-first full-stack architecture with Next.js 15 and NestJS 10 as the core frameworks. Next.js 15 provides production-ready features including stable React 19 support, Server Actions, Turbopack dev performance (96.3% faster), and App Router patterns ideal for real-time UX. NestJS offers TypeScript-first Node.js framework with decorator-driven architecture, built-in WebSocket support, dependency injection, and production-grade patterns essential for enterprise applications.
+The research recommends building on the existing Next.js 15 + Tailwind v4 foundation with Shadcn UI as the design system layer. This approach is ALREADY partially implemented - the application has Tailwind v4 configured (`@tailwindcss/postcss: ^4.1.18`), design tokens defined in `globals.css` using `@theme` directive, and supporting utilities (`cn()` helper, `next-themes` for dark mode).
 
 **Core technologies:**
-- **Next.js 15.x**: Frontend framework with App Router — industry standard for React SSR with production features and optimal real-time UX patterns
-- **NestJS 10.x**: Backend API framework — TypeScript-first with native WebSocket support, DI, and enterprise patterns that demonstrate senior-level architecture skills
-- **Prisma 7.x + PostgreSQL 16**: ORM and database — type-safe data access with Row Level Security for multi-tenancy and audit trail extensions
-- **Socket.io 4.x + Redis**: Real-time layer — battle-tested WebSocket abstraction with Redis adapter for horizontal scaling across multiple server instances
-- **NextAuth.js v5**: Authentication — official Next.js auth solution with built-in RBAC support and Prisma database adapter
-- **CASL 6.x**: Authorization — industry-standard fine-grained permissions with Prisma integration for database-level filtering
-- **Zod 3.x**: Validation — TypeScript-first schema validation shared between frontend and backend for end-to-end type safety
-- **Vitest 2.x + Playwright**: Testing — modern testing stack with 3-4x faster execution than Jest and native async component support
+- **Shadcn UI (latest)**: Design system foundation built on Radix UI primitives. Copy-paste components with full customization, seamless Tailwind v4 integration, official React 19 support.
+- **Radix UI Primitives (latest)**: WAI-ARIA compliant headless components. Provides keyboard navigation, focus management, screen reader support. Handles complex accessibility patterns automatically.
+- **Tailwind v4 @theme directive**: CSS-first design token configuration. Semantic tokens available as CSS variables, eliminates JS/CSS duplication, enables runtime theming.
+- **class-variance-authority**: Declarative component variant management. Type-safe variant composition for size/color/state variations.
+- **eslint-plugin-jsx-a11y**: Lint-time accessibility checks. Static analysis catches missing labels, insufficient contrast, invalid ARIA.
+- **axe DevTools (browser extension)**: Manual + automated WCAG testing. Recommended over @axe-core/react which does NOT support React 18+.
+- **color-contrast-checker**: WCAG contrast validation library. Validates design tokens meet 4.5:1 (text) and 3:1 (UI components) requirements.
 
-**Critical version requirements:**
-- Next.js 15 requires React 19 for App Router
-- Prisma 7 requires TypeScript strict mode
-- Socket.io 4.7+ required for improved binary support
-- NextAuth v5 has breaking changes from v4 (use beta release)
+**Supporting libraries already installed:**
+- next-themes (0.4.6+) - theme management
+- lucide-react (0.564.0+) - icon library
+- clsx (2.1.1+), tailwind-merge (3.4.1+) - className utilities
 
 ### Expected Features
 
-Research reveals clear tiers of features based on user expectations and recruiter evaluation criteria. The three explicitly required showcase features (real-time collaboration, RBAC, audit logging) are critical differentiators that must be implemented comprehensively.
+**Must have (table stakes v1.1):**
+- **WCAG AA Color Compliance**: Legal requirement (ADA Title II 2026), 4.5:1 text contrast, 3:1 UI elements
+- **Semantic Design Tokens**: CSS variables for colors/spacing/typography, foundation for theming
+- **Dark Mode**: User expectation in 2026, requires paired color scales (not just inverted)
+- **Accessible Forms**: Label association, aria-invalid, error messaging, keyboard navigation
+- **Keyboard Navigation**: WCAG 2.1.1 (Level A), visible focus indicators, roving tabindex for complex widgets
+- **Shadcn UI Integration**: Professional component foundation, accelerates development with pre-built accessible components
+- **Component Documentation**: Developers need usage guides, props API, accessibility notes
 
-**Must have (table stakes):**
-- Task CRUD with list and board/Kanban views — foundation of any work management tool
-- User authentication and session management — basic security requirement
-- Task filtering, search, assignment, and priority levels — users expect these in all modern PM tools
-- Labels/tags for flexible categorization — demonstrates many-to-many relationships
-- Activity feed showing task changes — enhanced by real-time updates
+**Should have (competitive advantage):**
+- **Automated Accessibility Testing**: Catches ~30% of issues in CI/CD, prevents regressions
+- **Radix UI Primitives Foundation**: Shows knowledge of accessibility architecture
+- **Tailwind v4 CSS-First Configuration**: Modern approach, 5x faster builds, runtime theming
+- **Component-Level Accessibility**: Design system enforces accessibility by default
+- **Semantic Component API**: Props describe purpose (primary) not appearance (blue)
 
-**Should have (critical differentiators for portfolio):**
-- **Real-time collaboration via WebSocket** — proves async/event-driven architecture skills, must show live updates without refresh
-- **Role-Based Access Control (Admin/Manager/Member)** — demonstrates enterprise security patterns with visible permission checks in UI
-- **Comprehensive audit logging with searchable UI** — shows production-ready compliance thinking, logs all mutations with context
-- Drag-and-drop task reordering — demonstrates interactive UI skills
-- Optimistic UI updates — shows performance optimization thinking
-
-**Defer to v2+ (explicitly out of scope):**
-- Email notifications — adds complexity without demonstrating core skills
-- File attachments/uploads — requires storage infrastructure (S3), security scanning
-- Mobile native app — wrong tech stack for timeline
-- Real billing/payments — PCI compliance adds no technical demonstration value
-- Advanced analytics/reporting — data visualization is complex, basic counts sufficient
-- Gantt charts, time tracking, calendar integration — over-engineering for portfolio demo
-- Multi-workspace/tenancy — adds significant complexity for limited demo value
+**Defer (v2+ post-design system):**
+- **Component Versioning System**: Only needed at scale
+- **Multi-Brand Theming**: Not needed for single product
+- **Component Usage Analytics**: Optimization, not launch requirement
+- **Advanced Animation System**: Polish, not foundation
+- **Internationalization Support**: Future markets
+- **Design-Development Alignment** (Figma mirroring): Nice to have, not critical
 
 ### Architecture Approach
 
-The research strongly recommends a monorepo structure using Turborepo with separate Next.js (frontend) and NestJS (backend) applications, sharing types and validation schemas through a common package. This enables code sharing while maintaining separation of concerns and provides atomic commits across the full stack.
+Integration adds design system layer on top of existing Next.js 15 App Router architecture without restructuring the monorepo. Shadcn UI components install directly in `apps/web/components/ui/` (NOT shared package) since TeamFlow has only one Next.js app currently. Components can move to `packages/ui` later if second app is added.
 
-**Major components and responsibilities:**
+**Major components:**
+1. **Design Token Layer**: Single source of truth via Tailwind v4 @theme in `globals.css`. CSS variables consumed by both Tailwind utilities and runtime JavaScript. Tokens use OKLCH color space for perceptual uniformity.
+2. **Shadcn UI Component Layer**: Primitive components (Button, Card, Input, Dialog) built on Radix UI. Copied into project via CLI, full ownership and customization. Two-layer architecture: logic (Radix) + style (Tailwind).
+3. **Feature Component Layer**: Domain-specific compositions (TeamCard, TaskList, ProjectView) built by composing Shadcn primitives. Existing components (empty-state, command-palette, conflict-warning) preserved and enhanced.
+4. **Theme Provider**: Existing `next-themes` integration handles light/dark switching via `.dark` class on `<html>`. Design tokens respond to class changes via CSS cascade.
+5. **Accessibility Testing Layer**: vitest-axe for component-level automated testing, eslint-plugin-jsx-a11y for static analysis, axe DevTools for manual audits, Playwright for E2E regression.
 
-1. **Client Layer (Next.js)** — UI rendering with App Router, client-side routing, SSR/SSG, auth middleware, RBAC enforcement at edge, and WebSocket client management. Implements the first layer of defense-in-depth authorization.
-
-2. **API Layer (NestJS)** — Business logic encapsulation in domain modules (Projects, Tasks, Teams, Users), controller/service/repository pattern, WebSocket gateway for real-time events, and cross-cutting concerns (RBAC service, audit logger, event bus). Second layer of authorization enforcement.
-
-3. **Data Layer (Prisma + PostgreSQL)** — Type-safe database access, migration management, Row Level Security for multi-tenancy isolation, and audit trail via Prisma Client Extensions. Third layer of authorization via RLS policies.
-
-4. **Real-Time Layer (Redis + Socket.io)** — Redis pub/sub for broadcasting WebSocket events across multiple server instances, session storage, and caching. Enables horizontal scalability of WebSocket connections.
-
-5. **Shared Packages** — Centralized TypeScript types, Zod validation schemas, and constants shared between frontend and backend. Single source of truth for data contracts and validation rules.
-
-**Critical architectural patterns:**
-
-- **Layered RBAC Enforcement**: Authorization checks at Next.js middleware, API routes, NestJS guards, service layer, and database RLS—defense in depth prevents security holes
-- **Event-Driven Audit Logging**: Domain events emitted by services captured by audit listener, decoupling audit concerns from business logic
-- **WebSocket Gateway with Redis Pub/Sub**: Horizontal scaling pattern allowing multiple backend instances to share WebSocket connections
-- **Repository Pattern**: Abstraction layer between business logic and Prisma for testability and database-agnostic service code
-- **Shared Validation with Zod**: Define schemas once in shared package, use in both frontend (react-hook-form) and backend (NestJS pipes)
+**Integration boundaries:**
+- Feature Components → Shadcn UI: Direct imports (`@/components/ui/button`)
+- Shadcn UI → Design Tokens: CSS variables + Tailwind utilities
+- Theme Provider → Shadcn UI: CSS class toggle (`.dark`)
+- Tests → Shadcn UI: React Testing Library + vitest-axe
 
 ### Critical Pitfalls
 
-Research identified 9 critical pitfalls specific to this domain and stack, with 3 being absolutely critical to address in Phase 1.
+1. **Spot Fixes for Systemic Problems**: Attempting to fix WCAG violations with piecemeal color class replacements (58 files modified, 0 problems solved). ROOT CAUSE: Improper design token configuration, not incorrect class usage. AVOID: Audit foundation first - if tokens aren't WCAG compliant, FIX TOKENS before touching components.
 
-1. **WebSocket Authentication Bypass** — WebSocket connections don't authenticate by default; attackers can establish connections without proper auth, bypassing RBAC entirely. Prevention: Validate JWT tokens during handshake, attach verified user to socket, apply guards to every event handler, explicitly disconnect on auth failure. Must be addressed in Phase 1 before real-time features.
+2. **Incomplete Tailwind v4 Migration**: CSS changes in `globals.css` @theme don't reflect in browser. CAUSE: Wrong filename (globals.css vs global.css), missing @import "tailwindcss", browser caching, HMR issues. AVOID: Run official migration tool, hard reload browser after CSS changes, delete .next cache, verify with simple utility (bg-red-500) first.
 
-2. **RBAC Enforcement Inconsistency (Session Identity Bleed)** — Scattered authorization checks create security holes where some endpoints verify permissions while others skip checks. Prevention: Centralized authorization service called from all endpoints, service-layer enforcement (not just controllers), explicit user context passing, policy-as-code with CASL. Must be addressed in Phase 1 before feature development.
+3. **Design System Adoption Without Governance**: Components created but teams continue using old components, resulting in 3 different button styles. AVOID: Add ESLint rules preventing old imports, deprecation warnings, migration deadlines, feature flag rollout.
 
-3. **Audit Log Incompleteness** — Audit logs miss critical events like failed auth, bulk operations, WebSocket events, and lack context (IP, user agent, what changed). Prevention: Centralized audit service, decorator-based capture, log failures explicitly, WebSocket middleware wrapping, separate append-only storage. Must be addressed in Phase 1; retrofitting is nearly impossible.
+4. **Building Too Much Too Soon**: Design system with 40+ components, 0 shipped, delaying usage by months. AVOID: Start with 5-8 primitives, migrate 2-3 real pages, discover components "found in the wild" as needed.
 
-4. **Prisma N+1 Query Explosions** — Loading lists with relations executes N+1 queries (1 for items, N for each relation), degrading performance from 50ms to 2+ seconds. Prevention: Use `include` for eager loading, `relationLoadStrategy: 'join'` for single queries, select only needed fields, monitor query counts in tests. Address in Phase 2 during data modeling.
+5. **Color Tokens Without WCAG Validation**: Custom palette with `--color-muted-foreground: oklch(45% 0 0)` fails contrast requirements (3.4:1 actual vs 4.5:1 needed). AVOID: Use pre-validated Radix Colors OR validate EVERY token pair with contrast tools before creating components.
 
-5. **Server Actions as Unauthenticated Public Endpoints** — Next.js Server Actions create public HTTP endpoints that anyone can invoke. Prevention: Every action must validate authentication first, input validation with Zod, authorization checks, rate limiting, audit logging of invocations. Must be addressed in Phase 1 patterns.
+6. **Multiple Style Systems in Parallel**: Incomplete retrofit leaves Page A using new design system, Page B using old inline Tailwind, Page C mixed. AVOID: Incremental-but-complete migration (migrate units fully, remove old styles), bundle analysis to catch duplicates.
+
+7. **Dark Mode as Afterthought**: Building light mode first, adding `.dark` classes later causes visual regressions. AVOID: Token-driven from day 1 (ALL colors as CSS variables), component checklist requires both modes, visual regression testing.
+
+8. **CSS Configuration Caching**: Developer modifies @theme, restarts server, sees no changes. Browser serving cached CSS. AVOID: Hard reload (Ctrl+Shift+R), delete .next cache, "Disable cache" in DevTools, document debugging workflow.
 
 ## Implications for Roadmap
 
-Based on combined research, the roadmap should follow a dependency-driven sequence that establishes critical patterns early and prevents the most severe pitfalls. The suggested structure is 4 phases over 3-4 weeks.
+Based on research, suggested phase structure prioritizes foundation validation before component migration to avoid Phase 07.1-03 failure pattern (systemic problem treated with spot fixes).
 
-### Phase 1: Authentication & Authorization Foundation
-**Rationale:** All three showcase features (real-time, RBAC, audit) depend on proper authentication patterns. WebSocket auth bypass, RBAC inconsistency, and audit log incompleteness are all Phase 1 pitfalls that cannot be retrofitted. Features built on broken auth patterns inherit those flaws permanently.
-
-**Delivers:**
-- User authentication with NextAuth.js v5
-- Session management with Redis storage
-- Centralized RBAC service with CASL
-- Multi-layer authorization (middleware, guards, service, RLS)
-- Audit logging foundation with event-driven pattern
-- WebSocket authentication with token validation
-- Server Action security patterns (auth + validation boilerplate)
-
-**Addresses features:**
-- User authentication (table stakes)
-- User profiles (table stakes)
-- Foundation for all protected features
-
-**Avoids pitfalls:**
-- Pitfall 1: WebSocket Authentication Bypass
-- Pitfall 2: RBAC Enforcement Inconsistency
-- Pitfall 3: Audit Log Incompleteness
-- Pitfall 5: Server Actions Unprotected
-- Pitfall 7: NextAuth Secret Configuration
-- Pitfall 9: RBAC Role Explosion (design simple model upfront)
-
-**Research flag:** STANDARD PATTERNS — NextAuth, CASL, and WebSocket auth are well-documented. Skip `/gsd:research-phase`.
-
-### Phase 2: Core Task Management & Data Modeling
-**Rationale:** Task CRUD is the foundation for all other features. Getting the data model right (with indexes, relations, audit fields) prevents Prisma N+1 issues and enables efficient filtering/search. Board view requires proper status modeling.
+### Phase 0: Foundation Validation & Migration Prerequisites (Pre-work)
+**Rationale:** Phase 07.1-03 failure proves foundation must be validated BEFORE component work. Tailwind v4 setup must be confirmed working (token changes reflect in browser within 2 seconds) and existing color tokens must pass WCAG AA audit.
 
 **Delivers:**
-- Task CRUD with proper Prisma schema
-- Database indexes on foreign keys and query columns
-- List view with filtering and search
-- Board/Kanban view with status columns
-- Task assignment, priority, labels
-- Activity feed (enhanced by real-time in Phase 3)
-- Optimized queries using `include` patterns
+- Tailwind v4 configuration verified functional
+- Color token WCAG AA validation (all pairs meet 4.5:1 text, 3:1 UI)
+- CSS debugging workflow documented
+- Dev environment setup (hard reload, cache clearing)
 
-**Uses stack elements:**
-- Prisma 7 with proper schema design
-- PostgreSQL with strategic indexes
-- Zod validation for task DTOs
-- Repository pattern for data access
+**Addresses:** Pitfall 2 (Tailwind v4 migration), Pitfall 5 (color validation), Pitfall 8 (caching)
 
-**Implements architecture:**
-- Repository pattern with Prisma
-- Service layer business logic
-- Shared Zod validators between frontend/backend
+**Validation criteria:** Change a @theme token, see it in browser within 2 seconds without hard reload. All existing tokens documented with contrast ratios.
 
-**Addresses features:**
-- Task CRUD (table stakes)
-- List view (table stakes)
-- Board/Kanban view (table stakes)
-- Task assignment, priority, labels (table stakes)
-- Filtering and search (table stakes)
-- Activity feed foundation (enhances real-time)
-
-**Avoids pitfalls:**
-- Pitfall 4: Prisma N+1 Query Explosions (use `include`, monitor query counts)
-- Database performance issues (indexes from day one)
-- Type drift (shared validators)
-
-**Research flag:** STANDARD PATTERNS — Task management schemas are well-established. Skip `/gsd:research-phase`.
-
-### Phase 3: Real-Time Collaboration
-**Rationale:** WebSocket patterns established in Phase 1, data model from Phase 2. Now add live updates without state synchronization conflicts. This is the most technically impressive showcase feature.
+### Phase 1: Design System Foundation (Core Primitives)
+**Rationale:** Install minimal viable component set to unblock development. Establish governance BEFORE usage prevents adoption pitfalls. Both light and dark mode required from start prevents afterthought pattern.
 
 **Delivers:**
-- Socket.io WebSocket gateway with NestJS
-- Redis pub/sub for multi-instance scaling
-- Live task updates (status, assignment, title)
-- Presence indicators ("3 users viewing")
-- Real-time activity feed updates
-- Conflict detection with optimistic locking
-- Conflict resolution UI
+- Shadcn UI CLI initialization + configuration
+- 5-8 primitive components (Button, Card, Input, Label, Dialog)
+- Component-level accessibility tests (vitest-axe)
+- ESLint rules preventing old component imports
+- Storybook stories showing both light and dark modes
 
-**Uses stack elements:**
-- Socket.io 4.x with @nestjs/platform-socket.io
-- Redis adapter (@socket.io/redis-adapter)
-- ioredis client for Redis pub/sub
-- Event-driven architecture from Phase 1
+**Addresses:**
+- Features: Shadcn UI integration, accessible buttons, forms, modals
+- Pitfall 3 (governance), Pitfall 4 (building too much), Pitfall 7 (dark mode), Pitfall 9 (Shadcn conflicts)
 
-**Implements architecture:**
-- WebSocket Gateway with Redis Pub/Sub pattern
-- Event-driven real-time propagation
-- Room-based subscriptions by project/organization
+**Avoids:** Installing all components at once, skipping accessibility testing, single-mode design
 
-**Addresses features:**
-- Real-time collaboration (CRITICAL DIFFERENTIATOR)
-- Enhanced activity feed with live updates
-- Optimistic UI updates with rollback
+**Validation criteria:** Each component has no axe violations, renders correctly in both modes, documented in Storybook
 
-**Avoids pitfalls:**
-- Pitfall 1: WebSocket auth (already solved in Phase 1)
-- Pitfall 8: Real-Time State Sync Conflicts (optimistic locking, conflict UI)
-- Connection state issues (Redis pub/sub from start)
-
-**Research flag:** NEEDS RESEARCH — Conflict resolution strategies and operational transform patterns may need deeper investigation during phase planning. Consider `/gsd:research-phase` for conflict resolution specifics.
-
-### Phase 4: Polish & Production Readiness
-**Rationale:** Core features complete. Focus on UX polish, error handling, responsive design, and deployment preparation.
+### Phase 2: Component Migration (Portfolio Pages)
+**Rationale:** Portfolio pages are low-traffic, non-critical features - ideal testing ground for new components. Migration-by-feature (not migration-by-component-type) delivers complete units and prevents parallel style systems.
 
 **Delivers:**
-- Responsive UI for mobile browsers
-- Error handling and loading states
-- Dark mode (if time permits)
-- Keyboard shortcuts (if time permits)
-- Comprehensive README with architecture diagrams
-- Docker multi-stage builds
-- CI/CD pipeline
-- Deployment to production environment
+- Portfolio homepage migrated to Shadcn components
+- Experience cards using new Card/Button components
+- Feature components composing Shadcn primitives (PortfolioCard, ExperienceTimeline)
+- Visual regression tests for both themes
 
-**Uses stack elements:**
-- Docker with multi-stage builds
-- Next.js standalone output mode
-- NestJS production configuration
-- Health check endpoints
+**Uses:** Button, Card, Badge, Avatar, Separator from Phase 1
+**Implements:** Component composition pattern, progressive enhancement
+**Addresses:** Pitfall 6 (parallel systems), Feature: component documentation via real examples
 
-**Addresses features:**
-- Responsive UI (table stakes)
-- Dark mode (nice-to-have polish)
-- Keyboard shortcuts (nice-to-have polish)
+**Validation criteria:** No old component imports in portfolio routes, Lighthouse accessibility score ≥90, dark mode tested
 
-**Avoids pitfalls:**
-- Deployment issues (proper Docker setup)
-- Environment configuration (validation at startup)
-- Poor mobile UX
+### Phase 3: Form Components & Validation
+**Rationale:** Forms have highest WCAG violation rate. Replacing existing forms with accessible Shadcn Form + react-hook-form integration provides biggest accessibility improvement.
 
-**Research flag:** STANDARD PATTERNS — Deployment and polish have established patterns. Skip `/gsd:research-phase`.
+**Delivers:**
+- Shadcn Form integration with react-hook-form
+- Accessible form components (Input, Label, Textarea, Select, Checkbox, Radio)
+- Error messaging with aria-invalid + aria-describedby
+- Validation timing (on blur, not every keystroke)
+
+**Uses:** Input, Label, Select, Form from Shadcn
+**Addresses:** Feature: accessible forms (table stakes), keyboard navigation
+**Avoids:** Placeholder-only labels, real-time validation screen reader noise
+
+**Validation criteria:** All forms keyboard-navigable, error messages announced by screen readers, WCAG AA compliant
+
+### Phase 4: Critical Route Migration (Team/Task Features)
+**Rationale:** After validating new components in low-risk areas (portfolio), migrate critical features. Complete migration unit-by-unit (team page fully migrated before task page starts) prevents mixing old/new styles.
+
+**Delivers:**
+- Team pages migrated to Shadcn components
+- Task management UI migrated
+- Table components enhanced with Shadcn styling
+- Old component code removed (not just deprecated)
+
+**Uses:** Table, Dropdown, Popover, Tooltip, Toast from Shadcn
+**Implements:** @tanstack/react-table integration with Shadcn Table
+**Addresses:** Pitfall 6 (complete migration), regression risk mitigation
+
+**Validation criteria:** grep for old component imports returns 0 results in migrated areas, bundle analysis shows single style system
+
+### Phase 5: Accessibility Automation & Optimization
+**Rationale:** After components stable and migrated, add automated testing to prevent regressions. Optimization happens last when usage patterns are known.
+
+**Delivers:**
+- Automated accessibility testing in CI (axe-core, Lighthouse)
+- Visual regression testing (Playwright screenshots both modes)
+- Bundle optimization (tree-shake unused Radix primitives)
+- Performance audit (Lighthouse performance score)
+
+**Addresses:** Feature: automated accessibility testing, regression testing
+**Avoids:** Premature optimization, manual-only testing at scale
+
+**Validation criteria:** CI fails on WCAG violations, visual regressions detected in PRs, bundle size decrease vs. Phase 4
 
 ### Phase Ordering Rationale
 
-**Dependency chain:**
-- Authentication → RBAC → all protected features
-- RBAC → audit logging (need user context)
-- Data model → real-time (need entities to sync)
-- WebSocket auth → real-time collaboration
-- All core features → polish and deployment
-
-**Pitfall avoidance:**
-- Phase 1 prevents the 3 most critical pitfalls (auth bypass, RBAC inconsistency, audit gaps)
-- Phase 2 prevents N+1 queries by establishing patterns early
-- Phase 3 prevents state conflicts with optimistic locking
-- Phase 4 ensures production-quality deployment
-
-**Timeline fit (3-4 weeks solo):**
-- Week 1: Phase 1 (authentication foundation)
-- Week 2: Phase 2 (core task management)
-- Week 3: Phase 3 (real-time collaboration)
-- Week 4: Phase 4 (polish and deployment)
-
-**Recruiter demonstration:**
-- Phases 1-3 deliver all three critical showcase features
-- Phase 4 ensures professional presentation
-- Each phase produces working software (incremental delivery)
+- **Phase 0 first**: Prevents Phase 07.1-03 failure pattern. Foundation must be validated before component work.
+- **Phase 1 primitives only**: Prevents building too much too soon (Pitfall 4). Ships 5-8 components vs. 40+ unvalidated.
+- **Phase 2 low-risk migration**: Portfolio pages test components in production without affecting critical features. Discovers composition patterns before high-stakes migration.
+- **Phase 3 forms separately**: Highest WCAG violation rate deserves dedicated phase. Complexity of react-hook-form integration warrants isolation.
+- **Phase 4 after validation**: Critical routes migrated only after portfolio pages prove new components work. Unit-by-unit completion prevents parallel style systems.
+- **Phase 5 last**: Automation added after components stable. Premature optimization wastes effort on components that may change.
 
 ### Research Flags
 
-**Phases likely needing deeper research during planning:**
-
-- **Phase 3 (Real-Time Collaboration):** Conflict resolution strategies for concurrent edits may need investigation. Operational Transform (OT) libraries and CRDT patterns are niche. Consider `/gsd:research-phase` specifically for conflict resolution if going beyond simple optimistic locking.
+**Phases needing deeper research during planning:**
+- **Phase 3 (Forms)**: react-hook-form integration patterns with Shadcn Form need validation. Complex error handling, field arrays, dynamic forms require research.
+- **Phase 4 (Tables)**: @tanstack/react-table integration with Shadcn Table components needs pattern verification. Sorting, filtering, pagination accessibility.
 
 **Phases with standard patterns (skip research-phase):**
-
-- **Phase 1 (Authentication & Authorization):** NextAuth.js, CASL, and WebSocket authentication have extensive documentation and established patterns. Current research is sufficient.
-- **Phase 2 (Core Task Management):** Prisma schema design, task management data models, and repository patterns are well-documented. Current research covers this comprehensively.
-- **Phase 4 (Polish & Production):** Docker deployment, Next.js production configuration, and NestJS production patterns are standard. No additional research needed.
+- **Phase 0 (Foundation)**: Official Tailwind v4 migration guide, Shadcn installation docs are comprehensive
+- **Phase 1 (Primitives)**: Shadcn CLI handles installation, Radix UI docs cover accessibility patterns
+- **Phase 2 (Portfolio)**: Composition patterns well-documented in Shadcn examples
+- **Phase 5 (Automation)**: axe-core, Playwright, Lighthouse CI have established patterns
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All core technologies verified with official documentation from 2026. Version compatibility matrix confirmed. No deprecated packages. |
-| Features | MEDIUM-HIGH | Feature expectations verified across multiple current competitors (Linear, Asana, Jira). Portfolio quality markers based on medium-confidence recruiter insights. |
-| Architecture | MEDIUM-HIGH | Patterns verified with official AWS, Azure, and OWASP documentation. Monorepo structure and NestJS patterns have multiple authoritative sources. |
-| Pitfalls | HIGH | All 9 critical pitfalls sourced from official security guidelines (OWASP, official docs) and verified 2026 blog posts. Recovery strategies realistic. |
+| Stack | HIGH | All technologies verified with official documentation. Shadcn UI + Radix + Tailwind v4 integration confirmed working in Next.js 15. |
+| Features | HIGH | WCAG AA requirements are legal standard (ADA Title II 2026), not opinion. Table stakes validated against 2026 design system best practices. |
+| Architecture | HIGH | Integration approach verified against official Shadcn monorepo guide. Tailwind v4 @theme patterns documented in release notes. |
+| Pitfalls | HIGH | Pitfall 1 validated by Phase 07.1-03 failure analysis (real project data). Other pitfalls verified via industry post-mortems and migration guides. |
 
 **Overall confidence:** HIGH
 
-The research quality is strong across all four areas. Stack recommendations come from official documentation and verified current sources. Architecture patterns are based on industry standards (AWS whitepapers, OWASP, Microsoft Azure patterns). Pitfalls are sourced from security best practices and official framework documentation. The main uncertainty is in feature prioritization for portfolio demonstration, which relies on medium-confidence recruiter insights, but these align consistently across multiple sources.
+Research based on official documentation (Shadcn UI, Radix UI, Tailwind CSS v4, WCAG 2.1), recent 2026 sources, and direct project failure analysis from Phase 07.1-03. Stack choices are industry standard for accessible React applications in 2026.
 
 ### Gaps to Address
 
-**During phase planning:**
+**Color token migration strategy:** Existing `globals.css` already has WCAG-compliant OKLCH tokens (fixed in 07.1-03). Need to verify if current tokens map cleanly to Shadcn's expected token names or if @theme inline mapping layer is required. RESOLUTION: Test during Phase 0 foundation validation.
 
-- **Conflict resolution implementation specifics (Phase 3):** Research covers the problem and high-level solutions (optimistic locking, OT, CRDTs) but may need deeper investigation of specific libraries and UX patterns during Phase 3 planning. Recommended to defer this to phase-specific research rather than addressing now.
+**Component parity verification:** Existing components (skeleton, empty-state, command-palette, conflict-warning, theme-toggle) need assessment for Shadcn migration vs. preservation. Some are domain-specific (empty-state, conflict-warning), some can be enhanced (theme-toggle with Shadcn Button). RESOLUTION: Create component inventory during Phase 1 planning.
 
-- **Multi-tenancy isolation testing (Phase 2):** Research identifies Row Level Security as the pattern but doesn't provide comprehensive test strategies. During Phase 2, may need additional research on RLS testing methodologies and Prisma-specific approaches.
+**Form migration complexity:** Current forms may use different state management than react-hook-form. Migration effort unknown without codebase audit. RESOLUTION: Phase 3 planning should include form inventory and migration estimate.
 
-- **WebSocket scaling thresholds (Phase 3):** Research provides general guidance (10k-20k connections before needing separate pools) but actual thresholds depend on server specs and message frequency. Monitor in production and adjust based on metrics.
+**Table integration patterns:** @tanstack/react-table integration with Shadcn Table styling needs validation. Unknown if existing table logic can be preserved or needs refactoring. RESOLUTION: Research during Phase 4 planning (flagged above).
 
-**During implementation:**
-
-- **NextAuth v5 edge cases:** Using beta version (v5) means some edge cases may not be documented. Plan for additional troubleshooting time during Phase 1 auth implementation.
-
-- **Prisma Client Extensions for audit logging:** Pattern is documented but may require experimentation to get context injection working correctly with PostgreSQL session variables. Allocate time for proof-of-concept during Phase 1.
-
-**Validation needed:**
-
-- **Timeline realism for solo developer:** The suggested 4-phase, 3-4 week timeline assumes full-time solo development. If working part-time, phases may need to expand. Validate against actual velocity after Phase 1.
-
-- **Portfolio demonstration sufficiency:** Recruiter expectations are based on medium-confidence sources. After Phase 3, validate with technical mentors or recruiters that the showcase features demonstrate the intended skill level.
+**Bundle size impact:** Adding Radix UI primitives will increase bundle size. Unknown if offset by removing old component code. Need baseline measurement. RESOLUTION: Bundle analysis in Phase 1, comparison in Phase 5.
 
 ## Sources
 
-### Primary (HIGH confidence)
+### Primary Sources (HIGH confidence)
+- [Shadcn UI Next.js Installation](https://ui.shadcn.com/docs/installation/next) - Component installation patterns
+- [Shadcn UI React 19 Support](https://ui.shadcn.com/docs/react-19) - Compatibility verification
+- [Shadcn UI Tailwind v4 Guide](https://ui.shadcn.com/docs/tailwind-v4) - Integration patterns
+- [Radix UI Primitives](https://www.radix-ui.com/primitives) - WAI-ARIA implementation
+- [Radix UI Accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility) - WCAG compliance details
+- [Tailwind CSS v4 Release](https://tailwindcss.com/blog/tailwindcss-v4) - @theme directive, CSS-first config
+- [WCAG 2.1 AA Requirements](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) - Contrast standards
+- [ADA Title II Digital Accessibility 2026](https://www.sdettech.com/blogs/ada-title-ii-digital-accessibility-2026-wcag-2-1-aa) - Legal requirements
 
-**Official Documentation:**
-- Next.js 15 Release Notes — production features, App Router, React 19 support
-- NestJS WebSocket Documentation — official WebSocket gateway patterns
-- Socket.io Redis Adapter Docs — official horizontal scaling patterns
-- Auth.js (NextAuth v5) RBAC Guide — official RBAC implementation
-- Prisma Client Extensions Docs — official audit trail patterns
-- OWASP WebSocket Security Cheat Sheet — security best practices
-- AWS SaaS Architecture Fundamentals — official SaaS architecture patterns
-- Azure Event Sourcing Pattern — official event-driven architecture
-- Microservices.io Audit Logging Pattern — industry standard patterns
+### Secondary Sources (MEDIUM confidence)
+- [Design System Adoption Pitfalls](https://www.netguru.com/blog/design-system-adoption-pitfalls) - Governance patterns
+- [Pro Tips for UI Library Migration](https://medium.com/@houhoucoop/pro-tips-for-ui-library-migration-in-large-projects-d54f0fbcd083) - Migration strategies
+- [Tailwind v4 Migration Guide](https://designrevision.com/blog/tailwind-4-migration) - Common issues
+- [Dark Mode Design Systems](https://medium.com/design-bootcamp/dark-mode-design-systems-a-practical-guide-13bc67e43774) - Dual-mode patterns
+- [Testing Component Systems](https://hackernoon.com/testing-a-component-system-like-infrastructure-contract-tests-visual-regression-and-accessibility-gates) - Accessibility testing
+- [Design Token Naming Best Practices](https://www.netguru.com/blog/design-token-naming-best-practices) - Semantic token structure
+- [Building Design System Architecture 2026](https://medium.com/@padmacnu/building-the-ultimate-design-system-a-complete-architecture-guide-for-2026-6dfcab0e9999) - Modern patterns
 
-**Technology Verification (2026):**
-- Stack research: All core technologies verified with current official documentation
-- Version compatibility confirmed across Next.js 15, NestJS 10, Prisma 7, Socket.io 4
-- TypeScript 5.x strict mode requirements verified
-
-### Secondary (MEDIUM confidence)
-
-**Current Industry Analysis:**
-- Linear vs Jira vs Asana feature comparison (2026) — competitive analysis
-- SaaS Management Platforms survey (2026) — feature expectations
-- Work management API comparison (2026) — real-time capabilities
-- RBAC best practices articles (2026) — implementation patterns
-- WebSocket architecture best practices — scaling patterns
-- Prisma performance optimization guides — N+1 prevention
-- Next.js security hardening (2026) — Server Actions security
-- Full-stack TypeScript monorepo guides — type sharing patterns
-
-**Community Best Practices:**
-- Building real-time collaboration tools with WebSockets — implementation guides
-- NestJS project structure with DDD — modular architecture
-- Schema-based multi-tenancy with Prisma — RLS patterns
-- WebSocket events architecture at scale — production patterns
-
-### Tertiary (LOW confidence)
-
-**Portfolio Quality Insights:**
-- Recruiter portfolio evaluation criteria — needs validation with actual recruiters
-- Technical hiring manager expectations — based on blog posts, not surveys
-- Timeline estimates for solo development — needs validation against actual velocity
-
-### Context7 Research
-
-All four research files (STACK.md, FEATURES.md, ARCHITECTURE.md, PITFALLS.md) utilized Context7 web research with perplexity search to gather current 2026 sources. Research confidence levels reflect source quality and verification across multiple authoritative sources.
+### Project-Specific (HIGH confidence)
+- Phase 07.1-03 Failure Analysis - Real project data (58 files modified, 7 commits, 90 minutes, 0 problems solved)
+- Current codebase analysis - `globals.css` (OKLCH tokens), `package.json` (Tailwind v4 installed), `components/ui/` (5 existing components)
 
 ---
-
-*Research completed: 2026-02-14*
-*Ready for roadmap: Yes*
-*Next step: Create roadmap based on 4-phase structure outlined above*
+*Research completed: 2026-02-16*
+*Ready for roadmap: yes*

@@ -1,341 +1,307 @@
-# Pitfalls Research
+# Pitfalls Research: Design System Retrofit to Existing Next.js + Tailwind Application
 
-**Domain:** Work Management SaaS (Next.js + NestJS + Prisma + Postgres + WebSockets)
-**Researched:** 2026-02-14
-**Confidence:** HIGH
+**Domain:** Adding design system and WCAG compliance to existing Next.js 15 + Tailwind CSS v4 application
+**Researched:** 2026-02-16
+**Confidence:** HIGH (based on project failure analysis + web research + official documentation)
 
 ## Critical Pitfalls
 
-### Pitfall 1: WebSocket Authentication Bypass
+### Pitfall 1: Spot Fixes for Systemic Problems
 
 **What goes wrong:**
-WebSocket connections appear authenticated because they originate from authenticated pages, but the WebSocket protocol doesn't handle authorization or authentication by default. Attackers can establish WebSocket connections without proper authentication, accessing real-time data streams and bypassing RBAC entirely.
+Attempting to fix WCAG contrast violations or design inconsistencies with piecemeal color class replacements across dozens of files. Changes appear correct in code but don't reflect in browser, or fixing Issue A reveals Issue B, which reveals Issue C, cycling endlessly without resolution.
 
 **Why it happens:**
-Developers assume that opening a WebSocket from an authenticated page automatically secures the connection. NestJS guards are only invoked when there's an event from the client, not on the initial connection request. NestJS doesn't disconnect the socket when authentication fails, leaving a partially authenticated connection open.
+Developers see a visible problem (white text on white background) and make the obvious fix (change the class). This works for bugs but fails for systemic design issues because the root cause is improper design token configuration, not incorrect class usage. From Phase 07.1-03: 58 files modified, 7 commits, 90 minutes spent, 0 problems solved.
 
 **How to avoid:**
-1. Create a custom WebSocket adapter with authentication middleware (middlewares cannot be added directly to WebSockets in NestJS)
-2. Implement ticket-based authentication during handshake: validate JWT tokens from the WebSocket handshake authentication headers
-3. Attach verified user data to the socket instance after successful authentication
-4. Apply guards to every WebSocket event handler, not just connection
-5. Explicitly disconnect sockets on authentication failure using `socket.disconnect()`
+Before touching component files, audit the design system foundation:
+1. Check if CSS custom properties (Tailwind v4 @theme tokens) have WCAG-compliant values
+2. Verify that semantic tokens exist (text-primary, text-secondary) vs. direct color values (text-gray-500)
+3. If either is missing, STOP component fixes and fix the foundation first
+4. Use established design systems (Shadcn UI + Radix Colors) that are pre-validated for WCAG compliance
 
 **Warning signs:**
-- WebSocket events accessible without proper session validation
-- Missing `@UseGuards()` decorators on WebSocket handlers
-- No token validation in WebSocket gateway constructor or `afterInit()` hook
-- Development testing shows "it works" but production lacks proper token verification
+- Multiple files changed but browser output unchanged
+- Fixing one area breaks another area
+- Pattern of "still broken" feedback after each commit
+- grep shows "correct" classes but rendered output shows problems
+- Over 5 emergency fix rounds in single session
 
 **Phase to address:**
-Phase 1 (Authentication Foundation) - Must establish WebSocket auth patterns before building real-time features
+Phase 1 of design system milestone must establish token foundation BEFORE migrating any components. Do not proceed to Phase 2 component migration until Lighthouse accessibility audit passes on foundation pages.
 
 ---
 
-### Pitfall 2: RBAC Enforcement Inconsistency (Session Identity Bleed)
+### Pitfall 2: Incomplete Tailwind CSS v4 Migration
 
 **What goes wrong:**
-Access checks are scattered across controllers, services, and UI components, making permission enforcement inconsistent. Some endpoints check permissions while others assume session context is trustworthy. Users can access resources by manipulating request parameters or exploiting endpoints that skip authorization checks. This creates both unproven caller identity at execution and privileged handlers accepting the wrong identity as authoritative.
+CSS changes in globals.css using @theme directive don't reflect in browser. Developer makes correct modifications to color tokens, restarts dev server, but sees no visual changes. This leads to confusion about whether Tailwind v4 is actually working or if there's a deeper configuration issue.
 
 **Why it happens:**
-RBAC is often implemented as reactive policy checks that read from session context without re-validating identity. Developers enforce permissions in controllers but forget to verify in service layers, assuming "if they got here, they must have permission." Role changes or team membership updates don't propagate to all enforcement points, creating temporal security holes.
+Tailwind v4 fundamentally changed from JavaScript config to CSS-first configuration. Common issues:
+- CSS filename wrong (globals.css vs. global.css - must be singular)
+- Missing @import "tailwindcss" directive (not @tailwind base/components/utilities)
+- Content paths in old v3 format
+- Browser caching old stylesheets
+- Hot reload issues with Next.js 15 + Tailwind v4 (markup updates but styles don't)
+- @apply in separate CSS files without proper references
 
 **How to avoid:**
-1. **Single Source of Truth**: Create a centralized authorization service that all endpoints call
-2. **Service-Layer Enforcement**: Never rely solely on controller guards—verify permissions at the data access layer
-3. **Explicit Context Passing**: Pass verified user identity explicitly to service methods rather than reading from ambient session
-4. **Policy-as-Code**: Define RBAC rules in a single location (e.g., using CASL or similar library)
-5. **Decorator Pattern**: Use custom decorators like `@RequirePermission('task.update')` that enforce at multiple layers
+1. Run official migration tool: `npx @tailwindcss/upgrade@next`
+2. Verify CSS file is named `global.css` (singular) not `globals.css`
+3. Confirm @import "tailwindcss" is first line, not @tailwind directives
+4. Check browser DevTools Network tab to verify CSS is not cached (304 status)
+5. Hard reload browser (Ctrl+Shift+R) after every CSS change
+6. Delete `.next` cache directory between tests
+7. Test with simple utility class first (bg-red-500) before complex tokens
 
 **Warning signs:**
-- Authorization logic duplicated across multiple files
-- Services that read `request.user` directly without re-validation
-- UI hides features but API doesn't enforce the same restrictions
-- Tests pass with mocked users but production shows privilege escalation
-- Role updates require deployment or cache clearing to take effect
+- Code looks correct but browser doesn't match
+- Changes to @theme values have no effect
+- Utility classes work but custom tokens don't
+- Need full page reload instead of hot module replacement
+- Old v3 @tailwind directives still in CSS file
 
 **Phase to address:**
-Phase 1 (Authentication Foundation) - Establish authorization patterns before building features that depend on them
+Phase 0 (Pre-work) must validate Tailwind v4 setup BEFORE creating design tokens. Acceptance criteria: Change a @theme token, see it reflect in browser within 2 seconds without hard reload.
 
 ---
 
-### Pitfall 3: Audit Log Incompleteness
+### Pitfall 3: Design System Adoption Without Change Management
 
 **What goes wrong:**
-Audit logs capture some events but miss critical actions, making forensic analysis impossible. Common gaps: bulk operations log one entry instead of individual changes, failed permission checks aren't logged, WebSocket events bypass audit logging entirely, and context (IP address, user agent, affected resources) is missing from entries.
+Design system components are created but teams continue building features with old components. The product ends up with three different button styles, two navigation patterns, and components in "old style" that take years to revisit. This is the exact problem the design system was meant to solve, now compounded by one more incomplete fix.
 
 **Why it happens:**
-Audit logging is added as an afterthought using scattered `logger.log()` calls. Developers log successful operations but forget failures, especially authentication failures and permission denials. Performance concerns lead to "we'll add that later" decisions. WebSocket and real-time events are particularly problematic because they don't flow through standard HTTP middleware.
+Engineers, product managers, and designers have different priorities. Without laying out the value proposition relative to their roles, team members see the design system as extra work. Developers use what they know (old components) rather than learning the new system. Product deadlines don't account for migration time.
 
 **How to avoid:**
-1. **Centralized Audit Service**: Create a dedicated audit logging service separate from application logs
-2. **Decorator-Based Capture**: Use method decorators like `@AuditLog('task.update')` on service methods
-3. **Complete Context**: Every entry must include: UTC timestamp, actor ID, action verb, resource type/ID, outcome (success/failure), IP address, user agent, request ID for correlation
-4. **Log Failures**: Explicitly log authentication failures, authorization denials, and validation errors
-5. **WebSocket Coverage**: Implement custom WebSocket middleware that wraps handlers with audit logging
-6. **Bulk Operations**: For bulk actions, log individual item changes, not just the bulk request
-7. **Separate Storage**: Use dedicated audit log table with append-only constraint and strict access controls
+1. Document the "why" for each role:
+   - Engineers: Faster feature development, fewer bugs, less CSS hunting
+   - Product: Consistent UX, faster iteration, fewer accessibility issues
+   - Designers: Design once, reuse everywhere, enforced standards
+2. Establish component governance: New features MUST use design system components
+3. Create migration plan with incremental deadlines (not "eventually migrate")
+4. Add linting rules to prevent importing old components
+5. Feature flag new components in staging for validation before rollout
+6. Deprecate old components explicitly (mark as deprecated, console warnings)
 
 **Warning signs:**
-- Audit logs that say "User 234 updated record 987" without context about what changed
-- Missing entries for failed login attempts or permission denials
-- Real-time collaboration changes not appearing in audit trail
-- Log queries showing gaps in sequential operations
-- Inability to answer "who changed this field from X to Y and when?"
-- Audit logs stored in the same table as application logs
-- No retention policy or log rotation strategy
+- New PRs still import old component library
+- Same component with 3 different import paths in codebase
+- Design system docs exist but aren't referenced in code reviews
+- "Quick fix" PRs that duplicate instead of using system components
+- No timeline for deprecating old components
 
 **Phase to address:**
-Phase 1 (Authentication Foundation) - Establish audit patterns from day one; retrofitting is extremely difficult
+Phase 1 must include component governance rules and linting setup. Phase 2+ should have "migration checkpoints" where old component imports are removed, not just deprecated.
 
 ---
 
-### Pitfall 4: Prisma N+1 Query Explosions
+### Pitfall 4: Building Too Much Too Soon
 
 **What goes wrong:**
-Loading a list of 100 items with related data executes 101 database queries (1 for items, 100 for relations), degrading performance from 50ms to 2+ seconds. In work management SaaS, this manifests when loading projects with tasks, tasks with comments, users with teams, etc. With 100 users, applications execute 201 queries per page load where only one is needed.
+Design system team attempts to create a full component library covering every scenario before launching. This delays actual usage by months, and by the time components are "ready," product requirements have changed, making many components obsolete or mismatched to actual needs.
 
 **Why it happens:**
-Developers loop through results and fetch relations individually:
-```typescript
-for (const task of tasks) {
-  task.assignee = await prisma.user.findUnique({ where: { id: task.userId } });
-}
-```
-This pattern feels natural when coming from REST APIs but is catastrophic for performance. GraphQL resolvers are particularly vulnerable because field resolution encourages this pattern.
+Fear of incomplete coverage leads to perfectionism. Teams aim to handle every edge case, every variant, every possible state. This is especially common when retrofitting, thinking "we need to replace everything the old system had."
 
 **How to avoid:**
-1. **Use `include` for eager loading**:
-```typescript
-prisma.task.findMany({
-  include: { assignee: true, comments: true }
-})
-```
-2. **Use `relationLoadStrategy: 'join'`** for single-query fetches (Prisma 5+)
-3. **Select only needed fields** to minimize data transfer:
-```typescript
-include: { assignee: { select: { id: true, name: true, avatar: true } } }
-```
-4. **Implement Dataloader pattern** for GraphQL resolvers to batch and deduplicate queries
-5. **Use Prisma middleware** to detect and alert on slow queries during development
-6. **Monitor query counts** in tests—fail builds if a single request exceeds threshold (e.g., 10 queries)
+1. Start with high-leverage primitives: Button, Input, Select, Typography, Card
+2. Migrate one page/feature at a time, discovering components as needed
+3. Use "found in the wild" approach: When you need a component, THEN add it to the system
+4. Limit initial scope to table stakes (buttons, inputs, type scale)
+5. Ship incremental updates: v0.1 with 5 components > v1.0 with 50 components in 6 months
+6. Design parts of the system WHILE rewriting applications, not before
 
 **Warning signs:**
-- Page load times increase linearly with result count
-- Database connection pool exhaustion under moderate load
-- Logs showing identical queries with different IDs in rapid succession
-- Query count metrics showing 50+ queries for single page render
-- Users reporting slowness when viewing lists but details load fast
+- Design system backlog has 40+ components, 0 shipped
+- Waiting for design system to be "complete" before using it
+- Components built for hypothetical future features, not current needs
+- No actual product pages migrated yet after 2 months of work
+- Design system has more LOC than the actual product
 
 **Phase to address:**
-Phase 2 (Data Modeling) - Establish patterns during initial schema design; harder to fix after features are built
+Phase 1: Ship 5-8 primitive components. Phase 2: Migrate 2-3 real pages using primitives. Phase 3: Add composites discovered during migration. Do NOT build all components upfront.
 
 ---
 
-### Pitfall 5: Server Actions as Unauthenticated Public Endpoints
+### Pitfall 5: Color Tokens Without WCAG Validation
 
 **What goes wrong:**
-Next.js Server Actions with `'use server'` create public HTTP endpoints that anyone can invoke with any payload, even if the action is never imported or called from the UI. Attackers can directly POST to these endpoints with crafted payloads, bypassing client-side validation and UI-based permission checks entirely.
+Custom color palette is created with tokens like `--color-muted-foreground: oklch(45% 0 0)` that fail WCAG contrast requirements (45% lightness = ~3.4:1 contrast, needs 4.5:1). Developers apply these tokens throughout the application, then discover during accessibility audit that the entire color system needs to be rebuilt.
 
 **Why it happens:**
-Server Actions look like regular TypeScript functions, leading developers to treat them as internal implementation details. The mental model is "this is called from my component, so it's protected," but the reality is every `'use server'` function creates a publicly accessible HTTP endpoint. Teams skip authentication checks assuming "the user is already logged in to see this page."
+Color design happens in isolation from contrast requirements. Designers create aesthetically pleasing palettes without checking contrast ratios. Developers trust that design tokens are accessible because they're "official design system values." From Phase 07.1-03: Custom OKLCH tokens were created but never validated against WCAG standards.
 
 **How to avoid:**
-1. **Every action MUST start with authentication validation**:
-```typescript
-'use server'
-async function updateTask(taskId: string, data: UpdateTaskInput) {
-  const session = await auth();
-  if (!session?.user) throw new Error('Unauthorized');
-
-  // Validate input
-  const validated = updateTaskSchema.parse(data);
-
-  // Check authorization
-  await requirePermission(session.user.id, 'task.update', taskId);
-
-  // Execute
-  return updateTask(taskId, validated);
-}
-```
-2. **Input validation with Zod** on every argument
-3. **Authorization checks** verifying ownership or permissions
-4. **Rate limiting** using middleware or tools like Arcjet
-5. **CAPTCHA for sensitive operations** (sign-ups, password resets, bulk operations)
-6. **Audit logging** of action invocations
+1. Use pre-validated color systems: Radix Colors (WCAG AA compliant), Tailwind UI official palettes, Material Design 3
+2. If creating custom palette, validate EVERY token pair:
+   - Text on backgrounds: 4.5:1 minimum (7:1 for AAA)
+   - Large text: 3:1 minimum
+   - UI components: 3:1 minimum
+3. Use automated tools during design: Contrast checker plugins in Figma, WebAIM contrast checker
+4. Document contrast ratios in design system docs
+5. Add automated contrast tests in CI: axe-core, pa11y, Lighthouse CI
+6. Test both light AND dark mode (don't just invert)
 
 **Warning signs:**
-- Server Actions without authentication checks at the top
-- Direct Prisma calls in actions without permission verification
-- Missing Zod validation schemas for action inputs
-- Client-side validation but no server-side validation
-- "It works in dev" but no consideration for malicious actors
-- Actions that read `userId` from input instead of session
+- Custom color tokens defined without documented contrast ratios
+- No accessibility audit in design system acceptance criteria
+- Colors chosen purely for aesthetics
+- Light gray text (400-500 range) used for body copy
+- Dark mode created by mechanically inverting light mode
 
 **Phase to address:**
-Phase 1 (Authentication Foundation) - Must establish Server Action patterns before building features
+Phase 0 (Pre-work): Validate color palette BEFORE creating components. Phase 1: Automated contrast testing in CI. Do NOT proceed to Phase 2 until all Phase 1 components pass WCAG AA.
 
 ---
 
-### Pitfall 6: Monorepo Type Drift and Import Chaos
+### Pitfall 6: Multiple Style Systems in Parallel
 
 **What goes wrong:**
-Frontend and backend types diverge over time, causing runtime errors when API contracts change but TypeScript shows no errors. Imports break when moving from development to production. Type definitions resolve to `any`, silently removing type safety. Builds succeed locally but fail in CI/CD.
+Design system components are added alongside existing styles, creating a product where different parts of the UI use completely different styling systems. Page A uses the new design system, Page B uses old inline Tailwind classes, Page C uses a mix. The result is visual inconsistency and increased bundle size.
 
 **Why it happens:**
-Teams share types by duplicating them across apps or compiling to JavaScript before publishing to the monorepo. Changes to backend DTOs don't automatically propagate to frontend code. TypeScript path aliases (`tsconfig.paths`) cause module resolution conflicts between Next.js and NestJS. Different TypeScript versions or compiler settings between apps create incompatibilities.
+Incomplete retrofits leave design debt that gets baked into future feature work. Some parts of the product take years to revisit. Teams ship features faster by using whatever styling is already on that page. No clear "migration complete" milestone prevents the state from being temporary.
 
 **How to avoid:**
-1. **Single Source of Truth**: Create a `@repo/types` package that exports raw TypeScript source (not compiled JavaScript)
-2. **Shared Package Structure**:
-```
-packages/
-  types/
-    src/
-      entities/  (User, Task, Project)
-      dtos/      (CreateTaskDto, UpdateTaskDto)
-      enums/     (TaskStatus, Priority)
-      errors/    (AppError types)
-    package.json (exports: "./src/*")
-    tsconfig.json
-```
-3. **Project References**: Use TypeScript project references instead of path aliases
-4. **Build Orchestration**: Use Turborepo or Nx to ensure shared packages build before consuming apps
-5. **Version Synchronization**: Pin TypeScript version across entire monorepo
-6. **Validation Bridge**: Use Zod schemas as the source of truth—generate types from schemas
+1. Incremental but complete migration strategy:
+   - Identify migration units (features, pages, sections)
+   - Set deadline for each unit
+   - Mark unit as "migration complete" when ALL old styles removed
+2. Use component versioning to track progress
+3. Add bundle analysis to catch duplicate style systems
+4. Create migration dashboard showing % complete per area
+5. Feature freeze on unmigrated areas (forces migration before new features)
+6. Add ESLint rules preventing old pattern usage in migrated files
 
 **Warning signs:**
-- Frontend shows type errors that don't exist at runtime
-- API returns data that doesn't match TypeScript interfaces
-- `any` appearing in types that should be specific
-- Import paths that work in dev but break in production
-- Changes to backend DTOs not caught by TypeScript in frontend
-- Different team members seeing different type errors
+- Same visual component styled 3 different ways in codebase
+- Bundle includes both old and new CSS frameworks
+- Migration tracking shows "80% complete" for 6+ months
+- New features mix old and new component libraries
+- No git grep for old component imports returns hundreds of results
 
 **Phase to address:**
-Phase 0 (Project Setup) - Must be correct from day one; extremely painful to retrofit
+Each phase must have "complete" criteria: Old styles removed, not just new components added. Phase 3: Full codebase audit to find and migrate remaining old patterns.
 
 ---
 
-### Pitfall 7: NextAuth Secret Rotation Logout Cascade
+### Pitfall 7: Dark Mode as Afterthought
 
 **What goes wrong:**
-Changing `NEXTAUTH_SECRET` in production invalidates all existing JWT sessions, logging out every user simultaneously. Users see "JWEDecryptionFailed" errors. Customer support is flooded with "I can't log in" tickets. Trust in the platform erodes.
+Dark mode is implemented by adding `.dark` classes to components after light mode is "complete." This results in inconsistent dark mode behavior, visual regressions, components that look good in light mode but broken in dark mode, and hard-coded colors that don't switch themes.
 
 **Why it happens:**
-Developers treat `NEXTAUTH_SECRET` as a configuration parameter that can be rotated for security. In development, `.env` files change frequently without consequence. The connection between the secret and session validity isn't obvious from the documentation. Teams discover this during incident response when they rotate secrets to mitigate a suspected breach.
+Teams build features in default (light) mode, ship them, then try to add dark mode support later. Hard-coded color values (text-gray-500) instead of semantic tokens (text-muted-foreground) don't adapt to theme changes. No dark mode testing during development.
 
 **How to avoid:**
-1. **Generate strong secret once** during initial deployment and never change it:
-```bash
-openssl rand -base64 32
-```
-2. **Store in secure vault** (AWS Secrets Manager, Vercel Environment Variables) with strict access controls
-3. **Document the consequences** of rotation in team runbook
-4. **If rotation is necessary**:
-   - Switch to database sessions instead of JWT
-   - Implement graceful migration with dual-secret validation period
-   - Notify users in advance of forced logout
-5. **Separate secrets by environment** but keep each environment's secret stable
-6. **Monitor for JWEDecryptionFailed errors** as an indicator of secret mismatch
+1. Token-driven implementation from day 1: ALL colors must be CSS variables that change with theme
+2. NO hard-coded Tailwind color classes (text-gray-500), ONLY semantic tokens (text-muted)
+3. Design system components must include both modes in initial design
+4. Component development checklist: Light mode ✓ Dark mode ✓ before PR approved
+5. Visual regression testing in both modes (Percy, Chromatic, Playwright screenshots)
+6. Browser extension to toggle dark mode during development
+7. Storybook stories showing both modes side-by-side
 
 **Warning signs:**
-- Secrets stored in unencrypted files or Slack messages
-- Different secrets on different deployment instances
-- Secrets being regenerated on each deployment
-- No documentation about which secrets can be rotated safely
-- Planning to rotate secrets "for security" without understanding impact
+- Components ship with only light mode tested
+- grep for "text-gray-", "bg-white" shows hundreds of hard-coded values
+- Dark mode "works" but has different visual hierarchy than light mode
+- Contrast violations only in dark mode
+- Theme toggle causes layout shifts or flickers
 
 **Phase to address:**
-Phase 0 (Project Setup) - Must be configured correctly before first user signs up
+Phase 1: Establish semantic token architecture (must support theming). Every phase: Dual-mode testing required for acceptance. Phase 4: Visual regression test suite covering both modes.
 
 ---
 
-### Pitfall 8: Real-Time State Synchronization Conflicts
+### Pitfall 8: CSS Configuration Caching Issues
 
 **What goes wrong:**
-Two users edit the same task simultaneously. User A sets status to "In Progress" while User B assigns it to themselves. The final state depends on network timing, causing one user's change to silently overwrite the other's. Users report "I just changed that and it reverted" or "my edits disappeared." In work management SaaS, this destroys user trust.
+Developer modifies @theme tokens in global.css, restarts dev server, but sees no visual changes in browser. Assumes Tailwind isn't working or changes are wrong. Spends hours debugging correct code because browser is serving cached CSS.
 
 **Why it happens:**
-WebSocket handlers implement "last write wins" by directly updating the database without checking current state:
-```typescript
-@SubscribeMessage('task.update')
-async handleUpdate(client: Socket, payload: UpdateTaskDto) {
-  await prisma.task.update({
-    where: { id: payload.taskId },
-    data: payload.changes
-  });
-  this.server.emit('task.updated', payload);
-}
-```
-This works perfectly in isolation but creates race conditions under concurrent edits. No conflict detection or resolution strategy exists.
-
-**Why it happens (deeper):**
-Developers optimize for the happy path where users don't collide. Real-time collaboration is added incrementally without rethinking data access patterns. Eventual consistency is misunderstood—teams assume WebSocket broadcasts will "eventually sync" without implementing actual conflict resolution.
+Next.js dev server caches CSS aggressively for performance. Browser also caches stylesheets. Tailwind v4's new architecture uses PostCSS plugin that may not trigger full recompilation on theme changes. Hot Module Replacement (HMR) updates markup but not always styles.
 
 **How to avoid:**
-1. **Optimistic Locking with Version Numbers**:
-```typescript
-await prisma.task.update({
-  where: { id: taskId, version: currentVersion },
-  data: { ...changes, version: { increment: 1 } }
-});
-// If no rows updated, version mismatch = conflict
-```
-2. **Field-Level Timestamps** to detect which field changed last
-3. **Operational Transform (OT)** for text editing (use libraries like ShareDB)
-4. **Conflict Detection + User Prompts**:
-   - Detect conflict server-side
-   - Emit conflict event to both clients
-   - Show UI: "User B edited this task. Choose: Keep yours | Take theirs | Merge"
-5. **Causal Consistency**: Track operation causality with vector clocks for distributed systems
-6. **Atomic Operations**: Use database transactions for multi-field updates that must be atomic
+1. Hard reload browser (Ctrl+Shift+R / Cmd+Shift+R) after CSS changes
+2. Delete .next directory when switching branches or major config changes
+3. Use "Disable cache" in DevTools Network tab during development
+4. Restart Next.js dev server after @theme modifications
+5. Verify CSS file timestamp in Network tab matches recent changes
+6. Test CSS changes with simple utility first (bg-red-500) to isolate caching vs. config issues
+7. Use CSS-in-JS debugging: Add temporary `* { border: 1px solid red; }` to verify CSS loads
 
 **Warning signs:**
-- User reports of "disappearing changes"
-- Updates that work in single-user testing but fail in multi-user scenarios
-- WebSocket event handlers that don't check current database state
-- No version or timestamp fields on frequently updated entities
-- Lack of conflict resolution UI
-- Tests that don't cover concurrent edits
+- Multiple restarts needed to see CSS changes
+- Changes work for teammate but not for you (browser cache)
+- Git diff shows correct CSS but browser doesn't match
+- CSS file size in Network tab doesn't change after adding rules
+- Need to clear browser data to see style updates
 
 **Phase to address:**
-Phase 3 (Real-Time Collaboration) - Critical before enabling multi-user editing of same resources
+Phase 0 (Pre-work): Document CSS debugging workflow. Include in onboarding docs. Add npm script: "dev:clean" that removes .next and starts fresh dev server.
 
 ---
 
-### Pitfall 9: RBAC Role Explosion and Stale Permissions
+### Pitfall 9: Shadcn UI Integration Conflicts
 
 **What goes wrong:**
-The system starts with clean roles (Admin, Member, Viewer) but over time accumulates dozens of roles (Admin, Owner, ProjectAdmin, TaskAdmin, TeamLead, Moderator, etc.). When users change roles or teams, old permissions linger because there's no cleanup mechanism. Administrators can't figure out what permissions a user actually has. Security audits become discovery exercises instead of validation.
+Installing Shadcn UI components into existing application causes class name conflicts, style collisions, or components that look different from designs because existing Tailwind config overrides Shadcn's expected tokens.
 
 **Why it happens:**
-Teams address edge cases by creating new roles instead of using permission composition. "Can this user do X?" is answered by creating a new role rather than rethinking the permission model. No automated cleanup when users leave teams or change roles. Over-engineering RBAC too early, before understanding actual access patterns.
+Shadcn expects specific Tailwind configuration structure. If your existing setup has custom class prefixes, different color token names, or conflicting global styles, Shadcn components won't render as designed. Additionally, Shadcn requires tailwind-merge for class conflict resolution.
 
 **How to avoid:**
-1. **Start Simple**: Begin with 3-4 roles (Admin, Member, Viewer) and resist creating more until absolutely necessary
-2. **Permission Composition**: Use permissions not roles for granular control:
-```typescript
-// Instead of: isProjectAdmin(user, project)
-// Use: hasPermission(user, 'project.settings.update', project)
-```
-3. **Temporal Permissions**: Use team membership + role rather than direct user-to-role assignment
-4. **Automated Cleanup**: When user leaves team, automatically revoke team-based permissions
-5. **Audit Trails**: Log permission grants and revocations with expiration dates
-6. **Regular Reviews**: Automated reports of users with unusual permission combinations
-7. **Defer Relationship-Based Access Control (ReBAC)**: Don't implement until you actually need resource-based permissions
+1. Add prefix in components.json to namespace Shadcn classes: `ui-bg-primary` instead of `bg-primary`
+2. Verify tailwind-merge is installed and configured correctly
+3. Check existing Tailwind config doesn't override Shadcn token names
+4. Use Shadcn's manual installation mode to understand dependencies
+5. Test each Shadcn component in isolation before integrating into pages
+6. Create Storybook stories for Shadcn components to verify styling
+7. Don't modify Shadcn component source files directly (defeats upgrade path)
 
 **Warning signs:**
-- More than 10 distinct roles in the system
-- Roles with overlapping responsibilities (both can do the same thing)
-- Users with multiple roles simultaneously
-- No automated way to list "all permissions this user has"
-- Permission checks that read directly from database without caching
-- Creating new roles to solve one-off access requests
-- Role names like "AdminButCantDeleteProjects"
+- Shadcn components look different from documentation examples
+- Class name conflicts in browser DevTools (two classes with same name)
+- Components styled correctly in isolation but broken when integrated
+- Can't upgrade Shadcn components without breaking changes
+- Need to copy-paste fixes from GitHub issues instead of using stable components
 
 **Phase to address:**
-Phase 1 (Authentication Foundation) - Design the permission model correctly before features depend on it
+Phase 1: Shadcn integration setup with prefix configuration. Phase 2: Component isolation testing in Storybook. Do NOT add Shadcn components directly to production pages until isolation testing passes.
+
+---
+
+### Pitfall 10: @apply Directive Issues in Tailwind v4
+
+**What goes wrong:**
+Using @apply in separate CSS files causes errors or doesn't work because the CSS file doesn't reference where the main Tailwind configuration is imported. Developers write component-specific CSS with @apply expecting Tailwind classes to be available but get "unknown class" errors.
+
+**Why it happens:**
+Tailwind v4's CSS-first approach requires explicit imports. In v3, @apply worked anywhere because config was JavaScript-based and globally available. In v4, CSS files using @apply need to reference the file where @import "tailwindcss" exists.
+
+**How to avoid:**
+1. Minimize @apply usage - prefer utility classes directly in components
+2. If using @apply, add explicit reference to main Tailwind file:
+   ```css
+   @import "../globals.css";
+   ```
+3. Keep @apply usage in the same file as @import "tailwindcss"
+4. Use CSS modules or styled-components for component-specific styles instead of @apply
+5. Document which CSS files can safely use @apply
+
+**Warning signs:**
+- @apply works in global.css but not in component CSS files
+- Build errors about unknown Tailwind classes in @apply
+- Need to duplicate utility definitions across CSS files
+- CSS architecture becomes confusing with multiple import chains
+
+**Phase to address:**
+Phase 1: Establish CSS architecture patterns. Document @apply usage guidelines. Phase 2: Migrate existing @apply usage to either direct utilities or CSS-in-JS.
 
 ---
 
@@ -345,33 +311,25 @@ Shortcuts that seem reasonable but create long-term problems.
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Storing WebSocket connections in memory | Simple implementation, no database overhead | Doesn't work across multiple server instances, breaks horizontal scaling | Never—use Redis pub/sub from day one |
-| Client-only form validation | Faster user feedback, less server code | Security vulnerability, data integrity issues | Only as UX enhancement, never as the sole validation |
-| Skipping database indexes on foreign keys | Faster writes during development | Catastrophic query performance as data grows | Never—add indexes during migration creation |
-| Polling instead of WebSockets for real-time | Easier to implement, works with simple HTTP | Higher server load, delays in updates, poor UX | Acceptable for low-frequency updates (>30s intervals) |
-| Hardcoding tenant/user IDs in queries | Faster prototyping | Data leaks across tenants, impossible to test multi-user scenarios | Never in production code; only in migration scripts |
-| Using `any` type for complex types | Bypass TypeScript compilation errors | Loss of type safety, runtime errors, refactoring nightmares | Never—invest time in proper typing |
-| Single database transaction for entire request | Simpler error handling, ACID guarantees | Long-held locks, deadlocks under load, poor performance | Acceptable for small, fast operations (<100ms) |
-| Sharing Prisma Client instance without checking | Avoids connection pool exhaustion | Leaks transaction context across requests in serverless | Only in traditional servers with proper singleton pattern |
-| Global error handlers without context | DRY principle, centralized error handling | Loses request context, makes debugging impossible | Never—always include request ID, user ID, action context |
-| Co-locating audit logs with application logs | Single logging infrastructure | Audit logs get lost in noise, can't apply strict access controls | Never—audit logs must be separate with append-only constraint |
+| Hard-coded color classes (text-gray-500) | Faster to write than semantic tokens | Breaks dark mode, requires find-replace for theme changes, no single source of truth | Never in design system retrofit |
+| Skipping visual regression tests | Ship features faster | Silent dark mode regressions, contrast violations discovered in production | Only for internal-only features |
+| Mixing old and new component libraries | Don't block feature development during migration | Multiple style systems, larger bundle, visual inconsistency | Temporary (< 1 sprint) during active migration |
+| Custom color palette without WCAG audit | Unique brand identity | Fails accessibility, requires complete rebuild | Never - use Radix Colors or validate first |
+| Modifying Shadcn component source directly | Quick fix for styling issues | Breaks upgrade path, defeats purpose of owning code | Never - extend via composition |
+| Browser hard-reload instead of fixing caching | Get CSS changes working quickly | Hides configuration issues, slows development | During Phase 0 only while debugging |
 
 ## Integration Gotchas
 
-Common mistakes when connecting to external services or internal systems.
+Common mistakes when integrating Shadcn UI and Tailwind v4 with existing Next.js application.
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| NextAuth Providers | Trusting provider profile data without validation | Validate all fields from OAuth providers; emails can be unverified, names can be missing |
-| Prisma in Serverless | Creating new PrismaClient on every request | Use singleton pattern with connection pooling; consider Prisma Accelerate for edge |
-| WebSocket Gateway | Not handling disconnects gracefully | Implement `handleDisconnect()`, clean up subscriptions, remove from active user lists |
-| Postgres Row-Level Security | Applying RLS but not testing with `SET ROLE` | Test every query as different users; verify RLS policies block unauthorized access |
-| Redis Pub/Sub | Using Redis as a message queue with guaranteed delivery | Use proper message queue (Bull/BullMQ) for job processing; Redis pub/sub loses messages if no subscribers |
-| Email Sending | Blocking requests waiting for email delivery | Queue emails asynchronously; never await SMTP calls in request handlers |
-| File Uploads | Storing files directly in database as bytea | Use object storage (S3, Cloudflare R2); store only URLs/keys in database |
-| External API Calls | No timeout or retry logic | Set aggressive timeouts (5-10s), implement exponential backoff, circuit breaker patterns |
-| Database Migrations | Running migrations during app startup | Run migrations as separate deployment step before new code deploys |
-| Environment Variables | Reading process.env directly in application code | Parse and validate all env vars at startup; fail fast if required vars missing |
+| Shadcn UI | Installing all components at once | Add components as needed, test each in isolation |
+| Tailwind v4 | Using old @tailwind directives | Use @import "tailwindcss" only |
+| Next.js 15 + Tailwind v4 HMR | Expecting automatic style updates | Hard reload after @theme changes, delete .next cache |
+| Dark mode | Adding .dark classes after building light mode | Build semantic tokens first, design both modes simultaneously |
+| Color tokens | Creating custom OKLCH values | Use pre-validated Radix Colors or audit with contrast tools |
+| Design system governance | Assuming team will naturally adopt new components | Add ESLint rules, deprecation warnings, migration deadlines |
 
 ## Performance Traps
 
@@ -379,67 +337,36 @@ Patterns that work at small scale but fail as usage grows.
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Loading full entities when only IDs needed | Slow queries, high memory usage | Use `select: { id: true }` instead of full entity | >1000 records per query |
-| Broadcasting WebSocket events to all connected clients | High bandwidth, client-side filtering | Implement room-based subscriptions by project/team | >100 concurrent users |
-| Sequentially processing bulk operations | Long request timeouts, poor UX | Use Promise.all() for parallel processing or background jobs | >10 items per operation |
-| Full table scans without indexes | Query time increases linearly with data | Index all foreign keys, WHERE clause columns, ORDER BY fields | >10,000 rows in table |
-| Storing session data in JWT | Large cookie size, slow authentication | Switch to database sessions with session ID in cookie | >2KB of session data |
-| Eager loading all relations by default | Query returns megabytes per record | Load relations only when needed; use lazy loading for large collections | Relations with >100 items |
-| Synchronous audit logging in request path | Adds 50-200ms to every write operation | Queue audit logs asynchronously with guaranteed delivery | >10 writes/second |
-| No pagination on list endpoints | Memory exhaustion, browser hangs | Implement cursor-based pagination from day one | >100 items per list |
-| Using COUNT(*) for pagination | Slow on large tables, locks table | Use cursor-based pagination or estimate from statistics | >100,000 rows |
-| Loading user permissions on every request | Database query on every request | Cache permissions in Redis with 5-10 minute TTL | >100 requests/second |
-
-## Security Mistakes
-
-Domain-specific security issues beyond general web security.
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Not validating resource ownership before operations | Horizontal privilege escalation—users modify others' tasks | Every service method must verify `resource.ownerId === user.id` or team membership |
-| Trusting client-provided IDs in authorization checks | User passes `userId` in request to access other accounts | Always read user ID from verified session, never from request body/params |
-| Exposing internal IDs in URLs | Information disclosure, enumeration attacks | Use UUIDs or slugs instead of sequential integers for public-facing IDs |
-| Missing rate limiting on authentication endpoints | Brute force attacks, credential stuffing | Rate limit login, registration, password reset (5 attempts per 15 minutes) |
-| Logging sensitive data in audit trails | PII exposure in logs | Mask or hash sensitive fields (passwords, tokens, credit cards) before logging |
-| Not invalidating sessions on password change | Stolen sessions remain valid after password reset | Clear all sessions for user when password changes or suspicious activity detected |
-| WebSocket message injection | Users can send crafted messages impersonating others | Validate sender identity server-side; never trust client-provided `userId` in WebSocket payload |
-| Insecure direct object references in APIs | Users guess IDs to access unauthorized resources | Implement authorization middleware that checks permissions on every request |
-| Missing CORS configuration for WebSockets | Cross-origin WebSocket hijacking | Configure CORS properly; validate Origin header on WebSocket handshake |
-| SQL injection via raw queries | Full database compromise | Use Prisma's type-safe query builder; if using `$queryRaw`, always use parameterized queries |
+| Parallel style systems | Bundle size increases 30-50% | Complete migration unit-by-unit, remove old styles | Immediately (slows all page loads) |
+| Hard-coded colors everywhere | Global theme change requires modifying 100+ files | Use semantic tokens from day 1 | At scale (unmaintainable) |
+| No component versioning | Breaking changes affect entire codebase | Version design system components, use feature flags | First breaking change |
+| Manual accessibility testing | WCAG violations discovered in production | Automated testing in CI (axe-core, Lighthouse) | Production launch |
+| CSS file organization chaos | Can't find where styles are defined | Document CSS architecture, enforce file naming | 50+ components |
 
 ## UX Pitfalls
 
-Common user experience mistakes in work management SaaS.
+Common user experience mistakes when retrofitting design systems.
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| No optimistic updates on real-time actions | UI feels laggy despite WebSocket connection | Update UI immediately, revert if server rejects; show loading state only if >500ms |
-| Silent failures without user feedback | Users don't know if action succeeded | Toast notifications for all state-changing operations; error modals for failures |
-| No loading skeletons during data fetch | Jarring layout shifts, feels broken | Show skeleton loaders matching final layout; avoid spinners that block content |
-| Overwhelming onboarding with all features | Users abandon during setup, don't see value | One clear task to accomplish; progressive disclosure of features |
-| No empty states guiding next action | Users see blank screen and leave | Empty states with clear CTA: "Create your first project" with inline creation |
-| Real-time updates without notification | Changes happen silently, users miss them | Show subtle indicator (blue dot, toast) when content updates in background |
-| No conflict resolution UI | User's work gets overwritten by others | Detect conflicts, show diff, let user choose which version to keep |
-| Identical experiences for new vs. returning users | New users see empty dashboard, get confused | Seed demo data for new accounts or show interactive tour |
-| No offline handling for real-time features | Connection loss breaks entire app | Show "Reconnecting..." banner; queue operations to sync when back online |
-| Poor mobile responsiveness for collaborative features | Mobile users can't participate in real-time work | Design mobile-first; real-time notifications work on small screens |
+| Visual inconsistency during migration | Feels like unfinished product, erodes trust | Migrate by user journey, not by component type |
+| Dark mode regressions | Can't read text, features unusable at night | Visual regression testing in both modes |
+| WCAG contrast failures | Inaccessible to users with low vision | Pre-validate color palette, automated CI tests |
+| Breaking existing workflows during migration | Users need to relearn interface | Feature parity verification before replacing components |
+| Flash of unstyled content (FOUC) | Janky theme switching | Use CSS variables for theming, not class swapping |
 
 ## "Looks Done But Isn't" Checklist
 
 Things that appear complete but are missing critical pieces.
 
-- [ ] **RBAC Implementation**: Often missing service-layer enforcement—verify authorization at data access layer, not just controllers
-- [ ] **WebSocket Security**: Often missing per-message authorization—verify every event handler has guards, not just connection
-- [ ] **Audit Logging**: Often missing failure logging—verify failed auth attempts, denied permissions, and validation errors are logged
-- [ ] **Real-Time Updates**: Often missing conflict resolution—verify concurrent edits are detected and user is prompted
-- [ ] **Server Actions**: Often missing input validation—verify Zod schemas validate all inputs, not just authentication
-- [ ] **Database Queries**: Often missing N+1 prevention—verify all relation loads use `include` or explicit joins
-- [ ] **Error Handling**: Often missing user-facing messages—verify all errors show actionable messages, not stack traces
-- [ ] **Session Management**: Often missing cleanup—verify sessions expire, revoke on logout, and invalidate on password change
-- [ ] **File Uploads**: Often missing validation—verify file types, sizes, and scan for malware before accepting
-- [ ] **Multi-Tenancy**: Often missing isolation tests—verify queries can't access other tenant's data even with manipulated IDs
-- [ ] **Rate Limiting**: Often missing on non-auth endpoints—verify bulk operations and expensive queries have rate limits
-- [ ] **Environment Config**: Often missing validation—verify app fails fast on startup if required env vars missing or invalid
+- [ ] **Design system foundation:** Often missing WCAG validation - verify all color token pairs meet 4.5:1 contrast minimum
+- [ ] **Dark mode:** Often missing systematic testing - verify EVERY page in dark mode, not just homepage
+- [ ] **Component migration:** Often missing old style removal - verify grep for old component imports returns zero results
+- [ ] **Tailwind v4 setup:** Often missing content path updates - verify classes in ALL directories are detected
+- [ ] **Accessibility compliance:** Often missing keyboard navigation - verify tab order and focus states
+- [ ] **Shadcn integration:** Often missing conflict resolution setup - verify tailwind-merge is configured
+- [ ] **Browser testing:** Often missing hard-coded color detection - verify grep for "text-gray-", "bg-white" finds only design tokens file
+- [ ] **CSS architecture:** Often missing @apply guidelines - verify team knows when and where @apply can be used
 
 ## Recovery Strategies
 
@@ -447,15 +374,12 @@ When pitfalls occur despite prevention, how to recover.
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| WebSocket Auth Bypass | MEDIUM | 1. Deploy authentication middleware immediately 2. Audit logs for unauthorized access 3. Force disconnect all current sockets 4. Notify affected users |
-| RBAC Inconsistency | HIGH | 1. Audit all authorization checks 2. Centralize in authorization service 3. Add service-layer enforcement 4. Regression test all protected endpoints |
-| Audit Log Gaps | HIGH (impossible to fully recover) | 1. Implement complete logging going forward 2. Document gap period 3. Consider gap permanent for compliance purposes |
-| Prisma N+1 Queries | MEDIUM | 1. Identify slow endpoints with APM 2. Add `include` to offending queries 3. Add integration tests verifying query count |
-| Server Actions Unprotected | HIGH | 1. Emergency: Add authentication to all actions 2. Audit access logs for unauthorized calls 3. Add Zod validation 4. Security review all actions |
-| Type Drift | MEDIUM | 1. Create shared types package 2. Migrate to TypeScript project references 3. Add CI check for type consistency |
-| NextAuth Secret Rotation | LOW (but user-impacting) | 1. Users must re-login (unavoidable) 2. Switch to database sessions to prevent future issues 3. Communicate to users via email/banner |
-| State Sync Conflicts | MEDIUM | 1. Add version field to entities 2. Implement optimistic locking 3. Build conflict resolution UI 4. Document known conflicts for users |
-| RBAC Role Explosion | HIGH | 1. Map existing roles to simplified permission model 2. Migrate users to new model 3. Remove redundant roles 4. Add automated cleanup |
+| Spot fixes attempted (Pitfall 1) | HIGH | 1. Revert all component changes, 2. Audit design tokens, 3. Fix tokens first, 4. Re-migrate components with correct foundation |
+| Tailwind v4 misconfigured (Pitfall 2) | LOW | 1. Run official upgrade tool, 2. Rename CSS file to global.css, 3. Replace @tailwind with @import, 4. Delete .next cache, 5. Test |
+| Multiple style systems (Pitfall 6) | MEDIUM | 1. Create migration dashboard, 2. Set deadlines per area, 3. Remove old styles as each area completes, 4. Add linting to prevent regression |
+| Failed WCAG audit (Pitfall 5) | HIGH | 1. Switch to Radix Colors, 2. Rebuild semantic token layer, 3. Re-test all components, 4. Add automated contrast checks |
+| Dark mode broken (Pitfall 7) | MEDIUM | 1. Find all hard-coded colors (grep), 2. Replace with semantic tokens, 3. Add visual regression tests, 4. Require both modes in PR reviews |
+| Shadcn conflicts (Pitfall 9) | LOW | 1. Add class prefix in components.json, 2. Reinstall conflicting components, 3. Test in isolation, 4. Document prefix usage |
 
 ## Pitfall-to-Phase Mapping
 
@@ -463,64 +387,57 @@ How roadmap phases should address these pitfalls.
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| WebSocket Authentication Bypass | Phase 1: Authentication Foundation | Integration test: Attempt WebSocket connection without valid token; verify disconnection |
-| RBAC Enforcement Inconsistency | Phase 1: Authentication Foundation | Test: Try accessing resource via API with invalid permissions; verify 403 response |
-| Audit Log Incompleteness | Phase 1: Authentication Foundation | Review: Check audit logs for failed login attempts and permission denials exist |
-| Prisma N+1 Query Explosions | Phase 2: Data Modeling | Test: Assert query count <10 for all list endpoints in integration tests |
-| Server Actions Unprotected | Phase 1: Authentication Foundation | Security review: Every Server Action has auth check in first 5 lines |
-| Monorepo Type Drift | Phase 0: Project Setup | CI Check: TypeScript compilation succeeds in all packages with strict mode |
-| NextAuth Secret Rotation | Phase 0: Project Setup | Runbook: Document secret management procedures and rotation consequences |
-| Real-Time State Sync Conflicts | Phase 3: Real-Time Collaboration | Test: Two concurrent WebSocket updates to same task; verify conflict detection |
-| RBAC Role Explosion | Phase 1: Authentication Foundation | Review: Permission model uses <10 roles; composition pattern documented |
+| Pitfall 1: Spot fixes | Phase 0: Foundation audit | Token changes reflect in browser within 2 seconds |
+| Pitfall 2: Tailwind v4 | Phase 0: Migration validation | Official upgrade tool runs cleanly, HMR works |
+| Pitfall 3: Adoption | Phase 1: Governance setup | ESLint fails on old component imports |
+| Pitfall 4: Building too much | Phase 1: Primitive-only scope | Ship 5-8 components max, migrate 2 real pages |
+| Pitfall 5: Color tokens | Phase 0: WCAG validation | All token pairs meet 4.5:1 contrast, documented |
+| Pitfall 6: Parallel systems | Phase 2+: Complete migration | Bundle analysis shows single style system |
+| Pitfall 7: Dark mode | Phase 1: Dual-mode design | Every component has both modes in Storybook |
+| Pitfall 8: CSS caching | Phase 0: Dev workflow docs | Team knows hard-reload shortcut, .next cleanup |
+| Pitfall 9: Shadcn conflicts | Phase 1: Integration setup | Shadcn components match docs in isolation |
+| Pitfall 10: @apply issues | Phase 1: CSS architecture | Document shows which files can use @apply |
 
 ## Sources
 
-### WebSocket Security
-- [WebSocket Security - OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/cheatsheets/WebSocket_Security_Cheat_Sheet.html)
-- [The Developer's Guide to WebSockets Security: Pitfalls and Protections - Qwiet](https://qwiet.ai/appsec-resources/the-developers-guide-to-websockets-security-pitfalls-and-protections/)
-- [Essential guide to WebSocket authentication - Ably](https://ably.com/blog/websocket-authentication)
-- [WebSocket Security: Top 8 Vulnerabilities and How to Solve Them - Bright Security](https://brightsec.com/blog/websocket-security-top-vulnerabilities/)
+**Design System Retrofit:**
+- [Design System Adoption Pitfalls](https://www.netguru.com/blog/design-system-adoption-pitfalls)
+- [Design Systems in 2026: Predictions, Pitfalls, and Power Moves](https://medium.com/@rydarashid/design-systems-in-2026-predictions-pitfalls-and-power-moves-f401317f7563)
+- [Pro Tips for Design System Migration in Large Projects](https://medium.com/@houhoucoop/pro-tips-for-ui-library-migration-in-large-projects-d54f0fbcd083)
+- [Incremental Migration: Evolving Without Breaking Production](https://medium.com/@navidbarsalari/incremental-migration-evolving-without-breaking-production-edf679769918)
 
-### RBAC Implementation
-- [6 Common Role Based Access Control (RBAC) Implementation Pitfalls - Idenhaus](https://idenhaus.com/rbac-implementation-pitfalls/)
-- [How to Implement RBAC with Custom Guards in NestJS - OneUpTime](https://oneuptime.com/blog/post/2026-01-25-rbac-custom-guards-nestjs/view)
-- [The Best Way to Authenticate WebSockets in NestJS - Preet Mishra](https://preetmishra.com/blog/the-best-way-to-authenticate-websockets-in-nestjs)
-- [Guards - Gateways | NestJS Documentation](https://docs.nestjs.com/websockets/guards)
+**Tailwind CSS v4 Migration:**
+- [Tailwind CSS v4 Migration Guide](https://designrevision.com/blog/tailwind-4-migration)
+- [Tailwind v4 Migration: From JavaScript Config to CSS-First](https://medium.com/better-dev-nextjs-react/tailwind-v4-migration-from-javascript-config-to-css-first-in-2025-ff3f59b215ca)
+- [How to Upgrade Tailwind CSS to v4 in Next.js 15](https://github.com/vercel/next.js/discussions/82623)
+- [Tailwind CSS v4 Not Working in Next.js? Check Your CSS Filename!](https://medium.com/@bloodturtle/the-problem-f71da1eb9faa)
+- [Fast Refresh / Hot Reload not working with Next.js 15 and Tailwind CSS 4](https://github.com/tailwindlabs/tailwindcss/discussions/18180)
 
-### Audit Logging
-- [Audit Logging Best Practices, Components & Challenges - Sonar](https://www.sonarsource.com/resources/library/audit-logging/)
-- [Audit Logging: What It Is & How It Works - Datadog](https://www.datadoghq.com/knowledge-center/audit-logging/)
-- [Audit Log Best Practices For Information Security - ZenGRC](https://www.zengrc.com/blog/audit-log-best-practices-for-information-security/)
+**WCAG Compliance:**
+- [The 6 most common WCAG failures and how to fix them](https://reciteme.com/us/news/6-most-common-wcag-failures/)
+- [Top 10 WCAG Violations Found on Business Websites](https://www.adacompliancepros.com/blog/top-10-wcag-violations-found-on-business-websites)
+- [Accessibility vs. Compliance: Why the Difference Matters](https://www.dbswebsite.com/blog/accessible-vs-compliant-accessibility/)
+- [2026 WCAG & ADA Website Compliance Requirements & Standards](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/)
 
-### Prisma Performance
-- [N+1 Query Problem: The Database Killer You're Creating - Saad Minhas](https://medium.com/@saad.minhas.codes/n-1-query-problem-the-database-killer-youre-creating-f68104b99a2d)
-- [N+1 Query Problem: Fixing It with SQL and Prisma ORM - Furkan Baytekin](https://www.furkanbaytekin.dev/blogs/software/n1-query-problem-fixing-it-with-sql-and-prisma-orm)
-- [Query optimization using Prisma Optimize - Prisma Documentation](https://www.prisma.io/docs/orm/prisma-client/queries/query-optimization-performance)
+**Design Tokens & Migration:**
+- [How to Manage Breaking Changes in Design Tokens](https://designtokens.substack.com/p/how-to-manage-breaking-changes-in)
+- [Color tokens: guide to light and dark modes in design systems](https://medium.com/design-bootcamp/color-tokens-guide-to-light-and-dark-modes-in-design-systems-146ab33023ac)
+- [Dark Mode Design Systems: A Practical Guide](https://medium.com/design-bootcamp/dark-mode-design-systems-a-practical-guide-13bc67e43774)
 
-### Next.js Server Actions Security
-- [Next.js Server Actions Security: 5 Vulnerabilities You Must Fix - MakerKit](https://makerkit.dev/blog/tutorials/secure-nextjs-server-actions)
-- [How to Think About Security in Next.js - Next.js Blog](https://nextjs.org/blog/security-nextjs-server-components-actions)
-- [Next.js Security Hardening: Five Steps to Bulletproof Your App in 2026 - Made Adi Widyananda](https://medium.com/@widyanandaadi22/next-js-security-hardening-five-steps-to-bulletproof-your-app-in-2026-61e00d4c006e)
-- [Guides: Data Security - Next.js Documentation](https://nextjs.org/docs/app/guides/data-security)
+**Shadcn UI Integration:**
+- [shadcn UI: Complete Guide](https://designrevision.com/blog/shadcn-ui-guide)
+- [Integrating Shadcn UI with React 19: Step-by-Step Tutorial](https://mobisoftinfotech.com/resources/blog/react-19-shadcn-ui-integration-tutorial)
 
-### NextAuth Session Management
-- [Next.js Session Management: Solving NextAuth Persistence Issues in 2025 - Clerk](https://clerk.com/articles/nextjs-session-management-solving-nextauth-persistence-issues)
-- [Common Next.js & NextAuth.js Authentication Pitfalls - InfiniteJS](https://infinitejs.com/posts/nextjs-nextauth-auth-pitfalls/)
+**Testing & Regression:**
+- [Testing a Component System Like Infrastructure](https://hackernoon.com/testing-a-component-system-like-infrastructure-contract-tests-visual-regression-and-accessibility-gates)
+- [Effective Regression Testing Strategy](https://www.testingxperts.com/blog/regression-testing-strategy)
 
-### Monorepo TypeScript
-- [Live types in a TypeScript monorepo - Colin McDonnell](https://colinhacks.com/essays/live-types-typescript-monorepo)
-- [Client/Server code sharing in Typescript monorepos - Carles Capellas](https://capelski.medium.com/effective-code-sharing-in-typescript-monorepos-475f9600f6b4)
-- [GitHub - belgattitude/nextjs-monorepo-example: Collection of monorepo tips & tricks](https://github.com/belgattitude/nextjs-monorepo-example)
-
-### Real-Time Collaboration
-- [Strong vs Eventual Consistency in Distributed Systems - Level Up Coding](https://blog.levelupcoding.com/p/strong-vs-eventual-consistency)
-- [Consistency Patterns in Distributed Systems: A Complete Guide - DesignGurus](https://www.designgurus.io/blog/consistency-patterns-distributed-systems)
-
-### Work Management SaaS
-- [Project Management Statistics & Trends for 2026 - ProProfs](https://www.proprofsproject.com/blog/project-management-statistics/)
-- [SaaS Onboarding Best Practices: Turn Trial Users Into Customers - Sybill](https://www.sybill.ai/blogs/saas-onboarding-best-practices)
+**Project-Specific:**
+- Phase 07.1-03 Failure Analysis (internal documentation)
+- Current codebase analysis (globals.css, package.json)
 
 ---
-*Pitfalls research for: TeamFlow Work Management SaaS*
-*Researched: 2026-02-14*
-*Confidence: HIGH - Based on official documentation, current blog posts, and 2026 resources*
+
+*Pitfalls research for: Adding design system and WCAG compliance to existing TeamFlow application*
+*Researched: 2026-02-16*
+*Confidence: HIGH (validated against real project failure + industry best practices)*

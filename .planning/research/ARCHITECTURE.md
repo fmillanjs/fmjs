@@ -1,990 +1,815 @@
-# Architecture Research
+# Architecture Research: Design System Integration
 
-**Domain:** Work Management SaaS
-**Researched:** 2026-02-14
-**Confidence:** MEDIUM-HIGH
+**Domain:** Design System Integration with Next.js 15 + Tailwind v4
+**Researched:** 2026-02-16
+**Confidence:** HIGH
 
-## Standard Architecture
+## Integration Overview
+
+This architecture document focuses on how Shadcn UI, design tokens, and accessibility features integrate with the existing TeamFlow monorepo architecture (Next.js 15 App Router + Tailwind v4).
+
+### Existing Architecture Summary
+
+```
+teamflow/
+├── apps/
+│   ├── web/              # Next.js 15 + React 19 frontend
+│   └── api/              # NestJS backend
+├── packages/
+│   ├── shared/           # Types and validators
+│   ├── database/         # Prisma client
+│   └── config/           # Shared configurations
+```
+
+**Current State:**
+- Tailwind CSS v4 installed (`@tailwindcss/postcss: ^4.1.18`)
+- PostCSS configured (`postcss.config.mjs`)
+- Design tokens already defined in `globals.css` using `@theme` directive
+- Path aliases configured (`@/*` pointing to app root)
+- Utility functions exist (`lib/utils.ts` with `cn()` helper)
+- Five existing UI components in `components/ui/`
+
+## Recommended Architecture for v1.1
 
 ### System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         CLIENT LAYER (Next.js)                       │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
-│  │  Pages/  │  │ API      │  │ WS       │  │ Auth     │             │
-│  │  App Dir │  │ Routes   │  │ Client   │  │ Context  │             │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘             │
-│       │             │             │             │                    │
-│       └─────────────┴─────────────┴─────────────┘                    │
-│                            ↓                                         │
-├─────────────────────────────────────────────────────────────────────┤
-│                         API GATEWAY (Next.js API)                    │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────────────────────────────────────────────────┐       │
-│  │        Auth Middleware → RBAC Check → Route Handler      │       │
-│  └──────────────────────────────────────────────────────────┘       │
-│                            ↓                                         │
-├─────────────────────────────────────────────────────────────────────┤
-│                      BACKEND LAYER (NestJS)                          │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐               │
-│  │   Projects   │  │    Tasks     │  │     Teams    │               │
-│  │   Module     │  │   Module     │  │    Module    │               │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘               │
-│         │                 │                 │                        │
-│         ├─ Controller     ├─ Controller     ├─ Controller           │
-│         ├─ Service        ├─ Service        ├─ Service              │
-│         ├─ Repository     ├─ Repository     ├─ Repository           │
-│         └─ DTOs/Events    └─ DTOs/Events    └─ DTOs/Events          │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────┐       │
-│  │              Cross-Cutting Concerns                       │       │
-│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │       │
-│  │  │  RBAC   │  │  Audit  │  │  Event  │  │  WS     │     │       │
-│  │  │ Service │  │  Log    │  │  Bus    │  │Gateway  │     │       │
-│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘     │       │
-│  └──────────────────────────────────────────────────────────┘       │
-│                            ↓                                         │
-├─────────────────────────────────────────────────────────────────────┤
-│                      DATA LAYER (Prisma + Postgres)                  │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
-│  │ Projects │  │  Tasks   │  │  Users   │  │  Audit   │             │
-│  │  Table   │  │  Table   │  │  Table   │  │  Logs    │             │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘             │
-└─────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────┐
-│                    REALTIME LAYER (Redis + WS)                       │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────────────────────────────────────────────────┐       │
-│  │   Redis Pub/Sub → WebSocket Gateway → Connected Clients  │       │
-│  └──────────────────────────────────────────────────────────┘       │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Next.js App Router Layer                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │ Pages/Routes │  │   Layouts    │  │  Templates   │       │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘       │
+│         │                 │                 │                │
+├─────────┴─────────────────┴─────────────────┴────────────────┤
+│                    Component Layer                           │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │         Feature Components (team/, task/)            │    │
+│  └────────────────────┬─────────────────────────────────┘    │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │    Shadcn UI Components (components/ui/)             │    │
+│  │  [Button] [Card] [Dialog] [Table] [Form]             │    │
+│  └────────────────────┬─────────────────────────────────┘    │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │    Radix UI Primitives (headless, accessible)        │    │
+│  └──────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│                    Styling Layer                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │  Tailwind   │→ │   Design    │← │   @theme    │          │
+│  │  Utilities  │  │   Tokens    │  │  Directive  │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+│         ↑                ↑                 ↑                 │
+│         │                │                 │                 │
+│  ┌──────────────────────────────────────────────────┐        │
+│  │         globals.css (CSS Variables)              │        │
+│  └──────────────────────────────────────────────────┘        │
+├─────────────────────────────────────────────────────────────┤
+│                    Utility Layer                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
+│  │  cn()    │  │  Hooks   │  │  Utils   │                   │
+│  └──────────┘  └──────────┘  └──────────┘                   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Component Responsibilities
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| **Next.js Frontend** | UI rendering, client-side routing, SSR/SSG, API proxying | App Router with React Server Components |
-| **Next.js API Routes** | Auth middleware, RBAC enforcement at edge, request proxying to NestJS | Middleware chain + tRPC or REST endpoints |
-| **NestJS Modules** | Business logic encapsulation per bounded context (Projects, Tasks, Teams) | Domain modules with controllers, services, repositories |
-| **RBAC Service** | Centralized permission checking across all layers | Policy-as-code with decorators, guards, and interceptors |
-| **Audit Logger** | Immutable event recording of all state changes | Append-only event log with metadata capture |
-| **Event Bus** | Asynchronous event propagation between modules | NestJS EventEmitter2 or Bull queues |
-| **WebSocket Gateway** | Bidirectional realtime communication | NestJS Gateway with Socket.IO + Redis adapter |
-| **Prisma Client** | Type-safe database access with migrations | Generated client with custom middleware |
-| **Redis** | Session storage, pub/sub for WebSockets, caching | ioredis with connection pooling |
+| Component | Responsibility | Implementation |
+|-----------|----------------|----------------|
+| **Radix UI Primitives** | Headless UI primitives with built-in accessibility (ARIA, keyboard nav, focus management) | Installed as dependencies by Shadcn CLI |
+| **Shadcn UI Components** | Styled, composable components copied into project (Button, Card, Dialog, etc.) | Installed to `apps/web/components/ui/` via CLI |
+| **Feature Components** | Domain-specific compositions (TeamCard, TaskList, ProjectView) | Built on top of Shadcn components |
+| **Design Tokens** | Single source of truth for colors, spacing, typography | Defined in `globals.css` via `@theme` directive |
+| **Tailwind Utilities** | Generated utility classes from design tokens | Auto-generated from `@theme` tokens |
+| **Theme Provider** | Runtime theme switching (light/dark) | Already exists via `next-themes` |
 
-## Recommended Project Structure
+## Integration Points with Existing Architecture
 
+### 1. Shadcn UI Installation in Monorepo
+
+**Decision: Install directly in `apps/web` (NOT in shared package)**
+
+**Rationale:**
+- TeamFlow monorepo has only ONE Next.js app currently
+- Premature abstraction to shared package adds complexity without benefit
+- Shadcn components can be moved to `packages/ui` later if second Next.js app is added
+- Official Shadcn monorepo guide recommends shared package ONLY for multi-app scenarios
+
+**Installation Path:**
 ```
-apps/
-├── web/                      # Next.js frontend application
-│   ├── app/                  # App Router directory
-│   │   ├── (auth)/          # Auth route group
-│   │   ├── (dashboard)/     # Dashboard route group
-│   │   ├── api/             # API routes (proxy to backend)
-│   │   └── layout.tsx       # Root layout
-│   ├── components/          # React components
-│   │   ├── ui/              # Shadcn/ui components
-│   │   ├── features/        # Feature-specific components
-│   │   └── layouts/         # Layout components
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/                 # Utilities and helpers
-│   │   ├── auth.ts          # Auth utilities (NextAuth)
-│   │   ├── rbac.ts          # Client-side RBAC helpers
-│   │   └── websocket.ts     # WebSocket client wrapper
-│   └── middleware.ts        # Next.js middleware for auth/RBAC
-│
-├── api/                      # NestJS backend application
-│   ├── src/
-│   │   ├── modules/         # Feature modules (bounded contexts)
-│   │   │   ├── projects/    # Project management module
-│   │   │   │   ├── controllers/
-│   │   │   │   ├── services/
-│   │   │   │   ├── repositories/
-│   │   │   │   ├── dto/
-│   │   │   │   ├── entities/
-│   │   │   │   ├── events/  # Domain events
-│   │   │   │   └── projects.module.ts
-│   │   │   ├── tasks/       # Task management module
-│   │   │   ├── teams/       # Team management module
-│   │   │   ├── users/       # User management module
-│   │   │   └── comments/    # Comments/activity module
-│   │   │
-│   │   ├── common/          # Cross-cutting concerns
-│   │   │   ├── guards/      # Auth, RBAC guards
-│   │   │   ├── interceptors/# Logging, transform interceptors
-│   │   │   ├── decorators/  # Custom decorators (@Roles, @CurrentUser)
-│   │   │   ├── filters/     # Exception filters
-│   │   │   └── pipes/       # Validation pipes
-│   │   │
-│   │   ├── core/            # Core infrastructure
-│   │   │   ├── auth/        # Authentication service
-│   │   │   ├── rbac/        # RBAC service and policies
-│   │   │   ├── audit/       # Audit logging service
-│   │   │   ├── events/      # Event bus configuration
-│   │   │   ├── websocket/   # WebSocket gateway
-│   │   │   └── database/    # Database configuration
-│   │   │
-│   │   ├── app.module.ts    # Root module
-│   │   └── main.ts          # Application entry point
-│   │
-│   └── test/                # E2E tests
-│
-packages/
-├── database/                 # Prisma schema and migrations
-│   ├── prisma/
-│   │   ├── schema.prisma    # Database schema
-│   │   ├── migrations/      # Migration files
-│   │   └── seed.ts          # Seed data
-│   └── src/
-│       ├── client.ts        # Prisma client export
-│       └── types.ts         # Generated types
-│
-├── shared/                   # Shared code between web and api
-│   ├── types/               # Shared TypeScript types
-│   ├── constants/           # Shared constants
-│   ├── validators/          # Zod schemas (shared validation)
-│   └── utils/               # Shared utility functions
-│
-├── config/                   # Shared configuration
-│   ├── eslint-config/       # ESLint configurations
-│   ├── tsconfig/            # TypeScript configurations
-│   └── prettier-config/     # Prettier configuration
-│
-└── ui/                       # Shared UI components (optional)
-    └── src/
-        └── components/      # Reusable components
+apps/web/
+├── components/
+│   ├── ui/                    # Shadcn components (CLI installs here)
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   └── ...
+│   ├── team/                  # Feature components
+│   ├── task/
+│   └── portfolio/
+├── lib/
+│   ├── utils.ts              # Already exists (cn helper)
+│   └── ...
+└── app/
+    └── globals.css           # Design tokens
 ```
 
-### Structure Rationale
+**CLI Command:**
+```bash
+cd apps/web
+npx shadcn@latest init
+```
 
-- **Monorepo:** Turborepo enables code sharing, unified tooling, and atomic commits across frontend/backend while maintaining separation of concerns.
-- **Modular Monolith (NestJS):** Each business domain (projects, tasks, teams) is a self-contained module. Enables future extraction to microservices if needed without architectural rewrite.
-- **Shared Package:** Zod validators and TypeScript types shared between frontend and backend ensure end-to-end type safety and single source of truth for validation.
-- **Database Package:** Centralizes Prisma schema and migrations. Both apps import from this package, ensuring consistent database access patterns.
-- **Feature-Based Organization:** Frontend organized by features (not technical layers), making code discovery intuitive and enabling incremental development.
+### 2. Path Alias Configuration
+
+**Current State:**
+```json
+{
+  "paths": {
+    "@/*": ["./*"],                    // Maps to apps/web/
+    "@repo/shared": ["../../packages/shared/src"],
+    "@repo/database": ["../../packages/database/src"]
+  }
+}
+```
+
+**Shadcn Requirements:**
+The CLI auto-detects `@/*` alias and configures `components.json` accordingly. No changes needed.
+
+**components.json Configuration (auto-generated):**
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "postcss.config.mjs",
+    "css": "app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+```
+
+### 3. Design Token Architecture
+
+**Data Flow:**
+```
+globals.css (@theme directive)
+    ↓ (CSS variables defined)
+Tailwind v4 (consumes tokens)
+    ↓ (generates utility classes)
+Shadcn Components (uses utilities + CSS vars)
+    ↓ (styled components)
+Feature Components (composes Shadcn)
+```
+
+**Existing Token System (PRESERVE):**
+
+`apps/web/app/globals.css` already defines design tokens using Tailwind v4 `@theme` directive:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Light theme tokens */
+  --color-background: oklch(98% 0 0);
+  --color-foreground: oklch(15% 0 0);
+  --color-primary: oklch(55% 0.2 250);
+  /* ... */
+}
+
+.dark {
+  /* Dark theme overrides */
+  --color-background: oklch(15% 0 0);
+  --color-foreground: oklch(98% 0 0);
+  /* ... */
+}
+```
+
+**Integration Strategy:**
+
+1. **Keep existing tokens** - Already WCAG AA compliant (fixed in 07.1-03)
+2. **Add Shadcn-specific tokens** - Map to Tailwind classes via `@theme inline`
+3. **Use OKLCH color space** - Already in use, better than HSL for perceptual uniformity
+
+**Updated globals.css Structure:**
+
+```css
+@import "tailwindcss";
+
+/* Existing design tokens */
+@theme {
+  --color-background: oklch(98% 0 0);
+  --color-foreground: oklch(15% 0 0);
+  /* ... all existing tokens ... */
+}
+
+/* Map tokens to Tailwind utilities (Shadcn compatibility) */
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-muted: var(--color-muted);
+  --color-accent: var(--color-accent);
+  --color-destructive: var(--color-destructive);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+
+  /* Radius tokens */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/* Dark theme (existing) */
+.dark {
+  --color-background: oklch(15% 0 0);
+  /* ... */
+}
+```
+
+**Why `@theme inline`?**
+- Allows using CSS variables in Tailwind utilities: `bg-[var(--color-primary)]`
+- Shadcn components can reference tokens directly: `className="bg-primary"`
+- Runtime theming works without recompiling Tailwind
+
+### 4. Component Strategy: New vs. Modified
+
+**NEW Components (Shadcn):**
+- Button (replace inline button styles)
+- Card (replace manual card layouts)
+- Dialog/Modal (replace current modals)
+- Form components (Input, Label, Textarea, Select)
+- Table (enhance @tanstack/react-table)
+- Dropdown Menu, Popover, Tooltip
+- Badge, Avatar, Separator
+- Alert, Toast (for notifications)
+- Tabs, Accordion, Collapsible
+
+**PRESERVE Existing Components:**
+- `components/ui/skeleton.tsx` - Already exists, keep as-is
+- `components/ui/empty-state.tsx` - Domain-specific, not in Shadcn
+- `components/ui/command-palette.tsx` - Already uses `cmdk`, keep
+- `components/ui/conflict-warning.tsx` - Domain-specific
+- `components/ui/theme-toggle.tsx` - Keep, may enhance with Shadcn Button
+
+**MODIFY/ENHANCE:**
+- **Theme Toggle**: Replace button element with Shadcn Button component
+- **Command Palette**: Wrap in Shadcn Dialog/Modal for better accessibility
+- **Forms**: Replace existing form inputs with Shadcn Form components + react-hook-form
+
+**Migration Path:**
+1. Install Shadcn components incrementally (don't install all at once)
+2. Replace components in non-critical routes first (portfolio pages)
+3. Test accessibility before moving to critical routes (team/task features)
+4. Keep old components until migration is complete (avoid breaking changes)
+
+### 5. Styling Integration
+
+**Existing Utility Usage:**
+
+```typescript
+// lib/utils.ts (already exists)
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+**Shadcn Component Example:**
+
+```typescript
+// components/ui/button.tsx (will be generated by CLI)
+import { cn } from '@/lib/utils';
+
+export function Button({ className, ...props }) {
+  return (
+    <button
+      className={cn(
+        "bg-primary text-primary-foreground",  // Uses design tokens
+        "rounded-md px-4 py-2",
+        "hover:bg-primary/90",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+**How It Works:**
+1. `bg-primary` → Tailwind generates from `--color-primary` token
+2. `cn()` merges custom classes with defaults (via `tailwind-merge`)
+3. Consumer can override: `<Button className="bg-destructive" />`
+
+## Accessibility Integration
+
+### Built-in Accessibility (Radix UI)
+
+Shadcn components are built on Radix UI primitives, which provide:
+
+| Feature | Implementation | Benefit |
+|---------|---------------|---------|
+| **ARIA Attributes** | Auto-applied (role, aria-expanded, aria-labelledby, etc.) | Screen reader compatibility |
+| **Keyboard Navigation** | Tab, Enter, Space, Arrow keys | Keyboard-only users |
+| **Focus Management** | Focus trapping in modals, focus restoration | Proper focus flow |
+| **Semantic HTML** | Proper element usage (button, dialog, etc.) | Accessibility tree |
+
+### Testing Strategy
+
+**Tools:**
+- **vitest** - Already installed for unit tests
+- **@testing-library/react** - Already installed (16.3.2)
+- **vitest-axe** - NEW (automated accessibility testing)
+- **@axe-core/react** - NEW (runtime accessibility auditing in dev)
+
+**Test Structure:**
+
+```typescript
+// __tests__/components/ui/button.test.tsx
+import { render, screen } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'vitest-axe';
+import { Button } from '@/components/ui/button';
+
+expect.extend(toHaveNoViolations);
+
+describe('Button Accessibility', () => {
+  it('should have no accessibility violations', async () => {
+    const { container } = render(<Button>Click me</Button>);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('should be keyboard accessible', () => {
+    render(<Button>Click me</Button>);
+    const button = screen.getByRole('button', { name: 'Click me' });
+    button.focus();
+    expect(button).toHaveFocus();
+  });
+});
+```
+
+**Testing Priorities:**
+1. All Shadcn components installed → accessibility tests
+2. Modified existing components → regression tests
+3. Feature components → integration tests with accessibility checks
+
+### WCAG AA Compliance
+
+**Color Contrast:**
+- Existing tokens already WCAG AA compliant (contrast ratio ≥ 4.5:1)
+- Shadcn components inherit token colors
+- Test: Run Lighthouse audits after integration
+
+**Focus Indicators:**
+- Radix UI provides visible focus by default
+- Custom focus styles use `--color-ring` token (already defined)
+
+**Keyboard Navigation:**
+- All interactive elements must be keyboard accessible
+- Radix primitives handle this automatically
+- Test: Manual keyboard-only testing
 
 ## Architectural Patterns
 
-### Pattern 1: Layered RBAC Enforcement
+### Pattern 1: Token-Based Theming
 
-**What:** Role-Based Access Control implemented at multiple architectural layers for defense-in-depth security.
+**What:** Define design tokens in CSS, consume via Tailwind utilities and CSS variables.
 
-**When to use:** Any multi-tenant application with complex permissions where a single authorization point creates a security risk or performance bottleneck.
+**When to use:** All new components, theme-dependent styles.
 
 **Trade-offs:**
-- **Pros:** Defense in depth, clear security boundaries, easier to audit, prevents data leakage even if one layer fails
-- **Cons:** Code duplication across layers, requires coordination to keep policies in sync, slightly higher development overhead
+- ✅ Single source of truth for design decisions
+- ✅ Runtime theming without rebuild
+- ✅ Type-safe in Tailwind utilities
+- ❌ Slightly more verbose than hardcoded colors
 
 **Example:**
+
 ```typescript
-// Layer 1: Next.js Middleware (Edge)
-// apps/web/middleware.ts
-export function middleware(req: NextRequest) {
-  const session = await getSession(req);
-  const path = req.nextUrl.pathname;
+// Bad: Hardcoded colors
+<div className="bg-blue-500 text-white" />
 
-  // Coarse-grained: Route-level access
-  if (path.startsWith('/admin') && !session?.user.roles.includes('ADMIN')) {
-    return NextResponse.redirect('/unauthorized');
-  }
-}
+// Good: Token-based
+<div className="bg-primary text-primary-foreground" />
 
-// Layer 2: Next.js API Route (Application)
-// apps/web/app/api/projects/[id]/route.ts
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession();
-
-  // Medium-grained: Resource access
-  const canView = await rbac.can(session.user, 'view', 'Project', params.id);
-  if (!canView) throw new ForbiddenError();
-
-  return fetch(`${API_URL}/projects/${params.id}`, {
-    headers: { 'Authorization': `Bearer ${session.accessToken}` }
-  });
-}
-
-// Layer 3: NestJS Guard (API)
-// apps/api/src/common/guards/rbac.guard.ts
-@Injectable()
-export class RbacGuard implements CanActivate {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    const requiredPermission = this.reflector.get('permission', context.getHandler());
-
-    return this.rbacService.hasPermission(user, requiredPermission);
-  }
-}
-
-// Layer 4: Database (Row-Level Security)
-// Prisma middleware adds tenant filtering
-prisma.$use(async (params, next) => {
-  if (params.model === 'Project') {
-    if (params.action === 'findMany' || params.action === 'findFirst') {
-      params.args.where = {
-        ...params.args.where,
-        organizationId: currentUser.organizationId
-      };
-    }
-  }
-  return next(params);
-});
+// Also valid: CSS variable for dynamic values
+<div style={{ backgroundColor: `var(--color-primary)` }} />
 ```
 
-### Pattern 2: Event-Driven Audit Logging
+### Pattern 2: Component Composition
 
-**What:** All state-changing operations emit domain events that are captured by an audit logger. Instead of scattered logging calls, audit trail is built from event stream.
+**What:** Build complex components by composing Shadcn primitives.
 
-**When to use:** Systems requiring compliance, audit trails, or event sourcing capabilities. Essential for work management where "who changed what when" is critical.
+**When to use:** Feature-specific UI needs (TeamCard, TaskRow, ProjectView).
 
 **Trade-offs:**
-- **Pros:** Complete audit trail for free, enables event sourcing, decouples logging from business logic, supports temporal queries
-- **Cons:** Eventual consistency, requires event schema versioning, storage grows continuously, debugging can be harder
+- ✅ Reusable, testable, accessible by default
+- ✅ Consistent styling across app
+- ✅ Easy to modify individual parts
+- ❌ More files to manage
 
 **Example:**
+
 ```typescript
-// Domain event definition
-// packages/shared/types/events.ts
-export class TaskStatusChangedEvent {
-  constructor(
-    public readonly taskId: string,
-    public readonly previousStatus: TaskStatus,
-    public readonly newStatus: TaskStatus,
-    public readonly userId: string,
-    public readonly timestamp: Date,
-    public readonly metadata: Record<string, any>
-  ) {}
-}
+// components/team/team-card.tsx
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
 
-// Service emits events
-// apps/api/src/modules/tasks/services/task.service.ts
-@Injectable()
-export class TaskService {
-  constructor(
-    private eventEmitter: EventEmitter2,
-    private auditLogger: AuditLogger
-  ) {}
-
-  async updateTaskStatus(taskId: string, newStatus: TaskStatus, userId: string) {
-    const task = await this.taskRepository.findById(taskId);
-    const previousStatus = task.status;
-
-    task.status = newStatus;
-    await this.taskRepository.save(task);
-
-    // Emit domain event
-    const event = new TaskStatusChangedEvent(
-      taskId,
-      previousStatus,
-      newStatus,
-      userId,
-      new Date(),
-      { ipAddress: req.ip, userAgent: req.headers['user-agent'] }
-    );
-
-    this.eventEmitter.emit('task.status.changed', event);
-    return task;
-  }
-}
-
-// Audit logger listens to all events
-// apps/api/src/core/audit/audit.listener.ts
-@Injectable()
-export class AuditListener {
-  @OnEvent('**') // Listen to all events
-  async handleEvent(event: any) {
-    await this.prisma.auditLog.create({
-      data: {
-        eventType: event.constructor.name,
-        entityType: this.extractEntityType(event),
-        entityId: this.extractEntityId(event),
-        userId: event.userId,
-        timestamp: event.timestamp,
-        changes: event, // Store full event as JSON
-        metadata: event.metadata
-      }
-    });
-  }
+export function TeamCard({ team }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{team.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-2">
+          {team.members.map(member => (
+            <Avatar key={member.id} src={member.avatar} />
+          ))}
+        </div>
+        <Button variant="outline">View Team</Button>
+      </CardContent>
+    </Card>
+  );
 }
 ```
 
-### Pattern 3: WebSocket Gateway with Redis Pub/Sub
+### Pattern 3: Progressive Enhancement
 
-**What:** Horizontal scaling pattern for WebSocket connections. Backend publishes events to Redis, which broadcasts to all connected WebSocket server instances.
+**What:** Replace existing components incrementally, keep old versions during migration.
 
-**When to use:** Real-time applications that need to scale beyond a single server instance. Critical for work management where multiple users collaborate on same entities.
-
-**Trade-offs:**
-- **Pros:** Horizontally scalable, connection state distributed, supports multiple backend instances, simple failover
-- **Cons:** Adds Redis dependency, slightly higher latency (< 10ms typically), requires connection state management, network overhead
-
-**Example:**
-```typescript
-// WebSocket Gateway with Redis adapter
-// apps/api/src/core/websocket/events.gateway.ts
-@WebSocketGateway({
-  cors: { origin: process.env.FRONTEND_URL },
-  adapter: createAdapter(redisClient, redisClient.duplicate())
-})
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
-
-  constructor(
-    private redisService: RedisService,
-    private rbacService: RbacService
-  ) {}
-
-  async handleConnection(client: Socket) {
-    const user = await this.validateToken(client.handshake.auth.token);
-
-    // Store connection metadata in Redis
-    await this.redisService.set(
-      `ws:connection:${client.id}`,
-      JSON.stringify({ userId: user.id, organizationId: user.organizationId }),
-      'EX', 3600
-    );
-
-    // Join room for organization
-    client.join(`org:${user.organizationId}`);
-  }
-
-  // Backend service publishes event
-  async notifyTaskUpdate(taskId: string, organizationId: string) {
-    // Redis pub/sub broadcasts to all connected instances
-    this.server.to(`org:${organizationId}`).emit('task.updated', {
-      taskId,
-      timestamp: new Date()
-    });
-  }
-}
-
-// Domain service integration
-// apps/api/src/modules/tasks/services/task.service.ts
-@OnEvent('task.status.changed')
-async handleTaskStatusChanged(event: TaskStatusChangedEvent) {
-  // Automatically propagate to WebSocket clients
-  this.eventsGateway.notifyTaskUpdate(event.taskId, event.organizationId);
-}
-```
-
-### Pattern 4: Repository Pattern with Prisma
-
-**What:** Abstraction layer between business logic and database access. Each domain module has a repository that encapsulates Prisma queries.
-
-**When to use:** Domain-driven designs where you want to isolate database concerns from business logic and enable future database swaps.
+**When to use:** Migrating from custom components to Shadcn.
 
 **Trade-offs:**
-- **Pros:** Testability (easy to mock), clear separation of concerns, database-agnostic business logic, centralized query optimization
-- **Cons:** Additional abstraction layer, potential over-engineering for simple CRUD, Prisma already provides abstraction
+- ✅ No breaking changes during migration
+- ✅ Can test new components in isolated routes
+- ✅ Rollback possible if issues arise
+- ❌ Temporary code duplication
+- ❌ Bundle size increases slightly
 
 **Example:**
+
 ```typescript
-// Repository interface
-// apps/api/src/modules/tasks/repositories/task.repository.interface.ts
-export interface ITaskRepository {
-  findById(id: string): Promise<Task | null>;
-  findByProject(projectId: string): Promise<Task[]>;
-  create(data: CreateTaskDto): Promise<Task>;
-  update(id: string, data: UpdateTaskDto): Promise<Task>;
-  delete(id: string): Promise<void>;
-}
+// components/ui/button-v2.tsx (new Shadcn version)
+export { Button } from './button-shadcn';
 
-// Prisma implementation
-// apps/api/src/modules/tasks/repositories/task.repository.ts
-@Injectable()
-export class TaskRepository implements ITaskRepository {
-  constructor(private prisma: PrismaService) {}
+// Old components keep working
+import { Button } from '@/components/ui/button'; // Old version
 
-  async findById(id: string): Promise<Task | null> {
-    return this.prisma.task.findUnique({
-      where: { id },
-      include: { assignee: true, project: true, comments: true }
-    });
-  }
+// New components use v2
+import { Button } from '@/components/ui/button-v2'; // Shadcn version
 
-  async findByProject(projectId: string): Promise<Task[]> {
-    return this.prisma.task.findMany({
-      where: { projectId },
-      include: { assignee: true },
-      orderBy: { createdAt: 'desc' }
-    });
-  }
-
-  async create(data: CreateTaskDto): Promise<Task> {
-    return this.prisma.task.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        projectId: data.projectId,
-        assigneeId: data.assigneeId,
-        status: 'TODO',
-        priority: data.priority || 'MEDIUM'
-      }
-    });
-  }
-}
-
-// Service uses repository
-// apps/api/src/modules/tasks/services/task.service.ts
-@Injectable()
-export class TaskService {
-  constructor(private taskRepository: ITaskRepository) {}
-
-  async getTaskById(id: string): Promise<Task> {
-    const task = await this.taskRepository.findById(id);
-    if (!task) throw new NotFoundException('Task not found');
-    return task;
-  }
-}
-```
-
-### Pattern 5: Shared Validation with Zod
-
-**What:** Define validation schemas once using Zod in shared package, generate TypeScript types, and use in both frontend and backend.
-
-**When to use:** Monorepos with TypeScript across frontend/backend where validation logic should be identical on both sides.
-
-**Trade-offs:**
-- **Pros:** Single source of truth, compile-time type safety, automatic API contract, reduced duplication, consistent error messages
-- **Cons:** Shared package dependency, Zod bundle size on frontend, requires monorepo setup
-
-**Example:**
-```typescript
-// Shared validation schema
-// packages/shared/validators/task.schema.ts
-import { z } from 'zod';
-
-export const createTaskSchema = z.object({
-  title: z.string().min(1).max(200),
-  description: z.string().max(5000).optional(),
-  projectId: z.string().uuid(),
-  assigneeId: z.string().uuid().optional(),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).default('MEDIUM'),
-  dueDate: z.date().optional()
-});
-
-export type CreateTaskDto = z.infer<typeof createTaskSchema>;
-
-// Backend validation
-// apps/api/src/modules/tasks/dto/create-task.dto.ts
-import { createTaskSchema } from '@acme/shared/validators';
-
-export class CreateTaskDto implements z.infer<typeof createTaskSchema> {
-  // Zod schema validates in NestJS pipe
-}
-
-// NestJS pipe
-export class ZodValidationPipe implements PipeTransform {
-  constructor(private schema: z.ZodSchema) {}
-
-  transform(value: unknown) {
-    return this.schema.parse(value); // Throws if invalid
-  }
-}
-
-// Controller
-@Post()
-@UsePipes(new ZodValidationPipe(createTaskSchema))
-async create(@Body() dto: CreateTaskDto) {
-  return this.taskService.create(dto);
-}
-
-// Frontend validation
-// apps/web/components/forms/create-task-form.tsx
-import { createTaskSchema } from '@acme/shared/validators';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-export function CreateTaskForm() {
-  const form = useForm({
-    resolver: zodResolver(createTaskSchema), // Same schema!
-    defaultValues: { priority: 'MEDIUM' }
-  });
-
-  const onSubmit = async (data: CreateTaskDto) => {
-    await fetch('/api/tasks', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-  };
-}
+// After migration complete, delete old version and rename v2 → button
 ```
 
 ## Data Flow
 
-### Request Flow (CRUD Operations)
+### Design Token Flow
 
 ```
-[User Action in Browser]
+Developer defines tokens in globals.css
     ↓
-[Next.js Client Component] → form submission / button click
+@theme directive processes tokens
     ↓
-[Client-side validation] → Zod schema validation
+Tailwind v4 generates utility classes (bg-primary, text-foreground, etc.)
     ↓
-[Next.js API Route] → /app/api/tasks/route.ts
+@theme inline makes tokens available as CSS variables (var(--color-primary))
     ↓
-[Auth Middleware] → Verify JWT session (NextAuth)
+Shadcn components use utilities (className="bg-primary")
     ↓
-[RBAC Check Layer 1] → Can user access this route?
+Runtime theme switcher updates CSS variables (.dark class)
     ↓
-[Proxy to NestJS] → Forward with auth header
-    ↓
-[NestJS Controller] → @Post() create(@Body() dto)
-    ↓
-[Auth Guard] → Validate JWT
-    ↓
-[RBAC Guard Layer 2] → Can user perform this action?
-    ↓
-[Validation Pipe] → Zod schema validation
-    ↓
-[Service Layer] → Business logic execution
-    ↓
-[Repository Layer] → Database query construction
-    ↓
-[Prisma Middleware] → Tenant isolation, soft deletes
-    ↓
-[Database Query] → Postgres transaction
-    ↓
-[Event Emission] → Emit domain event (task.created)
-    ↓
-    ├─→ [Audit Logger] → Record to audit_logs table
-    └─→ [WebSocket Gateway] → Broadcast to connected clients
-    ↓
-[Response] ← Transform DTO ← Service ← Controller
-    ↓
-[Next.js API] ← JSON response
-    ↓
-[Client] ← Update UI + Optimistic update
+Browser re-renders with new theme (no reload needed)
 ```
 
-### Real-Time Event Flow
+### Component Installation Flow
 
 ```
-[Backend Service] → State change occurs
+Developer runs: npx shadcn@latest add button
     ↓
-[Domain Event Emitted] → task.status.changed
+CLI reads components.json (paths, aliases, config)
     ↓
-    ├─→ [Audit Listener] → Log to database
-    │
-    └─→ [WebSocket Listener] → Trigger real-time broadcast
-            ↓
-        [Redis Pub/Sub] → Publish to channel
-            ↓
-        [All WebSocket Instances] → Receive from Redis
-            ↓
-        [Room-Based Broadcast] → Filter by organization/project
-            ↓
-        [Connected Clients] → Receive event
-            ↓
-        [Client Event Handler] → Update React state
-            ↓
-        [UI Re-render] → Display updated data
+CLI downloads button.tsx from Shadcn registry
+    ↓
+CLI installs peer dependencies (e.g., @radix-ui/react-button)
+    ↓
+CLI copies button.tsx to apps/web/components/ui/
+    ↓
+CLI updates imports to use project aliases (@/lib/utils)
+    ↓
+Developer imports: import { Button } from '@/components/ui/button'
 ```
 
-### Authentication & Session Flow
+### Theme Switching Flow
 
 ```
-[User Login] → Email/password or OAuth
+User clicks theme toggle
     ↓
-[NextAuth.js] → Authenticate with provider
+ThemeProvider (next-themes) updates <html class="dark">
     ↓
-[JWT Creation] → Generate access token with claims
+CSS cascade applies .dark selector styles
     ↓
-[Session Storage] → Store in Redis (server-side session)
+Design token values swap (light → dark)
     ↓
-[HTTP-only Cookie] → Set session cookie
+All components using tokens re-render with new colors
     ↓
-[Subsequent Requests]
-    ↓
-[Next.js Middleware] → Read session from cookie
-    ↓
-[Session Lookup] → Fetch from Redis
-    ↓
-[Attach to Request] → Add user context
-    ↓
-[Forward to NestJS] → Include JWT in Authorization header
-    ↓
-[NestJS Auth Guard] → Validate JWT signature
-    ↓
-[User Context] → Attach to request object
-```
-
-### Audit Query Flow (Temporal Queries)
-
-```
-[Query: "What did Task X look like on Date Y?"]
-    ↓
-[Audit Log Query] → SELECT * FROM audit_logs
-                    WHERE entityId = X
-                    AND timestamp <= Y
-                    ORDER BY timestamp DESC
-    ↓
-[Event Replay] → Apply events in chronological order
-    ↓
-[State Reconstruction] → Build object state at point in time
-    ↓
-[Response] → Historical state of entity
+localStorage persists user preference
 ```
 
 ## Scaling Considerations
 
-| Scale | Architecture Adjustments | Rationale |
-|-------|--------------------------|-----------|
-| **0-1k users** | Single Next.js + NestJS instance, single Postgres, Redis for sessions only | Monolith is simplest, no premature optimization. Focus on feature development. |
-| **1k-10k users** | Add database read replicas, enable Postgres connection pooling (PgBouncer), implement query caching in Redis, optimize slow queries | Database becomes first bottleneck. Read-heavy workloads benefit from replicas. |
-| **10k-50k users** | Horizontal scaling: Multiple NestJS instances behind load balancer, Redis cluster for WebSocket pub/sub, CDN for Next.js static assets, separate WebSocket server pool | WebSocket connections consume memory. Separate concerns to scale independently. |
-| **50k-100k users** | Database sharding by organization, message queue for async tasks (Bull), separate audit log database, implement rate limiting | Write throughput becomes bottleneck. Sharding isolates tenant data. |
-| **100k+ users** | Microservices extraction (Projects, Tasks, Teams as separate services), Event-driven architecture with message broker (Kafka/RabbitMQ), CQRS pattern, multi-region deployment | Coordination overhead of monolith becomes limiting factor. Independent scaling and deployment. |
+| Scale | Architecture Adjustments |
+|-------|--------------------------|
+| **Current (1 Next.js app)** | Install Shadcn in `apps/web/components/ui/`. No shared package needed. |
+| **2-3 Next.js apps** | Move Shadcn components to `packages/ui`. Export via workspace protocol (`@repo/ui`). |
+| **4+ Next.js apps** | Create dedicated design system package with Storybook. Publish as internal npm package. Version control for breaking changes. |
 
-### Scaling Priorities
+### Build Order Dependencies
 
-1. **First bottleneck: Database connection pool exhaustion**
-   - **Symptom:** Connection timeouts, slow queries under concurrent load
-   - **Solution:** Add PgBouncer for connection pooling, implement read replicas for SELECT queries
-   - **Timeline:** Around 5k-10k concurrent users
+**Phase 1: Foundation (No dependencies)**
+1. Install Shadcn CLI and initialize `components.json`
+2. Verify design tokens in `globals.css` work with Tailwind v4
+3. Install `vitest-axe` for accessibility testing
 
-2. **Second bottleneck: WebSocket connection limits**
-   - **Symptom:** New WebSocket connections rejected, memory pressure on backend
-   - **Solution:** Separate WebSocket server pool, implement Redis pub/sub for cross-instance communication
-   - **Timeline:** Around 10k-20k concurrent WebSocket connections (1 connection per active user)
+**Phase 2: Core Components (Depends on Phase 1)**
+4. Install primitive components: Button, Card, Input, Label
+5. Write accessibility tests for each component
+6. Create Storybook stories (if needed for documentation)
 
-3. **Third bottleneck: Audit log write throughput**
-   - **Symptom:** Slow transactions due to audit log writes, database write contention
-   - **Solution:** Async event processing with message queue, separate audit database, batch inserts
-   - **Timeline:** Around 50k users with high activity (lots of state changes)
+**Phase 3: Complex Components (Depends on Phase 2)**
+7. Install composed components: Dialog, Form, Table, Dropdown
+8. Test keyboard navigation and focus management
+9. Update existing feature components to use new primitives
+
+**Phase 4: Migration (Depends on Phase 3)**
+10. Replace old components in non-critical routes
+11. Run regression tests (visual, functional, accessibility)
+12. Replace components in critical routes (team, task features)
+
+**Phase 5: Optimization (Depends on Phase 4)**
+13. Remove old component code
+14. Tree-shake unused Radix primitives
+15. Run Lighthouse audits for performance/accessibility
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Scattered RBAC Logic
+### Anti-Pattern 1: Installing All Shadcn Components at Once
 
-**What people do:** Implement permission checks directly in controllers, services, and database queries without a centralized RBAC service.
+**What people do:** Run `npx shadcn@latest add` for every component in the registry.
+
+**Why it's wrong:**
+- Bloats bundle size with unused code
+- Installs unnecessary dependencies
+- Harder to track which components are actually used
+- More surface area for security vulnerabilities
+
+**Do this instead:**
+- Install components as needed (just-in-time)
+- Start with primitives (Button, Card, Input)
+- Add complex components only when building features that need them
+- Use `grep` to find unused components before production
+
+### Anti-Pattern 2: Bypassing Design Tokens
+
+**What people do:** Use arbitrary Tailwind values or hardcoded colors.
 
 ```typescript
-// WRONG: Permission logic scattered everywhere
-async updateTask(taskId: string, userId: string) {
-  const task = await this.prisma.task.findUnique({ where: { id: taskId } });
-
-  // Permission check in service
-  if (task.assigneeId !== userId && task.project.ownerId !== userId) {
-    throw new ForbiddenException();
-  }
-
-  // Business logic
-  task.status = 'DONE';
-  return this.prisma.task.update({ where: { id: taskId }, data: task });
-}
+// Anti-pattern
+<Button className="bg-[#3b82f6] text-white" />
+<Card className="border-gray-200" />
 ```
 
 **Why it's wrong:**
-- Permission logic duplicated across codebase
-- Changes to permission model require updating multiple files
-- Difficult to audit what permissions exist
-- Testing requires mocking permission checks everywhere
-- No single source of truth for access control policies
+- Breaks theme consistency (won't work in dark mode)
+- Bypasses WCAG AA compliance checks
+- Makes refactoring theme colors impossible
+- Defeats the purpose of design system
 
-**Do this instead:** Centralize RBAC in a dedicated service with declarative policies.
-
-```typescript
-// RIGHT: Centralized RBAC service
-@Injectable()
-export class RbacService {
-  async can(
-    user: User,
-    action: Action,
-    resource: Resource,
-    resourceId?: string
-  ): Promise<boolean> {
-    // Load user's roles and permissions
-    const permissions = await this.getUserPermissions(user);
-
-    // Check resource-specific rules
-    if (resourceId && resource === 'Task') {
-      const task = await this.prisma.task.findUnique({
-        where: { id: resourceId },
-        include: { project: true }
-      });
-
-      // Policy evaluation
-      return this.evaluatePolicy(user, action, task, permissions);
-    }
-  }
-}
-
-// Use with guard/decorator
-@Put(':id')
-@RequirePermission('task', 'update')
-async updateTask(@Param('id') id: string, @Body() dto: UpdateTaskDto) {
-  // No permission logic here - handled by guard
-  return this.taskService.update(id, dto);
-}
-```
-
-### Anti-Pattern 2: Direct Prisma Access in Controllers
-
-**What people do:** Call Prisma client directly from controllers, bypassing service and repository layers.
+**Do this instead:**
 
 ```typescript
-// WRONG: Database access in controller
-@Controller('tasks')
-export class TaskController {
-  constructor(private prisma: PrismaClient) {}
+// Use design tokens
+<Button className="bg-primary text-primary-foreground" />
+<Card className="border-border" />
 
-  @Get(':id')
-  async getTask(@Param('id') id: string) {
-    return this.prisma.task.findUnique({
-      where: { id },
-      include: { assignee: true, comments: true }
-    });
-  }
-}
+// If custom color needed, add to design tokens first
+// Then use: bg-custom-blue
 ```
+
+### Anti-Pattern 3: Modifying Shadcn Components Directly
+
+**What people do:** Edit files in `components/ui/` to change default behavior.
 
 **Why it's wrong:**
-- No place for business logic (validation, authorization, event emission)
-- Cannot intercept queries for audit logging or tenant filtering
-- Difficult to test (must mock entire Prisma client)
-- Tight coupling to database schema
-- No opportunity for caching or optimization
+- Can't re-run `shadcn add` to update components (overwrites changes)
+- Breaks expectation that Shadcn components are "stock"
+- Makes debugging harder (is this Shadcn's code or custom?)
 
-**Do this instead:** Use Service → Repository layering.
+**Do this instead:**
 
 ```typescript
-// RIGHT: Layered architecture
-@Controller('tasks')
-export class TaskController {
-  constructor(private taskService: TaskService) {}
+// Wrap Shadcn components with custom variants
+// components/custom/primary-button.tsx
+import { Button } from '@/components/ui/button';
 
-  @Get(':id')
-  async getTask(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.taskService.getTaskById(id, user);
-  }
+export function PrimaryButton(props) {
+  return <Button variant="default" size="lg" {...props} />;
 }
 
-@Injectable()
-export class TaskService {
-  constructor(
-    private taskRepository: TaskRepository,
-    private rbacService: RbacService,
-    private eventEmitter: EventEmitter2
-  ) {}
-
-  async getTaskById(id: string, user: User): Promise<TaskDto> {
-    // Business logic: RBAC check
-    const canView = await this.rbacService.can(user, 'view', 'Task', id);
-    if (!canView) throw new ForbiddenException();
-
-    // Delegate to repository
-    const task = await this.taskRepository.findById(id);
-    if (!task) throw new NotFoundException();
-
-    // Business logic: event emission
-    this.eventEmitter.emit('task.viewed', { taskId: id, userId: user.id });
-
-    return this.toDto(task);
-  }
-}
-
-@Injectable()
-export class TaskRepository {
-  constructor(private prisma: PrismaService) {}
-
-  async findById(id: string): Promise<Task | null> {
-    return this.prisma.task.findUnique({
-      where: { id },
-      include: { assignee: true, comments: true }
-    });
-  }
+// Or use composition
+export function IconButton({ icon, children, ...props }) {
+  return (
+    <Button {...props}>
+      {icon}
+      <span className="ml-2">{children}</span>
+    </Button>
+  );
 }
 ```
 
-### Anti-Pattern 3: Synchronous Audit Logging in Transaction
+### Anti-Pattern 4: Ignoring Accessibility Testing
 
-**What people do:** Write audit logs synchronously within the same database transaction as the business operation.
+**What people do:** Assume Radix UI = 100% accessible, skip testing.
+
+**Why it's wrong:**
+- Radix provides primitives, but YOU control content (alt text, labels, etc.)
+- Color contrast depends on your tokens, not Radix
+- Keyboard shortcuts can conflict with browser defaults
+- Dynamic content (loading states, errors) needs ARIA live regions
+
+**Do this instead:**
 
 ```typescript
-// WRONG: Synchronous audit logging
-async updateTask(id: string, data: UpdateTaskDto) {
-  return this.prisma.$transaction(async (tx) => {
-    const task = await tx.task.update({ where: { id }, data });
-
-    // Audit log blocks transaction
-    await tx.auditLog.create({
-      data: {
-        entityType: 'Task',
-        entityId: id,
-        action: 'UPDATE',
-        changes: data
-      }
-    });
-
-    return task;
+// Always test accessibility
+describe('TeamCard', () => {
+  it('should have no axe violations', async () => {
+    const { container } = render(<TeamCard team={mockTeam} />);
+    expect(await axe(container)).toHaveNoViolations();
   });
-}
+
+  it('should have accessible name', () => {
+    render(<TeamCard team={mockTeam} />);
+    expect(screen.getByRole('article', { name: mockTeam.name })).toBeInTheDocument();
+  });
+});
 ```
+
+### Anti-Pattern 5: Premature Shared Package Abstraction
+
+**What people do:** Immediately create `packages/ui` for Shadcn components in monorepo with single Next.js app.
 
 **Why it's wrong:**
-- Audit log write failures cause business transaction rollback (audit shouldn't block operations)
-- Increases transaction duration (holding locks longer)
-- Audit table contention impacts business operations
-- Cannot handle high-volume audit logging
-- Tight coupling between business logic and audit system
+- Adds build complexity (need to compile shared package)
+- Slows down dev server (watches multiple packages)
+- Makes debugging harder (stack traces reference compiled code)
+- No benefit until second Next.js app exists
 
-**Do this instead:** Event-driven asynchronous audit logging.
+**Do this instead:**
+- Keep Shadcn in `apps/web/components/ui/` until proven need
+- Move to shared package ONLY when second app is added
+- Use file-based sharing (symlinks) for experimentation
+- Document migration path in ADR for future reference
 
-```typescript
-// RIGHT: Asynchronous event-based audit logging
-async updateTask(id: string, data: UpdateTaskDto) {
-  const previousTask = await this.taskRepository.findById(id);
-  const updatedTask = await this.taskRepository.update(id, data);
-
-  // Emit event (non-blocking)
-  this.eventEmitter.emit('task.updated', new TaskUpdatedEvent(
-    id,
-    previousTask,
-    updatedTask,
-    currentUser.id,
-    new Date()
-  ));
-
-  return updatedTask;
-}
-
-// Separate listener handles audit logging
-@Injectable()
-export class AuditListener {
-  @OnEvent('task.updated', { async: true })
-  async handleTaskUpdated(event: TaskUpdatedEvent) {
-    // Async, doesn't block business operation
-    await this.auditLogger.log({
-      entityType: 'Task',
-      entityId: event.taskId,
-      userId: event.userId,
-      action: 'UPDATE',
-      before: event.previousState,
-      after: event.newState,
-      timestamp: event.timestamp
-    });
-  }
-}
-```
-
-### Anti-Pattern 4: Client-Side Only Authorization
-
-**What people do:** Rely on frontend UI hiding/showing based on user roles without backend enforcement.
-
-```typescript
-// WRONG: Client-side only
-function TaskCard({ task, user }) {
-  return (
-    <div>
-      <h3>{task.title}</h3>
-      {user.role === 'ADMIN' && (
-        <button onClick={() => deleteTask(task.id)}>Delete</button>
-      )}
-    </div>
-  );
-}
-
-// Backend has no authorization check
-@Delete(':id')
-async deleteTask(@Param('id') id: string) {
-  return this.prisma.task.delete({ where: { id } });
-}
-```
-
-**Why it's wrong:**
-- Anyone can call API endpoints directly (bypass UI controls)
-- Browser developer tools can manipulate client state
-- Security through obscurity is not security
-- Regulatory compliance requires backend enforcement
-
-**Do this instead:** Defense in depth with backend enforcement as source of truth.
-
-```typescript
-// RIGHT: Backend enforcement + frontend UX hints
-// Frontend
-function TaskCard({ task, user, permissions }) {
-  const canDelete = permissions.includes('task:delete');
-
-  return (
-    <div>
-      <h3>{task.title}</h3>
-      {canDelete && (
-        <button onClick={() => deleteTask(task.id)}>Delete</button>
-      )}
-    </div>
-  );
-}
-
-// Backend ALWAYS enforces
-@Delete(':id')
-@UseGuards(RbacGuard)
-@RequirePermission('task', 'delete')
-async deleteTask(@Param('id') id: string, @CurrentUser() user: User) {
-  // Even if client bypasses UI, guard blocks unauthorized users
-  return this.taskService.delete(id, user);
-}
-```
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| **NextAuth.js** | OAuth providers + JWT sessions | Configure in `apps/web/app/api/auth/[...nextauth]/route.ts`. Store sessions in Redis for invalidation support. |
-| **Redis** | ioredis client, connection pooling | Single Redis instance for sessions, cache, and pub/sub. Consider Redis Cluster at 50k+ users. |
-| **Email (SendGrid/Postmark)** | NestJS email module, template-based | Async via Bull queue. Store email events in audit log. |
-| **File Storage (S3)** | Pre-signed URLs for direct upload | Generate URLs in backend, client uploads directly. Store metadata in DB. |
-| **Analytics (PostHog/Amplitude)** | Client-side + server-side events | User interactions from frontend, backend events from audit log. |
-| **Error Tracking (Sentry)** | SDK in both Next.js and NestJS | Use source maps, attach user context, breadcrumbs from audit log. |
+## Integration Boundaries
 
 ### Internal Boundaries
 
 | Boundary | Communication | Notes |
 |----------|---------------|-------|
-| **Next.js ↔ NestJS** | REST API over HTTP, WebSocket for realtime | Next.js API routes proxy to NestJS. Consider tRPC for type safety. |
-| **NestJS Modules ↔ Modules** | Direct imports (monolith), EventEmitter for async | Prefer events for cross-module communication to maintain loose coupling. |
-| **Backend ↔ Database** | Prisma Client with middleware | Connection pooling via PgBouncer. Use transactions for multi-table updates. |
-| **Backend ↔ Redis** | Direct client access, BullMQ for queues | Separate Redis databases: 0 for sessions, 1 for cache, 2 for pub/sub. |
-| **WebSocket Gateway ↔ Clients** | Socket.IO with auth handshake | Authenticate on connection. Use rooms for broadcast targeting. |
+| **Feature Components ↔ Shadcn UI** | Direct imports (`@/components/ui/button`) | Shadcn provides primitives, features compose them |
+| **Shadcn UI ↔ Design Tokens** | CSS variables + Tailwind utilities | Tokens defined in `globals.css`, consumed via `className` |
+| **Theme Provider ↔ Shadcn UI** | CSS class toggle (`.dark`) | `next-themes` updates `<html>` class, tokens respond |
+| **Tests ↔ Shadcn UI** | React Testing Library + vitest-axe | Test behavior, not implementation |
+
+### External Dependencies
+
+| Service | Integration Pattern | Notes |
+|---------|---------------------|-------|
+| **Radix UI** | Peer dependencies (installed by Shadcn CLI) | Headless primitives for accessibility |
+| **Tailwind CSS v4** | PostCSS plugin | Processes `@theme` directive, generates utilities |
+| **next-themes** | Provider wrapper in `layout.tsx` | Already installed, handles theme persistence |
+| **tailwind-merge** | Utility function (`cn()`) | Already installed, merges Tailwind classes |
+
+## Regression Risk Areas
+
+### High Risk (Breaking Changes Likely)
+
+1. **Existing Forms**
+   - **Risk:** Current forms use raw HTML inputs, Shadcn Form requires react-hook-form integration
+   - **Mitigation:** Create parallel form components, test thoroughly, migrate route-by-route
+   - **Detection:** Run E2E tests for auth flows (login, signup, reset password)
+
+2. **Modal/Dialog Patterns**
+   - **Risk:** Current modals may use different open/close state management than Shadcn Dialog
+   - **Mitigation:** Map existing modal props to Shadcn Dialog props, keep state logic
+   - **Detection:** Test task creation, team invites, deletion confirmations
+
+3. **Table Components**
+   - **Risk:** `@tanstack/react-table` integration with Shadcn Table components
+   - **Mitigation:** Shadcn Table is styling only, keep existing `@tanstack/react-table` logic
+   - **Detection:** Test team member list, task list, any sortable/filterable tables
+
+### Medium Risk (May Require Refactoring)
+
+4. **Theme Toggle Component**
+   - **Risk:** Current implementation may not work with Shadcn Button variants
+   - **Mitigation:** Wrap Shadcn Button, preserve theme switching logic
+   - **Detection:** Test light/dark mode switching persists on reload
+
+5. **Command Palette**
+   - **Risk:** `cmdk` library already in use, Shadcn provides styled wrapper
+   - **Mitigation:** Keep existing `cmdk` logic, optionally adopt Shadcn styles
+   - **Detection:** Test keyboard shortcuts (Cmd+K), search functionality
+
+6. **CSS Variable Naming**
+   - **Risk:** Existing tokens use `--color-*` prefix, Shadcn expects specific names
+   - **Mitigation:** Use `@theme inline` to map existing vars to Shadcn conventions
+   - **Detection:** Visual regression tests, check dark mode colors
+
+### Low Risk (Additive Changes)
+
+7. **New Components** (Button, Card, Badge, Avatar, etc.)
+   - **Risk:** Minimal, these are additions, not replacements
+   - **Mitigation:** Install incrementally, test accessibility
+   - **Detection:** Run `vitest-axe` on new components
+
+8. **Portfolio Pages**
+   - **Risk:** Low traffic, non-critical features
+   - **Mitigation:** Use as testing ground for new components
+   - **Detection:** Visual QA, Lighthouse audits
+
+## Monitoring & Rollback
+
+**Build Failures:**
+- Tailwind v4 `@theme` syntax errors → Check `globals.css` for invalid tokens
+- Shadcn CLI installation errors → Verify `components.json` aliases match `tsconfig.json`
+- TypeScript errors → Check Radix UI peer dependencies installed
+
+**Runtime Issues:**
+- Theme not switching → Verify `next-themes` provider in `layout.tsx`
+- Focus trap not working → Check Dialog/Modal `open` state management
+- Keyboard navigation broken → Test with Tab key, check `tabIndex` values
+
+**Accessibility Regressions:**
+- Run `axe-core` in dev mode (`@axe-core/react` logs to console)
+- Run Lighthouse CI in GitHub Actions (fail on accessibility score < 90)
+- Manual keyboard testing before each deploy
+
+**Rollback Strategy:**
+- Keep old components until migration complete
+- Feature flag new components (`USE_SHADCN_BUTTON`) for gradual rollout
+- Git revert commits if critical accessibility violations found
 
 ## Sources
 
-### High Confidence (Official Documentation & Current Resources)
+**Shadcn UI Integration:**
+- [Shadcn UI - Next.js Installation](https://ui.shadcn.com/docs/installation/next)
+- [Shadcn UI - React 19 Compatibility](https://ui.shadcn.com/docs/react-19)
+- [Shadcn UI - Tailwind v4 Guide](https://ui.shadcn.com/docs/tailwind-v4)
+- [Shadcn UI - Monorepo Setup](https://ui.shadcn.com/docs/monorepo)
+- [Shadcn UI - components.json Reference](https://ui.shadcn.com/docs/components-json)
 
-- [SaaS Architecture Fundamentals - AWS Whitepapers](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-architecture-fundamentals.html)
-- [NestJS Monorepo Documentation](https://docs.nestjs.com/cli/monorepo)
-- [Building a Scalable RBAC System in Next.js](https://medium.com/@muhebollah.diu/building-a-scalable-role-based-access-control-rbac-system-in-next-js-b67b9ecfe5fa)
-- [WebSocket Architecture Best Practices](https://ably.com/topic/websocket-architecture-best-practices)
-- [Event Sourcing Pattern - Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing)
-- [Microservices Pattern: Audit Logging](https://microservices.io/patterns/observability/audit-logging.html)
+**Tailwind CSS v4:**
+- [Tailwind CSS v4.0 Release](https://tailwindcss.com/blog/tailwindcss-v4)
+- [Tailwind CSS - Theme Variables](https://tailwindcss.com/docs/theme)
+- [Tailwind CSS 4 @theme: Design Tokens Guide](https://medium.com/@sureshdotariya/tailwind-css-4-theme-the-future-of-design-tokens-at-2025-guide-48305a26af06)
 
-### Medium Confidence (Verified Patterns & Best Practices)
+**Accessibility:**
+- [React Accessibility Guide](https://legacy.reactjs.org/docs/accessibility.html)
+- [WCAG AA Testing Best Practices](https://www.allaccessible.org/blog/react-accessibility-best-practices-guide)
+- [React Testing Library Accessibility](https://medium.com/ifood-engineering/testing-components-and-accessibility-with-react-testing-library-26935374e437)
+- [Vitest Component Testing](https://vitest.dev/guide/browser/component-testing)
 
-- [Architecture Patterns for SaaS Platforms: Billing, RBAC, and Onboarding](https://medium.com/appfoster/architecture-patterns-for-saas-platforms-billing-rbac-and-onboarding-964ea071f571)
-- [Full-stack TypeScript Monorepo Guide](https://gist.github.com/realcc/c08ff57de93274ec3e0d5809bd5a54ef)
-- [Structuring NestJS with DDD and Onion Architecture](https://medium.com/@patrick.cunha336/structuring-a-nestjs-project-with-ddd-and-onion-architecture-65b04b7f2754)
-- [Schema-Based Multi-Tenancy with NestJS and Prisma](https://darioielardi.dev/schema-based-multi-tenancy-with-nestjs-and-prisma)
-- [How to Build a Role-Based Access Control Layer](https://www.osohq.com/learn/rbac-role-based-access-control)
-- [WebSocket Events Architecture: Real-Time Updates at Scale](https://www.thedjpetersen.com/thoughts/websocket-events-architecture/)
-- [Building Real-Time Applications with WebSockets](https://render.com/articles/building-real-time-applications-with-websockets)
+**Design Systems:**
+- [Building Design System Architecture 2026](https://medium.com/@padmacnu/building-the-ultimate-design-system-a-complete-architecture-guide-for-2026-6dfcab0e9999)
+- [Design Tokens Developer Guide](https://penpot.app/blog/the-developers-guide-to-design-tokens-and-css-variables/)
+- [CSS Variables Complete Guide 2026](https://devtoolbox.dedyn.io/blog/css-variables-complete-guide)
 
-### Research Context (Domain Understanding)
+**Monorepo Patterns:**
+- [Turborepo Next.js Guide](https://turborepo.dev/docs/guides/frameworks/nextjs)
+- [Build Monorepo with Next.js](https://blog.logrocket.com/build-monorepo-next-js/)
 
-- [SaaS Development in 2026: Features, Stack & Architecture](https://www.tvlitsolutions.com/saas-development-in-2026-features-stack-architecture/)
-- [Modern HTTP Stack in 2026](https://hemaks.org/posts/modern-http-stack-in-2026-http3-grpc-websockets-and-when-to-use-what/)
-- [Database Schema Design Best Practices](https://www.bytebase.com/blog/top-database-schema-design-best-practices/)
-- [Guide to Design Database for Task Manager](https://mysql.tutorials24x7.com/blog/guide-to-design-database-for-task-manager-in-mysql)
+**Next.js 15:**
+- [Next.js 15 Release Notes](https://nextjs.org/blog/next-15)
+- [Next.js 15 App Router Pitfalls](https://imidef.com/en/2026-02-11-app-router-pitfalls)
 
 ---
-*Architecture research for: TeamFlow Work Management SaaS*
-*Researched: 2026-02-14*
-*Confidence: MEDIUM-HIGH (Verified with official docs and multiple authoritative sources)*
+*Architecture research for: Design System Integration (v1.1)*
+*Researched: 2026-02-16*
+*Confidence: HIGH - All integration points verified with official documentation*

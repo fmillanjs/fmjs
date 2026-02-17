@@ -73,6 +73,42 @@
 | Prisma Studio | Database GUI | Built-in visual editor for database during development | HIGH |
 | ESLint 9.x | Code quality | Next.js 15 supports ESLint 9 with flat config format | HIGH |
 
+---
+
+## v1.1 Design System & Accessibility Additions
+
+**Focus:** WCAG AA compliance, Shadcn UI integration, semantic design tokens
+**Researched:** 2026-02-16
+**Confidence:** HIGH
+
+### Design System Foundation
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| shadcn/ui | latest | Design system foundation | Industry standard for accessible React components built on Radix UI primitives. Provides copy-paste components with full customization, integrates seamlessly with Tailwind v4 and Next.js 15. Official support for React 19. |
+| Radix UI Primitives | latest | Headless UI primitives | Foundation of shadcn/ui. WAI-ARIA compliant components with built-in keyboard navigation, focus management, and screen reader support. Handles complex accessibility patterns (dialogs, dropdowns, etc.). |
+| tw-animate-css | latest | Animation utilities | Tailwind v4 compatible replacement for deprecated `tailwindcss-animate`. Pure CSS solution embracing v4's CSS-first architecture. |
+
+### Supporting Libraries (v1.1)
+
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| class-variance-authority | latest | Component variant management | Required for shadcn/ui. Declarative API for defining component variants (size, color, state). Provides type-safe variant composition. |
+| next-themes | 0.4.6+ | Theme management | **Already installed.** Handles light/dark/system themes with no flash. Works with Tailwind's `dark:` variant. Persists user preference. |
+| lucide-react | 0.564.0+ | Icon library | **Already installed.** Modern, tree-shakeable icon library. Shadcn/ui's default icon set. Accessibility-friendly with proper ARIA attributes. |
+| clsx | 2.1.1+ | Conditional class names | **Already installed.** Utility for constructing className strings conditionally. Part of the `cn()` utility pattern. |
+| tailwind-merge | 3.4.1+ | Tailwind class merging | **Already installed.** Intelligently merges conflicting Tailwind classes. Essential for component composition. |
+
+### Accessibility Testing & Validation
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| eslint-plugin-jsx-a11y | Lint-time accessibility checks | Static analysis of JSX for a11y issues. Supports ESLint 9 flat config. Use `plugin:jsx-a11y/recommended` or `plugin:jsx-a11y/strict` for stricter enforcement. |
+| axe DevTools (browser) | Manual + automated WCAG testing | Development and QA. Browser extension for in-page accessibility audits. **Recommended over @axe-core/react** which does NOT support React 18+. Free tier available. |
+| color-contrast-checker | WCAG contrast validation | JavaScript library for validating WCAG 2.0/2.1 color contrast ratios. Use for design token validation. Supports shorthand hex codes. |
+| wcag-contrast | Programmatic contrast calculation | Low-level utility for WCAG contrast math. Use for build-time validation of design tokens. |
+| Playwright + axe-core | E2E accessibility testing | CI/CD pipeline. Automated a11y regression testing. |
+
 ## Installation
 
 ### Core Dependencies
@@ -110,6 +146,42 @@ npm install -D zod-prisma-types
 npm install -D winston-daily-rotate-file
 ```
 
+### v1.1 Design System & Accessibility
+
+```bash
+# Navigate to web app
+cd apps/web
+
+# Shadcn/ui CLI initialization (detects Next.js 15 + Tailwind v4)
+npx shadcn@latest init
+
+# Manual dependencies (if not using CLI)
+npm install class-variance-authority tw-animate-css
+
+# Development tools
+npm install -D eslint-plugin-jsx-a11y color-contrast-checker wcag-contrast
+
+# Note: lucide-react, tailwind-merge, clsx, next-themes already installed
+```
+
+### Shadcn/ui Component Installation
+
+```bash
+# Add components as needed for v1.1
+npx shadcn@latest add button
+npx shadcn@latest add dialog
+npx shadcn@latest add dropdown-menu
+npx shadcn@latest add form
+npx shadcn@latest add input
+npx shadcn@latest add label
+npx shadcn@latest add select
+npx shadcn@latest add tabs
+npx shadcn@latest add tooltip
+
+# Components are copied to apps/web/components/ui/
+# Fully customizable - you own the code
+```
+
 ## Alternatives Considered
 
 | Category | Recommended | Alternative | Why Not Alternative | Confidence |
@@ -123,6 +195,11 @@ npm install -D winston-daily-rotate-file
 | Auth | NextAuth v5 | Auth0 | Auth0 adds external dependency and cost. NextAuth provides same features with database ownership | MEDIUM |
 | Validation | Zod | class-validator | class-validator uses decorators (runtime metadata). Zod is TypeScript-first with better DX and composability in 2026 | HIGH |
 | Testing | Vitest | Jest | Jest slower (3-4x) and lacks native ESM support. Vitest is Jest-compatible API with modern features | HIGH |
+| **Design System** | **shadcn/ui** | **React Aria Components** | You need Adobe's opinionated styled components OR you're building a native mobile app (React Native Aria). Shadcn provides more flexibility. | HIGH |
+| **Design System** | **shadcn/ui** | **Headless UI** | You prefer Tailwind Labs' official library OR need Vue support. Less comprehensive than Radix/shadcn. | MEDIUM |
+| **Primitives** | **Radix UI** | **ARIAKit** | You prefer ARIAKit's API OR need specific components Radix doesn't provide. Both are excellent WCAG-compliant options. | MEDIUM |
+| **Animations** | **tw-animate-css** | **custom animations** | You have brand-specific animation requirements. Build on `@theme` animations block in Tailwind v4. | MEDIUM |
+| **A11y Testing** | **axe DevTools** | **manual WCAG audit** | Final QA before launch. Automated tools catch 30-40% of issues; human testing catches the rest. | HIGH |
 
 ## What NOT to Use
 
@@ -135,6 +212,11 @@ npm install -D winston-daily-rotate-file
 | NextAuth v4 | Deprecated. v5 (Auth.js) has breaking changes but better middleware, edge runtime support, and patterns | NextAuth v5 (Auth.js) | HIGH |
 | Prisma Middleware (deprecated) | Prisma deprecated middleware in favor of Client Extensions for better type safety | Prisma Client Extensions | HIGH |
 | ws library directly | Low-level WebSocket library requires manual implementation of reconnection, rooms, Redis scaling | Socket.io | MEDIUM |
+| **tailwindcss-animate** | **Deprecated in Tailwind v4 (as of March 2025)** | **tw-animate-css (v4 compatible)** | **HIGH** |
+| **@axe-core/react** | **Does NOT support React 18+** | **axe DevTools browser extension OR axe Developer Hub (free tier)** | **HIGH** |
+| **react-axe** | **Deprecated by Deque Labs** | **@axe-core/react (though see React 18+ note above)** | **HIGH** |
+| **Tailwind v3 config (tailwind.config.js)** | **Tailwind v4 uses CSS-first `@theme` directive** | **Migrate to `@theme` in app.css** | **HIGH** |
+| **Standalone Radix packages** | **Redundant with shadcn/ui** | **Use shadcn CLI - it installs Radix primitives as needed** | **MEDIUM** |
 
 ## Production Patterns by Feature
 
@@ -255,6 +337,110 @@ CREATE POLICY tenant_isolation ON projects
   USING (organization_id = current_setting('app.tenant_id')::uuid);
 ```
 
+### v1.1: Design System Component Pattern
+
+**Stack:**
+- shadcn/ui components in `components/ui/`
+- class-variance-authority for variants
+- Tailwind v4 `@theme` for design tokens
+- next-themes for dark mode
+
+**Pattern:**
+```typescript
+// Button component with CVA variants
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-[--color-primary] text-[--color-primary-foreground] hover:bg-[--color-primary]/90",
+        destructive: "bg-[--color-destructive] text-[--color-destructive-foreground]",
+        outline: "border border-[--color-border] bg-transparent hover:bg-[--color-accent]",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+interface ButtonProps extends VariantProps<typeof buttonVariants> {
+  className?: string;
+}
+
+export function Button({ variant, size, className, ...props }: ButtonProps) {
+  return (
+    <button className={cn(buttonVariants({ variant, size, className }))} {...props} />
+  );
+}
+```
+
+### v1.1: WCAG AA Color Validation
+
+**Stack:**
+- color-contrast-checker for validation
+- Tailwind v4 `@theme` for semantic tokens
+- Design token build script
+
+**Pattern:**
+```typescript
+// scripts/validate-colors.ts
+import { ColorContrastChecker } from 'color-contrast-checker';
+
+const checker = new ColorContrastChecker();
+
+// Design tokens from @theme
+const tokens = {
+  background: '#FFFFFF',
+  foreground: '#18181B', // zinc-900
+  primary: '#3B82F6',    // blue-500
+  primaryForeground: '#FFFFFF',
+};
+
+// WCAG AA requirements: 4.5:1 normal text, 3:1 large text/UI
+const results = {
+  text: checker.isLevelAA(tokens.foreground, tokens.background, 14), // normal text
+  primaryText: checker.isLevelAA(tokens.primaryForeground, tokens.primary, 14),
+  uiComponents: checker.isLevelAA(tokens.primary, tokens.background, 18), // 3:1 for UI
+};
+
+console.log('WCAG AA Validation:', results);
+// Fail build if any check fails
+```
+
+### v1.1: Accessibility Testing Workflow
+
+**Development:**
+1. eslint-plugin-jsx-a11y catches issues at write-time
+2. axe DevTools browser extension for manual testing
+3. Keyboard navigation testing (Tab, Enter, Escape, Arrow keys)
+
+**CI/CD:**
+```typescript
+// e2e/accessibility.spec.ts
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('should not have WCAG violations', async ({ page }) => {
+  await page.goto('/dashboard');
+
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+
+  expect(accessibilityScanResults.violations).toEqual([]);
+});
+```
+
 ## Version Compatibility Matrix
 
 | Package | Version | Compatible With | Critical Notes |
@@ -266,6 +452,85 @@ CREATE POLICY tenant_isolation ON projects
 | Socket.io 4.x | 4.7+ | @nestjs/websockets 10.x | Redis adapter 8.x required for scaling. Binary support improved in 4.7+ |
 | Zod 3.x | 3.22+ | TypeScript 5.x | Requires strict mode. Use with nestjs-zod for NestJS integration |
 | Vitest 2.x | 2.0+ | TypeScript 5.x, React 19 | Cannot test async Server Components - use Playwright for those |
+| **shadcn/ui** | **latest** | **Next.js 15 + React 19** | **Official support announced October 2024. Use `--force` or `--legacy-peer-deps` if npm shows peer dependency warnings.** |
+| **Radix UI** | **latest** | **React 19** | **Fully compatible. Underlying primitives for shadcn/ui.** |
+| **Tailwind v4** | **4.1.18+** | **Next.js 15** | **Requires `@tailwindcss/postcss@4.x`. Already configured in project.** |
+| **tw-animate-css** | **latest** | **Tailwind v4** | **Built specifically for v4's CSS-first architecture.** |
+| **class-variance-authority** | **latest** | **TypeScript 5.6** | **Works seamlessly. Type inference for variants.** |
+| **next-themes** | **0.4.6+** | **Next.js 15 App Router** | **Already installed. Use `<ThemeProvider attribute="class">` for Tailwind dark mode.** |
+| **lucide-react** | **0.564.0+** | **React 19** | **Already installed. Tree-shakeable, actively maintained.** |
+| **eslint-plugin-jsx-a11y** | **latest** | **ESLint 9 flat config** | **Supports both legacy `.eslintrc` and modern flat config. Use `jsxA11y.flatConfigs.recommended`.** |
+
+## Integration Notes (v1.1)
+
+### Tailwind v4 + shadcn/ui
+
+shadcn/ui works with Tailwind v4 out of the box. The CLI detects v4 and configures accordingly:
+
+- **Design tokens**: Define in `@theme` block in `app/globals.css`
+- **Animations**: Use tw-animate-css instead of deprecated tailwindcss-animate
+- **Dark mode**: Use `next-themes` with `attribute="class"` (no tailwind.config.js darkMode setting needed)
+
+### WCAG AA Compliance
+
+All Radix/shadcn components follow WCAG AA guidelines by default:
+
+- **Color contrast**: 4.5:1 for normal text, 3:1 for large text and UI components
+- **Keyboard navigation**: Full keyboard support with proper focus management
+- **Screen readers**: Semantic HTML + ARIA attributes
+- **Focus indicators**: Visible focus states (customize via Tailwind)
+
+**Validation workflow:**
+
+1. **Design phase**: Use `color-contrast-checker` to validate token combinations
+2. **Development**: `eslint-plugin-jsx-a11y` catches static issues
+3. **Testing**: axe DevTools for page-level audits
+4. **CI/CD**: Playwright + axe-core for regression testing
+
+### Component Architecture (v1.1)
+
+```
+apps/web/
+├── components/
+│   ├── ui/           # shadcn components (copied via CLI)
+│   │   ├── button.tsx
+│   │   ├── dialog.tsx
+│   │   └── ...
+│   └── custom/       # Your custom components
+│       └── ...
+├── lib/
+│   └── utils.ts      # cn() utility (tailwind-merge + clsx)
+└── app/
+    └── globals.css   # @theme design tokens
+```
+
+### Design Token Strategy (v1.1)
+
+Tailwind v4's `@theme` directive replaces the old JavaScript config:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Semantic color tokens */
+  --color-primary: oklch(0.55 0.25 262);
+  --color-primary-foreground: oklch(0.99 0 0);
+
+  /* WCAG AA compliant contrasts */
+  --color-background: oklch(0.99 0 0);
+  --color-foreground: oklch(0.15 0 0); /* ~14:1 contrast */
+
+  /* Dark mode overrides in :root.dark */
+  /* ... */
+}
+```
+
+**Advantages for v1.1:**
+
+- Design tokens are native CSS variables (accessible at runtime)
+- IDE autocompletion works automatically
+- No build step between config and CSS
+- Easy to validate with `wcag-contrast` library
 
 ## TypeScript Configuration
 
@@ -331,6 +596,17 @@ CMD ["node", "server.js"]
 - [Auth.js RBAC Guide](https://authjs.dev/guides/role-based-access-control) - Official RBAC implementation
 - [Prisma Client Extensions](https://www.prisma.io/docs/orm/prisma-client/client-extensions) - Official audit trail patterns
 
+### v1.1 Official Documentation (HIGH confidence)
+- [shadcn/ui Next.js Installation](https://ui.shadcn.com/docs/installation/next) — Installation steps and dependencies
+- [shadcn/ui React 19 Support](https://ui.shadcn.com/docs/react-19) — Official React 19 compatibility announcement
+- [shadcn/ui Manual Installation](https://ui.shadcn.com/docs/installation/manual) — Explicit package list
+- [shadcn/ui Tailwind v4](https://ui.shadcn.com/docs/tailwind-v4) — Tailwind v4 migration guide
+- [Radix UI Primitives](https://www.radix-ui.com/primitives) — Component library documentation
+- [Radix UI Accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility) — WAI-ARIA compliance details
+- [Tailwind CSS v4 Announcement](https://tailwindcss.com/blog/tailwindcss-v4) — CSS-first configuration, @theme directive
+- [Tailwind CSS Theme Variables](https://tailwindcss.com/docs/theme) — Design token documentation
+- [next-themes GitHub](https://github.com/pacocoursey/next-themes) — Dark mode implementation
+
 ### Production Patterns (HIGH to MEDIUM confidence)
 - [How to Implement WebSockets in NestJS](https://oneuptime.com/blog/post/2026-02-02-nestjs-websockets/view) - Recent 2026 production patterns
 - [Building a Production-Ready Real-Time Notification System in NestJS](https://medium.com/@marufpulok98/building-a-production-ready-real-time-notification-system-in-nestjs-websockets-redis-offline-6cc2f1bd0b05) - WebSocket + Redis patterns
@@ -338,6 +614,22 @@ CMD ["node", "server.js"]
 - [Implementing Prisma RBAC](https://www.permit.io/blog/implementing-prisma-rbac-fine-grained-prisma-permissions) - CASL + Prisma integration
 - [Securing Multi-Tenant Applications Using RLS in PostgreSQL with Prisma](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35) - Multi-tenancy patterns
 - [Prisma Audit Trail Guide for Postgres](https://medium.com/@arjunlall/prisma-audit-trail-guide-for-postgres-5b09aaa9f75a) - Audit logging implementation
+
+### v1.1 NPM Packages (MEDIUM Confidence)
+- [@axe-core/react](https://www.npmjs.com/package/@axe-core/react) — React 18+ limitation noted
+- [eslint-plugin-jsx-a11y](https://www.npmjs.com/package/eslint-plugin-jsx-a11y) — ESLint integration
+- [tw-animate-css](https://www.npmjs.com/package/tw-animate-css) — Tailwind v4 animation utilities
+- [color-contrast-checker](https://www.npmjs.com/package/color-contrast-checker) — WCAG validation library
+- [wcag-contrast](https://www.npmjs.com/package/wcag-contrast) — Contrast calculation utility
+- [class-variance-authority](https://cva.style/docs) — Variant API documentation
+
+### v1.1 Community Resources (MEDIUM Confidence)
+- [Medium: Theme colors with Tailwind v4 and next-themes](https://medium.com/@kevstrosky/theme-colors-with-tailwind-css-v4-0-and-next-themes-dark-light-custom-mode-36dca1e20419) — 2026 implementation guide
+- [Medium: React Tailwind reusable components with CVA](https://medium.com/@gorkemkaramolla/react-tailwind-reuseable-and-customizable-components-with-cva-clsx-and-tailwindmerge-combo-guide-c3756bdbbf16) — Pattern explanation
+- [DesignRevision: shadcn UI Complete Guide (2026)](https://designrevision.com/blog/shadcn-ui-guide) — Current best practices
+- [Medium: Accessibility Testing in React](https://medium.com/@ignatovich.dm/accessibility-testing-in-react-tools-and-best-practices-119f3c0aee6e) — Tool comparison
+- [BrowserStack: Automating Accessibility Testing 2026](https://www.browserstack.com/guide/automate-accessibility-testing) — CI/CD integration patterns
+- [W3C: Web Accessibility Evaluation Tools](https://www.w3.org/WAI/test-evaluate/tools/list/) — Official tool directory
 
 ### Best Practices (MEDIUM confidence)
 - [Next.js Best Practices in 2025](https://www.raftlabs.com/blog/building-with-next-js-best-practices-and-benefits-for-performance-first-teams/) - Architecture patterns
@@ -352,5 +644,5 @@ CMD ["node", "server.js"]
 
 ---
 *Stack research for: TeamFlow (Work Management SaaS)*
-*Researched: 2026-02-14*
+*Researched: 2026-02-14 (core), 2026-02-16 (v1.1 additions)*
 *Overall Confidence: HIGH - All core technologies verified with official docs and recent 2026 sources*
