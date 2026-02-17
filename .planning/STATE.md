@@ -10,20 +10,20 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 ## Current Position
 
-Milestone: v1.1 - UI/Design System Overhaul
-Phase: 13 - Automation & Optimization
-Plan: 13-02 complete — deprecated component replacement, ESLint governance hardened (zero violations), @next/bundle-analyzer integrated, bundle baseline documented. COMP-05 satisfied.
-Status: Phase 13 in progress — 2/3 plans done.
-Last activity: 2026-02-17 — 13-02: ConflictWarning/EmptyState replaced inline in 5 files; ESLint governance active on all feature dirs; 103 kB shared chunk baseline measured
+Milestone: v1.1 - UI/Design System Overhaul — COMPLETE
+Phase: 13 - Automation & Optimization — COMPLETE
+Plan: 13-03 complete — lighthouserc.json created, Lighthouse CI job added to deploy.yml, full Phase 13 automation layer human-verified. MIG-04 satisfied.
+Status: Phase 13 complete — 3/3 plans done. v1.1 milestone complete.
+Last activity: 2026-02-17 — 13-03: lighthouserc.json asserting performance >=0.9 on 5 public routes; Lighthouse CI job added; build-and-push now needs [test, lighthouse]; human verified all 7 automation checks
 
-Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 75% (12/16 requirements)
+Progress: [██████████] v1.0: 79% (55/67 requirements) | v1.1: 100% (16/16 requirements)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 43
+- Total plans completed: 44
 - Average duration: 9.5 min/plan
-- Total execution time: 6.9 hours
+- Total execution time: ~7.1 hours
 
 **By Phase:**
 
@@ -91,6 +91,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 12 P09 | 20 | 2 tasks | 9 files |
 | Phase 13 P01 | 4 | 2 tasks | 8 files |
 | Phase 13-automation-optimization P02 | 25 | 2 tasks | 8 files |
+| Phase 13-automation-optimization P03 | 10 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -312,6 +313,9 @@ Recent decisions affecting current work:
 - [Phase 13-automation-optimization]: ESLint skeleton restriction removed: components/ui/skeleton.tsx is the active skeleton used by loading.tsx files; skeleton restriction was incorrect since no alternative Shadcn skeleton exists at a different path
 - [Phase 13-automation-optimization]: @typescript-eslint/parser required in eslint flat config: TypeScript generics in Shadcn components fail without it; added languageOptions.parser field
 - [Phase 13-automation-optimization]: Bundle baseline: 103 kB shared chunks, 243 kB largest route (projectId board with DnD Kit + TanStack Table + Shadcn form system)
+- [Phase 13-automation-optimization]: Lighthouse CI scoped to public routes only (/, /about, /projects, /projects/teamflow, /login) — dashboard routes cannot be audited by lhci (no auth)
+- [Phase 13-automation-optimization]: categories:accessibility warn (not error) in lighthouserc.json — axe-core is authoritative for WCAG; dual failures would be confusing to triage
+- [Phase 13-automation-optimization]: upload.target=temporary-public-storage for Lighthouse reports — no GitHub App token or LHCI server required for portfolio CI
 
 ### Roadmap Evolution
 
@@ -326,7 +330,7 @@ Recent decisions affecting current work:
 **Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
 **Phase 11 - Form Components & Validation**: ✅ Complete (all 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). ✅ All 5 dashboard/portfolio forms migrated (11-03). ✅ task-form.tsx migrated with 3 Shadcn Selects + role=group labels toggle (11-04). ✅ 6 axe WCAG AA tests passing (11-04). ✅ Human-verified: keyboard navigation, ARIA attributes, zero browser console warnings. COMP-03 satisfied.
 **Phase 12 - Critical Route Migration**: ✅ Complete (all 9 plans done). ✅ TaskForm→Dialog, TaskDetailPanel→Select/Tabs/AlertDialog, TaskFilters→5 Popovers, TaskSearch→Input, TaskCard→Badge, KanbanColumn→Card (12-02 through 12-05). ✅ TeamMemberList→AlertDialog/Badge, ProjectCard/List/Actions→Card/Tabs/AlertDialog/Dialog (12-06, 12-07). ✅ Route pages→Button/Card/lucide icons (12-08). ✅ MIG-03 grep clean, WCAG AA axe tests passing, SelectItem __none__ sentinel fix, human verified (12-09). COMP-04/MIG-02/MIG-03 satisfied.
-**Phase 13 - Automation & Optimization**: In progress (2/3 plans done). ✅ 13-01: Dashboard visual regression spec created, 6 PNG baselines generated (teams-list/profile/team-detail × light+dark), CI split into named steps, ESLint governance check added. ✅ 13-02: ConflictWarning/EmptyState replaced inline in 5 files (3 components + 2 app pages), ESLint governance hardened (zero violations on all feature dirs), @next/bundle-analyzer installed, bundle baseline documented (103 kB shared / 243 kB max). COMP-05 satisfied.
+**Phase 13 - Automation & Optimization**: ✅ COMPLETE (3/3 plans done). ✅ 13-01: Dashboard visual regression spec created, 6 PNG baselines generated (teams-list/profile/team-detail × light+dark), CI split into named steps, ESLint governance check added. ✅ 13-02: ConflictWarning/EmptyState replaced inline in 5 files (3 components + 2 app pages), ESLint governance hardened (zero violations on all feature dirs), @next/bundle-analyzer installed, bundle baseline documented (103 kB shared / 243 kB max). COMP-05 satisfied. ✅ 13-03: lighthouserc.json asserting performance >=0.9 on 5 public routes, Lighthouse CI job in deploy.yml (needs: test), build-and-push gated on [test, lighthouse]. MIG-04 satisfied. Human-verified: visual regression pass, ESLint governance enforces, Lighthouse config valid, CI YAML valid.
 
 ### Blockers/Concerns
 
@@ -352,10 +356,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 13 Plan 02 — complete)
-Stopped at: Completed 13-02-PLAN.md. ConflictWarning/EmptyState replaced inline in 5 files; ESLint governance (eslint + @typescript-eslint/parser) active on all feature dirs with zero violations; @next/bundle-analyzer integrated; 103 kB shared / 243 kB max bundle baseline documented. COMP-05 satisfied.
-Status: Phase 13 in progress. 2/3 plans done.
-Next action: Execute 13-03-PLAN.md (next plan in phase)
+Last session: 2026-02-17 (Phase 13 Plan 03 — complete)
+Stopped at: Completed 13-03-PLAN.md. lighthouserc.json created asserting performance >=0.9 on 5 public routes; Lighthouse CI job added to deploy.yml (build-and-push now needs [test, lighthouse]); human verified full Phase 13 automation layer. MIG-04 satisfied.
+Status: Phase 13 COMPLETE. v1.1 milestone COMPLETE. 3/3 plans done.
+Next action: v1.1 milestone complete — all 16 requirements satisfied. Ready for v1.2 planning or deployment verification.
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
