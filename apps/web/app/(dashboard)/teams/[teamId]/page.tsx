@@ -60,7 +60,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
     return (
       <div className="bg-card shadow rounded-lg p-8 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-red-400"
+          className="mx-auto h-12 w-12 text-[var(--red-9)]"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -75,7 +75,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
         <div className="mt-6">
           <Link
             href="/teams"
-            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
           >
             Back to Teams
           </Link>
@@ -176,7 +176,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-6 w-6 text-blue-600"
+                  className="h-6 w-6 text-primary"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -202,7 +202,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-6 w-6 text-green-600"
+                  className="h-6 w-6 text-[var(--green-9)]"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -228,7 +228,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-6 w-6 text-orange-600"
+                  className="h-6 w-6 text-[var(--amber-9)]"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -256,7 +256,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           <h3 className="text-lg leading-6 font-medium text-foreground">Projects</h3>
           <Link
             href={`/teams/${team.id}/projects/new`}
-            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
           >
             New Project
           </Link>
@@ -270,7 +270,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
               action={
                 <Link
                   href={`/teams/${team.id}/projects/new`}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
                 >
                   Create Project
                 </Link>
@@ -309,7 +309,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
           <div className="mt-4 text-center">
             <Link
               href={`/teams/${team.id}/projects`}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="text-primary hover:text-primary/80 text-sm font-medium"
             >
               View all {projects.length} projects →
             </Link>

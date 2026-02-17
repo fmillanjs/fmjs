@@ -46,7 +46,7 @@ export default async function TeamsPage() {
         </div>
         <Link
           href="/teams/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
         >
           <svg
             className="-ml-1 mr-2 h-5 w-5"
@@ -91,7 +91,7 @@ export default async function TeamsPage() {
               <div className="px-4 py-5 sm:p-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-semibold">
+                    <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-lg font-semibold">
                       {team.name.charAt(0).toUpperCase()}
                     </div>
                   </div>

@@ -79,7 +79,7 @@ export default async function AuditLogPage({
         {/* Access Denied */}
         <div className="bg-card shadow rounded-lg p-12 text-center">
           <svg
-            className="mx-auto h-12 w-12 text-red-400"
+            className="mx-auto h-12 w-12 text-[var(--red-9)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -98,7 +98,7 @@ export default async function AuditLogPage({
           <div className="mt-6">
             <Link
               href={`/teams/${teamId}`}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
             >
               Back to Team
             </Link>

@@ -76,7 +76,7 @@ export default async function ProjectSettingsPage({
       <div>
         <Link
           href={`/teams/${teamId}/projects/${projectId}`}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          className="text-sm text-primary hover:text-primary/80"
         >
           ← Back to Project
         </Link>
@@ -97,8 +97,8 @@ export default async function ProjectSettingsPage({
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-card shadow rounded-lg p-6 border-2 border-red-200">
-        <h2 className="text-xl font-bold text-red-900 mb-4">Danger Zone</h2>
+      <div className="bg-card shadow rounded-lg p-6 border-2 border-[var(--red-6)]">
+        <h2 className="text-xl font-bold text-[var(--red-11)] mb-4">Danger Zone</h2>
         <ProjectActions
           projectId={projectId}
           teamId={teamId}

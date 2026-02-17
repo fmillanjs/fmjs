@@ -20,7 +20,7 @@ export default function Error({
     <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
       <div className="text-center space-y-6 max-w-md px-4">
         {/* Icon */}
-        <AlertTriangle className="w-24 h-24 mx-auto text-red-600 dark:text-red-400" />
+        <AlertTriangle className="w-24 h-24 mx-auto text-[var(--red-9)]" />
 
         {/* Error Heading */}
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">

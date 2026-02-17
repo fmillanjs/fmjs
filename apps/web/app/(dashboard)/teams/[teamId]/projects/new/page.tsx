@@ -21,7 +21,7 @@ export default async function NewProjectPage({
       <div className="mb-6">
         <Link
           href={`/teams/${teamId}/projects`}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          className="text-sm text-primary hover:text-primary/80"
         >
           ← Back to Projects
         </Link>

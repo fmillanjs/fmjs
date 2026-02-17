@@ -6,10 +6,10 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
       <div className="text-center space-y-6 max-w-md px-4">
         {/* Icon */}
-        <FileQuestion className="w-24 h-24 mx-auto text-blue-600 dark:text-blue-400" />
+        <FileQuestion className="w-24 h-24 mx-auto text-primary" />
 
         {/* 404 Heading */}
-        <h1 className="text-6xl font-bold text-blue-600 dark:text-blue-400">404</h1>
+        <h1 className="text-6xl font-bold text-primary">404</h1>
 
         {/* Subheading */}
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">

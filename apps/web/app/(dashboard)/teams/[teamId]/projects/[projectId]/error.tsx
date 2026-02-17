@@ -23,7 +23,7 @@ export default function ProjectError({
     <div className="flex items-center justify-center min-h-[50vh]">
       <div className="max-w-md w-full bg-card dark:bg-gray-950 border border-border rounded-lg shadow-lg p-8 text-center">
         <div className="flex justify-center mb-4">
-          <AlertTriangle className="w-16 h-16 text-red-500" />
+          <AlertTriangle className="w-16 h-16 text-[var(--red-9)]" />
         </div>
         <h2 className="text-2xl font-bold text-foreground mb-2">Failed to load project</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
