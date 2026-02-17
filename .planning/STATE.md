@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Milestone: v1.1 - UI/Design System Overhaul
-Phase: 9 - Design System Foundation
-Plan: 4 of 4 complete
-Status: Phase 09 complete
-Last activity: 2026-02-16 — Completed 09-04 Shadcn Component Installation and WCAG Verification
+Phase: 10 - Component Migration Portfolio
+Plan: 1 of 3 complete
+Status: In progress
+Last activity: 2026-02-17 — Completed 10-01 Portfolio Component Migration (Textarea + 6 components)
 
 Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1: 50% (8/16 requirements)
 
@@ -72,6 +72,7 @@ Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 09-design-system-foundation P02 | 3 | 1 task | 1 file |
 | Phase 09-design-system-foundation P03 | 2 | 2 tasks | 2 files |
 | Phase 09-design-system-foundation P04 | 10 | 3 tasks | 9 files |
+| Phase 10-component-migration-portfolio P01 | 2 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -233,6 +234,10 @@ Recent decisions affecting current work:
 - [Phase 09-04]: Skipped Storybook — in-app /design-system verification page used instead (faster, no extra tooling infra)
 - [Phase 09-04]: Semantic foreground tokens (text-primary-foreground, etc.) replace mix-blend-difference CSS trick for readable color swatch labels
 - [Phase 09-04]: badge component for Phase 10 tech stack tags, sonner replaces deprecated toast, separator for layout dividers
+- [Phase 10-01]: Link className=block group wrapping Card chosen over Button asChild wrapping Card for project-card — simpler focus ring behavior
+- [Phase 10-01]: Badge variant=secondary for tech stack tags — neutral appearance vs variant=default which signals primary action
+- [Phase 10-01]: Button asChild size=lg pattern for Link CTAs, Button asChild variant=outline for external links
+- [Phase 10-01]: Button variant=ghost size=icon for mobile hamburger toggle replacing raw button element
 
 ### Roadmap Evolution
 
@@ -243,7 +248,8 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-**Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04). Proceed with Phase 10.
+**Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
+**Phase 10 - Component Migration Portfolio**: 🔄 In progress (1 of 3 plans). ✅ Portfolio components migrated (10-01). Proceed with 10-02 dashboard components.
 
 ### Blockers/Concerns
 
@@ -269,10 +275,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-16 (Phase 09 Design System Foundation)
-Stopped at: Completed 09-04-PLAN.md - Shadcn Component Installation and WCAG Visual Verification
-Status: Phase 09 complete (all 4 plans done) — 8 Shadcn components installed, /design-system page created, human-verified WCAG AA 0 violations
-Next action: Proceed to Phase 10 component migration
+Last session: 2026-02-17 (Phase 10 Component Migration Portfolio)
+Stopped at: Completed 10-01-PLAN.md - Portfolio Component Migration (Textarea install + 6 components migrated)
+Status: Phase 10 in progress (1 of 3 plans done) — Textarea installed, all 6 portfolio components migrated to Shadcn primitives with zero hardcoded color classes
+Next action: Proceed to Phase 10 Plan 02 - dashboard component migration
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
