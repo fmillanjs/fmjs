@@ -4,6 +4,8 @@
 
 This roadmap transforms Fernando's portfolio website into a compelling technical showcase by building TeamFlow—a production-quality work management SaaS application that demonstrates senior full-stack engineering capabilities. The journey progresses from foundational authentication and authorization patterns through core task management features, then adds the most technically impressive showcase element (real-time collaboration), and concludes with portfolio integration and production polish. Each phase builds on validated patterns from the previous phase, avoiding critical security pitfalls while delivering incrementally working software within the 3-4 week timeline.
 
+**Milestone v1.1 - UI/Design System Overhaul** continues from Phase 7 completion, establishing a production-ready design system foundation with WCAG AA compliance and accessibility-first components to unblock real-time feature activation and prevent future accessibility debt.
+
 ## Phases
 
 **Phase Numbering:**
@@ -11,6 +13,8 @@ This roadmap transforms Fernando's portfolio website into a compelling technical
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 Decimal phases appear between their surrounding integers in numeric order.
+
+### v1.0 Phases (Complete)
 
 - [x] **Phase 1: Foundation & Authentication** - Establish security foundation with auth, RBAC, audit logging, and infrastructure (completed 2026-02-14)
 - [x] **Phase 2: Core Work Management** - Build teams, projects, tasks, and views with proper data modeling (completed 2026-02-14)
@@ -20,6 +24,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Authentication Fixes** - Fix JWT_SECRET configuration to unblock Phase 3 real-time features (completed 2026-02-16)
 - [x] **Phase 6.1: User Flow & Architecture Audit** - Audit and fix complete user journey with navigation, data integrity, auth boundaries, and edge case handling (completed 2026-02-16)
 - [x] **Phase 7: Phase 3 Verification & Real-Time Features Validation** - Verify all real-time collaboration features work end-to-end with manual testing (completed 2026-02-16)
+
+### v1.1 Phases (UI/Design System Overhaul)
+
+- [ ] **Phase 8: Foundation Validation** - Validate Tailwind v4 setup and audit existing color tokens for WCAG AA compliance
+- [ ] **Phase 9: Design System Foundation** - Install Shadcn UI primitives with governance and dark mode support
+- [ ] **Phase 10: Component Migration (Portfolio)** - Migrate low-risk portfolio pages to validate new components
+- [ ] **Phase 11: Form Components & Validation** - Replace all forms with accessible Shadcn Form components
+- [ ] **Phase 12: Critical Route Migration** - Migrate team/task features to new components and remove old code
+- [ ] **Phase 13: Automation & Optimization** - Add automated accessibility testing and bundle optimization
 
 ## Phase Details
 
@@ -177,22 +190,6 @@ Plans:
 - [ ] 06-01-PLAN.md — JWT configuration fix (add to .env.local, remove fallback, validation, rotate secret)
 - [ ] 06-02-PLAN.md — End-to-end verification (manual WebSocket test + Phase 3 features validation + E2E test)
 
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 → 6 → 6.1 → 7 (decimal phases like 2.1 execute between their surrounding integers)
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation & Authentication | 7/7 | ✓ Complete | 2026-02-14 |
-| 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
-| 3. Real-Time Collaboration | 4/4 | ✓ Complete | 2026-02-15 |
-| 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
-| 5.1. Authentication Investigation | 2/2 | ✓ Complete | 2026-02-15 |
-| 6. Authentication Fixes | 2/2 | ✓ Complete | 2026-02-16 |
-| 6.1. User Flow & Architecture Audit | 6/6 | ✓ Complete | 2026-02-16 |
-| 7. Phase 3 Verification | 1/1 | ✓ Complete | 2026-02-16 |
-
 ### Phase 6.1: User Flow & Architecture Audit (INSERTED)
 
 **Goal**: Audit and fix the complete user journey from portfolio through TeamFlow, ensuring consistent navigation, data integrity between API and database, proper authentication at all boundaries, and comprehensive edge case handling
@@ -248,27 +245,129 @@ Plans:
 Plans:
 - [ ] 07-01-PLAN.md — Phase 3 comprehensive verification (VERIFICATION.md creation, manual testing, requirements validation)
 
-### Phase 07.1: Phase 3 Gap Closure - Real-Time Collaboration Fixes (INSERTED)
+### Phase 8: Foundation Validation
 
-**Goal:** Fix critical session isolation, conflict detection logic errors, and UI/UX issues preventing multi-user real-time collaboration from functioning correctly
+**Goal**: Validate Tailwind v4 setup is functional and audit existing color tokens for WCAG AA compliance before any component work begins
 
-**Depends on:** Phase 7
+**Depends on**: Phase 7 (v1.0 completion)
 
-**Requirements:** REAL-02, REAL-03, REAL-04, REAL-05, REAL-06 (gap closure to bring Phase 3 from 2/8 to 8/8 satisfied)
+**Requirements**: FOUND-01, FOUND-02, FOUND-03
 
 **Success Criteria** (what must be TRUE):
-  1. Redis adapter enabled with async initialization for cross-session event broadcasting
-  2. User sees live task creation updates when another user creates a task (Test 2 → PASS)
-  3. User sees live comment updates when another user adds a comment (Test 5 → PASS)
-  4. User sees presence indicators showing active viewers on project page (Test 6 → PASS)
-  5. User does NOT see false conflict warnings when moving their own task (Test 4 → PASS)
-  6. User DOES see conflict warning when another user modifies same task concurrently (Test 7 → PASS)
-  7. All text elements meet WCAG AA 4.5:1 minimum contrast ratio (white-on-white fixed)
-  8. Assignee field shows user name during task creation (no "unknown user" placeholder)
+  1. Developer can modify @theme token in globals.css and see changes in browser within 2 seconds without hard reload
+  2. All existing color token pairs documented with actual contrast ratios (4.5:1 minimum for text, 3:1 minimum for UI elements)
+  3. CSS debugging workflow documented with hard reload procedure, cache clearing steps, and verification checklist
+  4. Any WCAG violations in existing tokens identified with remediation plan
+  5. Tailwind v4 configuration confirmed functional (test utility like bg-red-500 works immediately)
 
-**Plans:** 3 plans
+**Plans:** TBD
 
-Plans:
-- [ ] 07.1-01-PLAN.md — Redis adapter re-enablement + WebSocket debugging (Priority 1 - CRITICAL)
-- [ ] 07.1-02-PLAN.md — Conflict detection logic fixes (Priority 2 - HIGH)
-- [ ] 07.1-03-PLAN.md — UI/UX fixes: WCAG compliance + "unknown user" fix (Priority 3 - HIGH)
+### Phase 9: Design System Foundation
+
+**Goal**: Install minimal viable Shadcn UI component set with governance rules and dual-mode design to establish professional design system foundation
+
+**Depends on**: Phase 8
+
+**Requirements**: COLOR-01, COLOR-02, COLOR-03, COLOR-04, COMP-01, COMP-02, COMP-05
+
+**Success Criteria** (what must be TRUE):
+  1. Shadcn UI CLI initialized and configured with Tailwind v4 integration working
+  2. 5-8 primitive components installed (Button, Card, Input, Label, Dialog) and rendering correctly in both light and dark modes
+  3. All installed components have WCAG AA compliant colors (verified via axe DevTools showing 0 contrast violations)
+  4. ESLint rules prevent importing old component patterns (build fails if developer uses deprecated components)
+  5. Each component renders correctly in Storybook showing both light and dark mode variants
+
+**Plans:** TBD
+
+### Phase 10: Component Migration (Portfolio)
+
+**Goal**: Migrate low-risk portfolio pages to Shadcn components as testing ground for new design system before touching critical features
+
+**Depends on**: Phase 9
+
+**Requirements**: MIG-01
+
+**Success Criteria** (what must be TRUE):
+  1. Portfolio homepage uses only Shadcn components (Button, Card, Badge for experience cards)
+  2. Portfolio projects page migrated to Shadcn components with consistent styling
+  3. All portfolio pages pass Lighthouse accessibility audit with score ≥90
+  4. Visual regression tests capture both light and dark mode screenshots for comparison
+  5. grep search for old component imports in /app/(portfolio) returns zero results
+
+**Plans:** TBD
+
+### Phase 11: Form Components & Validation
+
+**Goal**: Replace all application forms with accessible Shadcn Form components integrated with react-hook-form to eliminate highest source of WCAG violations
+
+**Depends on**: Phase 10
+
+**Requirements**: COMP-03
+
+**Success Criteria** (what must be TRUE):
+  1. All forms keyboard-navigable with proper tab order and Enter key submission
+  2. Form fields have visible labels (not placeholder-only) associated via htmlFor
+  3. Error messages have aria-invalid and aria-describedby attributes announced by screen readers
+  4. Form validation occurs on blur (not every keystroke) to reduce screen reader noise
+  5. All form components pass axe DevTools audit with zero accessibility violations
+
+**Plans:** TBD
+
+### Phase 12: Critical Route Migration
+
+**Goal**: Migrate team and task management features to Shadcn components unit-by-unit, removing old component code completely to prevent parallel style systems
+
+**Depends on**: Phase 11
+
+**Requirements**: COMP-04, MIG-02, MIG-03
+
+**Success Criteria** (what must be TRUE):
+  1. Team pages fully migrated to Shadcn components (tables, dropdowns, modals all using new system)
+  2. Task management UI fully migrated (Kanban board, list view, task detail page all using Shadcn)
+  3. Modals and dialogs have focus trapping, ESC key close, and proper ARIA roles
+  4. Old component files deleted from codebase (not just deprecated or commented out)
+  5. Bundle analysis shows single style system (no duplicate CSS from parallel component libraries)
+
+**Plans:** TBD
+
+### Phase 13: Automation & Optimization
+
+**Goal**: Add automated accessibility testing to prevent regressions and optimize bundle size after component migration stabilizes
+
+**Depends on**: Phase 12
+
+**Requirements**: MIG-04, COMP-05
+
+**Success Criteria** (what must be TRUE):
+  1. CI/CD pipeline fails on WCAG violations (axe-core + Lighthouse integration running automatically)
+  2. Visual regression tests detect dark mode rendering issues in pull requests
+  3. Bundle size decreased compared to Phase 11 baseline (or documented if increased with justification)
+  4. Playwright visual regression suite captures screenshots of all major routes in both themes
+  5. Lighthouse performance score ≥90 for all critical routes
+
+**Plans:** TBD
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5.1 → 6 → 6.1 → 7 (v1.0) → 8 → 9 → 10 → 11 → 12 → 13 (v1.1)
+
+Decimal phases like 2.1 execute between their surrounding integers.
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation & Authentication | 7/7 | ✓ Complete | 2026-02-14 |
+| 2. Core Work Management | 11/11 | ✓ Complete | 2026-02-14 |
+| 3. Real-Time Collaboration | 4/4 | ✓ Complete | 2026-02-15 |
+| 4. Portfolio & Polish | 10/10 | ✓ Complete | 2026-02-15 |
+| 5.1. Authentication Investigation | 2/2 | ✓ Complete | 2026-02-15 |
+| 6. Authentication Fixes | 2/2 | ✓ Complete | 2026-02-16 |
+| 6.1. User Flow & Architecture Audit | 6/6 | ✓ Complete | 2026-02-16 |
+| 7. Phase 3 Verification | 1/1 | ✓ Complete | 2026-02-16 |
+| **v1.1 Phases** | | | |
+| 8. Foundation Validation | 0/0 | Not started | - |
+| 9. Design System Foundation | 0/0 | Not started | - |
+| 10. Component Migration (Portfolio) | 0/0 | Not started | - |
+| 11. Form Components & Validation | 0/0 | Not started | - |
+| 12. Critical Route Migration | 0/0 | Not started | - |
+| 13. Automation & Optimization | 0/0 | Not started | - |

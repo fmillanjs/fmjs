@@ -2,7 +2,7 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-14)
+See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
@@ -11,12 +11,12 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Milestone: v1.1 - UI/Design System Overhaul
-Phase: Not started (defining requirements)
+Phase: 8 - Foundation Validation
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-16 — Milestone v1.1 started
+Status: Ready for planning
+Last activity: 2026-02-16 — v1.1 roadmap created
 
-Progress: [████████░░] v1.0: 79% (55/67 requirements) | Phase 07.1: 2/3 (67%)
+Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1: 0% (0/16 requirements)
 
 ## Performance Metrics
 
@@ -202,61 +202,50 @@ Recent decisions affecting current work:
 - [Phase 07.1-02]: Selective version-based OCC: text edits use conflict detection, dropdowns use last-write-wins
 - [Phase 07.1-02]: Self-update filtering before version comparison prevents false conflict warnings
 - [Phase 07.1-02]: Amber conflict warning UI with WCAG-compliant contrast and user-driven resolution
-- [Phase 07.1]: Plan 07.1-03 FAILED: Attempted WCAG contrast fixes with spot changes. Learned that systemic design issues require design system overhaul, not piecemeal fixes. Need new milestone for UI/design system best practices.
+- [Phase 07.1]: Plan 07.1-03 FAILED: Attempted WCAG contrast fixes with spot changes. Learned that systemic design issues require design system overhaul, not piecemeal fixes. Led to v1.1 milestone creation.
+- [v1.1 Roadmap]: Phase 8 Foundation Validation must precede component work to avoid Phase 07.1-03 failure pattern
+- [v1.1 Roadmap]: 6 phases (8-13) derived from 16 requirements using research insights
+- [v1.1 Roadmap]: Foundation-first approach validates Tailwind v4 before touching components
 
 ### Roadmap Evolution
 
 - Phase 6 added: Authentication Fixes
 - Phase 6.1 inserted after Phase 6: User Flow & Architecture Audit (URGENT)
 - Phase 7.1 inserted after Phase 7: Phase 3 Gap Closure - Real-Time Collaboration Fixes (URGENT)
+- Milestone v1.1 added: UI/Design System Overhaul (Phases 8-13)
 
 ### Pending Todos
 
-None - All Phase 6.1 issues resolved.
+None - v1.1 roadmap created and ready for Phase 8 planning.
 
 ### Blockers/Concerns
 
-**Phase 3 Gap Closure - BLOCKED** (updated 2026-02-16):
-- ✅ **Wave 1 COMPLETE (Plan 07.1-01)**: Redis adapter working, WebSocket events broadcast across sessions
-  - Test Results: Session isolation FIXED, multi-user real-time collaboration working
-  - Redis pub/sub adapter enables horizontal scaling
-  - Project-level room isolation with membership verification
-- ✅ **Wave 2 COMPLETE (Plan 07.1-02)**: Conflict detection logic fixed and verified
-  - Test Results: 3/3 PASS (Tests 4, 7, 8 all passing)
-  - Self-update filtering eliminates false conflict warnings (Test 4 PASS)
-  - Version-based OCC detects legitimate conflicts (Test 7 PASS)
-  - Optimistic rollback working (Test 8 PASS)
-  - Selective version checking: text edits use OCC, dropdowns use last-write-wins
-- ❌ **Wave 3 FAILED (Plan 07.1-03)**: UI/UX Fixes EXECUTION ABORTED
-  - Status: Plan failed after 90 minutes, 7 commits, 58 files modified
-  - Problem: Attempted spot fixes for systemic design issues
-  - Root Cause: No proper design system, improper Tailwind v4 configuration, non-WCAG color palette
-  - Result: Code changes didn't reflect in browser - deeper configuration issues
-  - Lesson: WCAG compliance must be built-in from start, not retrofitted
-  - **BLOCKER**: Requires complete UI/design system overhaul (new milestone needed)
-  - See: `.planning/phases/07.1-phase-3-gap-closure-real-time-collaboration-fixes/07.1-03-SUMMARY.md`
-- **Impact on v1.0**: Requirement count remains at 79% (55/67)
-  - REAL-06 (Conflict detection): 3/8 satisfied
-  - REAL-05 (Optimistic UI): Complete
-  - REAL-02 (Live updates): Improved
-  - **UI-01 (Professional design)**: FAILED - accessibility violations remain
-  - **UI-02 (WCAG compliance)**: FAILED - contrast issues unresolved
+**v1.0 Completion Status** (updated 2026-02-16):
+- ✅ **Phase 3 real-time features**: Fully functional after Phases 6, 6.1, 7, 07.1-01, 07.1-02
+  - Redis pub/sub: Working
+  - WebSocket authentication: Working
+  - Live updates: Working
+  - Presence indicators: Working
+  - Conflict detection: Working (selective OCC)
+- ❌ **UI/UX accessibility**: BLOCKED (Plan 07.1-03 FAILED)
+  - Root cause: Systemic design issues (Tailwind v4 config, color palette, no design system)
+  - Resolution: NEW MILESTONE v1.1 - UI/Design System Overhaul
+  - **Do NOT retry spot fixes** - requires architectural solution
 
-**CRITICAL BLOCKER - NEW MILESTONE REQUIRED:**
-UI/Design System Overhaul needed before continuing UI-related work:
-- Establish WCAG-compliant color palette (Shadcn UI + Radix Colors)
-- Implement semantic design tokens
-- Create component library with built-in accessibility
-- Comprehensive dark mode strategy
-- Do NOT retry Plan 07.1-03 until design foundation complete
+**v1.1 Prerequisites** (updated 2026-02-16):
+- ✅ Roadmap created: Phases 8-13 defined
+- ✅ Research complete: research/SUMMARY.md provides foundation
+- ✅ Requirements defined: 16 requirements (FOUND-01 through MIG-04)
+- ⏳ Ready for Phase 8 planning: Foundation Validation phase
+
+**No active blockers** - ready to proceed with Phase 8 planning.
 
 ## Session Continuity
 
-Last session: 2026-02-16T23:45:00Z (Phase 07.1 Plan 03 FAILED - execution aborted)
-Stopped at: Plan 07.1-03 EXECUTION FAILED after 90 minutes. Aborted due to systemic design issues requiring architectural solution, not spot fixes.
-Status: BLOCKED - Requires new milestone for UI/Design System Overhaul
-Next action: User creating new milestone for design system implementation. Do NOT resume Phase 07.1 Wave 3 until design foundation complete.
-See: `.planning/phases/07.1-phase-3-gap-closure-real-time-collaboration-fixes/07.1-03-SUMMARY.md` for lessons learned
+Last session: 2026-02-16 (v1.1 roadmap creation)
+Stopped at: ROADMAP.md and STATE.md updated with v1.1 phases 8-13
+Status: Ready for Phase 8 planning
+Next action: `/gsd:plan-phase 8` to create Foundation Validation plan
 
 ---
-*v1.0 complete (88%). Starting v1.1 to activate real-time features.*
+*v1.0 at 79% complete. v1.1 roadmap ready.*
