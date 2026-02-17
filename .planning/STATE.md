@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 10 - Component Migration Portfolio
-Plan: 3 of 3 complete
-Status: Complete
-Last activity: 2026-02-17 — Completed 10-03 Portfolio Page Migration (all 6 pages migrated, MIG-01 satisfied)
+Plan: 4 of 4 (checkpoint — Task 1 complete, Task 2 awaiting human verification)
+Status: Checkpoint
+Last activity: 2026-02-17 — Completed 10-04 Task 1 (12 visual baselines, 0 WCAG violations, all accessibility tests pass)
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 56% (9/16 requirements)
 
@@ -75,6 +75,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 10-component-migration-portfolio P01 | 2 | 2 tasks | 7 files |
 | Phase 10-component-migration-portfolio P02 | 8 | 2 tasks | 4 files |
 | Phase 10-component-migration-portfolio P03 | 3 | 2 tasks | 6 files |
+| Phase 10-component-migration-portfolio P04 | 17 | 1 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -245,6 +246,9 @@ Recent decisions affecting current work:
 - [Phase 10-03]: bg-accent token used for info panel backgrounds replacing bg-blue-50 dark:bg-blue-950/30 — matches Radix Colors accent scale semantics
 - [Phase 10-03]: About page CTA changed from mailto: href to /contact Link — consistent with Button asChild navigation pattern
 - [Phase 10-03]: green-600/green-400 preserved for success checkmark list items (semantically correct, not primary color)
+- [Phase 10-04]: dark mode axe-core test: localStorage pre-load (addInitScript) required — post-load class injection causes body bg to remain transparent (rgba(0,0,0,0)), axe falls back to white canvas for all color contrast checks
+- [Phase 10-04]: primary token: blue-9 (#0090ff) → blue-11 (#0d74ce) for WCAG 2 AA compliance — Radix step 9 guarantee is APCA Lc 60 only, not WCAG 2 4.5:1 (blue-9 on white = 2.99:1)
+- [Phase 10-04]: body element requires bg-background text-foreground classes — without it, html/body/main have transparent backgrounds and axe-core cannot resolve dark mode CSS custom properties
 
 ### Roadmap Evolution
 
@@ -283,9 +287,9 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-17 (Phase 10 Component Migration Portfolio)
-Stopped at: Completed 10-03-PLAN.md - Portfolio Page Migration (all 6 pages migrated, MIG-01 requirement satisfied)
-Status: Phase 10 complete (3 of 3 plans done) — all portfolio pages use Shadcn UI primitives and semantic design tokens, zero hardcoded color patterns in entire portfolio scope
-Next action: Proceed to Phase 11 (dashboard component migration)
+Stopped at: Checkpoint 10-04-PLAN.md Task 2 — awaiting human visual verification at http://localhost:3000
+Status: Phase 10 plan 04 paused at checkpoint — Task 1 complete (12 baselines, 0 WCAG violations), Task 2 awaiting human approval
+Next action: Human visual verification, then proceed to Phase 11 (dashboard component migration)
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
