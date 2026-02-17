@@ -42,6 +42,9 @@ jobs:
       - name: Run API unit tests
         run: cd apps/api && npm test
 
+      - name: Run ESLint governance check
+        run: cd apps/web && npx next lint
+
       - name: Start Docker services
         run: docker-compose up -d
 
@@ -81,8 +84,22 @@ jobs:
       - name: Install Playwright browsers
         run: cd apps/web && npx playwright install --with-deps chromium
 
-      - name: Run E2E tests
-        run: cd apps/web && npx playwright test
+      - name: Run accessibility tests (axe WCAG AA)
+        run: cd apps/web && npx playwright test e2e/portfolio/accessibility.spec.ts e2e/auth/form-accessibility.spec.ts e2e/dashboard/component-accessibility.spec.ts
+        env:
+          NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+      - name: Run visual regression tests (light and dark modes)
+        run: cd apps/web && npx playwright test e2e/portfolio/visual-regression.spec.ts e2e/dashboard/visual-regression.spec.ts
+        env:
+          NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+      - name: Run remaining E2E tests (user journey, edge cases, auth flows)
+        run: cd apps/web && npx playwright test --ignore=e2e/portfolio/accessibility.spec.ts --ignore=e2e/auth/form-accessibility.spec.ts --ignore=e2e/dashboard/component-accessibility.spec.ts --ignore=e2e/portfolio/visual-regression.spec.ts --ignore=e2e/dashboard/visual-regression.spec.ts
         env:
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
