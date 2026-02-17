@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 14 COMPLETE, Phase 15 next
+**Current focus:** v2.0 DevCollab — Phase 15 Authentication System in progress
 
 ## Current Position
 
-Phase: 14 of 21 (Monorepo Scaffold + Infrastructure)
-Plan: 4 of 4 in Phase 14 — COMPLETE
-Status: Phase 14 complete
-Last activity: 2026-02-17 — 14-04 complete: CI/CD pipeline extended with build-and-push-devcollab job for devcollab-web and devcollab-api images to GHCR
+Phase: 15 of 21 (Authentication System)
+Plan: 2 of 4 in Phase 15 — Plan 02 complete
+Status: Phase 15 in progress
+Last activity: 2026-02-17 — 15-02 complete: Auth dependencies declared, cookie-parser/CORS middleware, @CheckAbility/@CurrentUser decorators, JWT CaslAuthGuard upgraded
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 2 plans complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 4 plans complete)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -36,9 +36,10 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 12-critical-route-migration | 9 | 37 min | 4.1 min |
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
+| 15-authentication-system | 2 (of 4) | 2 min | 1.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-P04 (1m), 14-P03 (1m), 14-P02 (1m), 14-P01 (1m), 13-P03 (10m)
+- Last 5 plans: 15-P02 (2m), 14-P04 (1m), 14-P03 (1m), 14-P02 (1m), 14-P01 (1m)
 - Trend: Stable — infra/scaffold plans run fast
 
 *Updated after each plan completion*
@@ -70,6 +71,10 @@ Key decisions for v2.0:
 - Default env var values (:-devcollab, :-minioadmin) allow docker compose up without .env for local dev (14-03)
 - [Phase 14]: build-and-push-devcollab uses needs: [test] only — DevCollab images build independently from Lighthouse CI check
 - [Phase 14]: Both devcollab images built in same CI job as sequential steps — saves CI minutes by sharing checkout, buildx setup, and GHCR login (14-04)
+- [Phase 15]: import * as cookieParser (CommonJS style) required for NestJS cookie-parser — NOT default import (15-02)
+- [Phase 15]: CORS origin uses DEVCOLLAB_WEB_URL env var with localhost:3002 fallback; credentials:true required for httpOnly cookie cross-origin (15-02)
+- [Phase 15]: CaslAuthGuard injects JwtService — DI wiring completes in Plan 03 when AppModule registers global JwtModule (15-02)
+- [Phase 15]: CHECK_ABILITY_KEY = 'check_ability' string literal is the Reflector metadata key for @CheckAbility decorator (15-02)
 
 ### Pending Todos
 
@@ -91,6 +96,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 14-04 complete — Phase 14 all 4 plans done: Prisma client isolation, app workspaces, Docker Compose services, CI/CD image pipeline
+Stopped at: 15-02 complete — Auth dependencies, cookie-parser middleware, CORS, @CheckAbility/@CurrentUser decorators, upgraded CaslAuthGuard with JWT verification
 Resume file: None
-Next action: Execute Phase 15 plans (DevCollab authentication)
+Next action: Execute 15-03 (auth feature module: AuthModule, AuthController, login/logout/me endpoints)
