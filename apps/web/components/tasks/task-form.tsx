@@ -126,7 +126,7 @@ export function TaskForm({
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
               {error}
             </div>
           )}
@@ -254,7 +254,7 @@ export function TaskForm({
                     flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-colors
                     ${
                       selectedLabelIds.includes(label.id)
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-primary bg-accent'
                         : 'border-border bg-card hover:border-foreground'
                     }
                   `}

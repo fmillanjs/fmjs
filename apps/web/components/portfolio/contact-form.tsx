@@ -72,7 +72,7 @@ export function ContactForm() {
         <div
           className={`rounded-md border px-4 py-3 text-sm ${
             submitStatus.type === 'success'
-              ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200'
+              ? 'border-[var(--green-6)] bg-[var(--green-3)] text-[var(--green-11)]'
               : 'border-destructive/20 bg-destructive/10 text-destructive'
           }`}
         >

@@ -97,20 +97,20 @@ export function ProjectActions({
           {!showArchiveConfirm ? (
             <button
               onClick={() => setShowArchiveConfirm(true)}
-              className="px-4 py-2 text-sm font-medium text-yellow-700 bg-yellow-50 border border-yellow-300 rounded-md hover:bg-yellow-100"
+              className="px-4 py-2 text-sm font-medium text-[var(--amber-11)] bg-[var(--amber-3)] border border-[var(--amber-6)] rounded-md hover:bg-[var(--amber-4)]"
             >
               Archive Project
             </button>
           ) : (
-            <div className="bg-yellow-50 border border-yellow-300 rounded-md p-4">
-              <p className="text-sm text-yellow-800 mb-3">
+            <div className="bg-[var(--amber-3)] border border-[var(--amber-6)] rounded-md p-4">
+              <p className="text-sm text-[var(--amber-11)] mb-3">
                 Are you sure you want to archive "{projectName}"?
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={handleArchive}
                   disabled={isArchiving}
-                  className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50"
                 >
                   {isArchiving ? 'Archiving...' : 'Yes, Archive'}
                 </button>

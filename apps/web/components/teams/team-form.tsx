@@ -59,7 +59,7 @@ export function TeamForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Server Error */}
       {serverError && (
-        <div className="rounded-md bg-red-50 p-4">
+        <div className="rounded-md bg-[var(--red-3)] p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
@@ -75,7 +75,7 @@ export function TeamForm() {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{serverError}</p>
+              <p className="text-sm font-medium text-[var(--red-11)]">{serverError}</p>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export function TeamForm() {
 
       {/* Success Message */}
       {successMessage && (
-        <div className="rounded-md bg-green-50 p-4">
+        <div className="rounded-md bg-[var(--green-3)] p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
@@ -99,7 +99,7 @@ export function TeamForm() {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">{successMessage}</p>
+              <p className="text-sm font-medium text-[var(--green-11)]">{successMessage}</p>
             </div>
           </div>
         </div>
