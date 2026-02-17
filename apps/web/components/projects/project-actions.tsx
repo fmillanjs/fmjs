@@ -2,6 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface ProjectActionsProps {
   projectId: string;
@@ -21,8 +31,8 @@ export function ProjectActions({
   const router = useRouter();
   const [isArchiving, setIsArchiving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [confirmName, setConfirmName] = useState('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleArchive = async () => {
@@ -48,7 +58,6 @@ export function ProjectActions({
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsArchiving(false);
-      setShowArchiveConfirm(false);
     }
   };
 
@@ -75,7 +84,7 @@ export function ProjectActions({
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
+      setDeleteOpen(false);
     }
   };
 
@@ -94,36 +103,31 @@ export function ProjectActions({
           <p className="text-sm text-muted-foreground mb-3">
             Archiving this project will hide it from the active projects list. You can unarchive it later.
           </p>
-          {!showArchiveConfirm ? (
-            <button
-              onClick={() => setShowArchiveConfirm(true)}
-              className="px-4 py-2 text-sm font-medium text-[var(--amber-11)] bg-[var(--amber-3)] border border-[var(--amber-6)] rounded-md hover:bg-[var(--amber-4)]"
-            >
-              Archive Project
-            </button>
-          ) : (
-            <div className="bg-[var(--amber-3)] border border-[var(--amber-6)] rounded-md p-4">
-              <p className="text-sm text-[var(--amber-11)] mb-3">
-                Are you sure you want to archive "{projectName}"?
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleArchive}
-                  disabled={isArchiving}
-                  className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50"
-                >
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="text-[var(--amber-11)] border-[var(--amber-6)] bg-[var(--amber-3)] hover:bg-[var(--amber-4)]"
+                disabled={isArchiving}
+              >
+                {isArchiving ? 'Archiving...' : 'Archive Project'}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Archive this project?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  &quot;{projectName}&quot; will be hidden from the active projects list. You can unarchive it from the Archived tab later.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleArchive} disabled={isArchiving}>
                   {isArchiving ? 'Archiving...' : 'Yes, Archive'}
-                </button>
-                <button
-                  onClick={() => setShowArchiveConfirm(false)}
-                  disabled={isArchiving}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       )}
 
@@ -134,51 +138,38 @@ export function ProjectActions({
           <p className="text-sm text-muted-foreground mb-3">
             Permanently delete this project and all its tasks. This action cannot be undone.
           </p>
-          {!showDeleteConfirm ? (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-            >
-              Delete Project
-            </button>
-          ) : (
-            <div className="bg-[var(--red-3)] border border-[var(--red-6)] rounded-md p-4">
-              <p className="text-sm text-[var(--red-11)] mb-1 font-medium">
-                This action cannot be undone!
-              </p>
-              <p className="text-sm text-[var(--red-11)] mb-3">
-                Type the project name "{projectName}" to confirm deletion.
-              </p>
-              <input
-                type="text"
+          <Button
+            variant="destructive"
+            onClick={() => { setDeleteOpen(true); setConfirmName(''); }}
+          >
+            Delete Project
+          </Button>
+          <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-destructive">Delete Project</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. Type <strong>{projectName}</strong> to confirm deletion.
+                </DialogDescription>
+              </DialogHeader>
+              <Input
+                value={confirmName}
+                onChange={(e) => setConfirmName(e.target.value)}
                 placeholder="Type project name to confirm"
-                className="w-full px-3 py-2 mb-3 border border-[var(--red-6)] rounded-md text-sm"
-                onChange={(e) => {
-                  const confirmBtn = document.getElementById('confirm-delete-btn') as HTMLButtonElement;
-                  if (confirmBtn) {
-                    confirmBtn.disabled = e.target.value !== projectName || isDeleting;
-                  }
-                }}
+                className="mt-2"
               />
-              <div className="flex gap-2">
-                <button
-                  id="confirm-delete-btn"
+              <DialogFooter className="mt-4">
+                <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+                <Button
+                  variant="destructive"
+                  disabled={confirmName !== projectName || isDeleting}
                   onClick={handleDelete}
-                  disabled={true}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isDeleting ? 'Deleting...' : 'Yes, Delete Forever'}
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={isDeleting}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
+                  {isDeleting ? 'Deleting...' : 'Delete Forever'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
 
