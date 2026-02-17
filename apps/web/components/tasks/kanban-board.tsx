@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useOptimistic, startTransition } from 'react';
+import { useState, useOptimistic, startTransition, useEffect } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -19,7 +19,7 @@ import { KanbanColumn } from './kanban-column';
 import { TaskCard } from './task-card';
 import { TaskForm } from './task-form';
 import { api } from '@/lib/api';
-import { ConflictWarning } from '../ui/conflict-warning';
+import { AlertTriangle, RefreshCw, X } from 'lucide-react';
 
 // Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface KanbanBoardProps {
@@ -48,6 +48,13 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
   const [showConflict, setShowConflict] = useState(false);
   const [conflictMessage, setConflictMessage] = useState('');
   const [conflictTaskId, setConflictTaskId] = useState<string>('');
+
+  // Auto-hide conflict warning after 10 seconds
+  useEffect(() => {
+    if (!showConflict) return;
+    const timer = setTimeout(() => setShowConflict(false), 10000);
+    return () => clearTimeout(timer);
+  }, [showConflict]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -210,12 +217,39 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
       />
 
       {showConflict && conflictTaskId && (
-        <ConflictWarning
-          taskId={conflictTaskId}
-          message={conflictMessage}
-          onReload={handleFormSuccess}
-          onDismiss={() => setShowConflict(false)}
-        />
+        <div className="flex items-center gap-3 rounded-lg border-l-4 border-amber-500 bg-[var(--amber-3)] p-4 text-[var(--amber-12)]">
+          <AlertTriangle className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="font-medium">{conflictMessage}</p>
+            <p className="text-sm opacity-90">
+              Choose to reload the latest version or keep your changes.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { handleFormSuccess(); setShowConflict(false); }}
+              className="flex items-center gap-1 rounded bg-[var(--amber-9)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--amber-10)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] focus:ring-offset-2 transition-colors"
+              aria-label="Reload task from server"
+            >
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              Reload
+            </button>
+            <button
+              onClick={() => setShowConflict(false)}
+              className="rounded border border-[var(--amber-6)] px-3 py-1.5 text-sm font-medium hover:bg-[var(--amber-4)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] focus:ring-offset-2 transition-colors"
+              aria-label="Keep my changes and dismiss warning"
+            >
+              Keep My Changes
+            </button>
+          </div>
+          <button
+            onClick={() => setShowConflict(false)}
+            className="flex-shrink-0 text-[var(--amber-11)] hover:text-[var(--amber-12)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] rounded transition-colors"
+            aria-label="Close conflict warning"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       )}
     </>
   );

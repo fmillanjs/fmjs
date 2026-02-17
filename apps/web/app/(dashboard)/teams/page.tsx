@@ -3,7 +3,6 @@ import { validatedApi } from '@/lib/api';
 import { OrganizationWithCountSchema } from '@/lib/validators/api-schemas';
 import { z } from 'zod';
 import Link from 'next/link';
-import { EmptyState } from '@/components/ui/empty-state';
 import { Users, Plus, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -56,16 +55,16 @@ export default async function TeamsPage() {
       {/* Teams List */}
       {teams.length === 0 ? (
         <div className="bg-card border border-border shadow rounded-lg p-12">
-          <EmptyState
-            icon={Users}
-            title="No teams yet"
-            description="Create your first team to get started with collaboration and organize your work."
-            action={
-              <Button asChild>
-                <Link href="/teams/new">Create Team</Link>
-              </Button>
-            }
-          />
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Users className="w-12 h-12 text-muted-foreground mb-4" />
+            <p className="text-lg font-semibold text-foreground mb-2">No teams yet</p>
+            <p className="text-sm text-muted-foreground max-w-sm mb-6">
+              Create your first team to get started with collaboration and organize your work.
+            </p>
+            <Button asChild>
+              <Link href="/teams/new">Create Team</Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

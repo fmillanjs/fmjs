@@ -3,7 +3,6 @@ import { auth } from '@/lib/auth';
 import Link from 'next/link';
 import { TeamMemberList } from '@/components/teams/team-member-list';
 import { InviteMemberForm } from '@/components/teams/invite-member-form';
-import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -200,16 +199,16 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
         {projects.length === 0 ? (
           <Card className="p-8">
             <CardContent className="pt-0">
-              <EmptyState
-                icon={FolderOpen}
-                title="No projects"
-                description="Create a project to start organizing work and managing tasks for this team."
-                action={
-                  <Button asChild>
-                    <Link href={`/teams/${team.id}/projects/new`}>Create Project</Link>
-                  </Button>
-                }
-              />
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <FolderOpen className="w-12 h-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-semibold text-foreground mb-2">No projects</p>
+                <p className="text-sm text-muted-foreground max-w-sm mb-6">
+                  Create a project to start organizing work and managing tasks for this team.
+                </p>
+                <Button asChild>
+                  <Link href={`/teams/${team.id}/projects/new`}>Create Project</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (

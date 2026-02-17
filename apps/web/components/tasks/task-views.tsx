@@ -10,7 +10,6 @@ import { TaskListView } from './task-list-view';
 import { TaskForm } from './task-form';
 import { TaskSearch } from './task-search';
 import { TaskFilters } from './task-filters';
-import { EmptyState } from '@/components/ui/empty-state';
 import { Plus, CheckSquare } from 'lucide-react';
 import { useRealTimeTasks } from '@/hooks/use-real-time-tasks';
 
@@ -89,20 +88,20 @@ export function TaskViews({ initialTasks, projectId, orgSlug, teamMembers, label
         </div>
       ) : isEmpty ? (
         <div className="bg-card border border-border rounded-lg p-12">
-          <EmptyState
-            icon={CheckSquare}
-            title="No tasks yet"
-            description="Create your first task to get started organizing work for this project."
-            action={
-              <button
-                onClick={() => setIsNewTaskOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Create Task
-              </button>
-            }
-          />
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <CheckSquare className="w-12 h-12 text-muted-foreground mb-4" />
+            <p className="text-lg font-semibold text-foreground mb-2">No tasks yet</p>
+            <p className="text-sm text-muted-foreground max-w-sm mb-6">
+              Create your first task to get started organizing work for this project.
+            </p>
+            <button
+              onClick={() => setIsNewTaskOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Create Task
+            </button>
+          </div>
         </div>
       ) : (
         /* Task views */

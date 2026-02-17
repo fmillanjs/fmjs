@@ -13,7 +13,7 @@ import { TaskHistory } from './task-history';
 import { useRouter } from 'next/navigation';
 import { useRealTimeComments } from '@/hooks/use-real-time-comments';
 import { useWebSocket } from '@/hooks/use-websocket';
-import { ConflictWarning } from '../ui/conflict-warning';
+import { AlertTriangle, RefreshCw, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -442,12 +442,39 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
       </div>
 
       {showConflict && (
-        <ConflictWarning
-          taskId={task.id}
-          message={conflictMessage}
-          onReload={handleRefreshTask}
-          onDismiss={() => setShowConflict(false)}
-        />
+        <div className="flex items-center gap-3 rounded-lg border-l-4 border-amber-500 bg-[var(--amber-3)] p-4 text-[var(--amber-12)]">
+          <AlertTriangle className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="font-medium">{conflictMessage}</p>
+            <p className="text-sm opacity-90">
+              Choose to reload the latest version or keep your changes.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { handleRefreshTask(); setShowConflict(false); }}
+              className="flex items-center gap-1 rounded bg-[var(--amber-9)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--amber-10)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] focus:ring-offset-2 transition-colors"
+              aria-label="Reload task from server"
+            >
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              Reload
+            </button>
+            <button
+              onClick={() => setShowConflict(false)}
+              className="rounded border border-[var(--amber-6)] px-3 py-1.5 text-sm font-medium hover:bg-[var(--amber-4)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] focus:ring-offset-2 transition-colors"
+              aria-label="Keep my changes and dismiss warning"
+            >
+              Keep My Changes
+            </button>
+          </div>
+          <button
+            onClick={() => setShowConflict(false)}
+            className="flex-shrink-0 text-[var(--amber-11)] hover:text-[var(--amber-12)] focus:outline-none focus:ring-2 focus:ring-[var(--amber-7)] rounded transition-colors"
+            aria-label="Close conflict warning"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       )}
     </div>
   );
