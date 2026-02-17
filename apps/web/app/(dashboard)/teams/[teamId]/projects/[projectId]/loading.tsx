@@ -20,14 +20,14 @@ export default function ProjectLoading() {
         {['TODO', 'IN_PROGRESS', 'DONE', 'BLOCKED'].map((status) => (
           <div
             key={status}
-            className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"
+            className="bg-muted rounded-lg p-4"
           >
             <Skeleton className="h-6 w-32 mb-4" />
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-3"
+                  className="bg-card rounded-lg border border-border p-3"
                 >
                   <Skeleton className="h-5 w-full mb-2" />
                   <Skeleton className="h-4 w-3/4 mb-3" />

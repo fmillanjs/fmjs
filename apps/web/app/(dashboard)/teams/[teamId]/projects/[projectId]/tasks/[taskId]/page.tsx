@@ -53,26 +53,26 @@ export default async function TaskDetailPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-        <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href={`/teams/${teamId}`} className="hover:text-foreground">
           Team
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects`} className="hover:text-foreground">
           Projects
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects/${projectId}`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects/${projectId}`} className="hover:text-foreground">
           Project
         </Link>
         <span>›</span>
-        <span className="text-gray-900 font-medium">{task.title}</span>
+        <span className="text-foreground font-medium">{task.title}</span>
       </nav>
 
       {/* Back Button */}
       <Link
         href={`/teams/${teamId}/projects/${projectId}`}
-        className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

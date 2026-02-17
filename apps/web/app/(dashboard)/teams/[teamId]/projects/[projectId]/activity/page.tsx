@@ -57,36 +57,36 @@ export default async function ProjectActivityPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-        <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href={`/teams/${teamId}`} className="hover:text-foreground">
           Team
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}/projects`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}/projects`} className="hover:text-foreground">
           Projects
         </Link>
         <span>›</span>
         <Link
           href={`/teams/${teamId}/projects/${projectId}`}
-          className="hover:text-gray-700"
+          className="hover:text-foreground"
         >
           {project.name}
         </Link>
         <span>›</span>
-        <span className="text-gray-900 dark:text-white font-medium">Activity</span>
+        <span className="text-foreground font-medium">Activity</span>
       </nav>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Activity</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <h1 className="text-2xl font-bold text-foreground">Activity</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Recent activity for {project.name}
           </p>
         </div>
         <Link
           href={`/teams/${teamId}/projects/${projectId}`}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
         >
           <svg
             className="-ml-1 mr-2 h-5 w-5"

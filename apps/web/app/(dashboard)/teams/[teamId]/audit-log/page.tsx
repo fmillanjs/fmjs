@@ -64,20 +64,20 @@ export default async function AuditLogPage({
     return (
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-          <Link href="/teams" className="hover:text-gray-700">
+        <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <Link href="/teams" className="hover:text-foreground">
             Teams
           </Link>
           <span>›</span>
-          <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+          <Link href={`/teams/${teamId}`} className="hover:text-foreground">
             {team.name}
           </Link>
           <span>›</span>
-          <span className="text-gray-900 dark:text-white font-medium">Audit Log</span>
+          <span className="text-foreground font-medium">Audit Log</span>
         </nav>
 
         {/* Access Denied */}
-        <div className="bg-white shadow rounded-lg p-12 text-center">
+        <div className="bg-card shadow rounded-lg p-12 text-center">
           <svg
             className="mx-auto h-12 w-12 text-red-400"
             fill="none"
@@ -91,8 +91,8 @@ export default async function AuditLogPage({
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">Access Denied</h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          <h3 className="mt-4 text-lg font-medium text-foreground">Access Denied</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
             Only administrators can access the audit log.
           </p>
           <div className="mt-6">
@@ -121,24 +121,24 @@ export default async function AuditLogPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300">
-        <Link href="/teams" className="hover:text-gray-700">
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href="/teams" className="hover:text-foreground">
           Teams
         </Link>
         <span>›</span>
-        <Link href={`/teams/${teamId}`} className="hover:text-gray-700">
+        <Link href={`/teams/${teamId}`} className="hover:text-foreground">
           {team.name}
         </Link>
         <span>›</span>
-        <span className="text-gray-900 dark:text-white font-medium">Audit Log</span>
+        <span className="text-foreground font-medium">Audit Log</span>
       </nav>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Log</h1>
-            <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded flex items-center gap-1">
+            <h1 className="text-2xl font-bold text-foreground">Audit Log</h1>
+            <span className="px-2 py-1 text-xs font-medium bg-[var(--red-3)] text-[var(--red-11)] rounded flex items-center gap-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -149,13 +149,13 @@ export default async function AuditLogPage({
               Admin Only
             </span>
           </div>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-1 text-sm text-muted-foreground">
             Organization-wide audit trail for {team.name}
           </p>
         </div>
         <Link
           href={`/teams/${teamId}`}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          className="inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-muted-foreground bg-card hover:bg-muted/50"
         >
           <svg
             className="-ml-1 mr-2 h-5 w-5"
