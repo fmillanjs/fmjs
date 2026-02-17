@@ -2,11 +2,11 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-16)
+See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v1.1 - UI/Design System Overhaul
+**Current focus:** Planning v1.2 — Deployment & Polish (v1.1 shipped 2026-02-17)
 
 ## Current Position
 

@@ -2,51 +2,51 @@
 
 ## What This Is
 
-A professional portfolio website showcasing TeamFlow—a production-quality work management SaaS application. TeamFlow demonstrates senior full-stack engineering capabilities through real-time collaboration features, role-based access control, and comprehensive audit logging. The portfolio serves as a marketing hub for job hunting, presenting TeamFlow as a complete product with live demo, case study, and source code.
+A professional portfolio website showcasing TeamFlow—a production-quality work management SaaS application. TeamFlow demonstrates senior full-stack engineering capabilities through real-time collaboration features, role-based access control, comprehensive audit logging, and a production-ready accessibility-first design system. The portfolio serves as a marketing hub for job hunting, presenting TeamFlow as a complete product with live demo, case study, and source code.
 
 ## Core Value
 
 Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-## Current Milestone: v1.1 - UI/Design System Overhaul
+## Current Milestone: Planning Next (v1.2)
 
-**Goal:** Establish a production-ready design system foundation with WCAG AA compliance and accessibility-first components.
-
-**Target features:**
-- WCAG AA color compliance (4.5:1 text contrast, 3:1 UI element contrast)
-- Fix Tailwind v4 configuration (CSS pipeline working correctly)
-- Shadcn UI integration (adopt as design system foundation)
-- Semantic design tokens (CSS variables for consistent theming)
-- Accessibility-first component library (forms, buttons, modals, all core UI)
-
-**Context:** Addresses critical blocker from Phase 07.1-03 where spot fixes failed due to systemic design issues. Establishes proper foundations that make WCAG compliance built-in rather than retrofitted.
+v1.1 is complete. The design system foundation is established. The next milestone should focus on:
+- Deploying to production (Coolify deployment, custom domains, environment setup)
+- v1.0 completion items deferred from the original roadmap (real-time UI polish, presence avatars)
+- Portfolio content polish (real resume PDF, case study refinement)
 
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ WCAG AA color palette implementation — v1.1 (Radix Colors, 0 axe violations)
+- ✓ Semantic design token system (CSS variables) — v1.1 (Radix 2-layer pattern, @theme inline)
+- ✓ Shadcn UI integration and configuration — v1.1 (components.json, new-york style)
+- ✓ Tailwind v4 configuration fixes (CSS pipeline) — v1.1 (233-263ms HMR confirmed)
+- ✓ Accessibility-first form components (inputs, selects, textareas) — v1.1 (all 12 forms migrated)
+- ✓ Accessibility-first button components with focus states — v1.1 (Radix Button, 6 variants)
+- ✓ Accessibility-first modal/dialog components — v1.1 (Radix Dialog/AlertDialog, focus trap)
+- ✓ Comprehensive dark mode implementation — v1.1 (Radix dark scales, next-themes)
+- ✓ Component library documentation — v1.1 (DESIGN-SYSTEM.md, /design-system route)
+- ✓ Regression testing suite (ensure no feature breakage) — v1.1 (Lighthouse CI + visual regression + axe)
 
 ### Active
 
-**v1.1 Requirements (UI/Design System Overhaul):**
-- [ ] WCAG AA color palette implementation
-- [ ] Semantic design token system (CSS variables)
-- [ ] Shadcn UI integration and configuration
-- [ ] Tailwind v4 configuration fixes (CSS pipeline)
-- [ ] Accessibility-first form components (inputs, selects, textareas)
-- [ ] Accessibility-first button components with focus states
-- [ ] Accessibility-first modal/dialog components
-- [ ] Comprehensive dark mode implementation
-- [ ] Component library documentation
-- [ ] Regression testing suite (ensure no feature breakage)
+**Next Milestone Requirements (v1.2):**
+- [ ] Production deployment to Coolify (custom domains, environment variables, HTTPS)
+- [ ] Real resume PDF at /resume.pdf
+- [ ] Seed data for demo workspace (Faker-generated tasks, projects, users)
+- [ ] E2E test coverage for task form submission and Kanban drag-and-drop
+- [ ] TypeScript error cleanup (5 pre-existing errors in e2e/user-journey and api.test.ts)
 
-### Deferred (Post-v1.1)
+### Deferred (Post-v1.2)
 
-**v1.0 Incomplete Requirements** (deferred until design system complete):
-- Real-time collaboration UI fixes (conflict indicators, presence avatars with proper contrast)
-- WCAG compliance retrofitting (superseded by v1.1 design system)
-- Additional v1.0 polish items requiring design system foundation
+- Real-time collaboration UI fixes (conflict indicators, presence avatars with proper contrast) — design system now supports this
+- Team invitation via email — manual team setup for v1
+- File attachments — defer to future version
+- Comment threads on tasks — keep tasks simple initially
+- Storybook / component playground — README + /design-system page sufficient
+- Mobile native app — web-first approach
 
 ### Out of Scope
 
@@ -62,29 +62,36 @@ Prove senior full-stack engineering skills through a deployed, production-ready 
 
 **Purpose**: Job hunting for senior full-stack developer roles. Need an impressive, interactive demo that showcases production-level thinking and execution.
 
-**Timeline pressure**: 3-4 weeks to complete both TeamFlow and portfolio site.
+**Current state:** v1.1 shipped 2026-02-17. Design system complete. ~14,714 LOC in web app (TypeScript/TSX). Application is functionally complete and accessible. Not yet deployed to production.
+
+**Tech stack:** Next.js 15 + NestJS 11 + Prisma + Postgres + NextAuth v5 + Socket.io + Radix UI + Shadcn UI + Tailwind v4 + dnd-kit + TanStack Table + Playwright + Vitest
+
+**Deployment status:** Docker infrastructure ready (dev + production Dockerfiles), CI/CD pipeline with GitHub Actions → GHCR → Coolify. Not yet triggered for live deployment.
 
 **Target audience**: Technical recruiters and hiring managers who will evaluate code quality, architecture decisions, and production readiness.
 
-**Strategy**: Treat TeamFlow as a real product with marketing site (portfolio), live demo environment, and comprehensive case study. Show product thinking, not just coding ability.
-
 ## Constraints
 
-- **Timeline**: 3-4 weeks — Must be ruthless about scope to hit deadline
 - **Tech Stack**: Next.js + NestJS + Prisma + Postgres + NextAuth + WebSockets — Stack is decided, no experimentation
-- **Infrastructure**: Docker for development, Coolify deployment after completion
+- **Infrastructure**: Docker for development, Coolify deployment
 - **Solo builder**: Fernando building this himself, needs clear priorities and sequencing
-- **Job hunt deadline**: This is blocking active job search
+- **No purple**: Never use purple in any design (user requirement)
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Separate Next.js + NestJS apps | Shows backend architecture skills, not just Next.js API routes | — Pending |
-| WebSockets over Pusher | More impressive technically, demonstrates real-time implementation skills | — Pending |
-| NextAuth over Clerk | More control and shows auth implementation, not just integration | — Pending |
-| Monorepo structure | Professional org-level architecture, easier to showcase | — Pending |
-| Demo workspace seeding | Recruiters can immediately interact without setup friction | — Pending |
+| Separate Next.js + NestJS apps | Shows backend architecture skills, not just Next.js API routes | ✓ Good — demonstrates full-stack depth |
+| WebSockets over Pusher | More impressive technically, demonstrates real-time implementation skills | ✓ Good — real-time features work after Phase 7.1 |
+| NextAuth over Clerk | More control and shows auth implementation, not just integration | ✓ Good — JWT strategy with NestJS verified working |
+| Monorepo structure | Professional org-level architecture, easier to showcase | ✓ Good — Turborepo working well |
+| Demo workspace seeding | Recruiters can immediately interact without setup friction | — Pending (seeding not yet implemented) |
+| Radix Colors over OKLCH hand-rolled | APCA-validated scale steps eliminate WCAG guesswork | ✓ Good — 0 axe violations vs 10 violations before |
+| Shadcn UI for component library | Owned source files, not a runtime dependency | ✓ Good — allows full customization |
+| Tailwind v4 CSS-first approach | Future-proof; CSS @theme instead of JS config | ✓ Good — HMR confirmed at 233-263ms |
+| ESLint governance in CI | Prevents deprecated component imports from re-appearing | ✓ Good — zero violations, catches violations immediately |
+| Lighthouse CI scoped to public routes | Dashboard requires auth, lhci cannot authenticate | ✓ Good — public routes performance-gated |
+| v1.1 before deployment | Design system needed before production launch for professionalism | ✓ Good — application now WCAG AA compliant |
 
 ---
-*Last updated: 2026-02-16 after milestone v1.1 started*
+*Last updated: 2026-02-17 after v1.1 milestone completion*
