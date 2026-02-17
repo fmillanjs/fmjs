@@ -378,7 +378,12 @@ Plans:
   4. Playwright visual regression suite captures screenshots of all major routes in both themes
   5. Lighthouse performance score ≥90 for all critical routes
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Dashboard visual regression spec + CI split into named accessibility/visual regression steps (MIG-04)
+- [ ] 13-02-PLAN.md — Fix 3 deprecated task imports + ESLint governance hardening + @next/bundle-analyzer integration (COMP-05)
+- [ ] 13-03-PLAN.md — Lighthouse CI config + lighthouse job in deploy.yml + human verification checkpoint (MIG-04)
 
 ## Progress
 
