@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 11 - Form Components & Validation
-Plan: 11-02 complete — All 6 auth forms migrated to Shadcn FormField pattern
-Status: Phase 11 in progress — Plan 02 of 4 complete
-Last activity: 2026-02-17 — Completed 11-02 (All 6 auth forms: FormField pattern, mode onBlur, role=alert, Button component, zero TS errors)
+Plan: 11-03 complete — All 5 dashboard/portfolio forms migrated to Shadcn Form pattern
+Status: Phase 11 in progress — Plan 03 of 4 complete
+Last activity: 2026-02-17 — Completed 11-03 (5 forms: team-form, project-form, contact-form, invite-member-form, comment-form — FormField pattern, Shadcn Select for role, react-hook-form added to comment-form)
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -78,6 +78,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 10-component-migration-portfolio P04 | 75 | 2 tasks | 70+ files |
 | Phase 11-form-components-validation P01 | 5 | 1 task | 4 files |
 | Phase 11-form-components-validation P02 | 2 | 2 tasks | 6 files |
+| Phase 11-form-components-validation P03 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -260,6 +261,9 @@ Recent decisions affecting current work:
 - [Phase 11-02]: role=alert for errors (assertive), role=status for success (polite) — correct ARIA live region semantics
 - [Phase 11-02]: Hidden token field in reset-password-form uses form.register('token') directly — appropriate for non-UI hidden inputs outside FormField context
 - [Phase 11-02]: profile-form image field: value={field.value ?? ''} coercion required — updateProfileSchema infers null but Input expects string | undefined
+- [Phase 11-03]: Shadcn Select onValueChange pattern (not {...field} spread on Select root) for invite-member-form role field
+- [Phase 11-03]: Inline zod commentSchema in comment-form — no shared schema needed for single-use component
+- [Phase 11-03]: comment-form alert() replaced with console.error — no toast required per plan spec
 
 ### Roadmap Evolution
 
@@ -272,7 +276,7 @@ Recent decisions affecting current work:
 
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
 **Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
-**Phase 11 - Form Components & Validation**: In progress (2 of 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). Plans 03-04 pending.
+**Phase 11 - Form Components & Validation**: In progress (3 of 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). ✅ All 5 dashboard/portfolio forms migrated (11-03): team-form, project-form, contact-form, invite-member-form (Shadcn Select), comment-form (react-hook-form added). Plan 04 pending.
 
 ### Blockers/Concerns
 
@@ -298,10 +302,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 11 Form Components — 11-02 complete)
-Stopped at: Plan 11-02 complete — All 6 auth forms migrated to Shadcn FormField pattern, committed 8614de4.
-Status: Phase 11 in progress. Plans 01-02 done. Plans 03 and 04 pending.
-Next action: Execute Phase 11 Plan 03 (select component migration) and Plan 04
+Last session: 2026-02-17 (Phase 11 Form Components — 11-03 complete)
+Stopped at: Plan 11-03 complete — All 5 dashboard/portfolio forms migrated, commits bfee932 and f662592.
+Status: Phase 11 in progress. Plans 01-03 done. Plan 04 pending.
+Next action: Execute Phase 11 Plan 04
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
