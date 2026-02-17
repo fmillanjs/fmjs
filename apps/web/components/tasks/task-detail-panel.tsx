@@ -14,6 +14,16 @@ import { useRouter } from 'next/navigation';
 import { useRealTimeComments } from '@/hooks/use-real-time-comments';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { ConflictWarning } from '../ui/conflict-warning';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 // Phase 07.1-03 Fix: Added email field to teamMembers for proper user identification
 interface TaskDetailPanelProps {
@@ -63,8 +73,6 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState(task.description || '');
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showConflict, setShowConflict] = useState(false);
   const [conflictMessage, setConflictMessage] = useState('');
 
@@ -202,13 +210,12 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
         {/* Title */}
         <div className="bg-card shadow rounded-lg p-6">
           {isEditingTitle ? (
-            <input
-              type="text"
+            <Input
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
               onBlur={handleTitleSave}
               onKeyDown={handleTitleKeyDown}
-              className="w-full text-2xl font-bold border-2 border-blue-500 rounded px-2 py-1 focus:outline-none"
+              className="w-full text-2xl font-bold"
               autoFocus
             />
           ) : (
@@ -225,25 +232,15 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
             <h3 className="text-sm font-medium text-muted-foreground mb-2">Description</h3>
             {isEditingDescription ? (
               <div>
-                <textarea
+                <Textarea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className="w-full border-2 border-blue-500 rounded px-3 py-2 focus:outline-none min-h-[120px]"
+                  className="min-h-[120px]"
                   autoFocus
                 />
                 <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={handleDescriptionSave}
-                    className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={handleDescriptionCancel}
-                    className="px-3 py-1 text-sm bg-muted text-muted-foreground rounded hover:bg-accent"
-                  >
-                    Cancel
-                  </button>
+                  <Button size="sm" onClick={handleDescriptionSave}>Save</Button>
+                  <Button size="sm" variant="outline" onClick={handleDescriptionCancel}>Cancel</Button>
                 </div>
               </div>
             ) : (
@@ -258,44 +255,34 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
         </div>
 
         {/* Comments and History Tabs */}
-        <div className="bg-card shadow rounded-lg">
-          {/* Tab Headers */}
-          <div className="border-b border-border">
-            <div className="flex gap-4 px-6">
-              <button
-                onClick={() => setActiveTab('comments')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm ${
-                  activeTab === 'comments'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                Comments ({comments.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('history')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm ${
-                  activeTab === 'history'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                History
-              </button>
+        <div className="bg-card shadow rounded-lg overflow-hidden">
+          <Tabs defaultValue="comments">
+            <div className="border-b border-border">
+              <TabsList className="w-full justify-start rounded-none h-auto bg-transparent px-6 gap-0">
+                <TabsTrigger
+                  value="comments"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent py-4"
+                >
+                  Comments ({comments.length})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="history"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent py-4"
+                >
+                  History
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </div>
-
-          {/* Tab Content */}
-          <div className="p-6">
-            {activeTab === 'comments' ? (
+            <TabsContent value="comments" className="p-6 mt-0">
               <div className="space-y-6">
                 <CommentThread comments={comments} taskId={currentTask.id} onUpdate={handleCommentsUpdate} />
                 <CommentForm taskId={currentTask.id} onCommentAdded={handleCommentsUpdate} />
               </div>
-            ) : (
+            </TabsContent>
+            <TabsContent value="history" className="p-6 mt-0">
               <TaskHistory taskId={currentTask.id} projectId={projectId} />
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
@@ -309,50 +296,49 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
           {/* Status */}
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">Status</label>
-            <select
-              value={currentTask.status}
-              onChange={(e) => updateField('status', e.target.value)}
-              className={`w-full px-3 py-2 rounded font-medium ${statusColors[currentTask.status].bg} ${statusColors[currentTask.status].text}`}
-            >
-              {Object.entries(statusLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <Select value={currentTask.status} onValueChange={(v) => updateField('status', v)}>
+              <SelectTrigger className={`w-full font-medium ${statusColors[currentTask.status].bg} ${statusColors[currentTask.status].text}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(statusLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Priority */}
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">Priority</label>
-            <select
-              value={currentTask.priority}
-              onChange={(e) => updateField('priority', e.target.value)}
-              className={`w-full px-3 py-2 rounded font-medium ${priorityColors[currentTask.priority].bg} ${priorityColors[currentTask.priority].text}`}
-            >
-              {Object.entries(priorityLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <Select value={currentTask.priority} onValueChange={(v) => updateField('priority', v)}>
+              <SelectTrigger className={`w-full font-medium ${priorityColors[currentTask.priority].bg} ${priorityColors[currentTask.priority].text}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(priorityLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Assignee */}
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">Assignee</label>
-            <select
-              value={currentTask.assigneeId || ''}
-              onChange={(e) => updateField('assigneeId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-border rounded"
-            >
-              <option value="">Unassigned</option>
-              {teamMembers.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.name || member.email}
-                </option>
-              ))}
-            </select>
+            <Select value={currentTask.assigneeId || ''} onValueChange={(v) => updateField('assigneeId', v || null)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Unassigned" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Unassigned</SelectItem>
+                {teamMembers.map((member) => (
+                  <SelectItem key={member.id} value={member.id}>
+                    {member.name || member.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Labels */}
@@ -429,32 +415,28 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Delete Button */}
           <div className="pt-4 border-t border-border">
-            {showDeleteConfirm ? (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Are you sure? This cannot be undone.</p>
-                <div className="flex gap-2">
-                  <button
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full">Delete Task</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this task?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. All comments and history for this task will be permanently deleted.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     onClick={handleDelete}
-                    className="flex-1 px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                   >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="flex-1 px-3 py-2 text-sm bg-muted text-muted-foreground rounded hover:bg-accent"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="w-full px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Delete Task
-              </button>
-            )}
+                    Delete Task
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
