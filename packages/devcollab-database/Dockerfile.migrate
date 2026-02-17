@@ -1,0 +1,11 @@
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy only what's needed for migration
+COPY packages/devcollab-database/prisma ./packages/devcollab-database/prisma
+COPY node_modules ./node_modules
+
+ENV DEVCOLLAB_DATABASE_URL=${DEVCOLLAB_DATABASE_URL}
+
+CMD ["node_modules/.bin/prisma", "migrate", "deploy", "--schema=./packages/devcollab-database/prisma/schema.prisma"]
