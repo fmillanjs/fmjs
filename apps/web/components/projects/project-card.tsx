@@ -20,15 +20,15 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, teamId }: ProjectCardProps) {
-  const statusColor = project.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+  const statusColor = project.status === 'ACTIVE' ? 'bg-[var(--green-3)] text-[var(--green-11)]' : 'bg-muted text-muted-foreground';
 
   return (
     <Link
       href={`/teams/${teamId}/projects/${project.id}`}
-      className="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-200"
+      className="block p-6 bg-card rounded-lg border border-border hover:shadow-lg transition-shadow duration-200"
     >
       <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
+        <h3 className="text-lg font-semibold text-foreground line-clamp-1">
           {project.name}
         </h3>
         <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor}`}>
@@ -37,12 +37,12 @@ export function ProjectCard({ project, teamId }: ProjectCardProps) {
       </div>
 
       {project.description && (
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
           {project.description}
         </p>
       )}
 
-      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>
           {project._count?.tasks ?? 0} {(project._count?.tasks ?? 0) === 1 ? 'task' : 'tasks'}
         </span>

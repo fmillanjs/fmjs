@@ -82,16 +82,16 @@ export function ProjectActions({
   return (
     <div className="space-y-4">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
           {error}
         </div>
       )}
 
       {/* Archive Section */}
       {projectStatus === 'ACTIVE' && (
-        <div className="border-b border-gray-200 pb-4">
-          <h3 className="text-sm font-medium text-gray-900 mb-2">Archive Project</h3>
-          <p className="text-sm text-gray-600 mb-3">
+        <div className="border-b border-border pb-4">
+          <h3 className="text-sm font-medium text-foreground mb-2">Archive Project</h3>
+          <p className="text-sm text-muted-foreground mb-3">
             Archiving this project will hide it from the active projects list. You can unarchive it later.
           </p>
           {!showArchiveConfirm ? (
@@ -117,7 +117,7 @@ export function ProjectActions({
                 <button
                   onClick={() => setShowArchiveConfirm(false)}
                   disabled={isArchiving}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
                 >
                   Cancel
                 </button>
@@ -131,7 +131,7 @@ export function ProjectActions({
       {isAdmin && (
         <div>
           <h3 className="text-sm font-medium text-red-900 mb-2">Delete Project</h3>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Permanently delete this project and all its tasks. This action cannot be undone.
           </p>
           {!showDeleteConfirm ? (
@@ -142,17 +142,17 @@ export function ProjectActions({
               Delete Project
             </button>
           ) : (
-            <div className="bg-red-50 border border-red-300 rounded-md p-4">
-              <p className="text-sm text-red-800 mb-1 font-medium">
+            <div className="bg-[var(--red-3)] border border-[var(--red-6)] rounded-md p-4">
+              <p className="text-sm text-[var(--red-11)] mb-1 font-medium">
                 This action cannot be undone!
               </p>
-              <p className="text-sm text-red-700 mb-3">
+              <p className="text-sm text-[var(--red-11)] mb-3">
                 Type the project name "{projectName}" to confirm deletion.
               </p>
               <input
                 type="text"
                 placeholder="Type project name to confirm"
-                className="w-full px-3 py-2 mb-3 border border-red-300 rounded-md text-sm"
+                className="w-full px-3 py-2 mb-3 border border-[var(--red-6)] rounded-md text-sm"
                 onChange={(e) => {
                   const confirmBtn = document.getElementById('confirm-delete-btn') as HTMLButtonElement;
                   if (confirmBtn) {
@@ -172,7 +172,7 @@ export function ProjectActions({
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={isDeleting}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted/50"
                 >
                   Cancel
                 </button>
@@ -183,7 +183,7 @@ export function ProjectActions({
       )}
 
       {!isAdmin && (
-        <div className="text-sm text-gray-600 dark:text-gray-300 italic">
+        <div className="text-sm text-muted-foreground italic">
           Only administrators can delete projects.
         </div>
       )}
