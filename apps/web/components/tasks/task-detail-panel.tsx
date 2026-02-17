@@ -326,12 +326,12 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
           {/* Assignee */}
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">Assignee</label>
-            <Select value={currentTask.assigneeId || ''} onValueChange={(v) => updateField('assigneeId', v || null)}>
+            <Select value={currentTask.assigneeId || '__none__'} onValueChange={(v) => updateField('assigneeId', v === '__none__' ? null : v)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Unassigned" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Unassigned</SelectItem>
+                <SelectItem value="__none__">Unassigned</SelectItem>
                 {teamMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.name || member.email}

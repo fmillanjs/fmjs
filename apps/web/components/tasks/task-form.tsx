@@ -199,12 +199,12 @@ export function TaskForm({
               <FormField control={form.control} name="assigneeId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Assignee</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)} value={field.value || '__none__'}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="__none__">Unassigned</SelectItem>
                       {teamMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id}>
                           {member.name || member.email}
