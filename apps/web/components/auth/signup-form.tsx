@@ -20,6 +20,11 @@ export function SignUpForm() {
   const form = useForm<SignUpDto>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data: SignUpDto) => {
@@ -90,7 +95,7 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} disabled={isLoading} />
+                  <Input type="email" autoComplete="email" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -104,7 +109,7 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} disabled={isLoading} />
+                  <Input type="password" autoComplete="new-password" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

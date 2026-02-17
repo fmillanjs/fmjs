@@ -37,6 +37,11 @@ export function ChangePasswordForm() {
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordFormSchema),
     mode: 'onBlur',
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
   });
 
   const onSubmit = async (data: ChangePasswordFormData) => {
@@ -71,7 +76,7 @@ export function ChangePasswordForm() {
             <FormItem>
               <FormLabel>Current Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter current password" {...field} />
+                <Input type="password" autoComplete="current-password" placeholder="Enter current password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,7 +90,7 @@ export function ChangePasswordForm() {
             <FormItem>
               <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter new password" {...field} />
+                <Input type="password" autoComplete="new-password" placeholder="Enter new password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -99,7 +104,7 @@ export function ChangePasswordForm() {
             <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Confirm new password" {...field} />
+                <Input type="password" autoComplete="new-password" placeholder="Confirm new password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

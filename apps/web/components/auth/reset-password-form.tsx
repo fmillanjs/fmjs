@@ -70,7 +70,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <FormItem>
               <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter new password" {...field} />
+                <Input type="password" autoComplete="new-password" placeholder="Enter new password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,7 +84,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Confirm new password" {...field} />
+                <Input type="password" autoComplete="new-password" placeholder="Confirm new password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

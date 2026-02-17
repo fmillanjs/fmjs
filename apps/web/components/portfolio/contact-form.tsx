@@ -27,6 +27,11 @@ export function ContactForm() {
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     mode: 'onBlur',
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
+    },
   });
 
   const onSubmit = async (data: ContactFormData) => {

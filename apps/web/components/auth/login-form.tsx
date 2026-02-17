@@ -19,6 +19,10 @@ export function LoginForm() {
   const form = useForm<LoginDto>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data: LoginDto) => {
@@ -66,7 +70,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} disabled={isLoading} />
+                  <Input type="email" autoComplete="email" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,7 +84,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} disabled={isLoading} />
+                  <Input type="password" autoComplete="current-password" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

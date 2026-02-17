@@ -28,6 +28,9 @@ export function TeamForm() {
   const form = useForm<CreateTeamInput>({
     resolver: zodResolver(createTeamSchema),
     mode: 'onBlur',
+    defaultValues: {
+      name: '',
+    },
   });
 
   const onSubmit = async (data: CreateTeamInput) => {
