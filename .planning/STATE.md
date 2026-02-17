@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 15 of 21 (Authentication System)
-Plan: 4 of 5 in Phase 15 — Plans 01, 02, and 04 complete
+Plan: 4 of 5 in Phase 15 — Plans 01, 02, 03, and 04 complete
 Status: Phase 15 in progress
-Last activity: 2026-02-17 — 15-04 complete: devcollab-web login/signup/logout UI built with credentials: 'include', root redirect to /login, dashboard placeholder
+Last activity: 2026-02-17 — 15-03 complete: DatabaseModule+PrismaService, AuthModule with signup/login/logout/me endpoints, AppModule with global JwtModule
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 5 plans complete)
 
@@ -72,10 +72,14 @@ Key decisions for v2.0:
 - [Phase 14]: build-and-push-devcollab uses needs: [test] only — DevCollab images build independently from Lighthouse CI check
 - [Phase 14]: Both devcollab images built in same CI job as sequential steps — saves CI minutes by sharing checkout, buildx setup, and GHCR login (14-04)
 - [Phase 15]: prisma migrate diff --from-empty generates migration SQL without database connection — used when devcollab-postgres not running locally (15-01)
-- [Phase 15]: import * as cookieParser (CommonJS style) required for NestJS cookie-parser — NOT default import (15-02)
+- [Phase 15]: import cookieParser from 'cookie-parser' (default import with esModuleInterop:true) — import * as causes TS2349 no call signatures error (15-03 corrects 15-02 decision)
 - [Phase 15]: CORS origin uses DEVCOLLAB_WEB_URL env var with localhost:3002 fallback; credentials:true required for httpOnly cookie cross-origin (15-02)
 - [Phase 15]: CaslAuthGuard injects JwtService — DI wiring completes in Plan 03 when AppModule registers global JwtModule (15-02)
 - [Phase 15]: CHECK_ABILITY_KEY = 'check_ability' string literal is the Reflector metadata key for @CheckAbility decorator (15-02)
+- [Phase 15]: JwtModule.registerAsync global: true in AppModule makes JwtService available to CaslAuthGuard APP_GUARD — without global: true, DI throws at startup (15-03)
+- [Phase 15]: PrismaService exposes get user() accessor only — AuthService cannot access other models, enabling precise testability via mock (15-03)
+- [Phase 15]: SafeUser interface must be exported from auth.service.ts — TypeScript strict TS4053 requires named return types to be exportable (15-03)
+- [Phase 15]: Prisma client must be regenerated after schema changes — node_modules/.prisma/devcollab-client stale after Plan 01 password field addition (15-03)
 - [Phase 15]: (auth) route group keeps /login and /signup URLs clean without 'auth' prefix in the path (15-04)
 - [Phase 15]: GET handler for /api/logout allows <a href> logout without JavaScript — sufficient for this phase (15-04)
 - [Phase 15]: NEXT_PUBLIC_API_URL env var with localhost:3003 fallback used in all frontend API calls (15-04)
@@ -100,6 +104,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 15-04 complete — devcollab-web login/signup client components, logout Route Handler, root redirect, dashboard placeholder
+Stopped at: 15-03 complete — DatabaseModule+PrismaService, AuthModule with signup/login/logout/me, AppModule with global JwtModule, TypeScript compilation passes
 Resume file: None
 Next action: Execute 15-05 (auth integration test: verify cookie round-trip with running stack)
