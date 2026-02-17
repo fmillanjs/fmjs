@@ -1,364 +1,429 @@
-# Feature Research: Design System & WCAG AA Compliance
+# Feature Research: DevCollab — Developer Collaboration Platform
 
-**Domain:** Design Systems & Web Accessibility
-**Researched:** 2026-02-16
-**Confidence:** HIGH
+**Domain:** Developer collaboration platform (GitHub-style content + Discord-style workspaces)
+**Researched:** 2026-02-17
+**Confidence:** HIGH (workspace/RBAC/threading patterns); MEDIUM (search, file uploads, notifications)
+
+---
 
 ## Feature Landscape
 
 ### Table Stakes (Users Expect These)
 
-Features users assume exist. Missing these = product feels incomplete or unprofessional.
+Features that must exist for the platform to feel credible. Recruiters evaluating senior skills will notice these are missing before noticing anything is present.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| **WCAG AA Color Compliance** | Legal requirement (ADA Title II 2026), professional standard | MEDIUM | 4.5:1 text, 3:1 UI elements. Not negotiable for production apps. |
-| **Semantic Design Tokens** | Industry standard for design systems | LOW | CSS variables for colors, spacing, typography. Foundation for theming. |
-| **Accessible Forms** | WCAG Level A requirement, table stakes for any app | MEDIUM | Label association, aria-invalid, aria-describedby, error messaging. |
-| **Keyboard Navigation** | WCAG 2.1.1 (Level A) - all functionality keyboard operable | MEDIUM | Focus management, roving tabindex for complex widgets, visible focus indicators. |
-| **Dark Mode** | User expectation in 2026, reduces eye strain | MEDIUM | Paired color scales, CSS variable switching, not just color inversion. |
-| **Focus Indicators** | WCAG 2.4.7 (Level AA) - visible keyboard focus | LOW | Must be visible and high contrast. Default browser focus often insufficient. |
-| **Component Documentation** | Developers expect usage guides and examples | LOW | When/how to use components, props API, accessibility notes. |
-| **Consistent Theming** | Users notice inconsistency, feels broken | LOW | Global tokens applied consistently, no one-off color values. |
+| **Workspace creation & multi-workspace support** | Every SaaS collab tool (Slack, Notion, Linear) is workspace-organized; recruiters expect this mental model | MEDIUM | One user can own/belong to multiple workspaces; each workspace is isolated |
+| **Invite-based membership** | No collaboration tool lets you add someone without invitation; must include email invite with token | MEDIUM | Time-limited token, accept/decline flow, re-invite capability |
+| **RBAC: Admin / Contributor / Viewer** | Permissions without roles feel unfinished; recruiters recognize RBAC as a senior engineering signal | MEDIUM | Three roles is the industry minimum for a credible RBAC story |
+| **Code snippet posts with syntax highlighting** | Primary differentiator of dev platforms from generic wikis; expected like bullets are expected in docs | MEDIUM | Language selection required; auto-detect as fallback |
+| **Markdown posts** | Developers write in markdown; a dev platform without markdown is missing its native language | MEDIUM | Preview mode essential; raw markdown must be toggleable |
+| **Threaded discussions on posts/snippets** | Users expect to be able to reply inline on content, not in a side channel | MEDIUM | One level of nesting is sufficient; Reddit-depth is not expected |
+| **Activity feed per workspace** | GitHub-style "what happened recently" is table stakes for any collaborative platform | MEDIUM | Chronological list of events; not real-time required, poll is acceptable |
+| **Copy-to-clipboard on code blocks** | Every code display surface since 2020 has a copy button; missing it reads as unfinished | LOW | One-click copy; brief "Copied!" confirmation state |
+| **User profile (display name, avatar)** | Collaboration requires knowing who did what; nameless faces feel broken | LOW | Initials fallback is fine; no profile customization required |
+| **Basic search within workspace** | Users need to find posts/snippets by keyword; zero search = content graveyard | HIGH | Scope: workspace-scoped search of post titles + snippet titles + content body |
+| **In-app mention notifications** | @mention without a notification is a broken interaction loop | MEDIUM | Must show unread badge + notification list; email not required for v1 |
+| **Read/unread notification state** | Seeing a notification and then seeing it again is table stakes; must persist read state | LOW | Mark-as-read individually + mark-all-read |
 
 ### Differentiators (Competitive Advantage)
 
-Features that set the product apart. Not required, but valuable for showcasing engineering quality.
+Features that elevate the portfolio demo above "another CRUD app." These signal senior thinking to recruiters.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| **Automated Accessibility Testing** | Catches ~30% of issues in CI/CD pipeline | MEDIUM | Component-level testing with axe-core prevents regressions. Shows engineering maturity. |
-| **Accessibility Regression Testing** | Tracks baselines, detects new violations in PRs | MEDIUM | Chromatic-style approach: test components, not just pages. Impressive for portfolio. |
-| **Radix UI Primitives Foundation** | WAI-ARIA compliant primitives, professional-grade | LOW | Shadcn/ui already uses Radix. Shows knowledge of accessibility architecture. |
-| **Tailwind v4 CSS-First Configuration** | Modern approach, 5x faster builds, runtime theming | MEDIUM | @theme directive, native CSS variables, eliminates JS config duplication. |
-| **Component-Level Accessibility** | Design system enforces accessibility by default | HIGH | Prevents issues at source, not remediation. Engineering-first approach. |
-| **Semantic Component API** | Props describe purpose, not appearance | LOW | button-primary vs blue-button. Makes system maintainable and themeable. |
-| **Design-Development Alignment** | Figma mirrors code structure, reduces handoff friction | LOW | Optional but impressive. Shows understanding of design systems at scale. |
+| **Shiki-powered syntax highlighting (VS Code quality)** | Same engine as VS Code; token-level accuracy for 100+ languages vs regex-based alternatives | LOW | Runs at build/server time; zero client JS for highlighting. Language label displayed alongside code |
+| **Language auto-detection with manual override** | Eliminates friction: paste code, get highlighting without selecting language | MEDIUM | Use `linguist-languages` heuristics or Shiki's lang inference; manual override dropdown always available |
+| **Embed-friendly snippet URLs** | Shareable direct link to a snippet (like GitHub Gist) makes snippets portable and linkable | LOW | `/workspaces/:id/snippets/:id` — publicly viewable if workspace is public |
+| **Diff/version view on edited posts** | Shows that content has history, not just a blob. Signals engineering maturity to recruiters | HIGH | Store previous body on every save; render diff with `diff` library. Complexity: HIGH — defer to v2+ |
+| **Reactions on posts/discussions** | Lightweight engagement signal without requiring full comment. Shows UX thinking | LOW | Emoji set: thumbs up, heart, laugh, +1. Count only; no per-user lists required for MVP |
+| **@mention with rich preview in editor** | Popover showing matching members as you type `@` is expected quality in 2025 collaboration tools | MEDIUM | Requires user search API; Tiptap or similar editor with mention extension |
+| **Markdown with code fence syntax highlighting in posts** | Fenced code blocks inside prose content are standard; missing = posts feel degraded vs snippets | MEDIUM | Consistent with snippet rendering; reuse Shiki integration |
+| **File upload with in-line preview** | Images embedded in posts rather than attached links feel polished | MEDIUM | Image preview inline; other files as download links with type icon |
+| **Activity feed event granularity** | Showing "Fernando posted 'Rust ownership patterns'" vs "Content created" signals UX care | LOW | Rich event objects with actor, target, and action string |
+| **Workspace-scoped full-text search with result highlighting** | Highlighting the matched term in search results is standard quality signal | HIGH | Postgres tsvector covers this for a portfolio scale; match highlighting via `ts_headline()` |
+| **Own auth system (separate from TeamFlow)** | Shows Fernando can build auth from scratch twice with different requirements | MEDIUM | JWT + refresh tokens; no NextAuth dependency here — raw NestJS guards |
 
 ### Anti-Features (Commonly Requested, Often Problematic)
 
-Features that seem good but create problems.
+Features that look impressive on a list but create disproportionate complexity, technical debt, or time sink for a solo portfolio project.
 
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| **Over-Customization of Pre-Built Components** | "Make it look slightly different" | Kills reusability, adds bloat, creates bugs, defeats library purpose | Use composition patterns, variant props, or custom components following library patterns |
-| **Pure Black (#000000) Dark Mode** | Seems like "true" dark mode | Eye strain, accessibility issues, harsh contrast | Use soft dark grays (e.g., #1a1a1a), reduces eye strain per 2026 best practices |
-| **Automated Testing as Sole Accessibility Validation** | "We have axe-core" | Catches only ~30% of issues, manual testing required for remaining 70% | Automated baseline + manual testing with assistive tech |
-| **Placeholder-Only Form Labels** | Cleaner visual design | WCAG violation, disappears on focus, screen reader issues | Always use explicit labels with for/id association, placeholders optional |
-| **Real-Time Validation on Every Keystroke** | Feels responsive | Announces too frequently for screen readers, annoying UX | Validate on blur or form submit, use aria-live carefully |
-| **Hardcoded Dark Mode Color Changes** | Quick implementation | Unmaintainable, breaks theming, creates tech debt | CSS variables with theme switching at root level |
-| **Token Names Describing Appearance** | Intuitive to name blue-500 | Breaks when brand colors change, not semantic | Use purpose-based names: button-primary-bg, not blue-button |
-| **Treating Component Library as Full Design System** | Seems equivalent | Missing governance, documentation, design principles | Component library is implementation layer, design system includes strategy, tokens, patterns, documentation |
+| **Real-time presence indicators ("X is typing")** | Feels polished and live | Requires persistent WebSocket connections, heartbeats, Redis pub/sub; complexity far exceeds demo value for a collab content platform | Activity feed updates on a short poll (30s) conveys "live" without WebSocket overhead |
+| **Rich WYSIWYG editor (TipTap + all extensions)** | Looks impressive; familiar to Notion users | TipTap's collaboration (Yjs/CRDT) adds significant bundle weight and sync complexity. Tables, embeds, and slash commands each add 2-4 days of edge case handling | Split-pane markdown editor with live preview (like GitHub's PR editor). Developers prefer raw markdown; WYSIWYG is for non-technical users |
+| **Email notification delivery** | Expected in production SaaS | Requires SMTP/SendGrid integration, deliverability management, unsubscribe flows, bounce handling | In-app notifications only. State this explicitly in case study as a known v1 tradeoff — recruiters understand MVP scoping |
+| **Infinite scroll activity feed** | Feels modern; social media pattern | Breaks browser back/forward, accessibility issues (role=feed aria complexity), "lost my place" UX | Cursor-based pagination with a "Load more" button; 20 items per page. Clear, predictable, accessible |
+| **Version history with full diff for all content** | Shows engineering maturity | Storing body snapshots on every save grows DB fast. Diffing markdown is non-trivial (ambiguous whitespace, inline code) | Store `updated_at` and current body only. Note in case study: "v2 roadmap includes content versioning" |
+| **Elasticsearch or dedicated search service** | Used at Google/Slack scale | Adds operational infrastructure (Docker service, index management, sync) for a portfolio demo with seed data | Postgres `tsvector` + `ts_headline()` handles this scale perfectly. Simple, zero extra infra, still qualifies as "full-text search" |
+| **Real-time notification push (WebSocket)** | Immediate delivery feels professional | Second WebSocket surface adds complexity; push notifications require service workers | Poll `/notifications/unread-count` every 60 seconds. Instant-feeling for a demo; complexity-appropriate |
+| **File CDN with transformations (Cloudinary-style)** | Automatic resizing, WebP conversion | Over-engineered for a portfolio. Cloudflare R2 + direct presigned upload is already impressive | Cloudflare R2 with presigned URLs for upload, direct URL for display. Images display at natural size with CSS max-width |
+| **Workspace public/private toggle with discovery** | Makes platform feel like GitHub | Requires workspace discovery UI, search indexing across workspaces, public SEO considerations | All workspaces are invite-only for v1. State as intentional security-first design |
+
+---
 
 ## Feature Dependencies
 
 ```
-[Design Tokens (CSS Variables)]
-    ├──requires──> [Tailwind v4 Configuration]
-    └──enables──> [Dark Mode]
-                  └──requires──> [Paired Color Scales]
-                                └──requires──> [WCAG Color Compliance]
+[Auth System (DevCollab-specific)]
+    └──required by──> [All authenticated features]
 
-[Accessible Component Library]
-    ├──requires──> [Radix UI Primitives]
-    │             └──provides──> [WAI-ARIA Patterns]
-    │                           └──provides──> [Keyboard Navigation]
-    │                                         └──provides──> [Focus Management]
-    ├──requires──> [Design Tokens]
-    └──enables──> [Component Documentation]
+[Workspace Creation]
+    └──required by──> [Membership & Invites]
+                          └──required by──> [RBAC enforcement]
+                                                └──required by──> [Posts, Snippets, Files, Discussions]
 
-[Accessibility Testing]
-    ├──requires──> [Accessible Component Library]
-    └──prevents──> [Accessibility Regressions]
+[User Profile (display name + avatar)]
+    └──required by──> [Activity Feed]
+    └──required by──> [Mention Notifications]
+    └──required by──> [Threaded Discussions (author display)]
 
-[Shadcn UI Integration]
-    ├──requires──> [Tailwind v4 Configuration]
-    ├──requires──> [Radix UI Primitives] (already included)
-    └──provides──> [Component Templates]
-                  └──requires──> [Customization via Design Tokens]
+[Posts or Snippets (content creation)]
+    └──required by──> [Threaded Discussions]
+    └──required by──> [Activity Feed events]
+    └──required by──> [Full-text Search (content to index)]
+    └──required by──> [Mention Notifications (mentions inside content)]
+
+[Mention Notifications]
+    └──requires──> [User Search API] (to resolve @name → user_id)
+    └──requires──> [Notification Store] (to persist + retrieve)
+    └──requires──> [Read/Unread State]
+
+[File Uploads]
+    └──requires──> [R2/S3 Storage Integration]
+    └──requires──> [Presigned URL API endpoint]
+    └──enhances──> [Posts] (inline images in markdown)
+
+[Full-text Search]
+    └──requires──> [Posts + Snippets exist with content]
+    └──enhances──> [Workspace content discovery]
+
+[Syntax Highlighting (Shiki)]
+    └──required by──> [Code Snippets display]
+    └──required by──> [Markdown code fences in Posts]
+    └──is independent of──> [backend] (runs server-side in Next.js)
+
+[Reactions]
+    └──requires──> [Posts and Discussions exist]
+    └──enhances──> [Engagement without comments]
 ```
 
 ### Dependency Notes
 
-- **Design Tokens require Tailwind v4 Configuration:** Tailwind v4's @theme directive makes tokens available as CSS variables, eliminating JS/CSS duplication.
-- **Dark Mode requires Paired Color Scales:** Not just inverted colors. Each mode needs separate scales designed for legibility and contrast.
-- **WCAG Compliance blocks Dark Mode:** Color scales must meet 4.5:1 (text) and 3:1 (UI) contrast in BOTH modes before shipping.
-- **Radix UI provides WAI-ARIA patterns:** Keyboard navigation, focus management, aria attributes handled by primitives. Don't reinvent.
-- **Component Testing must be component-level:** Testing at page level drowns in duplicates. Test reusable components at source.
-- **Accessibility Regression Testing requires baselines:** Must establish "last known good state" before tracking new violations.
+- **Auth is the foundation:** Everything else requires authenticated workspace membership. Auth must be Phase 1.
+- **Workspace + Membership gates all content:** Cannot build posts/snippets without first having a workspace + member context.
+- **Mentions require User Search API:** The `@mention` editor extension needs to query `GET /workspaces/:id/members?search=query` to resolve names to user IDs before a post is saved.
+- **Activity Feed requires Posts/Snippets to exist:** The feed is meaningless without content events; wire it in the same phase as content creation.
+- **Syntax highlighting is frontend-only:** Shiki runs in Next.js Server Components; no backend dependency. Can be implemented in the same phase as snippet display.
+- **File uploads require R2 credentials before development begins:** This is an infrastructure gate, not a code gate. Set up R2 in Phase 1 environment setup.
+- **Search can be deferred:** Postgres tsvector can be added as a GIN index migration after content tables exist. Does not block any other feature.
+
+---
+
+## Feature Deep Dives
+
+### 1. Workspace Model
+
+**Industry pattern (Slack, Linear, Notion, GitHub Orgs):**
+- One workspace per "team/project context"; users can belong to multiple workspaces
+- Workspace has a name, slug (URL-safe identifier), optional description, optional avatar
+- Membership is per-workspace; a user has one role per workspace
+- Owner (= Admin in DevCollab's model) cannot be demoted without transferring ownership first
+
+**Invite flow pattern:**
+- Admin generates invite link with a time-limited token (e.g., 72h expiry) or sends by email (v2)
+- Token encodes: workspace_id, invited_by_user_id, role_to_assign, expiry
+- Recipient accepts → gets added as WorkspaceMember with the pre-assigned role
+- Invite tokens are single-use; consumed on accept
+
+**Edge cases that matter for RBAC credibility:**
+- Last Admin protection: cannot remove or demote the last admin in a workspace (would orphan it)
+- Self-demotion: Admin can demote themselves only if another admin exists
+- Viewer → Contributor promotion requires Admin to do it (Contributor cannot self-promote)
+- Workspace deletion requires Admin + confirmation modal (not just a click)
+
+### 2. RBAC: Admin / Contributor / Viewer
+
+| Action | Admin | Contributor | Viewer |
+|--------|-------|-------------|--------|
+| Create post / snippet | YES | YES | NO |
+| Edit own post / snippet | YES | YES | NO |
+| Edit others' post / snippet | YES | NO | NO |
+| Delete own post / snippet | YES | YES | NO |
+| Delete others' post / snippet | YES | NO | NO |
+| Upload files | YES | YES | NO |
+| Comment / reply in discussions | YES | YES | NO |
+| React to posts | YES | YES | YES |
+| View all content | YES | YES | YES |
+| Invite new members | YES | NO | NO |
+| Change member roles | YES | NO | NO |
+| Remove members | YES | NO | NO |
+| Edit workspace settings (name, avatar) | YES | NO | NO |
+| Delete workspace | YES (owner only) | NO | NO |
+| View member list | YES | YES | YES |
+
+**Implementation note:** Enforce at NestJS guard level via `WorkspaceMemberGuard` that reads role from `WorkspaceMember` table join. Do not trust frontend-passed role claims.
+
+### 3. Code Snippet Sharing
+
+**Table stakes UX:**
+- Language selector (dropdown with 20 most common + search for more)
+- Syntax highlighting rendered server-side via Shiki (VS Code quality, zero client JS)
+- Language label shown in top-right of code block
+- Copy button with "Copied!" feedback (1.5s, then resets)
+- Line numbers (optional toggle, off by default)
+
+**Language detection:** Shiki does not auto-detect by default. Recommended approach: require explicit selection, default to `plaintext`. Auto-detection is MEDIUM complexity and LOW payoff for a demo.
+
+**Embed/share:** Direct URL to snippet (`/w/:slug/snippets/:id`) that non-members can view if workspace is set to "link sharing on" (simple boolean toggle). This is the GitHub Gist "shareable" pattern.
+
+**Recommended library:** `shiki` (server-side, Next.js RSC compatible). Do not use `highlight.js` (regex-based, lower quality) or `Prism` (older ecosystem).
+
+### 4. Markdown Posts
+
+**Expected editor UX for developers:**
+- Split-pane: raw markdown left, rendered preview right (GitHub PR editor model)
+- Alternatively: toggle between "Write" and "Preview" tabs (simpler, less JS)
+- Toolbar optional — experienced developers prefer typing; toolbar for discovery
+- Fenced code blocks inside markdown must render with Shiki highlighting
+- Image drag-and-drop into editor uploads to R2 and inserts markdown image syntax
+
+**Publish flow:**
+- Draft state (visible only to author) vs Published (visible to all workspace members)
+- "Publish" button, not "Save" — makes the flow feel intentional not accidental
+- Editing published post shows "Update" button, not "Publish" again
+- `updated_at` timestamp displayed ("Last edited 2 hours ago")
+
+**Recommended library:** `@uiw/react-md-editor` or `react-simplemde-editor` for the editor surface. `react-markdown` + `remark-gfm` + Shiki integration for the renderer. Avoid TipTap for markdown posts — WYSIWYG adds complexity without matching developer expectations.
+
+### 5. Threaded Discussions
+
+**Flat vs Nested — the research verdict:**
+- phpBB and vBulletin (the most-used forums ever) default to flat
+- Discourse (the modern dev forum standard) is flat-chronological with expandable reply context
+- GitHub PR reviews use flat threads anchored to specific content locations
+- Nested (Reddit-style) is for voting/ranking; inappropriate for a collaboration platform
+
+**Recommendation: One level of nesting, maximum.** Top-level comments + replies to top-level comments. No reply-to-reply. This maps to GitHub's PR conversation model and avoids the UX complexity of collapsed trees.
+
+**Edit/delete rules (industry standard):**
+- Author can edit their own comment (show "edited" timestamp)
+- Author can delete their own comment (replace content with "[deleted]", keep thread structure)
+- Admin can delete any comment (full removal or redaction)
+- Editing is time-unlimited (not the Twitter "15 minute window" — this is a docs platform, not microblogging)
+
+**Reactions on comments:** Optional for MVP; LOW complexity if added (reuse post reaction system).
+
+### 6. Activity Feed
+
+**Events to track (ranked by demo value):**
+1. `post.created` — "{user} published '{title}'"
+2. `snippet.created` — "{user} shared a {language} snippet: '{title}'"
+3. `member.joined` — "{user} joined the workspace"
+4. `member.role_changed` — "{admin} changed {user}'s role to {role}"
+5. `comment.created` — "{user} replied to '{post_title}'"
+6. `file.uploaded` — "{user} uploaded '{filename}'"
+
+**What NOT to track:** Every edit, every reaction, every view. This floods the feed with noise.
+
+**Presentation:**
+- Reverse chronological (newest first)
+- Actor avatar + display name + event description + relative timestamp ("3 hours ago")
+- Clickable event links (click on post title → navigate to post)
+- Pagination: "Load more" button, 20 events per page (cursor-based)
+
+**Polling vs real-time:** Poll every 30 seconds from the frontend. No WebSocket needed. Feed is not a chat system; latency of 30s is entirely appropriate.
+
+### 7. Mention Notifications
+
+**@mention detection in editor:**
+- As user types `@`, open a popover querying `GET /workspaces/:id/members?q={typed}`
+- Popover shows avatar + display name; click to insert mention
+- Mention stored as structured data in post body (not just plain text)
+- On post save/publish, backend parses mentions, creates `Notification` records for each mentioned user
+
+**Notification delivery:**
+- In-app only (no email for v1)
+- Bell icon in nav with unread count badge
+- Click bell → dropdown showing last 10 notifications (type, actor, target, timestamp)
+- Mark individual as read; "Mark all read" button
+- Poll `/notifications/unread-count` every 60 seconds for badge update
+
+**Read/unread state:**
+- `Notification` table: `id`, `recipient_user_id`, `actor_user_id`, `type`, `target_type`, `target_id`, `message`, `read_at`, `created_at`
+- `read_at` = null → unread; timestamp = read
+- Count: `WHERE read_at IS NULL AND recipient_user_id = :id`
+
+**Mention types to support:** Post body mentions, snippet description mentions, discussion comment mentions. Start with post + comment mentions; snippet description mentions can be added later.
+
+### 8. Full-Text Search
+
+**What users expect to search:**
+1. Post titles and body content (highest value)
+2. Snippet titles and language (medium value)
+3. Snippet code content (low value — searching inside code is rarely useful)
+4. Member names (needed for invite/mention flows, not general search)
+
+**Scope for MVP:** Posts + Snippets within a workspace. Cross-workspace search is an anti-feature (requires security boundary enforcement that adds complexity).
+
+**Implementation: Postgres tsvector (not Elasticsearch, not Meilisearch)**
+
+Rationale: This is a portfolio project with seed data. Postgres FTS via `tsvector` + `tsquery` handles this perfectly. Adding a dedicated search engine (Meilisearch, Typesense) introduces operational overhead (additional Docker service, index sync) with zero recruiter-visible benefit. The query quality is comparable for single-language English content at this scale.
+
+Implementation steps:
+1. Add `search_vector tsvector` column to `Post` and `Snippet` tables
+2. Create GIN index on `search_vector`
+3. Trigger or application-layer update of `search_vector` on save (combine title + body)
+4. Query: `WHERE search_vector @@ plainto_tsquery('english', :q)`
+5. Ranking: `ORDER BY ts_rank(search_vector, query) DESC`
+6. Result highlighting: `ts_headline('english', body, query)` for matched term context
+
+**Result ranking:**
+- Title match ranks above body match (weighted tsvector: title weight 'A', body weight 'C')
+- Recency as tiebreaker (`created_at DESC`)
+
+**Search UI:**
+- Global search bar in workspace header (keyboard shortcut: `Cmd+K` / `Ctrl+K`)
+- Results grouped by type (Posts / Snippets)
+- Matched text highlighted (yellow background on matched terms)
+- Click result → navigate to that post/snippet
+
+### 9. File Uploads
+
+**Accepted types for a dev collaboration platform:**
+- Images: `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/svg+xml`
+- Documents: `application/pdf`
+- Code: `text/plain`, plus common source extensions if stored as text
+- Do NOT accept: executables, `.zip` archives (security risk surface without malware scanning)
+
+**Size limits:**
+- Images: 10MB per file (generous; Slack allows 100MB but 10MB covers all real use)
+- PDF: 20MB
+- Total per workspace: Track but do not enforce in v1 (seed data won't hit limits)
+
+**Storage: Cloudflare R2**
+- Presigned PUT URL from backend → browser uploads directly to R2 (no API server byte-streaming)
+- Backend stores only the R2 URL, not the file bytes
+- Organize by: `{workspace_id}/{user_id}/{timestamp}-{random}-{filename}`
+- No CDN transforms in v1; images display via direct R2 public URL
+
+**Preview behavior:**
+- Images: inline `<img>` with max-width constraint
+- PDF: link to open in new tab (no inline PDF viewer — browser handles this)
+- Other files: icon + filename + file size + download link
+
+**UX pattern:**
+- Drag-and-drop to markdown editor → uploads immediately → inserts markdown image syntax
+- Explicit file attachment section per post/snippet (below content)
+- Progress bar during upload (XHR with progress event)
+- Error states: file too large, type not allowed, upload failed (retry button)
+
+---
 
 ## MVP Definition
 
-### Launch With (v1.1)
+### Launch With (DevCollab v1 — Recruiter Demo)
 
-Minimum viable design system - what's needed to unblock development and meet compliance.
+Minimum to make the platform feel like a real product a recruiter can explore:
 
-- [x] **Tailwind v4 Configuration** — Foundation for everything else, currently broken
-- [ ] **WCAG AA Color Palette** — Legal requirement, blocks dark mode and all UI
-- [ ] **Semantic Design Tokens (CSS Variables)** — Theming foundation, enables dark mode
-- [ ] **Dark Mode Implementation** — User expectation, demonstrates token system works
-- [ ] **Shadcn UI Integration** — Professional component foundation, accelerates development
-- [ ] **Accessible Form Components** — Highest usage, most WCAG violations happen here
-- [ ] **Accessible Button Components** — Core interaction, must have focus states
-- [ ] **Accessible Modal/Dialog Components** — Common pattern, focus trap required
-- [ ] **Basic Component Documentation** — Developers need to know when/how to use components
-- [ ] **Regression Testing** — Ensure no existing features break during overhaul
+- [x] **Own auth system** — required gate; nothing works without it
+- [x] **Workspace creation + invite-based membership** — core collaboration model
+- [x] **RBAC: Admin / Contributor / Viewer** — enforced at API level; demonstrated by seed data showing different roles
+- [x] **Code snippet posts with Shiki syntax highlighting** — primary dev-specific differentiator
+- [x] **Markdown posts with preview** — content creation foundation
+- [x] **Threaded discussions (1-level nesting)** — makes content interactive
+- [x] **Copy button on code blocks** — table stakes; non-negotiable
+- [x] **Activity feed** — makes workspace feel alive with the seed data
+- [x] **In-app mention notifications** — closes the interaction loop
+- [x] **Basic full-text search (Postgres tsvector)** — makes seed content navigable
+- [x] **File uploads to R2** — demonstrates cloud storage integration
+- [x] **Seed data: demo workspace with realistic content** — required for recruiter-friendly demo
 
-### Add After Validation (v1.x - Post-Design System)
+### Add After Validation (v1.x)
 
-Features to add once core design system is working and validated.
-
-- [ ] **Automated Accessibility Testing** — CI/CD integration, catch issues early (after components stable)
-- [ ] **Accessibility Regression Testing** — Track violations over time (after baseline established)
-- [ ] **Advanced Component Variants** — Loading states, disabled states, sizes (as needed per feature)
-- [ ] **Component-Level Accessibility Tests** — Storybook + axe integration (when component library stabilizes)
-- [ ] **Design-Development Alignment** — Figma component library mirroring code (nice to have, not critical)
-- [ ] **Toast/Notification Components** — Accessible live regions (defer until needed by features)
-- [ ] **Tooltip Components** — Hover + keyboard patterns (defer, not critical path)
+- [ ] **Reactions on posts/comments** — engagement signal; LOW complexity
+- [ ] **Snippet embed/share URL** — linkable snippets; LOW complexity
+- [ ] **Language auto-detection** — reduces friction; MEDIUM complexity
+- [ ] **`Cmd+K` search modal** — UX polish; MEDIUM complexity
 
 ### Future Consideration (v2+)
 
-Features to defer until design system is proven in production.
+- [ ] **Content version history + diff view** — HIGH complexity, HIGH engineering signal
+- [ ] **Email notification delivery** — requires SMTP/deliverability setup
+- [ ] **Real-time feed updates (WebSocket)** — currently covered by polling
+- [ ] **Workspace public/private toggle + discovery** — security boundary complexity
+- [ ] **Rich WYSIWYG editor (TipTap)** — non-developer use case
 
-- [ ] **Component Versioning System** — Track breaking changes (only needed at scale)
-- [ ] **Multi-Brand Theming** — Multiple theme tokens (not needed for single product)
-- [ ] **Component Usage Analytics** — Track which components used where (optimization, not launch)
-- [ ] **Advanced Animation System** — Motion design tokens (polish, not foundation)
-- [ ] **Accessibility Statement Generator** — Auto-generate WCAG conformance report (nice to have)
-- [ ] **Internationalization Support** — RTL layouts, locale-specific patterns (future markets)
+---
 
 ## Feature Prioritization Matrix
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| WCAG AA Color Compliance | HIGH | MEDIUM | P1 |
-| Semantic Design Tokens | HIGH | LOW | P1 |
-| Tailwind v4 Configuration | HIGH | MEDIUM | P1 |
-| Accessible Forms | HIGH | MEDIUM | P1 |
-| Dark Mode | HIGH | MEDIUM | P1 |
-| Shadcn UI Integration | HIGH | LOW | P1 |
-| Keyboard Navigation | HIGH | MEDIUM | P1 |
-| Focus Indicators | HIGH | LOW | P1 |
-| Button Components | HIGH | LOW | P1 |
-| Modal/Dialog Components | MEDIUM | MEDIUM | P1 |
-| Component Documentation | MEDIUM | LOW | P1 |
-| Regression Testing | HIGH | LOW | P1 |
-| Automated Accessibility Testing | MEDIUM | MEDIUM | P2 |
-| Accessibility Regression Testing | MEDIUM | MEDIUM | P2 |
-| Toast/Notification Components | MEDIUM | LOW | P2 |
-| Tooltip Components | LOW | LOW | P2 |
-| Component Versioning | LOW | HIGH | P3 |
-| Multi-Brand Theming | LOW | HIGH | P3 |
-| Design-Development Alignment | LOW | MEDIUM | P3 |
-| Animation System | LOW | MEDIUM | P3 |
+| Feature | Recruiter Value | Implementation Cost | Priority |
+|---------|----------------|---------------------|----------|
+| Own auth system | HIGH (shows auth depth) | MEDIUM | P1 |
+| Workspace + Membership | HIGH (core model) | MEDIUM | P1 |
+| RBAC enforcement | HIGH (senior signal) | MEDIUM | P1 |
+| Code snippets + Shiki | HIGH (dev differentiator) | LOW | P1 |
+| Markdown posts + preview | HIGH (content foundation) | MEDIUM | P1 |
+| Threaded discussions | HIGH (makes it interactive) | MEDIUM | P1 |
+| Copy button on code | HIGH (table stakes; absence noticed) | LOW | P1 |
+| Activity feed | HIGH (makes demo feel alive) | MEDIUM | P1 |
+| Mention notifications | HIGH (closes interaction loop) | MEDIUM | P1 |
+| Full-text search | MEDIUM (navigability) | MEDIUM | P1 |
+| File uploads to R2 | MEDIUM (cloud integration) | MEDIUM | P1 |
+| Seed data | HIGH (demo-required) | MEDIUM | P1 |
+| Reactions | MEDIUM | LOW | P2 |
+| Snippet embed URL | LOW | LOW | P2 |
+| Cmd+K search modal | MEDIUM | MEDIUM | P2 |
+| Language auto-detect | LOW | MEDIUM | P2 |
+| Content version history | HIGH (if built) | HIGH | P3 |
+| Email notifications | LOW | HIGH | P3 |
+| WYSIWYG editor (TipTap) | LOW (devs prefer MD) | HIGH | P3 |
 
 **Priority key:**
-- P1: Must have for v1.1 launch (design system foundation)
-- P2: Should have, add when possible (post-foundation enhancements)
-- P3: Nice to have, future consideration (scale/optimization features)
+- P1: Required for recruiter demo to feel like a real product
+- P2: Polish pass after all P1 features work end-to-end
+- P3: Future milestone; mention in case study as roadmap item
 
-## Implementation Patterns by Category
-
-### Color System
-
-**WCAG AA Requirements:**
-- Normal text: 4.5:1 contrast minimum
-- Large text (18pt/24px or 14pt bold/19px): 3:1 contrast minimum
-- UI components (borders, icons, focus indicators): 3:1 contrast minimum
-- Do not round contrast ratios (4.499:1 fails 4.5:1 requirement)
-
-**Dark Mode Best Practices:**
-- Avoid pure black (#000000), use soft dark grays (#1a1a1a, #121212)
-- Desaturate colors for dark mode (vibrant colors cause eye strain on dark backgrounds)
-- Use lighter borders or soft glows for elevation (shadows less visible in dark mode)
-- Test WCAG compliance in BOTH light and dark modes
-
-**Design Token Structure:**
-- Global tokens: Platform-agnostic base values (--color-gray-900: #1a1a1a)
-- Semantic tokens: Purpose-based aliases (--button-primary-bg: var(--color-blue-600))
-- Naming pattern: {context}-{role}-{modifier} (e.g., button-primary-bg-hover)
-
-### Accessible Forms
-
-**Required Patterns:**
-- Explicit label association: `<label for="email">` + `<input id="email">`
-- Never use placeholder-only labels (WCAG violation)
-- Required fields: Indicate in label text ("Email (required)")
-- Error states: aria-invalid="true" + aria-describedby pointing to error message
-- Error messages: Clear, actionable ("Email must be valid format" not "Invalid")
-- Validation timing: On blur or submit, not every keystroke (reduces screen reader noise)
-
-**ARIA Patterns:**
-- aria-live="polite" for non-critical updates
-- aria-live="assertive" (or role="alert") for critical errors
-- aria-describedby for linking help text and error messages to inputs
-- aria-invalid="true" when field has validation error
-
-### Keyboard Navigation
-
-**WCAG Requirements:**
-- 2.1.1 Keyboard (Level A): All functionality keyboard-operable
-- 2.1.2 No Keyboard Trap (Level A): Users can navigate away from any component
-- 2.4.3 Focus Order (Level A): Logical and meaningful sequence
-- 2.4.7 Focus Visible (Level AA): Visible focus indicator required
-
-**Patterns:**
-- Roving tabindex for complex widgets (tablists, menus, radio groups)
-- Only one item has tabindex="0" at a time, others tabindex="-1"
-- Arrow keys navigate within component, Tab/Shift+Tab exit component
-- Focus trapping for modals (Tab wraps within dialog)
-- Escape key closes modals and dropdowns
-
-**Radix UI Primitives Handle:**
-- WAI-ARIA role/aria attributes
-- Focus management and keyboard navigation
-- Screen reader announcements
-- Use primitives, don't reinvent
-
-### Component Testing
-
-**Automated Testing (catches ~30%):**
-- axe-core integration in unit tests
-- Run on component level, not just pages
-- Catches: missing alt text, insufficient contrast, missing labels, invalid ARIA
-
-**Manual Testing Required (remaining ~70%):**
-- Screen reader testing (NVDA, JAWS, VoiceOver)
-- Keyboard-only navigation
-- Focus order and visibility
-- Live region announcements
-- Error message clarity
-
-**Regression Testing Pattern:**
-- Establish baseline: "last known good state"
-- Scan on PRs: detect new violations, ignore existing debt
-- Component-level testing: prevents issues at source, not page-level duplication
-
-### Shadcn UI Integration
-
-**Architecture:**
-- Built on Radix UI primitives (accessibility handled)
-- Styled with Tailwind CSS (customizable via tokens)
-- Components copied into project (full ownership, no dependency lock-in)
-- Two-layer architecture: logic layer (Radix) + style layer (Tailwind)
-
-**Best Practices:**
-- Install specific components as needed (don't install everything)
-- Use Tailwind tokens for theming (color, spacing, typography)
-- Apply branding via theme overrides in CSS
-- Add variants using class-variance-authority pattern
-- Mirror structure in Figma for design-dev alignment (optional)
-
-**Customization Pattern:**
-- Base layer: Radix primitive (behavior, accessibility)
-- Style layer: Tailwind classes (appearance)
-- Theme layer: CSS variables (tokens for colors, spacing)
-- Variant layer: CVA for size/state variants
+---
 
 ## Competitor Feature Analysis
 
-| Feature | Material UI | Chakra UI | Shadcn UI (Our Choice) |
-|---------|------------|-----------|------------------------|
-| Accessibility | WAI-ARIA compliant | Built-in a11y | Radix primitives (best-in-class) |
-| Theming | Emotion/styled-components | CSS-in-JS theme | Tailwind + CSS vars (fastest) |
-| Component Ownership | Dependency-based | Dependency-based | Copy to project (full control) |
-| Customization | Override styles | Theme tokens | Direct code editing |
-| Bundle Size | Large | Medium | Minimal (only what you use) |
-| Dark Mode | Built-in | Built-in | Manual implementation required |
-| TypeScript | Excellent | Good | Excellent |
-| Documentation | Comprehensive | Comprehensive | Community-driven |
+| Feature | GitHub Gist | Slack/Discord | Notion | Our Approach |
+|---------|-------------|---------------|--------|--------------|
+| Syntax highlighting | Token-level (CodeMirror) | None | None | Shiki (VS Code quality) |
+| Workspace model | Org-based | Channel-based | Team-based | Workspace with invite tokens |
+| RBAC | Owner/Member/Outside Collaborator | Admin/Member/Guest | Admin/Member/Viewer | Admin/Contributor/Viewer |
+| Markdown posts | No (Gist is snippets only) | No | Full WYSIWYG | Split-pane markdown editor |
+| Threaded discussions | Issues/PRs (separate) | Threads on messages | Comments | 1-level nested on content |
+| Activity feed | Dashboard/Explore | Activity sidebar | Not available | Per-workspace reverse-chron |
+| Search | Across all Gists | Channel search | Workspace search | Workspace-scoped FTS |
+| File uploads | Attachments limited | Files channel | Inline images | R2 presigned upload |
+| Mentions | @user in issues | @user in messages | @user in pages | @user parsed from body |
 
-**Our Approach:**
-- Use Shadcn UI for component templates (Radix + Tailwind foundation)
-- Customize via design tokens in CSS (semantic naming, purpose-based)
-- Tailwind v4 @theme directive for token management
-- Manual dark mode implementation (demonstrates understanding)
-- Component-level accessibility testing (engineering-first)
-- Focus on portfolio value: shows architectural thinking, not just library usage
+---
 
 ## Sources
 
-### Design Systems & Best Practices
-- [What is a Design System? A 2026 Guide](https://www.untitledui.com/blog/what-is-a-design-system)
-- [10 UX Best Practices to Follow in 2026](https://uxpilot.ai/blogs/ux-best-practices)
-- [Best Design System Examples for 2026](https://www.designrush.com/best-designs/websites/trends/design-system-examples)
-- [Best design system examples in 2026](https://www.adhamdannaway.com/blog/design-systems/design-system-examples)
-
-### WCAG AA Compliance
-- [ADA Title II Digital Accessibility 2026: WCAG 2.1 AA](https://www.sdettech.com/blogs/ada-title-ii-digital-accessibility-2026-wcag-2-1-aa)
-- [2026 WCAG & ADA Website Compliance Requirements](https://www.accessibility.works/blog/wcag-ada-website-compliance-standards-requirements/)
-- [WCAG 2.1 AA Compliance: Complete Checklist (2026)](https://www.webability.io/blog/wcag-2-1-aa-the-standard-for-accessible-web-design)
-- [WCAG Color Contrast Ratios](https://www.accessibilitychecker.org/wcag-guides/ensure-the-contrast-between-foreground-and-background-colors-meets-wcag-2-aa-minimum-contrast-ratio-thresholds/)
-- [WebAIM: Contrast and Color Accessibility](https://webaim.org/articles/contrast/)
-- [Understanding Success Criterion 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
-
-### Shadcn UI & Component Architecture
-- [The Anatomy of shadcn/ui Components](https://vercel.com/academy/shadcn-ui/extending-shadcn-ui-with-custom-components)
-- [The Foundation for your Design System - shadcn/ui](https://ui.shadcn.com/)
-- [shadcn/ui Introduction](https://ui.shadcn.com/docs)
-- [The complete beginner's guide to shadcn/ui](https://shadcraft.com/blog/the-complete-beginner-s-guide-to-shadcn-ui)
-- [The anatomy of shadcn/ui](https://manupa.dev/blog/anatomy-of-shadcn-ui)
-
-### Design Tokens & Semantic Naming
-- [Design Token Naming Best Practices](https://www.netguru.com/blog/design-token-naming-best-practices)
-- [Best Practices For Naming Design Tokens, Components And Variables](https://www.smashingmagazine.com/2024/05/naming-best-practices/)
-- [How To Name Design Tokens in Design Systems](https://smart-interface-design-patterns.com/articles/naming-design-tokens/)
-- [Design tokens - The Design System Guide](https://thedesignsystem.guide/design-tokens)
-- [Naming Tokens in Design Systems](https://medium.com/eightshapes-llc/naming-tokens-in-design-systems-9e86c7444676)
-
-### Dark Mode Implementation
-- [Dark mode UI design: Best practices and examples](https://blog.logrocket.com/ux-design/dark-mode-ui-design-best-practices-and-examples/)
-- [Designing a Scalable and Accessible Dark Theme](https://www.fourzerothree.in/p/scalable-accessible-dark-mode)
-- [Dark Mode Design Systems: A Practical Guide](https://medium.com/design-bootcamp/dark-mode-design-systems-a-practical-guide-13bc67e43774)
-- [Complete Dark Mode Design Guide (2025)](https://ui-deploy.com/blog/complete-dark-mode-design-guide-ui-patterns-and-implementation-best-practices-2025)
-
-### Accessibility Testing & Regression
-- [Sneak peek: Accessibility Regression Testing](https://www.chromatic.com/blog/sneak-peek-accessibility-regression-testing/)
-- [Testing a Component System Like Infrastructure](https://hackernoon.com/testing-a-component-system-like-infrastructure-contract-tests-visual-regression-and-accessibility-gates)
-- [Testing the accessibility of pattern libraries](https://hidde.blog/testing-the-accessibility-of-pattern-libraries/)
-- [Accessibility testing for components and pages](https://www.chromatic.com/features/accessibility-test)
-- [Using Automated Test Results To Improve Accessibility](https://www.smashingmagazine.com/2022/11/automated-test-results-improve-accessibility/)
-- [Accessibility in Design Systems — Build Accessible Components](https://www.accesify.io/blog/accessibility-design-systems-component-libraries/)
-
-### Tailwind v4 & CSS Variables
-- [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4)
-- [A First Look at Setting Up Tailwind CSS v4.0](https://bryananthonio.com/blog/configuring-tailwind-css-v4/)
-- [Theme variables - Core concepts - Tailwind CSS](https://tailwindcss.com/docs/theme)
-- [What's New in Tailwind CSS 4.0: Migration Guide (2026)](https://designrevision.com/blog/tailwind-4-migration)
-- [Tailwind CSS 4 @theme: The Future of Design Tokens](https://medium.com/@sureshdotariya/tailwind-css-4-theme-the-future-of-design-tokens-at-2025-guide-48305a26af06)
-- [Upgrading to Tailwind CSS v4: A Migration Guide](https://typescript.tv/hands-on/upgrading-to-tailwind-css-v4-a-migration-guide/)
-
-### Accessible Forms & ARIA
-- [A Guide To Accessible Form Validation](https://www.smashingmagazine.com/2023/02/guide-accessible-form-validation/)
-- [How to Build Accessible Form Validation and Errors](https://216digital.com/how-to-build-accessible-form-validation-and-errors/)
-- [Accessible Dynamic Forms — Labels, Errors & Real-Time Validation](https://www.accesify.io/blog/accessible-dynamic-forms-labels-errors-validation/)
-- [How to Create Accessible Forms: HTML5 & ARIA Tutorial](https://testparty.ai/blog/create-accessible-forms)
-- [WebAIM: Usable and Accessible Form Validation](https://webaim.org/techniques/formvalidation/)
-- [ARIA Labels Guide: When and How to Use ARIA](https://testparty.ai/blog/aria-labels-guide)
-- [ARIA21: Using aria-invalid to Indicate An Error Field](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA21)
-
-### Keyboard Navigation & Focus Management
-- [Focus & Keyboard Operability](https://usability.yale.edu/web-accessibility/articles/focus-keyboard-operability)
-- [Developing a Keyboard Interface - W3C ARIA APG](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/)
-- [Keyboard Navigation Patterns for Complex Widgets](https://www.uxpin.com/studio/blog/keyboard-navigation-patterns-complex-widgets/)
-- [Complete Guide to Accessibility for Keyboard Interaction & Focus Management](https://blog.greeden.me/en/2025/11/10/complete-guide-to-accessibility-for-keyboard-interaction-focus-management-order-visibility-roving-tabindex-shortcuts-and-patterns-for-modals-tabs-menus/)
-- [Keyboard focus - web.dev](https://web.dev/learn/accessibility/focus)
-- [Keyboard Navigation & Focus — Ensuring Operability (WCAG)](https://www.accesify.io/blog/keyboard-navigation-focus-wcag/)
-
-### Radix UI & Accessibility Primitives
-- [What are Radix Primitives?](https://vercel.com/academy/shadcn-ui/what-are-radix-primitives)
-- [Accessibility – Radix Primitives](https://www.radix-ui.com/primitives/docs/overview/accessibility)
-- [Radix UI vs Shadcn UI: A Clear Comparison](https://shadcnstudio.com/blog/radix-ui-vs-shadcn-ui)
-- [Anatomy of a Primitive](https://vercel.com/academy/shadcn-ui/anatomy-of-a-primitive)
-- [Radix Primitives](https://www.radix-ui.com/primitives)
-
-### Component Library Pitfalls
-- [Common Problems with Design Pattern Libraries](https://www.uxpin.com/studio/blog/common-problems-with-design-pattern-libraries/)
-- [Design System vs Component Library: Key Differences](https://www.ramotion.com/blog/design-system-vs-component-library/)
-- [Top Mistakes Developers Make When Using React UI Component Library](https://www.sencha.com/blog/top-mistakes-developers-make-when-using-react-ui-component-library-and-how-to-avoid-them/)
-- [Your Component Library Isn't a Design System (But it Could Be)](https://www.telerik.com/blogs/your-component-library-isnt-design-system-but-could-be)
-- [The Dark Side of Design Systems - Mistakes, Missteps, and Lessons Learned](https://sakalim.com/content/the-dark-side-of-design-systems-mistakes-missteps-and-lessons-learned)
+- [Workspace roles: Bitrise docs](https://docs.bitrise.io/en/bitrise-platform/workspaces/collaboration-and-permissions-in-workspaces/workspace-collaboration.html)
+- [RBAC examples and patterns: OSO](https://www.osohq.com/learn/rbac-examples)
+- [Developer's guide to RBAC: WorkOS](https://workos.com/guide/the-developers-guide-to-rbac)
+- [Shiki syntax highlighter: Official](https://shiki.style/guide/)
+- [Shiki + React Server Components: Lucky Media](https://www.luckymedia.dev/blog/syntax-highlighting-with-shiki-react-server-components-and-next-js)
+- [react-shiki library: GitHub](https://github.com/AVGVSTVS96/react-shiki)
+- [Web discussions: flat by design: Coding Horror](https://blog.codinghorror.com/web-discussions-flat-by-design/)
+- [Discourse flat threading rationale: LSST Community](https://community.lsst.org/t/understanding-and-using-discourses-flat-threading/150)
+- [Pagination vs infinite scroll UX: UX Patterns for Devs](https://uxpatterns.dev/pattern-guide/pagination-vs-infinite-scroll)
+- [Notification design guidelines: Smashing Magazine](https://www.smashingmagazine.com/2025/07/design-guidelines-better-notifications-ux/)
+- [Postgres FTS vs Meilisearch vs Typesense: Nomadz](https://nomadz.pl/en/blog/postgres-full-text-search-or-meilisearch-vs-typesense)
+- [Postgres FTS at portfolio scale: Supabase](https://supabase.com/blog/postgres-full-text-search-vs-the-rest)
+- [WYSIWYG vs markdown for developer docs: Froala](https://froala.com/blog/general/wysiwyg-vs-markdown-developer-docs/)
+- [File upload system best practices 2025: Porto Theme](https://www.portotheme.com/10-file-upload-system-features-every-developer-should-know-in-2025/)
+- [Code snippet sharing best practices: CoderFile](https://www.coderfile.io/blog/code-snippet-sharing-best-practices)
+- [Full stack portfolio projects 2026: Nucamp](https://www.nucamp.co/blog/top-10-full-stack-portfolio-projects-for-2026-that-actually-get-you-hired)
+- [Credential injection via invitation flow (security): Medium](https://medium.com/@raia39499/credential-injection-via-invitation-flow-a-silent-account-takeover-risk-042a37702520)
 
 ---
-*Feature research for: Design System & WCAG AA Compliance (TeamFlow v1.1)*
-*Researched: 2026-02-16*
+*Feature research for: DevCollab — Developer Collaboration Platform (Fernando Millan portfolio v2.0)*
+*Researched: 2026-02-17*

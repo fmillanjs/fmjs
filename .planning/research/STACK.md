@@ -1,5 +1,4 @@
 # Stack Research: TeamFlow
-
 **Domain:** Work Management SaaS
 **Researched:** 2026-02-14
 **Confidence:** HIGH
@@ -643,6 +642,664 @@ CMD ["node", "server.js"]
 - [Dockerizing NestJS with Prisma and PostgreSQL](https://notiz.dev/blog/dockerizing-nestjs-with-prisma-and-postgresql/) - Production containers
 
 ---
-*Stack research for: TeamFlow (Work Management SaaS)*
-*Researched: 2026-02-14 (core), 2026-02-16 (v1.1 additions)*
-*Overall Confidence: HIGH - All core technologies verified with official docs and recent 2026 sources*
+
+## DevCollab Stack Additions
+
+**Focus:** New stack additions needed for DevCollab (developer collaboration platform).
+**Researched:** 2026-02-17
+**Confidence:** HIGH (core), MEDIUM (search integration specifics)
+
+DevCollab re-uses the full TeamFlow stack. This section documents ONLY what needs to be added. Do not re-install anything already present in `apps/web` or `apps/api`.
+
+---
+
+### 1. Rich Text / Markdown Editor — Tiptap v3
+
+**Recommendation: Tiptap v3 (`@tiptap/react` + `@tiptap/pm` + `@tiptap/starter-kit`)**
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| @tiptap/react | ^3.19.0 | Rich text editor React bindings | v3 is stable (released 2025), React 19 compatible, SSR-safe with `immediatelyRender: false`. Used for Markdown posts with rich editing. |
+| @tiptap/pm | ^3.19.0 | ProseMirror engine (required peer dep) | Required by @tiptap/react. Ships ProseMirror as a unified package. |
+| @tiptap/starter-kit | ^3.19.0 | Bundled common extensions | Includes bold, italic, headings, lists, code blocks, blockquotes. Reduces individual extension installs. |
+| @tiptap/extension-code-block-lowlight | ^3.x | Syntax-highlighted code blocks in editor | Integrates lowlight (a highlight.js wrapper) for code block highlighting within the editor itself. |
+| lowlight | ^3.x | highlight.js wrapper for Tiptap | Required by extension-code-block-lowlight. Provides language-aware highlighting inside the editor. |
+
+**Why Tiptap over alternatives:**
+- ProseMirror-based: battle-tested, production-grade collaborative editing foundation
+- React 19 compatible: v3.16+ confirmed React 19 support (January 2026 verification)
+- SSR-safe: `immediatelyRender: false` prevents hydration mismatches in Next.js App Router
+- Extensible: custom extensions for mentions, @user linking, file attachments
+- Open source core: all features DevCollab needs are in the free tier
+
+**Known limitation:** Pro drag-handle extension has a tippyjs-react dependency that has React 19 issues. Do not use `@tiptap-pro/extension-drag-handle`. Use the free `@tiptap/extension-drag-handle` alternative or omit drag handles.
+
+**SSR configuration required:**
+```typescript
+// DevCollab rich text editor (client component only)
+'use client';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+
+const editor = useEditor({
+  extensions: [StarterKit],
+  immediatelyRender: false, // REQUIRED for Next.js SSR safety
+  content: initialContent,
+});
+```
+
+---
+
+### 2. Syntax Highlighting — Shiki v3
+
+**Recommendation: Shiki v3 (server component rendering) + react-markdown v10 for display**
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| shiki | ^3.22.0 | Syntax highlighting engine | Ships zero client JS. Works in React Server Components via `codeToHtml()`. Used by Vercel (Next.js docs), Astro. TextMate grammar support means near-perfect highlighting for all languages. |
+| react-markdown | ^10.1.0 | Markdown rendering component | Latest version (March 2025) supports React 19. Used for rendering saved Markdown posts in read-only view. |
+| rehype-pretty-code | ^0.14.x | Shiki + rehype integration | Plugs Shiki into react-markdown's rehype pipeline. Handles code fence syntax highlighting in Markdown posts automatically. |
+
+**Why Shiki over alternatives:**
+- `prism-react-renderer`: ships JS to client, requires DOM manipulation — bad for RSC
+- `react-syntax-highlighter`: 1MB+ bundle, client-side only
+- `highlight.js` direct: no RSC support, significantly larger grammar files
+- Shiki renders at build/request time, ships zero syntax highlighting JS to browser
+
+**Usage pattern for DevCollab:**
+
+```typescript
+// For code snippets display — React Server Component
+import { codeToHtml } from 'shiki';
+
+async function CodeSnippet({ code, language }: { code: string; language: string }) {
+  const html = await codeToHtml(code, {
+    lang: language,
+    theme: 'github-dark', // or 'github-light' based on user theme
+  });
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+// For Markdown posts — use react-markdown + rehype-pretty-code
+import Markdown from 'react-markdown';
+import rehypePrettyCode from 'rehype-pretty-code';
+
+<Markdown rehypePlugins={[[rehypePrettyCode, { theme: 'github-dark' }]]}>
+  {markdownContent}
+</Markdown>
+```
+
+**Theme consideration:** Use `github-dark` / `github-light` pair for a professional developer-facing look. Shiki supports dual themes for light/dark mode via CSS variables.
+
+---
+
+### 3. File Storage — AWS SDK v3 + MinIO (dev) + Cloudflare R2 (prod)
+
+**Recommendation: `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` + `multer-s3` + MinIO Docker (dev) + Cloudflare R2 (prod)**
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| @aws-sdk/client-s3 | ^3.991.0 | S3 API client (R2 + MinIO compatible) | AWS SDK v3 modular client. Cloudflare R2 and MinIO both expose S3-compatible APIs, so one SDK covers all environments. Actively maintained (daily releases). |
+| @aws-sdk/s3-request-presigner | ^3.991.0 | Pre-signed URL generation | Generates time-limited upload/download URLs. Frontend uploads directly to storage, bypassing API server — avoids large file payloads hitting NestJS. |
+| @aws-sdk/lib-storage | ^3.991.0 | Multipart upload support | Required for files >5MB (auto-selected by SDK). Handles chunked uploads to S3-compatible storage. |
+| multer-s3 | ^3.0.1 | Multer storage engine for S3 | Streams files directly to S3 without disk I/O. v3.x uses AWS SDK v3 (compatible with R2 and MinIO). |
+| @types/multer | latest | TypeScript types for multer | NestJS @UseInterceptors(FileInterceptor) requires multer types. |
+
+**Environment strategy:**
+
+| Environment | Storage Backend | SDK Configuration |
+|-------------|-----------------|-------------------|
+| Local dev (Docker) | MinIO (`minio/minio` container) | Point `endpoint` to `http://minio:9000`, `forcePathStyle: true` |
+| Production (Coolify) | Cloudflare R2 | Point `endpoint` to R2 account URL, same AWS SDK v3 |
+
+**Why R2 for production:**
+- Zero egress fees (vs AWS S3 which charges per GB downloaded)
+- S3-compatible API — same SDK, change only the endpoint/credentials
+- No data transfer costs when serving to global CDN
+- Generous free tier (10GB storage, 1M Class A operations/month)
+
+**Why NOT to upload directly from NestJS buffer:**
+- Large files (10MB+) would load entirely into NestJS memory
+- Pre-signed URLs let the client upload directly, keeping API layer stateless
+- Scales to concurrent uploads without API bottleneck
+
+**NestJS service pattern:**
+```typescript
+// apps/devcollab-api/src/storage/storage.service.ts
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+@Injectable()
+export class StorageService {
+  private s3: S3Client;
+
+  constructor(private config: ConfigService) {
+    this.s3 = new S3Client({
+      region: 'auto',
+      endpoint: config.get('STORAGE_ENDPOINT'), // MinIO or R2 URL
+      credentials: {
+        accessKeyId: config.get('STORAGE_ACCESS_KEY'),
+        secretAccessKey: config.get('STORAGE_SECRET_KEY'),
+      },
+      forcePathStyle: config.get('STORAGE_FORCE_PATH_STYLE') === 'true', // true for MinIO
+    });
+  }
+
+  async getUploadUrl(key: string, contentType: string): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: this.config.get('STORAGE_BUCKET'),
+      Key: key,
+      ContentType: contentType,
+    });
+    return getSignedUrl(this.s3, command, { expiresIn: 3600 });
+  }
+}
+```
+
+**Docker compose addition for MinIO (dev only):**
+```yaml
+# Add to docker-compose.dev.yml
+minio:
+  image: minio/minio:latest
+  container_name: devcollab-minio
+  ports:
+    - '9000:9000'   # API
+    - '9001:9001'   # Console UI
+  environment:
+    MINIO_ROOT_USER: minioadmin
+    MINIO_ROOT_PASSWORD: minioadmin
+  command: server /data --console-address ":9001"
+  volumes:
+    - minio_data:/data
+  networks:
+    - teamflow-network
+  healthcheck:
+    test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+    interval: 10s
+    timeout: 5s
+    retries: 5
+```
+
+**Note on MinIO Docker Hub deprecation:** MinIO deprecated their Docker Hub image updates in October 2025. Use `minio/minio:latest` for local dev (still works), or Chainguard's maintained image for production self-hosting. For DevCollab, local dev MinIO is fine; production uses Cloudflare R2.
+
+---
+
+### 4. Full-Text Search — Meilisearch + nestjs-meilisearch
+
+**Recommendation: Meilisearch v1.x (Docker, self-hosted) + `nestjs-meilisearch` v3.0.0**
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| nestjs-meilisearch | ^3.0.0 | NestJS module for Meilisearch | v3.0.0 explicitly supports NestJS v11, drops NestJS 10. Node.js 20+ required (already using node:20). Provides `@InjectMeiliSearch()` decorator and `MeiliSearchModule.forRoot()`. |
+| meilisearch | ^0.49.x | Meilisearch JS client (peer dep) | Official Meilisearch JS client. Installed as peer dependency alongside nestjs-meilisearch. |
+
+**Why Meilisearch over Postgres full-text search:**
+
+| Criterion | Postgres FTS (`fullTextSearchPostgres`) | Meilisearch |
+|-----------|----------------------------------------|-------------|
+| Status in Prisma | Preview feature (not GA for Postgres as of 2026) | External, no Prisma dependency |
+| Typo tolerance | No | Yes (built-in) |
+| Relevance ranking | Basic (ts_rank) | Advanced multi-factor |
+| Search-as-you-type | Requires additional setup | Sub-100ms out of box |
+| Infrastructure | Already running Postgres | One additional Docker container |
+| Sync complexity | None (query directly) | Must sync data on write |
+
+**For DevCollab specifically:** Users searching code snippets by language/tags, posts by title/content, and members by name need typo tolerance and instant results. Postgres FTS would require GIN indexes and manual ranking — more work for worse UX. Meilisearch delivers better search experience with minimal code.
+
+**Docker compose addition:**
+```yaml
+# Add to docker-compose.dev.yml
+meilisearch:
+  image: getmeili/meilisearch:latest
+  container_name: devcollab-meilisearch
+  ports:
+    - '7700:7700'
+  environment:
+    MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-devmaster}
+    MEILI_ENV: development
+  volumes:
+    - meilisearch_data:/meili_data
+  networks:
+    - teamflow-network
+  healthcheck:
+    test: ['CMD', 'curl', '-f', 'http://localhost:7700/health']
+    interval: 10s
+    timeout: 5s
+    retries: 5
+```
+
+**NestJS module configuration:**
+```typescript
+// apps/devcollab-api/src/app.module.ts
+import { MeiliSearchModule } from 'nestjs-meilisearch';
+
+@Module({
+  imports: [
+    MeiliSearchModule.forRoot({
+      host: process.env.MEILI_HOST ?? 'http://meilisearch:7700',
+      apiKey: process.env.MEILI_MASTER_KEY ?? 'devmaster',
+    }),
+  ],
+})
+export class AppModule {}
+
+// In any service:
+import { InjectMeiliSearch } from 'nestjs-meilisearch';
+import { MeiliSearch } from 'meilisearch';
+
+@Injectable()
+export class SearchService {
+  constructor(@InjectMeiliSearch() private meili: MeiliSearch) {}
+
+  async indexSnippet(snippet: CodeSnippet) {
+    const index = this.meili.index('snippets');
+    await index.addDocuments([snippet]);
+  }
+
+  async search(query: string) {
+    return this.meili.index('snippets').search(query, {
+      attributesToHighlight: ['title', 'description'],
+      limit: 20,
+    });
+  }
+}
+```
+
+**Sync pattern:** Use NestJS `@nestjs/event-emitter` (already installed in `apps/api`) to trigger Meilisearch indexing when snippets/posts are created or updated. This keeps Postgres as source of truth and Meilisearch as the search replica.
+
+---
+
+### 5. Monorepo Additions — New Apps and Packages
+
+**New Turborepo apps:**
+
+| App | Path | Purpose | Notes |
+|-----|------|---------|-------|
+| devcollab-web | `apps/devcollab-web/` | Next.js 15 frontend for DevCollab | New app, mirrors `apps/web/` structure. Own NextAuth config, own app router. |
+| devcollab-api | `apps/devcollab-api/` | NestJS 11 backend for DevCollab | New app, mirrors `apps/api/` structure. Own auth, own Prisma client instance. |
+
+**Shared packages (reuse existing, extend as needed):**
+
+| Package | Path | DevCollab Usage |
+|---------|------|-----------------|
+| @repo/database | `packages/database/` | Add DevCollab Prisma models to `schema.prisma`. Use the SAME Prisma client — one database, separate model namespaces. |
+| @repo/shared | `packages/shared/` | Add shared DevCollab types/Zod schemas used by both devcollab-web and devcollab-api. |
+| @repo/config | `packages/config/` | Reuse existing ESLint, TypeScript configs. |
+
+**Why one schema.prisma (not two):** Prisma recommends a single schema per database. Both TeamFlow and DevCollab share the same Postgres instance (separate tables, same DB). If schemas diverge significantly later, evaluate splitting to separate databases — but that adds operational overhead for a portfolio project.
+
+**Turborepo task additions (turbo.json):** The existing `build`, `dev`, and `lint` tasks already cover all apps via `apps/*` glob — no turbo.json changes needed.
+
+**Port allocation:**
+
+| Service | Port | App |
+|---------|------|-----|
+| Next.js (TeamFlow) | 3000 | apps/web |
+| NestJS (TeamFlow) | 4000 | apps/api |
+| Next.js (DevCollab) | 3001 | apps/devcollab-web |
+| NestJS (DevCollab) | 4001 | apps/devcollab-api |
+| MinIO API | 9000 | Docker (dev) |
+| MinIO Console | 9001 | Docker (dev) |
+| Meilisearch | 7700 | Docker (dev) |
+
+**Scaffold commands:**
+```bash
+# From monorepo root
+# Create devcollab-web
+cp -r apps/web apps/devcollab-web
+# Then update: package.json name, next.config.js port, auth config
+
+# Create devcollab-api
+cp -r apps/api apps/devcollab-api
+# Then update: package.json name, main.ts port (4001), env vars
+
+# Install new libraries in devcollab-web
+npm install @tiptap/react @tiptap/pm @tiptap/starter-kit \
+  @tiptap/extension-code-block-lowlight lowlight \
+  shiki react-markdown rehype-pretty-code \
+  --workspace=apps/devcollab-web
+
+# Install new libraries in devcollab-api
+npm install nestjs-meilisearch meilisearch \
+  @aws-sdk/client-s3 @aws-sdk/s3-request-presigner @aws-sdk/lib-storage \
+  multer-s3 \
+  --workspace=apps/devcollab-api
+
+npm install -D @types/multer \
+  --workspace=apps/devcollab-api
+```
+
+---
+
+### 6. NestJS Modules and Prisma Schema for DevCollab
+
+**New NestJS modules needed in `apps/devcollab-api`:**
+
+| Module | Purpose | Key Dependencies |
+|--------|---------|------------------|
+| WorkspaceModule | Workspace CRUD, membership management | Prisma, CASL |
+| AuthModule | DevCollab-specific JWT auth (own secret, own token) | @nestjs/jwt, passport-jwt, bcrypt |
+| SnippetsModule | Code snippet CRUD, language tagging | Prisma, StorageModule (for file attachments) |
+| PostsModule | Markdown post CRUD, publishing | Prisma |
+| DiscussionsModule | Threaded discussions on snippets/posts | Prisma, Socket.io Gateway |
+| ActivityFeedModule | Activity events aggregation | Prisma, EventEmitter |
+| MentionsModule | @user mention parsing and notifications | Prisma, EventEmitter, Socket.io |
+| SearchModule | Meilisearch indexing and query API | nestjs-meilisearch |
+| StorageModule | S3/R2 pre-signed URL generation | @aws-sdk/client-s3 |
+| NotificationsGateway | WebSocket for real-time mentions/activity | @nestjs/websockets, Socket.io |
+
+**DevCollab RBAC roles (separate from TeamFlow):**
+
+```typescript
+// packages/shared/src/devcollab-roles.ts
+export enum DevCollabRole {
+  ADMIN = 'ADMIN',        // Can manage workspace, members, all content
+  CONTRIBUTOR = 'CONTRIBUTOR', // Can create/edit own snippets/posts, comment
+  VIEWER = 'VIEWER',      // Read-only access
+}
+```
+
+**Prisma schema additions to `packages/database/prisma/schema.prisma`:**
+
+```prisma
+// =================== DEVCOLLAB MODELS ===================
+
+enum DevCollabRole {
+  ADMIN
+  CONTRIBUTOR
+  VIEWER
+}
+
+enum SnippetVisibility {
+  PUBLIC
+  WORKSPACE
+  PRIVATE
+}
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     WorkspaceMember[]
+  snippets    Snippet[]
+  posts       Post[]
+  activities  ActivityEvent[]
+
+  @@index([slug])
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  role        DevCollabRole @default(VIEWER)
+  userId      String
+  workspaceId String
+  joinedAt    DateTime      @default(now())
+
+  user      User      @relation("DevCollabMemberships", fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+model Snippet {
+  id          String             @id @default(cuid())
+  title       String
+  description String?            @db.Text
+  content     String             @db.Text  // Raw code
+  language    String             // e.g., "typescript", "python"
+  visibility  SnippetVisibility  @default(WORKSPACE)
+  authorId    String
+  workspaceId String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  author      User              @relation("SnippetAuthor", fields: [authorId], references: [id])
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tags        SnippetTag[]
+  discussions Discussion[]
+  attachments FileAttachment[]
+
+  @@index([authorId])
+  @@index([workspaceId])
+  @@index([language])
+  @@index([createdAt])
+}
+
+model SnippetTag {
+  id        String  @id @default(cuid())
+  name      String
+  snippetId String
+
+  snippet Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+
+  @@unique([snippetId, name])
+  @@index([name])
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text  // Markdown / Tiptap JSON
+  published   Boolean  @default(false)
+  authorId    String
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User         @relation("PostAuthor", fields: [authorId], references: [id])
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  discussions Discussion[]
+
+  @@index([authorId])
+  @@index([workspaceId])
+  @@index([published])
+  @@index([createdAt])
+}
+
+model Discussion {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  authorId  String
+  parentId  String?   // For threading: null = top-level, set = reply
+  snippetId String?
+  postId    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author   User        @relation("DiscussionAuthor", fields: [authorId], references: [id])
+  parent   Discussion? @relation("DiscussionThread", fields: [parentId], references: [id])
+  replies  Discussion[] @relation("DiscussionThread")
+  snippet  Snippet?    @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  post     Post?       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  mentions Mention[]
+
+  @@index([authorId])
+  @@index([snippetId])
+  @@index([postId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model Mention {
+  id           String   @id @default(cuid())
+  mentionedId  String   // User being mentioned
+  discussionId String
+  read         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  mentioned  User       @relation("Mentioned", fields: [mentionedId], references: [id], onDelete: Cascade)
+  discussion Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+
+  @@index([mentionedId])
+  @@index([discussionId])
+  @@index([read])
+}
+
+model ActivityEvent {
+  id          String   @id @default(cuid())
+  type        String   // snippet.created, post.published, discussion.replied, etc.
+  actorId     String
+  workspaceId String
+  entityType  String   // Snippet, Post, Discussion
+  entityId    String
+  metadata    Json?    // Extra context (title, preview, etc.)
+  createdAt   DateTime @default(now())
+
+  actor     User      @relation("ActivityActor", fields: [actorId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([workspaceId, createdAt])
+}
+
+model FileAttachment {
+  id        String   @id @default(cuid())
+  filename  String
+  storageKey String  // S3/R2 object key
+  mimeType  String
+  sizeBytes Int
+  snippetId String?
+  uploaderId String
+  createdAt DateTime @default(now())
+
+  snippet  Snippet? @relation(fields: [snippetId], references: [id], onDelete: SetNull)
+  uploader User     @relation("FileUploader", fields: [uploaderId], references: [id])
+
+  @@index([snippetId])
+  @@index([uploaderId])
+}
+```
+
+**User model additions needed** (add relations to existing `User` model in schema.prisma):
+```prisma
+// Add to existing User model:
+devCollabMemberships WorkspaceMember[] @relation("DevCollabMemberships")
+snippets             Snippet[]         @relation("SnippetAuthor")
+posts                Post[]            @relation("PostAuthor")
+discussions          Discussion[]      @relation("DiscussionAuthor")
+mentions             Mention[]         @relation("Mentioned")
+activityEvents       ActivityEvent[]   @relation("ActivityActor")
+fileUploads          FileAttachment[]  @relation("FileUploader")
+```
+
+---
+
+### DevCollab Installation Commands
+
+```bash
+# From monorepo root — install in devcollab-web
+npm install \
+  @tiptap/react@^3.19.0 \
+  @tiptap/pm@^3.19.0 \
+  @tiptap/starter-kit@^3.19.0 \
+  @tiptap/extension-code-block-lowlight@^3.0.0 \
+  lowlight@^3.0.0 \
+  shiki@^3.22.0 \
+  react-markdown@^10.1.0 \
+  rehype-pretty-code@^0.14.0 \
+  --workspace=apps/devcollab-web
+
+# From monorepo root — install in devcollab-api
+npm install \
+  nestjs-meilisearch@^3.0.0 \
+  meilisearch@latest \
+  @aws-sdk/client-s3@^3.991.0 \
+  @aws-sdk/s3-request-presigner@^3.991.0 \
+  @aws-sdk/lib-storage@^3.991.0 \
+  multer-s3@^3.0.1 \
+  --workspace=apps/devcollab-api
+
+npm install -D @types/multer --workspace=apps/devcollab-api
+
+# Generate updated Prisma client (after schema.prisma changes)
+npx prisma generate --schema=packages/database/prisma/schema.prisma
+
+# Create Meilisearch indexes (run once after first start)
+# POST http://localhost:7700/indexes with body: { "uid": "snippets", "primaryKey": "id" }
+# POST http://localhost:7700/indexes with body: { "uid": "posts", "primaryKey": "id" }
+```
+
+---
+
+### DevCollab Alternatives Considered
+
+| Category | Recommended | Alternative | Why Not Alternative | Confidence |
+|----------|-------------|-------------|---------------------|------------|
+| Rich Text Editor | Tiptap v3 | Lexical (Meta) | Lexical is excellent but less mature, fewer ready-made extensions. Tiptap has broader ecosystem and ProseMirror battle-tested stability. | MEDIUM |
+| Rich Text Editor | Tiptap v3 | Quill v2 | Quill is unmaintained (v2 arrived late 2023, no active development). Security concerns, no React 19 support path. | HIGH |
+| Rich Text Editor | Tiptap v3 | TinyMCE | TinyMCE requires commercial license for cloud. Self-hosted is complex. Tiptap is simpler for developer-facing portfolio. | HIGH |
+| Syntax Highlighting | Shiki v3 | react-syntax-highlighter | Bundles Prism/highlight.js on client. 400KB+ bundle hit. No RSC support. Shiki ships zero JS to client. | HIGH |
+| Syntax Highlighting | Shiki v3 | Prism.js | Client-side only, requires DOM manipulation. Does not work in RSC. | HIGH |
+| Search | Meilisearch | Postgres FTS (`fullTextSearchPostgres`) | Still in Preview for Postgres in Prisma (not GA). No typo tolerance. Requires GIN indexes and manual ranking. Worse search UX. | HIGH |
+| Search | Meilisearch | Typesense | Both are excellent. Meilisearch has slightly better DX, more community tutorials for NestJS. Typesense is a valid alternative if Meilisearch proves difficult. | MEDIUM |
+| Search | Meilisearch | Elasticsearch | Overkill for a portfolio project. High memory usage (1GB+ JVM). DevCollab's dataset is small. | HIGH |
+| File Storage (prod) | Cloudflare R2 | AWS S3 | R2 has zero egress fees. S3 charges per GB downloaded. Same SDK. R2 is the obvious choice for cost when serving files via CDN. | HIGH |
+| File Storage (dev) | MinIO Docker | Localstack | LocalStack emulates the full AWS stack (overkill). MinIO is purpose-built S3-compatible storage, simpler setup. | HIGH |
+| File Storage (dev) | MinIO Docker | Filesystem (local disk) | Filesystem storage diverges from production behavior. MinIO ensures dev/prod parity with S3 API. | HIGH |
+
+---
+
+### DevCollab What NOT to Use
+
+| Avoid | Why | Use Instead | Confidence |
+|-------|-----|-------------|------------|
+| @tiptap-pro extensions (drag-handle) | Requires paid account + React 19 compatibility issues with tippyjs-react dependency | Free @tiptap/extension-drag-handle or omit | HIGH |
+| react-syntax-highlighter | Ships Prism/highlight.js to client, 400KB+, no React Server Component support | shiki with codeToHtml() in RSC | HIGH |
+| AWS S3 for production | Egress fees add up. DevCollab serves files publicly — every download costs money | Cloudflare R2 (zero egress) | HIGH |
+| Elasticsearch | JVM dependency, 1GB+ memory, complex configuration. Portfolio project doesn't need this scale | Meilisearch | HIGH |
+| Postgres FTS as primary search | Preview feature in Prisma for Postgres (not GA). No typo tolerance. Poor relevance for code search UX | Meilisearch | HIGH |
+| Multer in-memory storage for large files | Files buffered entirely in Node.js heap before upload. Breaks on files >100MB, degrades server performance | multer-s3 streaming + pre-signed URLs | HIGH |
+| Two separate Prisma schemas | Adds operational complexity (two migration histories, two clients). Use one schema.prisma for both apps. | Single packages/database/schema.prisma | MEDIUM |
+| localStorage for Tiptap content | Content is lost on browser close, no collaboration or history. | Save to Postgres via NestJS API | HIGH |
+
+---
+
+### DevCollab Version Compatibility Matrix
+
+| Package | Version | Compatible With | Critical Notes | Confidence |
+|---------|---------|-----------------|----------------|------------|
+| @tiptap/react | ^3.19.0 | React 19, Next.js 15 | Set `immediatelyRender: false`. Must be in `'use client'` component. | HIGH |
+| @tiptap/pm | ^3.19.0 | @tiptap/react 3.x | Required peer dep. Must match @tiptap/react version. | HIGH |
+| @tiptap/starter-kit | ^3.19.0 | @tiptap/react 3.x | Includes bold, italic, code, headings, lists. Check extensions included before adding duplicates. | HIGH |
+| shiki | ^3.22.0 | Node.js 18+, React RSC | Works in Server Components. For client use, import from `shiki/bundle/web` (smaller bundle). | HIGH |
+| react-markdown | ^10.1.0 | React 19 | v9.0.2 fixed React 19 types. v10 is current stable. | HIGH |
+| rehype-pretty-code | ^0.14.x | shiki ^3.x | Requires shiki as peer dep. Installs via rehype plugin system. | MEDIUM |
+| nestjs-meilisearch | ^3.0.0 | NestJS 11, Node.js 20+ | v3.0.0 dropped NestJS 10. Node 20+ required. Already on node:20 in Docker. | HIGH |
+| meilisearch | ^0.49.x | Node.js 18+ | Installed as peer dep of nestjs-meilisearch. Official Meilisearch client. | HIGH |
+| @aws-sdk/client-s3 | ^3.991.0 | Node.js 18+, R2, MinIO | R2 endpoint: `https://<account-id>.r2.cloudflarestorage.com`. MinIO: `http://minio:9000`. | HIGH |
+| multer-s3 | ^3.0.1 | @aws-sdk/client-s3 v3 | v3.x uses AWS SDK v3. v2.x uses AWS SDK v2 (do not mix). | HIGH |
+
+---
+
+### DevCollab Sources
+
+**HIGH Confidence — Official Documentation:**
+- [Tiptap Next.js Installation](https://tiptap.dev/docs/editor/getting-started/install/nextjs) — `immediatelyRender: false` SSR fix, v3 packages
+- [Tiptap 3.0 Stable Release](https://tiptap.dev/blog/release-notes/tiptap-3-0-is-stable) — Architecture changes, SSR improvements
+- [Shiki Next.js Integration](https://shiki.style/packages/next) — v3.22.0 current, RSC usage patterns
+- [AWS SDK v3 S3 Request Presigner](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-s3-request-presigner/) — Pre-signed URL API
+- [Cloudflare R2 S3 Compatibility](https://developers.cloudflare.com/r2/examples/) — R2 S3 API examples
+- [Meilisearch Docker Guide](https://www.meilisearch.com/docs/guides/docker) — Official Docker setup
+- [nestjs-meilisearch v3.0.0 Release](https://github.com/lambrohan/nestjs-meilisearch/releases) — NestJS 11 support confirmation
+
+**MEDIUM Confidence — Verified Community Sources:**
+- [react-markdown v10.1.0 Releases](https://github.com/remarkjs/react-markdown/releases) — React 19 compatibility in v9.0.2+
+- [multer-s3 npm](https://www.npmjs.com/package/multer-s3) — v3.x AWS SDK v3 compatibility
+- [Cloudflare R2 NestJS Integration](https://medium.com/@nurulislamrimon/cloudflare-r2-object-storage-functions-for-the-nestjs-in-one-shot-992225952fc8) — NestJS + R2 pattern (recent)
+- [MinIO Docker Compose Setup](https://pliutau.com/local-minio-docker-compose-buckets/) — Bucket auto-creation pattern
+- [Postgres FTS vs Meilisearch](https://medium.com/@simbatmotsi/postgres-full-text-search-vs-meilisearch-vs-elasticsearch-choosing-a-search-stack-that-scales-fcf17ef40a1b) — Dec 2025 comparison
+- [Prisma fullTextSearchPostgres Preview Update](https://github.com/prisma/prisma/discussions/26136) — Confirms still in Preview for Postgres
+
+---
+
+*Stack research for: TeamFlow (Work Management SaaS) + DevCollab (Developer Collaboration Platform)*
+*Researched: 2026-02-14 (TeamFlow core), 2026-02-16 (v1.1 Design System), 2026-02-17 (DevCollab additions)*
+*Overall Confidence: HIGH — All DevCollab library versions verified against npm, GitHub releases, and official docs. React 19 and NestJS 11 compatibility confirmed for all new additions.*
