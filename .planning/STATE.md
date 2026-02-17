@@ -12,11 +12,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-09 Task 1 complete — at checkpoint:human-verify (Task 2). MIG-03 grep clean, WCAG AA axe tests passing, sidebar lucide icons, contrast violations fixed.
-Status: Phase 12 in progress — 8/9 plans done (12-09 at checkpoint, awaiting human visual approval)
-Last activity: 2026-02-17 — 12-09: MIG-03 grep clean; 5 WCAG AA axe tests passing; sidebar SVGs→lucide; sidebar contrast fixes (active link + DEMO badge)
+Plan: Phase 12 complete — all 9 plans done. COMP-04/MIG-02/MIG-03 satisfied. Human visual verification approved. SelectItem __none__ sentinel fix applied (1041172).
+Status: Phase 12 complete — 9/9 plans done. Ready for Phase 13.
+Last activity: 2026-02-17 — 12-09: human visual verification approved; SelectItem crash fixed (1041172); Phase 12 fully complete
 
-Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
+Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 75% (12/16 requirements)
 
 ## Performance Metrics
 
@@ -88,6 +88,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 12 P06 | 1 | 1 task | 1 file |
 | Phase 12 P07 | 2 | 2 tasks | 3 files |
 | Phase 12 P08 | 2 | 2 tasks | 3 files |
+| Phase 12 P09 | 20 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -303,6 +304,7 @@ Recent decisions affecting current work:
 - [Phase 12-08]: projects.reduce for Tasks stat instead of hardcoded 0 — correctly aggregates task counts from project _count relation
 - [Phase 12]: Active sidebar nav link: text-foreground on bg-primary/10 (not text-primary) — blue-11 (#0d74ce) on #e1ecf7 = 3.98:1 fails WCAG AA; foreground = 21:1 passes (12-09)
 - [Phase 12]: DEMO badge: text-[var(--green-12)] on bg-[var(--green-3)] — green-11 = 4.21:1 (fails 4.5:1), green-12 passes WCAG AA (12-09)
+- [Phase 12]: Shadcn SelectItem cannot use value="" — Radix Select crashes on empty string; use sentinel value="__none__" and map back to null/undefined in onValueChange handler (12-09)
 
 ### Roadmap Evolution
 
@@ -316,6 +318,7 @@ Recent decisions affecting current work:
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
 **Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
 **Phase 11 - Form Components & Validation**: ✅ Complete (all 4 plans done). ✅ Shadcn Form + Select installed (11-01, COMP-03). ✅ All 6 auth forms migrated to FormField pattern (11-02). ✅ All 5 dashboard/portfolio forms migrated (11-03). ✅ task-form.tsx migrated with 3 Shadcn Selects + role=group labels toggle (11-04). ✅ 6 axe WCAG AA tests passing (11-04). ✅ Human-verified: keyboard navigation, ARIA attributes, zero browser console warnings. COMP-03 satisfied.
+**Phase 12 - Critical Route Migration**: ✅ Complete (all 9 plans done). ✅ TaskForm→Dialog, TaskDetailPanel→Select/Tabs/AlertDialog, TaskFilters→5 Popovers, TaskSearch→Input, TaskCard→Badge, KanbanColumn→Card (12-02 through 12-05). ✅ TeamMemberList→AlertDialog/Badge, ProjectCard/List/Actions→Card/Tabs/AlertDialog/Dialog (12-06, 12-07). ✅ Route pages→Button/Card/lucide icons (12-08). ✅ MIG-03 grep clean, WCAG AA axe tests passing, SelectItem __none__ sentinel fix, human verified (12-09). COMP-04/MIG-02/MIG-03 satisfied.
 
 ### Blockers/Concerns
 
@@ -341,10 +344,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Plan 09 — at checkpoint:human-verify Task 2)
-Stopped at: 12-09 Task 1 complete (afbb58f) — awaiting human visual verification of all migrated Shadcn components
-Status: Phase 12 in progress. Plans 12-01 through 12-08 done. 12-09 Task 1 done, Task 2 checkpoint pending.
-Next action: Human visual verification of Shadcn components, then resume 12-09 continuation
+Last session: 2026-02-17 (Phase 12 Plan 09 — complete)
+Stopped at: Phase 12 fully complete. All 9 plans done (12-01 through 12-09). COMP-04/MIG-02/MIG-03 satisfied.
+Status: Phase 12 done. Ready for Phase 13 (accessibility audit).
+Next action: Begin Phase 13 planning
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
