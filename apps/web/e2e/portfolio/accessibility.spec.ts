@@ -19,11 +19,17 @@ test.describe('Portfolio Accessibility - WCAG AA', () => {
     })
 
     test(`${path} - dark mode`, async ({ page }) => {
+      // Set dark mode in localStorage BEFORE navigation so next-themes initializes
+      // in dark mode — ensures CSS custom properties resolve correctly on first render.
+      // Post-load class injection causes axe-core to compute incorrect backgrounds
+      // because CSS variable transitions aren't observable by axe's getComputedStyle.
+      await page.addInitScript(() => {
+        localStorage.setItem('theme', 'dark')
+      })
       await page.goto(path)
       await page.waitForLoadState('networkidle')
-      // Same class injection pattern as visual regression tests
-      await page.evaluate(() => document.documentElement.classList.add('dark'))
-      await page.waitForTimeout(100)
+      // Allow time for next-themes to apply dark class from localStorage
+      await page.waitForTimeout(200)
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
         .analyze()

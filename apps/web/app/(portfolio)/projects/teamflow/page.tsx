@@ -23,7 +23,7 @@ export default function TeamFlowCaseStudy() {
       <div className="mb-12">
         <Link
           href="/projects"
-          className="inline-flex items-center text-primary hover:underline mb-6"
+          className="inline-flex items-center text-primary underline hover:no-underline mb-6"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -110,7 +110,7 @@ export default function TeamFlowCaseStudy() {
 
         <div className="mt-6 space-y-4">
           <div>
-            <p className="font-semibold text-green-600 dark:text-green-400 mb-2">
+            <p className="font-semibold text-green-700 dark:text-green-400 mb-2">
               ✓ Available in v1.0:
             </p>
             <p>
@@ -191,7 +191,7 @@ export default function TeamFlowCaseStudy() {
 
         <div className="mt-6 p-4 bg-accent border border-border rounded-lg">
           <p className="text-sm">
-            <strong className="text-primary">Note on Real-time Features:</strong>{' '}
+            <strong className="text-accent-foreground">Note on Real-time Features:</strong>{' '}
             WebSocket-based live updates, presence indicators, and optimistic UI with
             conflict detection are fully implemented in the codebase but currently
             blocked by authentication architecture compatibility issues between Next.js

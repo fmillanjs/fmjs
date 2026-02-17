@@ -29,13 +29,16 @@ test.describe('Portfolio Visual Regression - Light Mode', () => {
 test.describe('Portfolio Visual Regression - Dark Mode', () => {
   for (const { name, path } of portfolioRoutes) {
     test(name, async ({ page }) => {
+      // Set dark mode in localStorage BEFORE navigation so next-themes initializes
+      // in dark mode — ensures CSS variables resolve correctly on first render.
+      // Consistent with accessibility tests dark mode approach.
+      await page.addInitScript(() => {
+        localStorage.setItem('theme', 'dark')
+      })
       await page.goto(path)
       await page.waitForLoadState('networkidle')
-      // Inject dark class — app uses next-themes with attribute="class" on <html>
-      // DO NOT use colorScheme: 'dark' — that sets prefers-color-scheme media query,
-      // NOT the class="dark" attribute that Radix Colors dark mode requires.
-      await page.evaluate(() => document.documentElement.classList.add('dark'))
-      await page.waitForTimeout(100) // allow CSS transitions
+      // Allow time for next-themes to apply dark class
+      await page.waitForTimeout(200)
       await expect(page).toHaveScreenshot(`${name}-dark.png`, {
         fullPage: true,
         maxDiffPixelRatio: 0.02,

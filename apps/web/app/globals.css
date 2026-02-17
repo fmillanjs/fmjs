@@ -42,9 +42,10 @@
   --popover: var(--slate-1);
   --popover-foreground: var(--slate-12);
 
-  /* Primary — Blue scale, step 9 = highest chroma (purest blue) */
-  /* blue-9 pairs with white text per Radix WCAG guarantee */
-  --primary: var(--blue-9);
+  /* Primary — Blue scale, step 11 = darkest accessible blue for WCAG 2 AA compliance */
+  /* blue-11 light (#0d74ce) has 4.93:1 contrast with white — passes 4.5:1 requirement */
+  /* blue-9 (#0090ff) only achieves 2.99:1 with white — does NOT meet WCAG 2 AA */
+  --primary: var(--blue-11);
   --primary-foreground: #ffffff;
 
   /* Secondary — slate-3 background with slate-11 text */
@@ -56,10 +57,11 @@
   --muted: var(--slate-3);
   --muted-foreground: var(--slate-11);
 
-  /* Accent — blue-3 background with blue-11 text */
-  /* Fixes Phase 8 CRITICAL: accent text was 1.21:1, blue-11 on blue-3 is guaranteed accessible */
+  /* Accent — blue-3 background with blue-12 text */
+  /* Fixes Phase 8 CRITICAL: accent text must be 4.5:1+. blue-12 (#113264) on blue-3 (#e6f4fe) = 10.9:1 */
+  /* blue-11 (#0d74ce) on blue-3 only achieves ~4.25:1 in P3 display gamut — does not reliably pass */
   --accent: var(--blue-3);
-  --accent-foreground: var(--blue-11);
+  --accent-foreground: var(--blue-12);
 
   /* Destructive */
   --destructive: var(--red-9);
@@ -79,6 +81,14 @@
   --border: var(--slate-6);
   --input: var(--slate-6);
   --ring: var(--blue-8);
+}
+
+/* Dark mode semantic token overrides */
+/* Radix dark CSS auto-updates --blue-11 to #70b8ff (light blue, readable on dark backgrounds) */
+/* Override primary-foreground for dark mode: white on #70b8ff is only 2.1:1 — fails WCAG AA */
+/* Use very dark slate (#111113 = --slate-1 dark) on #70b8ff for 9.04:1 contrast — passes AA */
+.dark {
+  --primary-foreground: var(--slate-1);
 }
 
 /* Expose semantic tokens as Tailwind CSS utilities via @theme inline */
