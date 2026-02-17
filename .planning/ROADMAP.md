@@ -63,7 +63,12 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
   3. `packages/devcollab-database` Prisma client is generated with its own output path (not overwriting TeamFlow's `@prisma/client`); initial migration is applied to devcollab-postgres
   4. A dedicated `migrate` service runs `prisma migrate deploy` and exits before devcollab-api starts (no migration race condition)
   5. CI/CD pipeline builds and pushes devcollab-web and devcollab-api images to GHCR on push to main
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 14-01-PLAN.md — packages/devcollab-database: Prisma schema, isolated client, Dockerfile.migrate
+- [ ] 14-02-PLAN.md — apps/devcollab-api (NestJS 11, CASL guard, /health) + apps/devcollab-web (Next.js 15, login placeholder)
+- [ ] 14-03-PLAN.md — docker-compose.yml: devcollab-postgres, devcollab-migrate, devcollab-api, devcollab-web, MinIO
+- [ ] 14-04-PLAN.md — CI/CD: build-and-push-devcollab job for GHCR
 
 ### Phase 15: Authentication System
 **Goal**: Users can sign up, log in, and maintain sessions in DevCollab using a completely separate JWT system from TeamFlow; deny-by-default RBAC guard is unit-tested before any feature routes exist
@@ -163,7 +168,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 | 11. Form Components & Validation | v1.1 | 4/4 | Complete | 2026-02-17 |
 | 12. Critical Route Migration | v1.1 | 9/9 | Complete | 2026-02-17 |
 | 13. Automation & Optimization | v1.1 | 3/3 | Complete | 2026-02-17 |
-| 14. Monorepo Scaffold + Infrastructure | v2.0 | 0/TBD | Not started | - |
+| 14. Monorepo Scaffold + Infrastructure | v2.0 | 0/4 | Not started | - |
 | 15. Authentication System | v2.0 | 0/TBD | Not started | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 0/TBD | Not started | - |
 | 17. Content Creation — Snippets + Posts | v2.0 | 0/TBD | Not started | - |
