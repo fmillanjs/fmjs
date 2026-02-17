@@ -73,7 +73,7 @@ export function ResetPasswordRequestForm() {
         </Button>
 
         <div className="text-center text-sm">
-          <Link href="/login" className="text-primary hover:text-primary/80">
+          <Link href="/login" className="text-foreground underline hover:text-muted-foreground">
             Back to Login
           </Link>
         </div>
