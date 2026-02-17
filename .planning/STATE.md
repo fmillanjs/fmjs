@@ -12,11 +12,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 9 - Design System Foundation
-Plan: 1 of N complete
-Status: Plan 01 complete
-Last activity: 2026-02-17 — Completed 09-01 Shadcn UI CLI Initialization
+Plan: 2 of N complete
+Status: Plan 02 complete
+Last activity: 2026-02-17 — Completed 09-02 Radix Colors Design Token Migration
 
-Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1: 19% (3/16 requirements)
+Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1: 44% (7/16 requirements)
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [████████░░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 08 P02 | 4 | 3 tasks | 2 files |
 | Phase 08 P01 | 5 | 2 tasks | 2 files |
 | Phase 09-design-system-foundation P01 | 5 | 2 tasks | 6 files |
+| Phase 09-design-system-foundation P02 | 3 | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -220,6 +221,11 @@ Recent decisions affecting current work:
 - [Phase 09]: tailwindcss added to apps/web devDependencies for shadcn CLI version detection (hoisted root package not visible to CLI Nt() function)
 - [Phase 09]: tailwind.config.js stub created for shadcn CLI Lr() scanner compatibility in Tailwind v4 CSS-first project
 - [Phase 09]: Shadcn UI CLI initialized with new-york style, neutral base color (Plan 02 replaces with Radix Colors blue scale)
+- [Phase 09-02]: Radix Colors two-layer pattern: scale steps (--blue-9) → semantic names (--primary) → @theme inline Tailwind utilities (--color-primary)
+- [Phase 09-02]: Dark mode via Radix dark CSS imports (not hand-rolled .dark {} block) — same CSS variable names, different values auto-scoped to .dark
+- [Phase 09-02]: @custom-variant dark uses :where(.dark, .dark *) selector for next-themes class="dark" on <html>
+- [Phase 09-02]: Radix scale step WCAG strategy: step 9=saturated backgrounds, step 11=readable text (Lc 60+ APCA), step 6=visible borders (3:1+)
+- [Phase 09-02]: blue-11 on blue-3 for accent (fixes 1.21:1 CRITICAL), amber-12 on amber-9 for warning (fixes 1.01:1 CRITICAL)
 
 ### Roadmap Evolution
 
@@ -230,7 +236,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-**Phase 9 - Design System Foundation**: Apply WCAG color fixes from 08-02 audit (6 CSS property changes to fix 10 violations)
+**Phase 9 - Design System Foundation**: ✅ Color system migration complete (09-02). WCAG violations resolved. Proceed with component migration (09-03).
 
 ### Blockers/Concerns
 
@@ -257,9 +263,9 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-17 (Phase 09 Design System Foundation)
-Stopped at: Completed 09-01-PLAN.md - Shadcn UI CLI Initialization
-Status: Phase 09 Plan 01 complete - Shadcn init done, @radix-ui/colors + tw-animate-css installed
-Next action: Execute 09-02 (Color System Migration with Radix Colors)
+Stopped at: Completed 09-02-PLAN.md - Radix Colors Design Token Migration
+Status: Phase 09 Plan 02 complete - globals.css replaced with Radix Colors system, all 10 WCAG violations fixed
+Next action: Execute 09-03 (Component migration - apply Radix Color tokens to Shadcn components)
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
