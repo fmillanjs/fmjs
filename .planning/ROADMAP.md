@@ -327,7 +327,13 @@ Plans:
   4. Form validation occurs on blur (not every keystroke) to reduce screen reader noise
   5. All form components pass axe DevTools audit with zero accessibility violations
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Install Shadcn Form + Select components via CLI
+- [ ] 11-02-PLAN.md — Migrate 6 auth forms to FormField pattern with mode: onBlur
+- [ ] 11-03-PLAN.md — Migrate 5 dashboard/portfolio forms (including Shadcn Select for role dropdown)
+- [ ] 11-04-PLAN.md — Migrate task-form (4 Shadcn Selects) + axe WCAG AA accessibility tests + human verification
 
 ### Phase 12: Critical Route Migration
 
