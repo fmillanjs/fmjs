@@ -4,6 +4,8 @@ import { TaskWithRelations } from '@repo/shared/types';
 import { TaskPriority, TaskStatus } from '@repo/shared/types/enums';
 import { formatDistanceToNow } from 'date-fns';
 import { Calendar, MessageSquare } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: TaskWithRelations;
@@ -49,14 +51,18 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
     >
       {/* Priority and Status badges */}
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span
-          className={`text-xs font-medium px-2 py-0.5 rounded ${priorityColor.bg} ${priorityColor.text}`}
+        <Badge
+          variant="outline"
+          className={cn('border-0 text-xs font-medium', priorityColor.bg, priorityColor.text)}
         >
           {task.priority}
-        </span>
-        <span className={`text-xs px-2 py-0.5 rounded ${statusColor.bg} ${statusColor.text}`}>
+        </Badge>
+        <Badge
+          variant="outline"
+          className={cn('border-0 text-xs', statusColor.bg, statusColor.text)}
+        >
           {statusLabels[task.status]}
-        </span>
+        </Badge>
       </div>
 
       {/* Title */}
