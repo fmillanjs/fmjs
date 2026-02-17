@@ -350,7 +350,18 @@ Plans:
   4. Old component files deleted from codebase (not just deprecated or commented out)
   5. Bundle analysis shows single style system (no duplicate CSS from parallel component libraries)
 
-**Plans:** TBD
+**Plans:** 9 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Install AlertDialog, Tabs, Popover via Shadcn CLI (Docker-aware)
+- [ ] 12-02-PLAN.md — TaskForm: custom overlay div to Shadcn Dialog (COMP-04)
+- [ ] 12-03-PLAN.md — TaskDetailPanel: raw selects + manual tabs to Select + Tabs + AlertDialog
+- [ ] 12-04-PLAN.md — TaskFilters + TaskSearch: custom dropdowns to Popover + Input
+- [ ] 12-05-PLAN.md — TaskCard + KanbanColumn: inline spans to Badge, outer div to Card
+- [ ] 12-06-PLAN.md — TeamMemberList: inline confirm div to AlertDialog + role badges to Badge
+- [ ] 12-07-PLAN.md — ProjectCard + ProjectList + ProjectActions: Card + Tabs + AlertDialog + Dialog
+- [ ] 12-08-PLAN.md — Route pages: inline SVGs + manual buttons to Button asChild + Card + lucide icons
+- [ ] 12-09-PLAN.md — axe WCAG AA tests + MIG-03 grep verification + human verification checkpoint
 
 ### Phase 13: Automation & Optimization
 
@@ -391,5 +402,5 @@ Decimal phases like 2.1 execute between their surrounding integers.
 | 9. Design System Foundation | 0/0 | Not started | - |
 | 10. Component Migration (Portfolio) | 0/4 | Complete    | 2026-02-17 |
 | 11. Form Components & Validation | 0/0 | Complete    | 2026-02-17 |
-| 12. Critical Route Migration | 0/0 | Not started | - |
+| 12. Critical Route Migration | 0/9 | Planned     | - |
 | 13. Automation & Optimization | 0/0 | Not started | - |
