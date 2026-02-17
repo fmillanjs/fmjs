@@ -106,17 +106,17 @@ export function TaskForm({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4"
+        className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-foreground">
             {mode === 'create' ? 'Create Task' : 'Edit Task'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-600 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
             type="button"
           >
             <X className="w-5 h-5" />
@@ -133,13 +133,13 @@ export function TaskForm({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Title <span className="text-red-500">*</span>
             </label>
             <input
               {...register('title')}
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               placeholder="Task title"
             />
             {errors.title && (
@@ -149,13 +149,13 @@ export function TaskForm({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Description
             </label>
             <textarea
               {...register('description')}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               placeholder="Task description (optional)"
             />
             {errors.description && (
@@ -166,12 +166,12 @@ export function TaskForm({
           {/* Status and Priority */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Status
               </label>
               <select
                 {...register('status')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               >
                 <option value={TaskStatus.TODO}>To Do</option>
                 <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
@@ -184,12 +184,12 @@ export function TaskForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Priority
               </label>
               <select
                 {...register('priority')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               >
                 <option value={TaskPriority.LOW}>Low</option>
                 <option value={TaskPriority.MEDIUM}>Medium</option>
@@ -205,13 +205,13 @@ export function TaskForm({
           {/* Due Date and Assignee */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Due Date
               </label>
               <input
                 {...register('dueDate')}
                 type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               />
               {errors.dueDate && (
                 <p className="text-red-600 text-sm mt-1">{String(errors.dueDate.message)}</p>
@@ -219,12 +219,12 @@ export function TaskForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Assignee
               </label>
               <select
                 {...register('assigneeId')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               >
                 <option value="">Unassigned</option>
                 {teamMembers.map((member) => (
@@ -241,7 +241,7 @@ export function TaskForm({
 
           {/* Labels */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Labels
             </label>
             <div className="flex flex-wrap gap-2">
@@ -255,7 +255,7 @@ export function TaskForm({
                     ${
                       selectedLabelIds.includes(label.id)
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 bg-white hover:border-gray-400'
+                        : 'border-border bg-card hover:border-foreground'
                     }
                   `}
                 >
@@ -263,11 +263,11 @@ export function TaskForm({
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: label.color }}
                   />
-                  <span className="text-sm text-gray-900">{label.name}</span>
+                  <span className="text-sm text-foreground">{label.name}</span>
                 </button>
               ))}
               {labels.length === 0 && (
-                <p className="text-sm text-gray-600 dark:text-gray-300">No labels available</p>
+                <p className="text-sm text-muted-foreground">No labels available</p>
               )}
             </div>
           </div>
@@ -277,7 +277,7 @@ export function TaskForm({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-muted-foreground bg-muted rounded-md hover:bg-accent transition-colors"
               disabled={isSubmitting}
             >
               Cancel

@@ -59,7 +59,7 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
 
   if (comments.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-600 dark:text-gray-300 italic">
+      <div className="text-center py-8 text-muted-foreground italic">
         No comments yet. Be the first to comment.
       </div>
     );
@@ -96,10 +96,10 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-medium text-sm text-gray-900">
+                <span className="font-medium text-sm text-foreground">
                   {comment.author.name || 'Unknown User'}
                 </span>
-                <span className="text-xs text-gray-600 dark:text-gray-300">
+                <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                 </span>
               </div>
@@ -109,7 +109,7 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
                   <textarea
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={3}
                     autoFocus
                   />
@@ -122,14 +122,14 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
                     </button>
                     <button
                       onClick={handleEditCancel}
-                      className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                      className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-accent"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-gray-700 whitespace-pre-wrap">{comment.content}</div>
+                <div className="text-sm text-muted-foreground whitespace-pre-wrap">{comment.content}</div>
               )}
 
               {/* Actions (Edit/Delete) - visible on hover */}

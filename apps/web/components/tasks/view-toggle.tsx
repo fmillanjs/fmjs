@@ -9,7 +9,7 @@ interface ViewToggleProps {
 
 export function ViewToggle({ currentView, onChange }: ViewToggleProps) {
   return (
-    <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
+    <div className="inline-flex rounded-lg border border-border bg-card p-1">
       <button
         onClick={() => onChange('board')}
         className={`
@@ -17,7 +17,7 @@ export function ViewToggle({ currentView, onChange }: ViewToggleProps) {
           ${
             currentView === 'board'
               ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-700 hover:bg-gray-100'
+              : 'text-muted-foreground hover:bg-accent'
           }
         `}
       >
@@ -31,7 +31,7 @@ export function ViewToggle({ currentView, onChange }: ViewToggleProps) {
           ${
             currentView === 'list'
               ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-700 hover:bg-gray-100'
+              : 'text-muted-foreground hover:bg-accent'
           }
         `}
       >

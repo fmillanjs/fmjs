@@ -14,17 +14,17 @@ interface TaskFiltersProps {
 }
 
 const statusOptions = [
-  { value: TaskStatus.TODO, label: 'To Do', color: 'bg-blue-100 text-blue-700' },
-  { value: TaskStatus.IN_PROGRESS, label: 'In Progress', color: 'bg-yellow-100 text-yellow-700' },
-  { value: TaskStatus.DONE, label: 'Done', color: 'bg-green-100 text-green-700' },
-  { value: TaskStatus.BLOCKED, label: 'Blocked', color: 'bg-red-100 text-red-700' },
+  { value: TaskStatus.TODO, label: 'To Do', color: 'bg-[var(--blue-3)] text-[var(--blue-11)]' },
+  { value: TaskStatus.IN_PROGRESS, label: 'In Progress', color: 'bg-[var(--amber-3)] text-[var(--amber-11)]' },
+  { value: TaskStatus.DONE, label: 'Done', color: 'bg-[var(--green-3)] text-[var(--green-11)]' },
+  { value: TaskStatus.BLOCKED, label: 'Blocked', color: 'bg-[var(--red-3)] text-[var(--red-11)]' },
 ];
 
 const priorityOptions = [
-  { value: TaskPriority.LOW, label: 'Low', color: 'bg-slate-100 text-slate-700' },
-  { value: TaskPriority.MEDIUM, label: 'Medium', color: 'bg-yellow-100 text-yellow-700' },
+  { value: TaskPriority.LOW, label: 'Low', color: 'bg-muted text-muted-foreground' },
+  { value: TaskPriority.MEDIUM, label: 'Medium', color: 'bg-[var(--amber-3)] text-[var(--amber-11)]' },
   { value: TaskPriority.HIGH, label: 'High', color: 'bg-orange-100 text-orange-700' },
-  { value: TaskPriority.URGENT, label: 'Urgent', color: 'bg-red-100 text-red-700' },
+  { value: TaskPriority.URGENT, label: 'Urgent', color: 'bg-[var(--red-3)] text-[var(--red-11)]' },
 ];
 
 const sortOptions = [
@@ -123,13 +123,13 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
   const hasActiveFilters = activeFilterCount > 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-card border border-border rounded-lg p-4">
       <div className="flex flex-wrap items-center gap-3">
         {/* Status Filter */}
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'status' ? null : 'status')}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
             Status
             {filters.status && filters.status.length > 0 && (
@@ -140,18 +140,18 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
             <ChevronDown className="w-4 h-4" />
           </button>
           {openDropdown === 'status' && (
-            <div className="absolute z-10 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg">
+            <div className="absolute z-10 mt-2 w-56 bg-card border border-border rounded-md shadow-lg">
               <div className="p-2 space-y-1">
                 {statusOptions.map((option) => (
                   <label
                     key={option.value}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       checked={filters.status?.includes(option.value) || false}
                       onChange={() => toggleStatus(option.value)}
-                      className="rounded border-gray-300"
+                      className="rounded border-border"
                     />
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${option.color}`}>
                       {option.label}
@@ -167,7 +167,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'priority' ? null : 'priority')}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
             Priority
             {filters.priority && filters.priority.length > 0 && (
@@ -178,18 +178,18 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
             <ChevronDown className="w-4 h-4" />
           </button>
           {openDropdown === 'priority' && (
-            <div className="absolute z-10 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg">
+            <div className="absolute z-10 mt-2 w-56 bg-card border border-border rounded-md shadow-lg">
               <div className="p-2 space-y-1">
                 {priorityOptions.map((option) => (
                   <label
                     key={option.value}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       checked={filters.priority?.includes(option.value) || false}
                       onChange={() => togglePriority(option.value)}
-                      className="rounded border-gray-300"
+                      className="rounded border-border"
                     />
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${option.color}`}>
                       {option.label}
@@ -205,7 +205,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'assignee' ? null : 'assignee')}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
             Assignee
             {filters.assignee && (
@@ -214,21 +214,21 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
             <ChevronDown className="w-4 h-4" />
           </button>
           {openDropdown === 'assignee' && (
-            <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg max-h-80 overflow-y-auto">
+            <div className="absolute z-10 mt-2 w-64 bg-card border border-border rounded-md shadow-lg max-h-80 overflow-y-auto">
               <div className="p-2 space-y-1">
                 <button
                   onClick={() => setAssignee('')}
-                  className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded text-left ${
+                  className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded text-left ${
                     !filters.assignee ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <span className="text-sm text-gray-700">All Assignees</span>
+                  <span className="text-sm text-muted-foreground">All Assignees</span>
                 </button>
                 {teamMembers.map((member) => (
                   <button
                     key={member.id}
                     onClick={() => setAssignee(member.id)}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded ${
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded ${
                       filters.assignee === member.id ? 'bg-blue-50' : ''
                     }`}
                   >
@@ -243,7 +243,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
                         {member.name?.charAt(0).toUpperCase() || 'U'}
                       </div>
                     )}
-                    <span className="text-sm text-gray-700">{member.name || 'Unknown'}</span>
+                    <span className="text-sm text-muted-foreground">{member.name || 'Unknown'}</span>
                   </button>
                 ))}
               </div>
@@ -255,7 +255,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'labels' ? null : 'labels')}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
             Labels
             {filters.labels && filters.labels.length > 0 && (
@@ -266,27 +266,27 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
             <ChevronDown className="w-4 h-4" />
           </button>
           {openDropdown === 'labels' && (
-            <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg max-h-80 overflow-y-auto">
+            <div className="absolute z-10 mt-2 w-64 bg-card border border-border rounded-md shadow-lg max-h-80 overflow-y-auto">
               <div className="p-2 space-y-1">
                 {labels.length === 0 ? (
-                  <div className="px-2 py-1.5 text-sm text-gray-600 dark:text-gray-300">No labels available</div>
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">No labels available</div>
                 ) : (
                   labels.map((label) => (
                     <label
                       key={label.id}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded cursor-pointer"
                     >
                       <input
                         type="checkbox"
                         checked={filters.labels?.includes(label.id) || false}
                         onChange={() => toggleLabel(label.id)}
-                        className="rounded border-gray-300"
+                        className="rounded border-border"
                       />
                       <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: label.color }}
                       />
-                      <span className="text-sm text-gray-700">{label.name}</span>
+                      <span className="text-sm text-muted-foreground">{label.name}</span>
                     </label>
                   ))
                 )}
@@ -299,20 +299,20 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'sort' ? null : 'sort')}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
             Sort by: {sortOptions.find((o) => o.value === filters.sortBy)?.label}
             <ChevronDown className="w-4 h-4" />
           </button>
           {openDropdown === 'sort' && (
-            <div className="absolute z-10 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+            <div className="absolute z-10 mt-2 w-48 bg-card border border-border rounded-md shadow-lg">
               <div className="p-2 space-y-1">
                 {sortOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => setSortBy(option.value)}
-                    className={`w-full text-left px-2 py-1.5 hover:bg-gray-50 rounded text-sm ${
-                      filters.sortBy === option.value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                    className={`w-full text-left px-2 py-1.5 hover:bg-muted/50 rounded text-sm ${
+                      filters.sortBy === option.value ? 'bg-blue-50 text-blue-700' : 'text-muted-foreground'
                     }`}
                   >
                     {option.label}
@@ -326,7 +326,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         {/* Sort Order Toggle */}
         <button
           onClick={toggleSortOrder}
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="px-3 py-2 border border-border rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           title={`Sort ${filters.sortOrder === 'asc' ? 'ascending' : 'descending'}`}
         >
           {filters.sortOrder === 'asc' ? '↑' : '↓'}
@@ -336,7 +336,7 @@ export function TaskFilters({ teamMembers, labels }: TaskFiltersProps) {
         {hasActiveFilters && (
           <button
             onClick={clearAllFilters}
-            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-[var(--red-11)] hover:bg-[var(--red-3)] rounded-md transition-colors"
           >
             <X className="w-4 h-4" />
             Clear all filters

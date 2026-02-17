@@ -179,7 +179,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
   if (isLoading && offset === 0) {
     return (
       <div className="flex justify-center py-8">
-        <div className="text-gray-600 dark:text-gray-300">Loading history...</div>
+        <div className="text-muted-foreground">Loading history...</div>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-600 dark:text-gray-300 italic">
+      <div className="text-center py-8 text-muted-foreground italic">
         No history yet.
       </div>
     );
@@ -205,7 +205,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border" />
 
         {/* Timeline entries */}
         <div className="space-y-6">
@@ -218,10 +218,10 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
                   <img
                     src={entry.actor.image}
                     alt={entry.actor.name || 'User'}
-                    className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                    className="w-8 h-8 rounded-full border-2 border-border"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium border-2 border-gray-200 dark:border-gray-700">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium border-2 border-border">
                     {entry.actor.name?.[0]?.toUpperCase() || '?'}
                   </div>
                 )}
@@ -229,12 +229,12 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
 
               {/* Content */}
               <div className="flex-1 pt-0.5">
-                <div className="text-sm text-gray-900">
+                <div className="text-sm text-foreground">
                   <span className="font-medium">{entry.actor.name || 'Unknown User'}</span>
                   {' '}
-                  <span className="text-gray-600">{formatActivityDescription(entry)}</span>
+                  <span className="text-muted-foreground">{formatActivityDescription(entry)}</span>
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                <div className="text-xs text-muted-foreground mt-0.5">
                   {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true })}
                 </div>
               </div>
@@ -249,7 +249,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
-            className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-600 dark:text-gray-300"
+            className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-muted-foreground"
           >
             {isLoading ? 'Loading...' : 'Load more'}
           </button>

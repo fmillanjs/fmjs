@@ -56,7 +56,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
     columnHelper.accessor('title', {
       header: 'Title',
       cell: (info) => (
-        <div className="font-medium text-gray-900">{info.getValue()}</div>
+        <div className="font-medium text-foreground">{info.getValue()}</div>
       ),
     }),
     columnHelper.accessor('status', {
@@ -88,7 +88,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
       cell: (info) => {
         const assignee = info.getValue();
         if (!assignee) {
-          return <span className="text-gray-600 dark:text-gray-300 text-sm">Unassigned</span>;
+          return <span className="text-muted-foreground text-sm">Unassigned</span>;
         }
         return (
           <div className="flex items-center gap-2">
@@ -113,11 +113,11 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
       header: 'Due Date',
       cell: (info) => {
         const dueDate = info.getValue();
-        if (!dueDate) return <span className="text-gray-600 dark:text-gray-300 text-sm">-</span>;
+        if (!dueDate) return <span className="text-muted-foreground text-sm">-</span>;
 
         const isOverdue = new Date(dueDate) < new Date() && info.row.original.status !== 'DONE';
         return (
-          <div className={`flex items-center gap-1 text-sm ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-700'}`}>
+          <div className={`flex items-center gap-1 text-sm ${isOverdue ? 'text-[var(--red-11)] font-medium' : 'text-muted-foreground'}`}>
             <Calendar className="w-3 h-3" />
             <span>{formatDistanceToNow(new Date(dueDate), { addSuffix: true })}</span>
           </div>
@@ -141,7 +141,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: label.color }}
                 />
-                <span className="text-xs text-gray-600 hidden md:inline">{label.name}</span>
+                <span className="text-xs text-muted-foreground hidden md:inline">{label.name}</span>
               </div>
             ))}
           </div>
@@ -155,7 +155,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
         const count = info.getValue();
         if (count === 0) return null;
         return (
-          <div className="flex items-center gap-1 text-sm text-gray-600">
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <MessageSquare className="w-3 h-3" />
             <span className="hidden md:inline">{count}</span>
           </div>
@@ -186,23 +186,23 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
 
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-600 dark:text-gray-300">No tasks yet. Create your first task.</p>
+      <div className="text-center py-12 bg-muted rounded-lg">
+        <p className="text-muted-foreground">No tasks yet. Create your first task.</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50 sticky top-0">
+      <div className="overflow-x-auto bg-card rounded-lg border border-border">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-accent transition-colors"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
-                        <span className="text-gray-600 dark:text-gray-300">
+                        <span className="text-muted-foreground">
                           {header.column.getIsSorted() === 'asc' ? (
                             <ChevronUp className="w-4 h-4" />
                           ) : header.column.getIsSorted() === 'desc' ? (
@@ -226,12 +226,12 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
               </tr>
             ))}
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
                 onClick={() => handleRowClick(row.original)}
-                className="hover:bg-gray-50 cursor-pointer transition-colors"
+                className="hover:bg-muted/50 cursor-pointer transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-6 py-4 whitespace-nowrap">

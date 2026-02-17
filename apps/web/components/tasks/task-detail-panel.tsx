@@ -25,10 +25,10 @@ interface TaskDetailPanelProps {
 }
 
 const statusColors: Record<TaskStatus, { bg: string; text: string }> = {
-  TODO: { bg: 'bg-blue-100', text: 'text-blue-800' },
-  IN_PROGRESS: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  DONE: { bg: 'bg-green-100', text: 'text-green-800' },
-  BLOCKED: { bg: 'bg-red-100', text: 'text-red-800' },
+  TODO: { bg: 'bg-[var(--blue-3)]', text: 'text-[var(--blue-11)]' },
+  IN_PROGRESS: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  DONE: { bg: 'bg-[var(--green-3)]', text: 'text-[var(--green-11)]' },
+  BLOCKED: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -39,10 +39,10 @@ const statusLabels: Record<TaskStatus, string> = {
 };
 
 const priorityColors: Record<TaskPriority, { bg: string; text: string }> = {
-  URGENT: { bg: 'bg-red-100', text: 'text-red-800' },
+  URGENT: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
   HIGH: { bg: 'bg-orange-100', text: 'text-orange-800' },
-  MEDIUM: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  LOW: { bg: 'bg-slate-100', text: 'text-slate-800' },
+  MEDIUM: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  LOW: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
 const priorityLabels: Record<TaskPriority, string> = {
@@ -200,7 +200,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
       {/* Main Content - Left Column */}
       <div className="lg:col-span-2 space-y-6">
         {/* Title */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-card shadow rounded-lg p-6">
           {isEditingTitle ? (
             <input
               type="text"
@@ -213,7 +213,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
             />
           ) : (
             <h1
-              className="text-2xl font-bold text-gray-900 cursor-pointer hover:bg-gray-50 rounded px-2 py-1"
+              className="text-2xl font-bold text-foreground cursor-pointer hover:bg-muted/50 rounded px-2 py-1"
               onClick={() => setIsEditingTitle(true)}
             >
               {currentTask.title}
@@ -222,7 +222,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Description */}
           <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Description</h3>
             {isEditingDescription ? (
               <div>
                 <textarea
@@ -240,7 +240,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                   </button>
                   <button
                     onClick={handleDescriptionCancel}
-                    className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    className="px-3 py-1 text-sm bg-muted text-muted-foreground rounded hover:bg-accent"
                   >
                     Cancel
                   </button>
@@ -248,26 +248,26 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
               </div>
             ) : (
               <div
-                className="text-gray-600 cursor-pointer hover:bg-gray-50 rounded px-3 py-2 min-h-[60px]"
+                className="text-muted-foreground cursor-pointer hover:bg-muted/50 rounded px-3 py-2 min-h-[60px]"
                 onClick={() => setIsEditingDescription(true)}
               >
-                {currentTask.description || <span className="text-gray-600 dark:text-gray-300 italic">Click to add a description...</span>}
+                {currentTask.description || <span className="text-muted-foreground italic">Click to add a description...</span>}
               </div>
             )}
           </div>
         </div>
 
         {/* Comments and History Tabs */}
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-card shadow rounded-lg">
           {/* Tab Headers */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-border">
             <div className="flex gap-4 px-6">
               <button
                 onClick={() => setActiveTab('comments')}
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'comments'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
                 Comments ({comments.length})
@@ -277,7 +277,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'history'
                     ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
                 History
@@ -301,14 +301,14 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
       {/* Metadata Sidebar - Right Column */}
       <div className="lg:col-span-1">
-        <div className="bg-white shadow rounded-lg p-6 space-y-4">
+        <div className="bg-card shadow rounded-lg p-6 space-y-4">
           {isSaving && (
             <div className="text-xs text-blue-600 font-medium">Saving...</div>
           )}
 
           {/* Status */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Status</label>
             <select
               value={currentTask.status}
               onChange={(e) => updateField('status', e.target.value)}
@@ -324,7 +324,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Priority */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Priority</label>
             <select
               value={currentTask.priority}
               onChange={(e) => updateField('priority', e.target.value)}
@@ -340,11 +340,11 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Assignee */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Assignee</label>
             <select
               value={currentTask.assigneeId || ''}
               onChange={(e) => updateField('assigneeId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded"
+              className="w-full px-3 py-2 border border-border rounded"
             >
               <option value="">Unassigned</option>
               {teamMembers.map((member) => (
@@ -357,7 +357,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Labels */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Labels</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">Labels</label>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {labels.map((label) => {
                 const isSelected = currentTask.labels.some((l) => l.id === label.id);
@@ -387,51 +387,51 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
 
           {/* Due Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Due Date</label>
             <input
               type="date"
               value={currentTask.dueDate ? format(new Date(currentTask.dueDate), 'yyyy-MM-dd') : ''}
               onChange={(e) => updateField('dueDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded"
+              className="w-full px-3 py-2 border border-border rounded"
             />
           </div>
 
           {/* Created By */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Created By</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Created By</label>
             <div className="flex items-center gap-2">
               {currentTask.createdBy.image ? (
                 <img src={currentTask.createdBy.image} alt="" className="w-6 h-6 rounded-full" />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-medium text-gray-600">
+                <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                   {currentTask.createdBy.name?.[0] || '?'}
                 </div>
               )}
-              <span className="text-sm text-gray-600">{currentTask.createdBy.name}</span>
+              <span className="text-sm text-muted-foreground">{currentTask.createdBy.name}</span>
             </div>
           </div>
 
           {/* Created At */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
-            <div className="text-sm text-gray-600">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Created</label>
+            <div className="text-sm text-muted-foreground">
               {formatDistanceToNow(new Date(currentTask.createdAt), { addSuffix: true })}
             </div>
           </div>
 
           {/* Updated At */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
-            <div className="text-sm text-gray-600">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Last Updated</label>
+            <div className="text-sm text-muted-foreground">
               {formatDistanceToNow(new Date(currentTask.updatedAt), { addSuffix: true })}
             </div>
           </div>
 
           {/* Delete Button */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-border">
             {showDeleteConfirm ? (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">Are you sure? This cannot be undone.</p>
+                <p className="text-sm text-muted-foreground">Are you sure? This cannot be undone.</p>
                 <div className="flex gap-2">
                   <button
                     onClick={handleDelete}
@@ -441,7 +441,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="flex-1 px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    className="flex-1 px-3 py-2 text-sm bg-muted text-muted-foreground rounded hover:bg-accent"
                   >
                     Cancel
                   </button>

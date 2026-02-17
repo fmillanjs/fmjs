@@ -42,7 +42,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
     <div
       onClick={onClick}
       className={`
-        bg-white rounded-lg border-2 p-3 cursor-pointer transition-all
+        bg-card rounded-lg border-2 p-3 cursor-pointer transition-all
         ${priorityColor.border}
         ${isDragging ? 'opacity-50 shadow-lg' : 'hover:shadow-md'}
       `}
@@ -75,14 +75,14 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: label.color }}
               />
-              <span className="text-xs text-gray-600">{label.name}</span>
+              <span className="text-xs text-muted-foreground">{label.name}</span>
             </div>
           ))}
         </div>
       )}
 
       {/* Assignee and metadata */}
-      <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mt-3">
+      <div className="flex items-center justify-between text-xs text-muted-foreground mt-3">
         <div className="flex items-center gap-2">
           {/* Assignee */}
           {task.assignee ? (
@@ -101,7 +101,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
               <span className="text-xs">{task.assignee.name}</span>
             </div>
           ) : (
-            <span className="text-xs text-gray-600 dark:text-gray-300">Unassigned</span>
+            <span className="text-xs text-muted-foreground">Unassigned</span>
           )}
         </div>
 

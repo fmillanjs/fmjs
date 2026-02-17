@@ -34,7 +34,7 @@ export function TaskSearch() {
 
   return (
     <div className="relative">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
         <Search className="w-5 h-5" />
       </div>
       <input
@@ -42,12 +42,12 @@ export function TaskSearch() {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Search tasks..."
-        className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full pl-10 pr-10 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
       {inputValue && (
         <button
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300 hover:text-gray-600 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Clear search"
         >
           <X className="w-4 h-4" />
@@ -55,7 +55,7 @@ export function TaskSearch() {
       )}
       {isPending && (
         <div className="absolute right-10 top-1/2 -translate-y-1/2">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-border border-t-blue-600 rounded-full animate-spin" />
         </div>
       )}
     </div>
