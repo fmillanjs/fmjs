@@ -1,5 +1,23 @@
 # Milestones
 
+## v2.0 DevCollab (In Progress — started 2026-02-17)
+
+**Phases:** 14–21 (8 phases)
+**Requirements:** 41 (INFRA-01 through SEED-02)
+**Status:** Roadmap created, Phase 14 ready to plan
+
+**Target deliverables:**
+- devcollab-web (Next.js 15, port 3002) + devcollab-api (NestJS 11, port 3003) in existing Turborepo
+- Separate Postgres, Prisma client, JWT auth (isolated from TeamFlow)
+- Workspaces with invite-based membership and RBAC (Admin / Contributor / Viewer)
+- Code snippets (Shiki), Markdown posts (Tiptap v3), threaded discussions, reactions
+- Notifications (@mention, bell icon), activity feed (30s poll)
+- Full-text search (Postgres tsvector + GIN index, Cmd+K modal)
+- Seed data (demo workspace, all three roles demonstrated, deterministic)
+- Portfolio site: DevCollab project card + case study + live demo link
+
+---
+
 ## v1.1 UI/Design System Overhaul (Shipped: 2026-02-17)
 
 **Phases:** 8–13 (6 phases, 26 plans, 57 tasks)
@@ -13,9 +31,8 @@
 - Installed Shadcn UI CLI with 8+ primitive components, ESLint governance blocking deprecated imports in CI
 - Migrated all 12 application forms to Shadcn Form/Select with automatic aria-invalid/aria-describedby wiring and mode:onBlur validation
 - Migrated all team, task, project, and portfolio UI to Shadcn — AlertDialog/Tabs/Popover/Card/Badge replacing custom patterns; old code deleted, MIG-03 grep clean
-- Added Lighthouse CI (performance ≥90 on 5 public routes), 18 visual regression PNG baselines, and hardened ESLint governance with zero deprecated imports
+- Added Lighthouse CI (performance >=90 on 5 public routes), 18 visual regression PNG baselines, and hardened ESLint governance with zero deprecated imports
 
 **Requirements satisfied:** 16/16 (FOUND-01–03, COLOR-01–04, COMP-01–05, MIG-01–04)
 
 ---
-

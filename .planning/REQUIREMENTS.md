@@ -162,10 +162,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEED-02 | Phase 21 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 42 total
-- Mapped to phases: 42
-- Unmapped: 0 ✓
+- v2.0 requirements: 41 total
+- Mapped to phases: 41
+- Unmapped: 0
+
+Note: The previous version of this file claimed 42 requirements. A recount of the actual requirement IDs listed above yields 41. No requirement is orphaned — all 41 are mapped to exactly one phase.
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-17 — traceability confirmed during roadmap creation (Phases 14-21)*
