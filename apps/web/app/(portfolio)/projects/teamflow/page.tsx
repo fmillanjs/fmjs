@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CaseStudySection } from '@/components/portfolio/case-study-section';
+import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function TeamFlowCaseStudy() {
       <div className="mb-12">
         <Link
           href="/projects"
-          className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-6"
+          className="inline-flex items-center text-primary hover:underline mb-6"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -40,32 +41,34 @@ export default function TeamFlowCaseStudy() {
           Back to Projects
         </Link>
 
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
           TeamFlow
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-600 dark:text-gray-300 mb-6">
+        <p className="text-xl text-muted-foreground mb-6">
           A production-ready work management SaaS
         </p>
 
         <div className="flex gap-4">
-          <a
-            href="/teams"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Live Demo
-          </a>
-          <a
-            href="https://github.com/fernandomillan/teamflow"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-          >
-            <Github className="w-4 h-4" />
-            View Source
-          </a>
+          <Button asChild>
+            <a
+              href="/teams"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="w-4 h-4" />
+              View Live Demo
+            </a>
+          </Button>
+          <Button asChild variant="outline">
+            <a
+              href="https://github.com/fernandomillan/teamflow"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="w-4 h-4" />
+              View Source
+            </a>
+          </Button>
         </div>
       </div>
 
@@ -75,31 +78,31 @@ export default function TeamFlowCaseStudy() {
           TeamFlow is a comprehensive work management platform built to demonstrate
           production-ready full-stack engineering skills. Version 1.0 delivers secure
           authentication, role-based access control, complete task management, and a
-          polished user experience. <strong className="text-blue-600 dark:text-blue-400">Real-time collaboration features are coming in v1.1.</strong>
+          polished user experience. <strong className="text-primary">Real-time collaboration features are coming in v1.1.</strong>
         </p>
 
         <div className="grid md:grid-cols-3 gap-4 mt-6">
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="border border-border rounded-lg p-4">
+            <div className="text-3xl font-bold text-primary mb-2">
               v1.0
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <div className="text-sm text-muted-foreground">
               Production Ready
             </div>
           </div>
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="border border-border rounded-lg p-4">
+            <div className="text-3xl font-bold text-primary mb-2">
               88%
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <div className="text-sm text-muted-foreground">
               Features Complete
             </div>
           </div>
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="border border-border rounded-lg p-4">
+            <div className="text-3xl font-bold text-primary mb-2">
               8
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <div className="text-sm text-muted-foreground">
               Technologies
             </div>
           </div>
@@ -112,13 +115,13 @@ export default function TeamFlowCaseStudy() {
             </p>
             <p>
               JWT Authentication, Role-Based Access Control (Admin/Manager/Member),
-              Team & Project Management, Kanban & List Views, Drag-and-Drop Task
-              Management, Comment Threads, Advanced Filtering & Search, Audit Logging,
+              Team &amp; Project Management, Kanban &amp; List Views, Drag-and-Drop Task
+              Management, Comment Threads, Advanced Filtering &amp; Search, Audit Logging,
               Activity Feed, Demo Workspace with Seed Data, Dark Mode, Responsive Design
             </p>
           </div>
           <div>
-            <p className="font-semibold text-blue-600 dark:text-blue-400 mb-2">
+            <p className="font-semibold text-primary mb-2">
               → Coming in v1.1:
             </p>
             <p>
@@ -186,9 +189,9 @@ export default function TeamFlowCaseStudy() {
           </li>
         </ul>
 
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div className="mt-6 p-4 bg-accent border border-border rounded-lg">
           <p className="text-sm">
-            <strong className="text-blue-600 dark:text-blue-400">Note on Real-time Features:</strong>{' '}
+            <strong className="text-primary">Note on Real-time Features:</strong>{' '}
             WebSocket-based live updates, presence indicators, and optimistic UI with
             conflict detection are fully implemented in the codebase but currently
             blocked by authentication architecture compatibility issues between Next.js
@@ -205,7 +208,7 @@ export default function TeamFlowCaseStudy() {
           both frontend and backend expertise:
         </p>
 
-        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6 my-6">
+        <div className="bg-muted border border-border rounded-lg p-6 my-6">
           <div className="font-mono text-sm space-y-2">
             <div>Browser (Next.js Client)</div>
             <div className="ml-4">↓ HTTP/WebSocket</div>
@@ -222,25 +225,25 @@ export default function TeamFlowCaseStudy() {
             <strong className="block mb-2">Monorepo Structure (Turborepo):</strong>
             <ul className="list-disc list-inside ml-4 space-y-1">
               <li>
-                <code className="text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
                   apps/web
                 </code>{' '}
                 - Next.js 15 frontend with App Router and Server Components
               </li>
               <li>
-                <code className="text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
                   apps/api
                 </code>{' '}
                 - NestJS backend with modular architecture
               </li>
               <li>
-                <code className="text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
                   packages/database
                 </code>{' '}
                 - Shared Prisma schema and migrations
               </li>
               <li>
-                <code className="text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
                   packages/shared
                 </code>{' '}
                 - Shared TypeScript types and Zod schemas
@@ -290,17 +293,17 @@ export default function TeamFlowCaseStudy() {
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-800">
+              <tr className="border-b border-border">
                 <th className="text-left py-3 px-4 font-semibold">Decision</th>
                 <th className="text-left py-3 px-4 font-semibold">Rationale</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody className="divide-y divide-border">
               <tr>
                 <td className="py-3 px-4 align-top">
                   <strong>Separate Next.js + NestJS</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. Next.js API routes
                   </span>
                 </td>
@@ -314,7 +317,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>WebSockets over Pusher</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. third-party service
                   </span>
                 </td>
@@ -329,7 +332,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>CASL for RBAC</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. manual permission checks
                   </span>
                 </td>
@@ -343,7 +346,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Redis session + pub/sub</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. in-memory storage
                   </span>
                 </td>
@@ -357,7 +360,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Monorepo with Turborepo</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. separate repos
                   </span>
                 </td>
@@ -371,7 +374,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Server Components for data fetching</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. client-side only
                   </span>
                 </td>
@@ -385,7 +388,7 @@ export default function TeamFlowCaseStudy() {
                 <td className="py-3 px-4 align-top">
                   <strong>Optimistic UI with automatic rollback</strong>
                   <br />
-                  <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+                  <span className="text-sm text-muted-foreground">
                     vs. loading states
                   </span>
                 </td>
@@ -403,7 +406,7 @@ export default function TeamFlowCaseStudy() {
       {/* Challenges & Solutions */}
       <CaseStudySection title="Challenges & Solutions">
         <div className="space-y-6">
-          <div className="border-l-4 border-blue-600 dark:border-blue-400 pl-4">
+          <div className="border-l-4 border-primary pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 1: Next.js 15 + NestJS Authentication Integration
             </h3>
@@ -419,7 +422,7 @@ export default function TeamFlowCaseStudy() {
               detection) but blocked at the authentication layer. HTTP-based task
               management works perfectly. v1.1 will resolve the auth integration.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-muted-foreground">
               <strong>Learning:</strong> Bleeding-edge framework versions (Next.js 15,
               NextAuth v5) can have integration challenges with other frameworks.
               Sometimes the most valuable learning comes from hitting architectural
@@ -427,7 +430,7 @@ export default function TeamFlowCaseStudy() {
             </p>
           </div>
 
-          <div className="border-l-4 border-blue-600 dark:border-blue-400 pl-4">
+          <div className="border-l-4 border-primary pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 2: Multi-Layer RBAC Enforcement
             </h3>
@@ -442,14 +445,14 @@ export default function TeamFlowCaseStudy() {
               Prisma queries. Guards enforce at controller layer, services verify
               ownership, and centralized AbilityFactory defines all rules.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-muted-foreground">
               <strong>Learned:</strong> Authorization is easier to audit and maintain
               when centralized. CASL&apos;s declarative approach prevents security bugs
               from scattered permission checks.
             </p>
           </div>
 
-          <div className="border-l-4 border-blue-600 dark:border-blue-400 pl-4">
+          <div className="border-l-4 border-primary pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 3: TypeScript Type Safety Across Monorepo
             </h3>
@@ -464,7 +467,7 @@ export default function TeamFlowCaseStudy() {
               forms and backend validators use the same schemas. TypeScript compiler
               catches breaking changes across the monorepo.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-muted-foreground">
               <strong>Learned:</strong> Monorepos enable powerful type safety when
               structured correctly. Zod provides both runtime validation and static
               types from a single source.
@@ -495,16 +498,16 @@ export default function TeamFlowCaseStudy() {
               <li>✓ Demo workspace with seed data</li>
               <li>✓ Responsive design with dark mode</li>
               <li>✓ Command palette (Ctrl+K)</li>
-              <li className="text-blue-600 dark:text-blue-400">→ Real-time updates (v1.1)</li>
-              <li className="text-blue-600 dark:text-blue-400">→ Live presence indicators (v1.1)</li>
-              <li className="text-blue-600 dark:text-blue-400">→ Optimistic UI with rollback (v1.1)</li>
+              <li className="text-primary">→ Real-time updates (v1.1)</li>
+              <li className="text-primary">→ Live presence indicators (v1.1)</li>
+              <li className="text-primary">→ Optimistic UI with rollback (v1.1)</li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold mb-3">Technologies Demonstrated</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Next.js 15 App Router & Server Components</li>
+              <li>Next.js 15 App Router &amp; Server Components</li>
               <li>React 19 with modern patterns</li>
               <li>NestJS with modular architecture</li>
               <li>TypeScript full-stack</li>
@@ -518,23 +521,24 @@ export default function TeamFlowCaseStudy() {
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div className="mt-8 p-6 bg-accent border border-border rounded-lg">
           <h3 className="font-semibold mb-2">Try the Demo</h3>
           <p className="mb-4">
             Experience TeamFlow v1.0 firsthand with the pre-seeded demo workspace.
-            Login with <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">demo1@teamflow.dev</code> / <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">Password123</code> and
+            Login with <code className="bg-card px-2 py-1 rounded">demo1@teamflow.dev</code> / <code className="bg-card px-2 py-1 rounded">Password123</code> and
             explore all features with sample data including 10 users, 3 projects, and
             50+ tasks.
           </p>
-          <a
-            href="/teams"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Launch Demo
-          </a>
+          <Button asChild>
+            <a
+              href="/teams"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Launch Demo
+            </a>
+          </Button>
         </div>
       </CaseStudySection>
     </div>
