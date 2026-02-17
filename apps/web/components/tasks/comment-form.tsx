@@ -1,8 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@/lib/api';
 import { useSession } from 'next-auth/react';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+
+const commentSchema = z.object({
+  content: z.string().min(1, 'Comment cannot be empty').max(1000, 'Comment must be under 1000 characters'),
+});
+
+type CommentFormData = z.infer<typeof commentSchema>;
 
 interface CommentFormProps {
   taskId: string;
@@ -11,47 +29,58 @@ interface CommentFormProps {
 
 export function CommentForm({ taskId, onCommentAdded }: CommentFormProps) {
   const { data: session } = useSession();
-  const [content, setContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<CommentFormData>({
+    resolver: zodResolver(commentSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      content: '',
+    },
+  });
 
   const token = (session as any)?.accessToken;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: CommentFormData) => {
+    if (!token) return;
 
-    if (!token || !content.trim()) return;
-
-    setIsSubmitting(true);
     try {
-      await api.post(`/api/tasks/${taskId}/comments`, { content: content.trim() }, token);
-      setContent('');
+      await api.post(`/api/tasks/${taskId}/comments`, { content: data.content.trim() }, token);
+      form.reset();
       onCommentAdded();
     } catch (error) {
       console.error('Failed to add comment:', error);
-      alert('Failed to add comment');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-border pt-4">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a comment..."
-        className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        rows={3}
-      />
-      <div className="mt-2 flex justify-end">
-        <button
-          type="submit"
-          disabled={!content.trim() || isSubmitting}
-          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Posting...' : 'Comment'}
-        </button>
-      </div>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="border-t border-border pt-4">
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Comment</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  placeholder="Add a comment..."
+                  rows={3}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="mt-2 flex justify-end">
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? 'Posting...' : 'Comment'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
