@@ -12,9 +12,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 - UI/Design System Overhaul
 Phase: 12 - Critical Route Migration
-Plan: 12-08 complete — Team page, settings page, project client-page route pages migrated; inline SVGs replaced with lucide-react, raw divs replaced with Card+Button asChild
-Status: Phase 12 in progress — 8/9 plans done
-Last activity: 2026-02-17 — Completed 12-08: three route pages migrated; all inline SVG blocks deleted; MIG-02+MIG-03 satisfied for team/settings/project pages
+Plan: 12-09 Task 1 complete — at checkpoint:human-verify (Task 2). MIG-03 grep clean, WCAG AA axe tests passing, sidebar lucide icons, contrast violations fixed.
+Status: Phase 12 in progress — 8/9 plans done (12-09 at checkpoint, awaiting human visual approval)
+Last activity: 2026-02-17 — 12-09: MIG-03 grep clean; 5 WCAG AA axe tests passing; sidebar SVGs→lucide; sidebar contrast fixes (active link + DEMO badge)
 
 Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
@@ -301,6 +301,8 @@ Recent decisions affecting current work:
 - [Phase 12-08]: Button size=sm asChild for compact header navigation links — matches plan spec for outline variant nav buttons in team/project headers
 - [Phase 12-08]: projects.length used for Projects stat instead of hardcoded 0 — pre-existing bug fixed during migration
 - [Phase 12-08]: projects.reduce for Tasks stat instead of hardcoded 0 — correctly aggregates task counts from project _count relation
+- [Phase 12]: Active sidebar nav link: text-foreground on bg-primary/10 (not text-primary) — blue-11 (#0d74ce) on #e1ecf7 = 3.98:1 fails WCAG AA; foreground = 21:1 passes (12-09)
+- [Phase 12]: DEMO badge: text-[var(--green-12)] on bg-[var(--green-3)] — green-11 = 4.21:1 (fails 4.5:1), green-12 passes WCAG AA (12-09)
 
 ### Roadmap Evolution
 
@@ -339,10 +341,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 12 Critical Route Migration — 12-08 complete)
-Stopped at: Completed 12-08-SUMMARY.md — Team/Settings/Project client-page route pages Shadcn migration
-Status: Phase 12 in progress. Plans 12-01 through 12-08 done. MIG-02+MIG-03 satisfied for team and project route pages.
-Next action: Execute Phase 12 Plan 09
+Last session: 2026-02-17 (Phase 12 Plan 09 — at checkpoint:human-verify Task 2)
+Stopped at: 12-09 Task 1 complete (afbb58f) — awaiting human visual verification of all migrated Shadcn components
+Status: Phase 12 in progress. Plans 12-01 through 12-08 done. 12-09 Task 1 done, Task 2 checkpoint pending.
+Next action: Human visual verification of Shadcn components, then resume 12-09 continuation
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
