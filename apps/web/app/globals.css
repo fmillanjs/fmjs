@@ -1,142 +1,90 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-@plugin "tailwindcss-animate";
+/* Radix Colors — light scales (scope to :root and .light) */
+@import "@radix-ui/colors/slate.css";
+@import "@radix-ui/colors/blue.css";
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/amber.css";
+@import "@radix-ui/colors/slate-alpha.css";
+@import "@radix-ui/colors/blue-alpha.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Radix Colors — dark scales (scope to .dark and .dark-theme) */
+@import "@radix-ui/colors/slate-dark.css";
+@import "@radix-ui/colors/blue-dark.css";
+@import "@radix-ui/colors/red-dark.css";
+@import "@radix-ui/colors/green-dark.css";
+@import "@radix-ui/colors/amber-dark.css";
+@import "@radix-ui/colors/slate-dark-alpha.css";
+@import "@radix-ui/colors/blue-dark-alpha.css";
 
-/* Design tokens for light and dark themes */
-@theme {
-  /* Light theme (default) */
-  --color-background: oklch(98% 0 0);
-  --color-foreground: oklch(15% 0 0);
-  --color-muted: oklch(96% 0 0);
-  --color-muted-foreground: oklch(45% 0 0);
-  --color-border: oklch(89% 0 0);
-  --color-card: oklch(100% 0 0);
-  --color-card-foreground: oklch(15% 0 0);
+/* Enable class-based dark mode — next-themes writes class="dark" to <html> */
+/* Without this, Tailwind v4 dark: utilities only respond to prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* Primary - Blue */
-  --color-primary: oklch(55% 0.2 250);
-  --color-primary-foreground: oklch(100% 0 0);
+/* ============================================================
+   Semantic token layer — map Radix scale steps to Shadcn names
+   Light values are active by default (:root)
+   Dark values activate automatically when .dark is on <html>
+   via the Radix dark CSS files imported above
+   ============================================================ */
+:root {
+  --radius: 0.5rem;
 
-  /* Secondary - Slate */
-  --color-secondary: oklch(96% 0 0);
-  --color-secondary-foreground: oklch(15% 0 0);
+  /* Backgrounds */
+  --background: var(--slate-1);
+  --foreground: var(--slate-12);
 
-  /* Accent - Blue (lighter) */
-  --color-accent: oklch(94% 0.05 250);
-  --color-accent-foreground: oklch(20% 0 0);
+  --card: var(--slate-2);
+  --card-foreground: var(--slate-12);
 
-  /* Destructive - Red */
-  --color-destructive: oklch(55% 0.22 25);
-  --color-destructive-foreground: oklch(100% 0 0);
+  --popover: var(--slate-1);
+  --popover-foreground: var(--slate-12);
 
-  /* Success - Green */
-  --color-success: oklch(60% 0.18 145);
-  --color-success-foreground: oklch(100% 0 0);
+  /* Primary — Blue scale, step 9 = highest chroma (purest blue) */
+  /* blue-9 pairs with white text per Radix WCAG guarantee */
+  --primary: var(--blue-9);
+  --primary-foreground: #ffffff;
 
-  /* Warning - Orange */
-  --color-warning: oklch(70% 0.15 65);
-  --color-warning-foreground: oklch(15% 0 0);
+  /* Secondary — slate-3 background with slate-11 text */
+  /* Fixes Phase 8: muted-foreground 4.35:1 → slate-11 guarantees Lc 60+ APCA */
+  --secondary: var(--slate-3);
+  --secondary-foreground: var(--slate-11);
 
-  /* Input */
-  --color-input: oklch(89% 0 0);
-  --color-ring: oklch(55% 0.2 250);
+  /* Muted */
+  --muted: var(--slate-3);
+  --muted-foreground: var(--slate-11);
+
+  /* Accent — blue-3 background with blue-11 text */
+  /* Fixes Phase 8 CRITICAL: accent text was 1.21:1, blue-11 on blue-3 is guaranteed accessible */
+  --accent: var(--blue-3);
+  --accent-foreground: var(--blue-11);
+
+  /* Destructive */
+  --destructive: var(--red-9);
+  --destructive-foreground: #ffffff;
+
+  /* Success */
+  --success: var(--green-9);
+  --success-foreground: #ffffff;
+
+  /* Warning — amber-9 bg with amber-12 text */
+  /* Fixes Phase 8 CRITICAL: warning was 1.01:1, amber-12 on amber-9 satisfies 4.5:1 */
+  --warning: var(--amber-9);
+  --warning-foreground: var(--amber-12);
+
+  /* UI elements */
+  /* Fixes Phase 8 HIGH: all borders were 1.18-1.58:1, slate-6 guarantees 3:1 for non-interactive borders */
+  --border: var(--slate-6);
+  --input: var(--slate-6);
+  --ring: var(--blue-8);
 }
 
-/* Dark theme overrides */
-.dark {
-  --color-background: oklch(15% 0 0);
-  --color-foreground: oklch(98% 0 0);
-  --color-muted: oklch(20% 0 0);
-  --color-muted-foreground: oklch(65% 0 0);
-  --color-border: oklch(27% 0 0);
-  --color-card: oklch(18% 0 0);
-  --color-card-foreground: oklch(98% 0 0);
-
-  /* Primary - Blue (adjusted for dark) */
-  --color-primary: oklch(65% 0.2 250);
-  --color-primary-foreground: oklch(100% 0 0);
-
-  /* Secondary - Slate */
-  --color-secondary: oklch(25% 0 0);
-  --color-secondary-foreground: oklch(98% 0 0);
-
-  /* Accent - Blue (lighter for dark) */
-  --color-accent: oklch(25% 0.05 250);
-  --color-accent-foreground: oklch(98% 0 0);
-
-  /* Destructive - Red (adjusted) */
-  --color-destructive: oklch(60% 0.22 25);
-  --color-destructive-foreground: oklch(100% 0 0);
-
-  /* Success - Green (adjusted) */
-  --color-success: oklch(65% 0.18 145);
-  --color-success-foreground: oklch(100% 0 0);
-
-  /* Warning - Orange (adjusted) */
-  --color-warning: oklch(75% 0.15 65);
-  --color-warning-foreground: oklch(10% 0 0);
-
-  /* Input */
-  --color-input: oklch(27% 0 0);
-  --color-ring: oklch(65% 0.2 250);
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@keyframes slide-in-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-in-up {
-  animation: slide-in-up 0.3s ease-out;
-}
-
+/* Expose semantic tokens as Tailwind CSS utilities via @theme inline */
+/* The 'inline' keyword is REQUIRED for Tailwind v4 — do not use @theme without inline */
+/* CSS variables here define bg-background, text-foreground, border-border, etc. */
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -152,55 +100,29 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --radius: var(--radius);
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+/* Custom animation (carried forward from previous globals.css) */
+@keyframes slide-in-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.3s ease-out;
 }
