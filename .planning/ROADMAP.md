@@ -79,7 +79,13 @@ Plans:
   2. A user can log in with email and password and receive an httpOnly cookie; the cookie persists the session across browser refresh
   3. A user can log out and the session cookie is cleared; subsequent requests without a cookie are rejected
   4. Any DevCollab API endpoint without a `@CheckAbility` decorator returns 403 (ForbiddenException), not 200 — verified by unit test enumeration of all controller methods
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 15-01-PLAN.md — Prisma password migration + env vars (DEVCOLLAB_JWT_SECRET in .env and docker-compose)
+- [ ] 15-02-PLAN.md — API foundation: auth deps in package.json, cookie-parser + CORS in main.ts, @CheckAbility/@CurrentUser decorators, CaslAuthGuard upgrade
+- [ ] 15-03-PLAN.md — Auth feature: DatabaseModule, AuthModule, AuthService, AuthController (signup/login/logout/me), JwtStrategy, AppModule wiring
+- [ ] 15-04-PLAN.md — devcollab-web: login form, signup form, logout route handler, dashboard placeholder
+- [ ] 15-05-PLAN.md — TDD meta-test: Vitest setup + controller-coverage spec (deny-by-default invariant enforced in CI)
 
 ### Phase 16: Workspaces + Membership + RBAC
 **Goal**: Users can create workspaces, invite members via time-limited single-use links, and have role-based permissions enforced at the API guard level — Admin, Contributor, and Viewer roles all behave correctly
