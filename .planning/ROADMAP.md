@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 9: Design System Foundation** - Install Shadcn UI primitives with governance and dark mode support
 - [x] **Phase 10: Component Migration (Portfolio)** - Migrate low-risk portfolio pages to validate new components (completed 2026-02-17)
 - [x] **Phase 11: Form Components & Validation** - Replace all forms with accessible Shadcn Form components (completed 2026-02-17)
-- [ ] **Phase 12: Critical Route Migration** - Migrate team/task features to new components and remove old code
+- [x] **Phase 12: Critical Route Migration** - Migrate team/task features to new components and remove old code (completed 2026-02-17)
 - [ ] **Phase 13: Automation & Optimization** - Add automated accessibility testing and bundle optimization
 
 ## Phase Details
@@ -350,7 +350,7 @@ Plans:
   4. Old component files deleted from codebase (not just deprecated or commented out)
   5. Bundle analysis shows single style system (no duplicate CSS from parallel component libraries)
 
-**Plans:** 9 plans
+**Plans:** 9/9 plans complete
 
 Plans:
 - [ ] 12-01-PLAN.md — Install AlertDialog, Tabs, Popover via Shadcn CLI (Docker-aware)
@@ -402,5 +402,5 @@ Decimal phases like 2.1 execute between their surrounding integers.
 | 9. Design System Foundation | 0/0 | Not started | - |
 | 10. Component Migration (Portfolio) | 0/4 | Complete    | 2026-02-17 |
 | 11. Form Components & Validation | 0/0 | Complete    | 2026-02-17 |
-| 12. Critical Route Migration | 0/9 | Planned     | - |
+| 12. Critical Route Migration | 0/9 | Complete    | 2026-02-17 |
 | 13. Automation & Optimization | 0/0 | Not started | - |
