@@ -332,7 +332,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                             {entry.metadata?.userAgent && (
                               <div>
                                 <span className="font-medium text-muted-foreground">User Agent:</span>{' '}
-                                <span className="text-gray-900 break-all">{entry.metadata.userAgent}</span>
+                                <span className="text-foreground break-all">{entry.metadata.userAgent}</span>
                               </div>
                             )}
                             {entry.metadata?.requestId && (

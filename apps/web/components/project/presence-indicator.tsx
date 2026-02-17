@@ -42,7 +42,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
         })}
         {remainingCount > 0 && (
           <div
-            className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-medium border-2 border-border"
+            className="w-8 h-8 rounded-full bg-muted-foreground flex items-center justify-center text-card text-xs font-medium border-2 border-border"
             title={`${remainingCount} more ${remainingCount === 1 ? 'user' : 'users'}`}
           >
             +{remainingCount}
