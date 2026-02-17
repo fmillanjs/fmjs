@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { ProjectCard } from './project-card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface Project {
   id: string;
@@ -19,75 +19,62 @@ interface ProjectListProps {
   teamId: string;
 }
 
-type FilterStatus = 'ALL' | 'ACTIVE' | 'ARCHIVED';
-
 export function ProjectList({ projects, teamId }: ProjectListProps) {
-  const [filter, setFilter] = useState<FilterStatus>('ACTIVE');
-
-  const filteredProjects = projects.filter(project => {
-    if (filter === 'ALL') return true;
-    return project.status === filter;
-  });
-
   const activeCount = projects.filter(p => p.status === 'ACTIVE').length;
   const archivedCount = projects.filter(p => p.status === 'ARCHIVED').length;
 
-  const emptyMessage = {
-    ACTIVE: 'No active projects. Create one to get started.',
-    ARCHIVED: 'No archived projects.',
-    ALL: 'No projects found.',
-  }[filter];
-
   return (
-    <div className="space-y-4">
-      {/* Filter tabs */}
-      <div className="border-b border-border">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setFilter('ACTIVE')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              filter === 'ACTIVE'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
-          >
-            Active ({activeCount})
-          </button>
-          <button
-            onClick={() => setFilter('ARCHIVED')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              filter === 'ARCHIVED'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
-          >
-            Archived ({archivedCount})
-          </button>
-          <button
-            onClick={() => setFilter('ALL')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              filter === 'ALL'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
-          >
-            All ({projects.length})
-          </button>
-        </nav>
-      </div>
+    <Tabs defaultValue="ACTIVE">
+      <TabsList className="w-full justify-start rounded-none h-auto bg-transparent border-b px-0 gap-6">
+        <TabsTrigger
+          value="ACTIVE"
+          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent pb-2 px-1"
+        >
+          Active ({activeCount})
+        </TabsTrigger>
+        <TabsTrigger
+          value="ARCHIVED"
+          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent pb-2 px-1"
+        >
+          Archived ({archivedCount})
+        </TabsTrigger>
+        <TabsTrigger
+          value="ALL"
+          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent pb-2 px-1"
+        >
+          All ({projects.length})
+        </TabsTrigger>
+      </TabsList>
 
-      {/* Project grid */}
-      {filteredProjects.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">{emptyMessage}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredProjects.map(project => (
-            <ProjectCard key={project.id} project={project} teamId={teamId} />
-          ))}
-        </div>
-      )}
-    </div>
+      <TabsContent value="ACTIVE" className="mt-4">
+        {projects.filter(p => p.status === 'ACTIVE').length === 0 ? (
+          <div className="text-center py-12"><p className="text-muted-foreground">No active projects. Create one to get started.</p></div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.filter(p => p.status === 'ACTIVE').map(project => <ProjectCard key={project.id} project={project} teamId={teamId} />)}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="ARCHIVED" className="mt-4">
+        {projects.filter(p => p.status === 'ARCHIVED').length === 0 ? (
+          <div className="text-center py-12"><p className="text-muted-foreground">No archived projects.</p></div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.filter(p => p.status === 'ARCHIVED').map(project => <ProjectCard key={project.id} project={project} teamId={teamId} />)}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="ALL" className="mt-4">
+        {projects.length === 0 ? (
+          <div className="text-center py-12"><p className="text-muted-foreground">No projects found.</p></div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.map(project => <ProjectCard key={project.id} project={project} teamId={teamId} />)}
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }
