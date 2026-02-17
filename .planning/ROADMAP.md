@@ -260,7 +260,11 @@ Plans:
   4. Any WCAG violations in existing tokens identified with remediation plan
   5. Tailwind v4 configuration confirmed functional (test utility like bg-red-500 works immediately)
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Tailwind v4 configuration validation and CSS debugging workflow documentation
+- [ ] 08-02-PLAN.md — WCAG AA color token audit with contrast ratio measurements and remediation plan
 
 ### Phase 9: Design System Foundation
 
