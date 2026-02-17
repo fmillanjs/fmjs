@@ -4,6 +4,20 @@ import { useState } from 'react';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface TeamMember {
   id: string;
@@ -33,7 +47,6 @@ export function TeamMemberList({
   const router = useRouter();
   const { data: session } = useSession();
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [showConfirm, setShowConfirm] = useState<string | null>(null);
 
   const canRemove = currentUserRole === 'ADMIN';
 
@@ -73,7 +86,6 @@ export function TeamMemberList({
 
       // Refresh the page to show updated member list
       router.refresh();
-      setShowConfirm(null);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Failed to remove member');
       setRemovingId(null);
@@ -101,9 +113,7 @@ export function TeamMemberList({
                       {member.user.name || 'Unknown User'}
                     </p>
                     {member.userId === currentUserId && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
-                        You
-                      </span>
+                      <Badge variant="secondary" className="text-xs">You</Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
@@ -111,44 +121,48 @@ export function TeamMemberList({
 
                 {/* Role Badge */}
                 <div className="ml-4">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(
-                      member.role
-                    )}`}
+                  <Badge
+                    variant="outline"
+                    className={cn('border-0 rounded-full text-xs', getRoleBadgeColor(member.role))}
                   >
                     {member.role}
-                  </span>
+                  </Badge>
                 </div>
               </div>
 
               {/* Remove Button */}
               {canRemove && member.userId !== currentUserId && (
                 <div className="ml-4">
-                  {showConfirm === member.userId ? (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleRemove(member.userId)}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-[var(--red-11)] hover:text-[var(--red-12)] hover:bg-[var(--red-3)]"
                         disabled={removingId === member.userId}
-                        className="text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
                       >
-                        {removingId === member.userId ? 'Removing...' : 'Confirm'}
-                      </button>
-                      <button
-                        onClick={() => setShowConfirm(null)}
-                        disabled={removingId === member.userId}
-                        className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-accent disabled:opacity-50"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowConfirm(member.userId)}
-                      className="text-sm text-[var(--red-11)] hover:text-[var(--red-12)]"
-                    >
-                      Remove
-                    </button>
-                  )}
+                        {removingId === member.userId ? 'Removing...' : 'Remove'}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Remove team member?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {member.user.name || member.user.email} will lose access to this team immediately. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={() => handleRemove(member.userId)}
+                          disabled={removingId === member.userId}
+                        >
+                          Remove
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               )}
             </div>
