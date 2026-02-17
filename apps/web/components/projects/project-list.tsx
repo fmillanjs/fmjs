@@ -47,7 +47,7 @@ export function ProjectList({ projects, teamId }: ProjectListProps) {
             onClick={() => setFilter('ACTIVE')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               filter === 'ACTIVE'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
@@ -57,7 +57,7 @@ export function ProjectList({ projects, teamId }: ProjectListProps) {
             onClick={() => setFilter('ARCHIVED')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               filter === 'ARCHIVED'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
@@ -67,7 +67,7 @@ export function ProjectList({ projects, teamId }: ProjectListProps) {
             onClick={() => setFilter('ALL')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               filter === 'ALL'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >

@@ -74,7 +74,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           placeholder="Enter new password"
         />
         {errors.password && (
-          <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.password.message}</p>
         )}
       </div>
 
@@ -90,7 +90,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           placeholder="Confirm new password"
         />
         {errors.confirmPassword && (
-          <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.confirmPassword.message}</p>
         )}
       </div>
 
@@ -103,7 +103,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Resetting Password...' : 'Reset Password'}
       </button>

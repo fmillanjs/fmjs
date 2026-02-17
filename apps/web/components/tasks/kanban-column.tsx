@@ -30,7 +30,7 @@ export function KanbanColumn({ id, title, tasks, count, onTaskClick, onAddTask }
         </h3>
         <button
           onClick={onAddTask}
-          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+          className="text-primary hover:text-primary/80 text-sm font-medium"
         >
           + Add
         </button>

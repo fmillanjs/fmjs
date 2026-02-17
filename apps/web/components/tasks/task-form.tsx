@@ -134,7 +134,7 @@ export function TaskForm({
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Title <span className="text-red-500">*</span>
+              Title <span className="text-[var(--red-11)]">*</span>
             </label>
             <input
               {...register('title')}
@@ -143,7 +143,7 @@ export function TaskForm({
               placeholder="Task title"
             />
             {errors.title && (
-              <p className="text-red-600 text-sm mt-1">{String(errors.title.message)}</p>
+              <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.title.message)}</p>
             )}
           </div>
 
@@ -159,7 +159,7 @@ export function TaskForm({
               placeholder="Task description (optional)"
             />
             {errors.description && (
-              <p className="text-red-600 text-sm mt-1">{String(errors.description.message)}</p>
+              <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.description.message)}</p>
             )}
           </div>
 
@@ -179,7 +179,7 @@ export function TaskForm({
                 <option value={TaskStatus.BLOCKED}>Blocked</option>
               </select>
               {errors.status && (
-                <p className="text-red-600 text-sm mt-1">{String(errors.status.message)}</p>
+                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.status.message)}</p>
               )}
             </div>
 
@@ -197,7 +197,7 @@ export function TaskForm({
                 <option value={TaskPriority.URGENT}>Urgent</option>
               </select>
               {errors.priority && (
-                <p className="text-red-600 text-sm mt-1">{String(errors.priority.message)}</p>
+                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.priority.message)}</p>
               )}
             </div>
           </div>
@@ -214,7 +214,7 @@ export function TaskForm({
                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
               />
               {errors.dueDate && (
-                <p className="text-red-600 text-sm mt-1">{String(errors.dueDate.message)}</p>
+                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.dueDate.message)}</p>
               )}
             </div>
 
@@ -234,7 +234,7 @@ export function TaskForm({
                 ))}
               </select>
               {errors.assigneeId && (
-                <p className="text-red-600 text-sm mt-1">{String(errors.assigneeId.message)}</p>
+                <p className="text-[var(--red-11)] text-sm mt-1">{String(errors.assigneeId.message)}</p>
               )}
             </div>
           </div>
@@ -284,7 +284,7 @@ export function TaskForm({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Task' : 'Save Changes'}

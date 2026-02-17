@@ -120,7 +120,7 @@ export function TeamForm() {
           />
         </div>
         {errors.name && (
-          <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
+          <p className="mt-2 text-sm text-[var(--red-11)]">{errors.name.message}</p>
         )}
       </div>
 
@@ -129,7 +129,7 @@ export function TeamForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Creating...' : 'Create Team'}
         </button>

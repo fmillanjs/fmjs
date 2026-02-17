@@ -186,7 +186,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-600">
+      <div className="text-center py-8 text-[var(--red-11)]">
         {error}
       </div>
     );
@@ -249,7 +249,7 @@ export function TaskHistory({ taskId, projectId }: TaskHistoryProps) {
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
-            className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 disabled:text-muted-foreground"
+            className="px-4 py-2 text-sm text-primary hover:text-primary/80 disabled:text-muted-foreground"
           >
             {isLoading ? 'Loading...' : 'Load more'}
           </button>

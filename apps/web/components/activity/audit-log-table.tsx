@@ -227,7 +227,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
           <button
             onClick={handleSearch}
             disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground"
+            className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
           >
             {isLoading ? 'Searching...' : 'Apply Filters'}
           </button>
@@ -306,7 +306,7 @@ export function AuditLogTable({ teamId, initialEntries, totalCount }: AuditLogTa
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">
-                        <button className="text-blue-600 hover:text-blue-800">
+                        <button className="text-primary hover:text-primary/80">
                           {expandedRow === entry.id ? 'Hide' : 'Show'}
                         </button>
                       </td>

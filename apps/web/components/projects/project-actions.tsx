@@ -130,7 +130,7 @@ export function ProjectActions({
       {/* Delete Section (Admin Only) */}
       {isAdmin && (
         <div>
-          <h3 className="text-sm font-medium text-red-900 mb-2">Delete Project</h3>
+          <h3 className="text-sm font-medium text-[var(--red-11)] mb-2">Delete Project</h3>
           <p className="text-sm text-muted-foreground mb-3">
             Permanently delete this project and all its tasks. This action cannot be undone.
           </p>

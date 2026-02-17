@@ -89,7 +89,7 @@ export function TeamMemberList({
               <div className="flex items-center min-w-0 flex-1">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                  <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
                     {getInitials(member.user.name)}
                   </div>
                 </div>
@@ -144,7 +144,7 @@ export function TeamMemberList({
                   ) : (
                     <button
                       onClick={() => setShowConfirm(member.userId)}
-                      className="text-sm text-red-600 hover:text-red-900"
+                      className="text-sm text-[var(--red-11)] hover:text-[var(--red-12)]"
                     >
                       Remove
                     </button>

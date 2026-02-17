@@ -16,7 +16,7 @@ export function ViewToggle({ currentView, onChange }: ViewToggleProps) {
           flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors
           ${
             currentView === 'board'
-              ? 'bg-blue-600 text-white shadow-sm'
+              ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:bg-accent'
           }
         `}
@@ -30,7 +30,7 @@ export function ViewToggle({ currentView, onChange }: ViewToggleProps) {
           flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors
           ${
             currentView === 'list'
-              ? 'bg-blue-600 text-white shadow-sm'
+              ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:bg-accent'
           }
         `}

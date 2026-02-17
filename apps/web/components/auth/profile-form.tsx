@@ -98,7 +98,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           placeholder="Your name"
         />
         {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.name.message}</p>
         )}
       </div>
 
@@ -114,7 +114,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           placeholder="https://example.com/avatar.jpg"
         />
         {errors.image && (
-          <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.image.message}</p>
         )}
       </div>
 
@@ -133,7 +133,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Updating...' : 'Update Profile'}
       </button>

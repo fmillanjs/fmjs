@@ -47,7 +47,7 @@ export function CommentForm({ taskId, onCommentAdded }: CommentFormProps) {
         <button
           type="submit"
           disabled={!content.trim() || isSubmitting}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:bg-muted disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Posting...' : 'Comment'}
         </button>

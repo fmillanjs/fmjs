@@ -116,7 +116,7 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditSave(comment.id)}
-                      className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
                     >
                       Save
                     </button>
@@ -137,13 +137,13 @@ export function CommentThread({ comments, taskId, onUpdate }: CommentThreadProps
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={() => handleEditStart(comment)}
-                    className="text-xs text-blue-600 hover:text-blue-800"
+                    className="text-xs text-primary hover:text-primary/80"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(comment.id)}
-                    className="text-xs text-red-600 hover:text-red-800"
+                    className="text-xs text-[var(--red-11)] hover:text-[var(--red-12)]"
                   >
                     Delete
                   </button>

@@ -40,7 +40,7 @@ const statusLabels: Record<TaskStatus, string> = {
 
 const priorityColors: Record<TaskPriority, { bg: string; text: string }> = {
   URGENT: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
-  HIGH: { bg: 'bg-orange-100', text: 'text-orange-800' },
+  HIGH: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
   MEDIUM: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
   LOW: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
@@ -234,7 +234,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={handleDescriptionSave}
-                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90"
                   >
                     Save
                   </button>
@@ -266,7 +266,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 onClick={() => setActiveTab('comments')}
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'comments'
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
@@ -276,7 +276,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
                 onClick={() => setActiveTab('history')}
                 className={`py-4 px-2 border-b-2 font-medium text-sm ${
                   activeTab === 'history'
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
               >
@@ -303,7 +303,7 @@ export function TaskDetailPanel({ task, teamMembers, labels, teamId, projectId }
       <div className="lg:col-span-1">
         <div className="bg-card shadow rounded-lg p-6 space-y-4">
           {isSaving && (
-            <div className="text-xs text-blue-600 font-medium">Saving...</div>
+            <div className="text-xs text-primary font-medium">Saving...</div>
           )}
 
           {/* Status */}

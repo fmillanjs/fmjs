@@ -53,7 +53,7 @@ export function ResetPasswordRequestForm() {
           placeholder="you@example.com"
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.email.message}</p>
         )}
       </div>
 
@@ -72,13 +72,13 @@ export function ResetPasswordRequestForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Sending...' : 'Send Reset Link'}
       </button>
 
       <div className="text-center text-sm">
-        <Link href="/login" className="text-blue-600 hover:text-blue-800">
+        <Link href="/login" className="text-primary hover:text-primary/80">
           Back to Login
         </Link>
       </div>

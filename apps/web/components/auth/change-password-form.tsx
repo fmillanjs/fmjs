@@ -76,7 +76,7 @@ export function ChangePasswordForm() {
           placeholder="Enter current password"
         />
         {errors.currentPassword && (
-          <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.currentPassword.message}</p>
         )}
       </div>
 
@@ -92,7 +92,7 @@ export function ChangePasswordForm() {
           placeholder="Enter new password"
         />
         {errors.newPassword && (
-          <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.newPassword.message}</p>
         )}
       </div>
 
@@ -108,7 +108,7 @@ export function ChangePasswordForm() {
           placeholder="Confirm new password"
         />
         {errors.confirmPassword && (
-          <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+          <p className="text-[var(--red-11)] text-sm mt-1">{errors.confirmPassword.message}</p>
         )}
       </div>
 
@@ -127,7 +127,7 @@ export function ChangePasswordForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Changing Password...' : 'Change Password'}
       </button>

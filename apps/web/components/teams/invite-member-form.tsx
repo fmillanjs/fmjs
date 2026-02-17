@@ -126,7 +126,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
             />
           </div>
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p className="mt-1 text-sm text-[var(--red-11)]">{errors.email.message}</p>
           )}
         </div>
 
@@ -147,7 +147,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
             </select>
           </div>
           {errors.role && (
-            <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+            <p className="mt-1 text-sm text-[var(--red-11)]">{errors.role.message}</p>
           )}
         </div>
       </div>
@@ -157,7 +157,7 @@ export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Inviting...' : 'Invite Member'}
         </button>
