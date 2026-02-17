@@ -12,17 +12,17 @@ interface TaskCardProps {
 }
 
 const priorityColors: Record<TaskPriority, { bg: string; text: string; border: string }> = {
-  URGENT: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-500' },
-  HIGH: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-500' },
-  MEDIUM: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-500' },
-  LOW: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-500' },
+  URGENT: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]', border: 'border-[var(--red-8)]' },
+  HIGH: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]', border: 'border-[var(--amber-8)]' },
+  MEDIUM: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]', border: 'border-[var(--amber-8)]' },
+  LOW: { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' },
 };
 
 const statusColors: Record<TaskStatus, { bg: string; text: string }> = {
-  TODO: { bg: 'bg-blue-50', text: 'text-blue-700' },
-  IN_PROGRESS: { bg: 'bg-yellow-50', text: 'text-yellow-700' },
-  DONE: { bg: 'bg-green-50', text: 'text-green-700' },
-  BLOCKED: { bg: 'bg-red-50', text: 'text-red-700' },
+  TODO: { bg: 'bg-[var(--blue-3)]', text: 'text-[var(--blue-11)]' },
+  IN_PROGRESS: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  DONE: { bg: 'bg-[var(--green-3)]', text: 'text-[var(--green-11)]' },
+  BLOCKED: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -94,7 +94,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
                   className="w-5 h-5 rounded-full"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
+                <div className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
                   {task.assignee.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
               )}

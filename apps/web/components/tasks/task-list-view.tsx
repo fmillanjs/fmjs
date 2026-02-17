@@ -25,17 +25,17 @@ interface TaskListViewProps {
 }
 
 const priorityColors: Record<TaskPriority, { bg: string; text: string }> = {
-  URGENT: { bg: 'bg-red-100', text: 'text-red-700' },
-  HIGH: { bg: 'bg-orange-100', text: 'text-orange-700' },
-  MEDIUM: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  LOW: { bg: 'bg-slate-100', text: 'text-slate-700' },
+  URGENT: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
+  HIGH: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  MEDIUM: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  LOW: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
 const statusColors: Record<TaskStatus, { bg: string; text: string }> = {
-  TODO: { bg: 'bg-blue-100', text: 'text-blue-700' },
-  IN_PROGRESS: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  DONE: { bg: 'bg-green-100', text: 'text-green-700' },
-  BLOCKED: { bg: 'bg-red-100', text: 'text-red-700' },
+  TODO: { bg: 'bg-[var(--blue-3)]', text: 'text-[var(--blue-11)]' },
+  IN_PROGRESS: { bg: 'bg-[var(--amber-3)]', text: 'text-[var(--amber-11)]' },
+  DONE: { bg: 'bg-[var(--green-3)]', text: 'text-[var(--green-11)]' },
+  BLOCKED: { bg: 'bg-[var(--red-3)]', text: 'text-[var(--red-11)]' },
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -99,7 +99,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
                 className="w-6 h-6 rounded-full"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
+              <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
                 {assignee.name?.charAt(0).toUpperCase() || 'U'}
               </div>
             )}
