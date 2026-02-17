@@ -49,7 +49,7 @@ export function Sidebar({ teams }: SidebarProps) {
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-40
-          w-64 bg-card dark:bg-gray-950 border-r border-border
+          w-64 bg-card border-r border-border
           transform transition-transform duration-200 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
@@ -74,7 +74,7 @@ export function Sidebar({ teams }: SidebarProps) {
                   ${
                     pathname === '/teams'
                       ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-accent hover:text-accent-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   }
                 `}
               >
@@ -95,13 +95,13 @@ export function Sidebar({ teams }: SidebarProps) {
               {/* Teams Section */}
               <div className="mt-6">
                 <div className="px-3 mb-2">
-                  <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Teams
                   </h3>
                 </div>
 
                 {teams.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-300">No teams yet</div>
+                  <div className="px-3 py-2 text-sm text-muted-foreground">No teams yet</div>
                 ) : (
                   <div className="space-y-1">
                     {teams
@@ -123,7 +123,7 @@ export function Sidebar({ teams }: SidebarProps) {
                               ${
                                 isActive(`/teams/${team.id}`)
                                   ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                                  : 'text-gray-700 dark:text-gray-200 hover:bg-accent hover:text-accent-foreground'
+                                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                               }
                             `}
                           >
@@ -142,7 +142,7 @@ export function Sidebar({ teams }: SidebarProps) {
                               <span className="truncate">{team.name}</span>
                             </div>
                             {isDemoWorkspace && (
-                              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full flex-shrink-0">
+                              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-[var(--green-3)] text-[var(--green-11)] rounded-full flex-shrink-0">
                                 DEMO
                               </span>
                             )}

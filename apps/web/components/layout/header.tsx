@@ -35,18 +35,18 @@ export function Header({ user }: HeaderProps) {
   const getRoleBadgeColor = (role: string | undefined) => {
     switch (role?.toUpperCase()) {
       case 'ADMIN':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[var(--red-3)] text-[var(--red-11)]';
       case 'MANAGER':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[var(--blue-3)] text-[var(--blue-11)]';
       case 'MEMBER':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[var(--green-3)] text-[var(--green-11)]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   return (
-    <header className="h-16 bg-card dark:bg-gray-950 border-b border-border sticky top-0 z-20">
+    <header className="h-16 bg-card border-b border-border sticky top-0 z-20">
       <div className="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left side - could add breadcrumbs or search here */}
         <div className="flex-1">
@@ -55,7 +55,7 @@ export function Header({ user }: HeaderProps) {
 
         {/* Right side - Theme toggle and User menu */}
         <div className="flex items-center gap-2">
-          <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-gray-600 dark:text-gray-300">
+          <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
             <span className="text-xs">⌘</span>K
           </kbd>
           <ThemeToggle />
@@ -82,7 +82,7 @@ export function Header({ user }: HeaderProps) {
               </div>
             </div>
             <svg
-              className={`h-5 w-5 text-gray-600 dark:text-gray-300 transition-transform ${
+              className={`h-5 w-5 text-muted-foreground transition-transform ${
                 isDropdownOpen ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -103,12 +103,12 @@ export function Header({ user }: HeaderProps) {
                 className="fixed inset-0 z-10"
                 onClick={() => setIsDropdownOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card dark:bg-gray-950 border border-border z-20">
+              <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-card border border-border z-20">
                 <div className="py-1">
                   {/* User info */}
                   <div className="px-4 py-3 border-b border-border">
                     <p className="text-sm font-medium text-foreground">{user.name}</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{user.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
 
                   {/* Menu items */}
