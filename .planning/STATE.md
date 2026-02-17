@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 14 of 21 (Monorepo Scaffold + Infrastructure)
-Plan: 1 of TBD in Phase 14
+Plan: 2 of TBD in Phase 14
 Status: In progress
-Last activity: 2026-02-17 — 14-01 complete: devcollab-database workspace package
+Last activity: 2026-02-17 — 14-02 complete: devcollab-api and devcollab-web app workspaces scaffolded
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 1 plan complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 2 plans complete)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -35,10 +35,10 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 06.1-user-flow-architecture-audit | 6 | 158 min | 26.3 min |
 | 12-critical-route-migration | 9 | 37 min | 4.1 min |
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
-| 14-monorepo-scaffold-infrastructure | 1 | 1 min | 1.0 min |
+| 14-monorepo-scaffold-infrastructure | 2 | 2 min | 1.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-P01 (1m), 13-P01 (4m), 13-P02 (25m), 13-P03 (10m), 12-P09 (20m)
+- Last 5 plans: 14-P02 (1m), 14-P01 (1m), 13-P01 (4m), 13-P02 (25m), 13-P03 (10m)
 - Trend: Stable — infra/scaffold plans run fast
 
 *Updated after each plan completion*
@@ -61,6 +61,9 @@ Key decisions for v2.0:
 - Prisma output set to node_modules/.prisma/devcollab-client — isolates DevCollab client from TeamFlow's @prisma/client (14-01)
 - Import in client.ts uses '.prisma/devcollab-client' not '@prisma/client' — critical isolation boundary (14-01)
 - globalThis key named devcollabPrisma to avoid collision with TeamFlow's singleton pattern (14-01)
+- Package names devcollab-api and devcollab-web (not scoped) so turbo prune filter matches exactly (14-02)
+- CaslAuthGuard installed as APP_GUARD before any feature controllers — deny-by-default security invariant active (14-02)
+- Auth deferred to Phase 15 — devcollab-web/app/page.tsx is a placeholder only (14-02)
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 14-01 complete — devcollab-database workspace package with Prisma schema, PrismaClient singleton, and Dockerfile.migrate
+Stopped at: 14-02 complete — devcollab-api and devcollab-web app workspaces with CASL guard, health endpoint, login placeholder, and turbo-prune Dockerfiles
 Resume file: None
-Next action: Execute 14-02 plan (devcollab-api NestJS app scaffold)
+Next action: Execute 14-03 plan (Docker Compose integration)
