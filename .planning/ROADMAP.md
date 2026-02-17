@@ -304,7 +304,13 @@ Plans:
   4. Visual regression tests capture both light and dark mode screenshots for comparison
   5. grep search for old component imports in /app/(portfolio) returns zero results
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Install Textarea + migrate portfolio components (project-card, contact-form, hero-section, tech-stack, footer, nav)
+- [ ] 10-02-PLAN.md — Install @axe-core/playwright + write visual regression and accessibility test files
+- [ ] 10-03-PLAN.md — Migrate portfolio pages (homepage, about, resume, projects, teamflow case study)
+- [ ] 10-04-PLAN.md — Run tests (screenshot baselines + WCAG AA) + human visual verification checkpoint
 
 ### Phase 11: Form Components & Validation
 
@@ -377,7 +383,7 @@ Decimal phases like 2.1 execute between their surrounding integers.
 | **v1.1 Phases** | | | |
 | 8. Foundation Validation | 0/0 | Not started | - |
 | 9. Design System Foundation | 0/0 | Not started | - |
-| 10. Component Migration (Portfolio) | 0/0 | Not started | - |
+| 10. Component Migration (Portfolio) | 0/4 | Not started | - |
 | 11. Form Components & Validation | 0/0 | Not started | - |
 | 12. Critical Route Migration | 0/0 | Not started | - |
 | 13. Automation & Optimization | 0/0 | Not started | - |
