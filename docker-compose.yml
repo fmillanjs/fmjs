@@ -37,10 +37,108 @@ services:
       timeout: 5s
       retries: 5
 
+  devcollab-postgres:
+    image: postgres:16-alpine
+    container_name: devcollab-postgres
+    restart: unless-stopped
+    ports:
+      - '5435:5432'
+    environment:
+      POSTGRES_USER: ${DEVCOLLAB_POSTGRES_USER:-devcollab}
+      POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}
+      POSTGRES_DB: ${DEVCOLLAB_POSTGRES_DB:-devcollab}
+    volumes:
+      - devcollab-pgdata:/var/lib/postgresql/data
+    networks:
+      - devcollab-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DEVCOLLAB_POSTGRES_USER:-devcollab}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-migrate:
+    build:
+      context: .
+      dockerfile: packages/devcollab-database/Dockerfile.migrate
+    depends_on:
+      devcollab-postgres:
+        condition: service_healthy
+    networks:
+      - devcollab-network
+    environment:
+      DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER:-devcollab}:${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB:-devcollab}
+
+  devcollab-api:
+    build:
+      context: .
+      dockerfile: apps/devcollab-api/Dockerfile
+    container_name: devcollab-api
+    restart: unless-stopped
+    ports:
+      - '3003:3003'
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    networks:
+      - devcollab-network
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER:-devcollab}:${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB:-devcollab}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-web:
+    build:
+      context: .
+      dockerfile: apps/devcollab-web/Dockerfile
+    container_name: devcollab-web
+    restart: unless-stopped
+    ports:
+      - '3002:3002'
+    networks:
+      - devcollab-network
+    environment:
+      NODE_ENV: production
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-minio:
+    image: quay.io/minio/minio
+    container_name: devcollab-minio
+    restart: unless-stopped
+    ports:
+      - '9002:9000'
+      - '9003:9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio-data:/data
+    networks:
+      - devcollab-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   pgdata:
   redisdata:
+  devcollab-pgdata:
+  minio-data:
 
 networks:
   teamflow-network:
+    driver: bridge
+  devcollab-network:
     driver: bridge
