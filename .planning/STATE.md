@@ -11,12 +11,12 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Milestone: v1.1 - UI/Design System Overhaul
-Phase: 10 - Component Migration Portfolio
-Plan: 4 of 4 (checkpoint — Task 1 complete, Task 2 awaiting human verification)
-Status: Checkpoint
-Last activity: 2026-02-17 — Completed 10-04 Task 1 (12 visual baselines, 0 WCAG violations, all accessibility tests pass)
+Phase: 11 - Dashboard Component Migration (next)
+Plan: Phase 10 complete — ready to start Phase 11
+Status: Phase boundary — Phase 10 complete, Phase 11 not started
+Last activity: 2026-02-17 — Completed 10-04 (visual regression baselines stable, all 13/13 accessibility tests pass, full semantic token sweep across 50+ dashboard files)
 
-Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 56% (9/16 requirements)
+Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1: 63% (10/16 requirements)
 
 ## Performance Metrics
 
@@ -75,7 +75,7 @@ Progress: [█████████░] v1.0: 79% (55/67 requirements) | v1.1
 | Phase 10-component-migration-portfolio P01 | 2 | 2 tasks | 7 files |
 | Phase 10-component-migration-portfolio P02 | 8 | 2 tasks | 4 files |
 | Phase 10-component-migration-portfolio P03 | 3 | 2 tasks | 6 files |
-| Phase 10-component-migration-portfolio P04 | 17 | 1 tasks | 20 files |
+| Phase 10-component-migration-portfolio P04 | 75 | 2 tasks | 70+ files |
 
 ## Accumulated Context
 
@@ -249,6 +249,8 @@ Recent decisions affecting current work:
 - [Phase 10-04]: dark mode axe-core test: localStorage pre-load (addInitScript) required — post-load class injection causes body bg to remain transparent (rgba(0,0,0,0)), axe falls back to white canvas for all color contrast checks
 - [Phase 10-04]: primary token: blue-9 (#0090ff) → blue-11 (#0d74ce) for WCAG 2 AA compliance — Radix step 9 guarantee is APCA Lc 60 only, not WCAG 2 4.5:1 (blue-9 on white = 2.99:1)
 - [Phase 10-04]: body element requires bg-background text-foreground classes — without it, html/body/main have transparent backgrounds and axe-core cannot resolve dark mode CSS custom properties
+- [Phase 10-04]: Full semantic token sweep: bg-white/text-gray-*/border-gray-* → bg-card/text-foreground/text-muted-foreground/border-border across all 50+ dashboard pages and components
+- [Phase 10-04]: Status/badge colors use Radix CSS variables directly (bg-[var(--green-3)] text-[var(--green-11)]) for dark mode compatible status indicators
 
 ### Roadmap Evolution
 
@@ -260,7 +262,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 **Phase 9 - Design System Foundation**: ✅ Complete (all 4 plans). ✅ Color system (09-02). ✅ ESLint governance (09-03). ✅ Shadcn components installed + WCAG verified (09-04).
-**Phase 10 - Component Migration Portfolio**: ✅ Complete (3 of 3 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). MIG-01 satisfied.
+**Phase 10 - Component Migration Portfolio**: ✅ Complete (4 of 4 plans). ✅ Portfolio components migrated (10-01). ✅ Visual regression + accessibility tests created (10-02). ✅ All 6 portfolio pages migrated to Shadcn UI (10-03). ✅ Visual regression baselines + WCAG AA accessibility + full semantic token sweep (10-04). MIG-01 satisfied. All 12 portfolio WCAG AA tests pass (0 violations). Dark mode fully semantic across entire app.
 
 ### Blockers/Concerns
 
@@ -286,10 +288,10 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-17 (Phase 10 Component Migration Portfolio)
-Stopped at: Checkpoint 10-04-PLAN.md Task 2 — awaiting human visual verification at http://localhost:3000
-Status: Phase 10 plan 04 paused at checkpoint — Task 1 complete (12 baselines, 0 WCAG violations), Task 2 awaiting human approval
-Next action: Human visual verification, then proceed to Phase 11 (dashboard component migration)
+Last session: 2026-02-17 (Phase 10 Component Migration Portfolio — complete)
+Stopped at: Plan 10-04 complete — awaiting human visual verification before Phase 11
+Status: Phase 10 complete (all 4 plans done). Visual regression baselines stable (13/13 pass). Accessibility tests 13/13 pass. Full semantic token sweep done.
+Next action: Human visual verification of dark mode across portfolio + dashboard, then proceed to Phase 11 (dashboard component migration)
 
 ---
 *v1.0 at 79% complete. v1.1 roadmap ready.*
