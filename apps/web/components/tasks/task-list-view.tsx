@@ -245,6 +245,7 @@ export function TaskListView({ tasks, projectId, teamMembers, labels, onRefresh 
       </div>
 
       <TaskForm
+        key={selectedTask?.id || 'new'}
         open={isFormOpen && !!selectedTask}
         onOpenChange={setIsFormOpen}
         mode="edit"

@@ -197,6 +197,7 @@ export function KanbanBoard({ initialTasks, projectId, orgSlug, teamMembers, lab
       </DndContext>
 
       <TaskForm
+        key={selectedTask?.id || 'new'}
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         mode={formMode}
