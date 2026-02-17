@@ -7,18 +7,18 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export function LoginForm() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginDto>({
+  const form = useForm<LoginDto>({
     resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: LoginDto) => {
@@ -51,64 +51,58 @@ export function LoginForm() {
     <div className="bg-card shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
       <h2 className="text-2xl font-bold text-center mb-6">Log In</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {serverError && (
-          <div className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
-            {serverError}
-          </div>
-        )}
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-1">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            {...register('email')}
-            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-            disabled={isLoading}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-[var(--red-11)]">{errors.email.message}</p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {serverError && (
+            <div role="alert" className="bg-[var(--red-3)] border border-[var(--red-6)] text-[var(--red-11)] px-4 py-3 rounded">
+              {serverError}
+            </div>
           )}
-        </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-1">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            {...register('password')}
-            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground bg-card"
-            disabled={isLoading}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.password && (
-            <p className="mt-1 text-sm text-[var(--red-11)]">{errors.password.message}</p>
-          )}
-        </div>
 
-        <div className="flex items-center justify-between">
-          <div className="text-sm">
-            <Link
-              href="/reset-password"
-              className="text-primary hover:text-primary/80 font-medium"
-            >
-              Forgot password?
-            </Link>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <Link
+                href="/reset-password"
+                className="text-primary hover:text-primary/80 font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-2 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Logging in...' : 'Log In'}
-        </button>
-      </form>
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? 'Logging in...' : 'Log In'}
+          </Button>
+        </form>
+      </Form>
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
