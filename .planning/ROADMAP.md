@@ -165,7 +165,11 @@ Plans:
   2. Search results are grouped into "Posts" and "Snippets" sections; matching terms are highlighted with `ts_headline()` so the user can see why each result matched
   3. Pressing `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) opens the global search modal from any page; pressing `Escape` or clicking outside closes it
   4. Running `prisma migrate dev` three consecutive times generates zero new migration files on runs 2 and 3 — GIN index migration drift is eliminated by the trigger-based tsvector pattern
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 20-01-PLAN.md — Prisma schema (searchVector Unsupported tsvector), trigger-based migration SQL, GIN indexes, PrismaService $queryRaw delegation
+- [ ] 20-02-PLAN.md — NestJS SearchModule (SearchService + SearchController with @CheckAbility), AppModule wiring, meta-test update
+- [ ] 20-03-PLAN.md — Frontend SearchModal (Cmd+K, Escape, backdrop) + SearchResults (Posts/Snippets grouped, ts_headline mark highlighting) + WorkspaceNav injection + human-verify
 
 ### Phase 21: Seed Data + Portfolio Integration
 **Goal**: The DevCollab demo workspace contains realistic content demonstrating all three roles; the portfolio site presents DevCollab with a project card, case study, and live demo link; recruiters can interact with the demo immediately on first visit
@@ -202,5 +206,5 @@ Plans:
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
 | 18. Discussions + Reactions | 4/4 | Complete    | 2026-02-18 | - |
 | 19. Notifications + Activity Feed | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
-| 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
+| 20. Full-Text Search | v2.0 | 0/3 | In progress | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
