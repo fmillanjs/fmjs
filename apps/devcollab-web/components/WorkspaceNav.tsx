@@ -1,5 +1,6 @@
 'use client';
 import BellIcon from './notifications/BellIcon';
+import SearchModal from './search/SearchModal';
 
 export default function WorkspaceNav({ slug }: { slug: string }) {
   return (
@@ -39,6 +40,20 @@ export default function WorkspaceNav({ slug }: { slug: string }) {
         >
           Activity
         </a>
+        {/* Search trigger — Cmd+K also opens the modal */}
+        <span
+          style={{
+            fontSize: '13px',
+            color: '#9ca3af',
+            border: '1px solid #e5e7eb',
+            borderRadius: '6px',
+            padding: '3px 10px',
+            cursor: 'default',
+            userSelect: 'none',
+          }}
+        >
+          Search <kbd style={{ fontSize: '11px', color: '#6b7280' }}>⌘K</kbd>
+        </span>
         <BellIcon />
         <a
           href="/dashboard"
@@ -47,6 +62,8 @@ export default function WorkspaceNav({ slug }: { slug: string }) {
           Dashboard
         </a>
       </div>
+      {/* SearchModal: rendered here so it is always mounted in workspace layout */}
+      <SearchModal slug={slug} />
     </nav>
   );
 }
