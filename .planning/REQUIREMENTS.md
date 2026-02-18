@@ -68,7 +68,7 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 - [x] **SRCH-01**: User can search posts and snippets by text (full-text, workspace-scoped)
 - [x] **SRCH-02**: Search results are grouped (Posts / Snippets) with match highlighting
-- [ ] **SRCH-03**: User can open global search with Cmd+K shortcut
+- [x] **SRCH-03**: User can open global search with Cmd+K shortcut
 
 ### Portfolio
 
@@ -154,7 +154,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FEED-01 | Phase 19 | Complete |
 | SRCH-01 | Phase 20 | Complete |
 | SRCH-02 | Phase 20 | Complete |
-| SRCH-03 | Phase 20 | Pending |
+| SRCH-03 | Phase 20 | Complete |
 | PORT-01 | Phase 21 | Pending |
 | PORT-02 | Phase 21 | Pending |
 | PORT-03 | Phase 21 | Pending |

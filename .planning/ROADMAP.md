@@ -48,7 +48,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start) (completed 2026-02-18)
 - [x] **Phase 18: Discussions + Reactions** - Threaded comments (1-level deep) on snippets and posts, emoji reactions, flat model with in-memory tree assembly (completed 2026-02-18)
 - [x] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination (completed 2026-02-18)
-- [ ] **Phase 20: Full-Text Search** - Postgres tsvector with trigger pattern (NOT Meilisearch), GIN index, Cmd+K modal, grouped results with ts_headline() highlighting; validated with prisma migrate dev x3 ritual
+- [x] **Phase 20: Full-Text Search** - Postgres tsvector with trigger pattern (NOT Meilisearch), GIN index, Cmd+K modal, grouped results with ts_headline() highlighting; validated with prisma migrate dev x3 ritual
 - [ ] **Phase 21: Seed Data + Portfolio Integration** - Demo workspace with all three roles demonstrated, deterministic faker seed, portfolio card + case study + live demo link
 
 ## Phase Details
@@ -167,9 +167,9 @@ Plans:
   4. Running `prisma migrate dev` three consecutive times generates zero new migration files on runs 2 and 3 — GIN index migration drift is eliminated by the trigger-based tsvector pattern
 **Plans**: 3 plans
 Plans:
-- [ ] 20-01-PLAN.md — Prisma schema (searchVector Unsupported tsvector), trigger-based migration SQL, GIN indexes, PrismaService $queryRaw delegation
-- [ ] 20-02-PLAN.md — NestJS SearchModule (SearchService + SearchController with @CheckAbility), AppModule wiring, meta-test update
-- [ ] 20-03-PLAN.md — Frontend SearchModal (Cmd+K, Escape, backdrop) + SearchResults (Posts/Snippets grouped, ts_headline mark highlighting) + WorkspaceNav injection + human-verify
+- [x] 20-01-PLAN.md — Prisma schema (searchVector Unsupported tsvector), trigger-based migration SQL, GIN indexes, PrismaService $queryRaw delegation
+- [x] 20-02-PLAN.md — NestJS SearchModule (SearchService + SearchController with @CheckAbility), AppModule wiring, meta-test update
+- [x] 20-03-PLAN.md — Frontend SearchModal (Cmd+K, Escape, backdrop) + SearchResults (Posts/Snippets grouped, ts_headline mark highlighting) + WorkspaceNav injection + human-verify
 
 ### Phase 21: Seed Data + Portfolio Integration
 **Goal**: The DevCollab demo workspace contains realistic content demonstrating all three roles; the portfolio site presents DevCollab with a project card, case study, and live demo link; recruiters can interact with the demo immediately on first visit

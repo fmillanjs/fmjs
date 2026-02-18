@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 20 (Full-Text Search) — Plan 02 complete
+**Current focus:** v2.0 DevCollab — Phase 20 (Full-Text Search) — COMPLETE
 
 ## Current Position
 
-Phase: 20 of 21 (Full-Text Search) — In Progress
-Plan: 2 of 3 in Phase 20 — COMPLETE (2026-02-18)
-Status: Phase 20 Plan 02 complete — SearchModule with SearchService ($queryRaw FTS + ts_headline) + SearchController (@CheckAbility) + AppModule wiring
-Last activity: 2026-02-18 — Phase 20 Plan 02 complete: NestJS SearchModule — GET /workspaces/:slug/search?q= endpoint with workspace-scoped FTS
+Phase: 20 of 21 (Full-Text Search) — COMPLETE
+Plan: 3 of 3 in Phase 20 — COMPLETE (2026-02-18)
+Status: Phase 20 Plan 03 complete — SearchModal + SearchResults frontend components + WorkspaceNav injection + human verification approved + prisma migration drift confirmed zero
+Last activity: 2026-02-18 — Phase 20 complete: Cmd+K search modal with debounced FTS, grouped results, ts_headline amber highlights, zero migration drift
 
-Progress: [█████░░░░░░░░░░░░░░░] ~44% (v2.0 phase 14-21, 21 plans complete across 22 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~47% (v2.0 phase 14-21, 22 plans complete across 23 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -57,6 +57,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 19 P04 | 0 | 1 task (human-verify) | 0 files |
 | Phase 20-full-text-search P01 | 3 | 2 tasks | 3 files |
 | Phase 20 P02 | 2 | 2 tasks | 6 files |
+| Phase 20 P03 | ~10 | 3 tasks (2 auto + 1 human-verify) | 3 files |
 
 ## Accumulated Context
 
@@ -152,6 +153,9 @@ Key decisions for v2.0:
 - [Phase 20-full-text-search]: PrismaService $queryRaw and $executeRaw getters bound to this.client — mandatory for Prisma.sql tagged template this context
 - [Phase 20-full-text-search]: [Phase 20-02]: SearchController @CheckAbility('read', 'Post') required — deny-by-default CaslAuthGuard blocks all unauthenticated search requests
 - [Phase 20-full-text-search]: [Phase 20-02]: FTS input sanitization strips |&\!<>()'" chars then builds prefix tsquery (word:*) — prevents Postgres syntax errors from user input and supports partial-word search
+- [Phase 20-full-text-search]: [Phase 20-03]: SearchModal manages its own open/close state — WorkspaceNav simply mounts it; modal self-manages via Cmd+K keyboard events
+- [Phase 20-full-text-search]: [Phase 20-03]: mark tag highlight color amber (#fef3c7 / #92400e) via inline style tag in SearchModal — no purple per project rule
+- [Phase 20-full-text-search]: [Phase 20-03]: prisma migrate diff --from-schema-datasource used for x3 drift ritual — identical zero-drift verification when migrate dev is non-interactive
 
 ### Pending Todos
 
@@ -163,9 +167,6 @@ None.
 - Tiptap v3 + Next.js 15 App Router SSR is highest-risk area. Run 1-day spike: isolated component, production build, confirm no hydration errors before full implementation.
 - Resolve Tiptap content storage format (JSON vs sanitized HTML) before writing schema migrations.
 
-**Phase 20 (Search) — Validation ritual:**
-- Run `prisma migrate dev` three consecutive times after adding tsvector columns. Runs 2 and 3 must generate zero migration files. Do not proceed past Phase 20 without this check passing.
-
 **Phase 21 (Deployment) — Research flag:**
 - Coolify per-service webhook trigger behavior for a second app is not fully documented. Plan for hands-on iteration when configuring deployment pipeline.
 - Lock every credential in Coolify UI immediately on first deploy. Verify deployment log shows REDACTED before sharing demo URL.
@@ -173,6 +174,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 20-02-PLAN.md — NestJS SearchModule: SearchService ($queryRaw + ts_headline + prefix matching), SearchController (@CheckAbility), AppModule wired, meta-test passes 35/35
+Stopped at: Completed 20-03-PLAN.md — SearchModal + SearchResults components + WorkspaceNav injection + human verification approved + zero prisma migration drift confirmed
 Resume file: None
-Next action: Execute Phase 20 Plan 03 (Frontend Search) — SearchBar component calling GET /workspaces/:slug/search?q=
+Next action: Execute Phase 21 (Seed Data + Portfolio Integration)
