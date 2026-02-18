@@ -59,10 +59,10 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 ### Notifications & Feed
 
-- [ ] **NOTF-01**: User is notified when mentioned with @name in a comment
-- [ ] **NOTF-02**: User sees unread notification count in bell icon
-- [ ] **NOTF-03**: User can mark notifications as read
-- [ ] **FEED-01**: User can view workspace activity feed (reverse-chronological, paginated)
+- [x] **NOTF-01**: User is notified when mentioned with @name in a comment
+- [x] **NOTF-02**: User sees unread notification count in bell icon
+- [x] **NOTF-03**: User can mark notifications as read
+- [x] **FEED-01**: User can view workspace activity feed (reverse-chronological, paginated)
 
 ### Search
 
@@ -148,10 +148,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-02 | Phase 18 | Complete |
 | DISC-03 | Phase 18 | Complete |
 | DISC-04 | Phase 18 | Complete |
-| NOTF-01 | Phase 19 | Pending |
-| NOTF-02 | Phase 19 | Pending |
-| NOTF-03 | Phase 19 | Pending |
-| FEED-01 | Phase 19 | Pending |
+| NOTF-01 | Phase 19 | Complete |
+| NOTF-02 | Phase 19 | Complete |
+| NOTF-03 | Phase 19 | Complete |
+| FEED-01 | Phase 19 | Complete |
 | SRCH-01 | Phase 20 | Pending |
 | SRCH-02 | Phase 20 | Pending |
 | SRCH-03 | Phase 20 | Pending |

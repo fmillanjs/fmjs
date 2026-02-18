@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 18 COMPLETE (4 of 4 plans) — Discussions + Reactions — Next: Phase 19 Search
+**Current focus:** v2.0 DevCollab — Phase 19 IN PROGRESS (1 of 4 plans) — Notifications + Activity Feed
 
 ## Current Position
 
-Phase: 18 of 21 (Discussions + Reactions)
-Plan: 4 of 4 in Phase 18 — COMPLETE (2026-02-18)
-Status: Phase 18 complete — Post/snippet detail pages wire ThreadedComments + ReactionBar; bug fix for snippet parent comment lookup (OR post/snippet workspaceId); all 11 human-verify steps approved
-Last activity: 2026-02-18 — Phase 18 Plan 04 complete: post/snippet detail pages wired with discussions + reactions; human-approved (4f65d4b)
+Phase: 19 of 21 (Notifications + Activity Feed)
+Plan: 1 of 4 in Phase 19 — COMPLETE (2026-02-18)
+Status: Phase 19 Plan 01 complete — Notification + ActivityEvent Prisma models, migration applied to devcollab-postgres, PrismaService getters, CASL Subject union extended
+Last activity: 2026-02-18 — Phase 19 Plan 01 complete: schema + migration + PrismaService + CASL foundation (afc764a)
 
-Progress: [█████░░░░░░░░░░░░░░░] ~30% (v2.0 phase 14-21, 13 plans complete across 18-04 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~32% (v2.0 phase 14-21, 14 plans complete across 19-01 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -51,6 +51,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 18-discussions-reactions P02 | 4 | 2 tasks | 10 files |
 | Phase 18-discussions-reactions P03 | 2 | 2 tasks | 4 files |
 | Phase 18-discussions-reactions P04 | ~30 | 2 tasks | 4 files |
+| Phase 19 P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,9 @@ Key decisions for v2.0:
 - [Phase 18]: CommentNode interface exported from ThreadedComments.tsx — canonical export for Plan 04 detail pages
 - [Phase 18]: PostsService.findOne includes reactions (id, emoji, userId) — enables SSR to pass initialReactions to ReactionBar without extra client fetch (18-04)
 - [Phase 18]: CommentsService.create parent comment lookup uses OR: [{ post: { workspaceId } }, { snippet: { workspaceId } }] — plain post: { workspaceId } silently failed for snippet comments (18-04 bug fix)
+- [Phase 19]: prisma migrate diff --from-url + direct psql apply + prisma migrate resolve --applied for non-interactive migration on live devcollab-postgres (19-01)
+- [Phase 19]: entityType on ActivityEvent is String not enum — stores Post/Snippet/User as plain string for future entity type flexibility (19-01)
+- [Phase 19]: CASL Subject union extended with Reaction and User (were missing before) + Notification and ActivityEvent — Contributor granted read/update Notification and read ActivityEvent (19-01)
 
 ### Pending Todos
 
@@ -153,6 +157,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 18-04-PLAN.md — post/snippet detail pages wired with ThreadedComments + ReactionBar; human-approved all 11 acceptance criteria (4f65d4b)
+Stopped at: Completed 19-01-PLAN.md — Notification + ActivityEvent schema, migration applied to devcollab-postgres, PrismaService getters, CASL Subject union extended (afc764a)
 Resume file: None
-Next action: Execute Phase 19 (Search)
+Next action: Execute Phase 19 Plan 02 (NestJS notification + activity-feed services)
