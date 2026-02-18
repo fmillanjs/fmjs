@@ -7,6 +7,8 @@ import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './core/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { SnippetsModule } from './snippets/snippets.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     HealthModule,
     AuthModule,
     WorkspacesModule,
+    SnippetsModule,
+    PostsModule,
   ],
   providers: [
     {
