@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Foundation & Features** — Phases 1-7 (shipped 2026-02-16)
 - ✅ **v1.1 UI/Design System Overhaul** — Phases 8-13 (shipped 2026-02-17)
-- 🚧 **v2.0 DevCollab** — Phases 14-21 (in progress)
+- ✅ **v2.0 DevCollab** — Phases 14-21 (shipped 2026-02-18)
 
 ## Phases
 
@@ -38,7 +38,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 </details>
 
-### 🚧 v2.0 DevCollab (Phases 14-21)
+### ✅ v2.0 DevCollab (Phases 14-21) — SHIPPED 2026-02-18
 
 **Milestone Goal:** Build and deploy DevCollab — a developer collaboration platform combining GitHub-style technical content with Discord-style workspace organization, added to the portfolio alongside TeamFlow.
 
@@ -49,7 +49,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 18: Discussions + Reactions** - Threaded comments (1-level deep) on snippets and posts, emoji reactions, flat model with in-memory tree assembly (completed 2026-02-18)
 - [x] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination (completed 2026-02-18)
 - [x] **Phase 20: Full-Text Search** - Postgres tsvector with trigger pattern (NOT Meilisearch), GIN index, Cmd+K modal, grouped results with ts_headline() highlighting; validated with prisma migrate dev x3 ritual
-- [ ] **Phase 21: Seed Data + Portfolio Integration** - Demo workspace with all three roles demonstrated, deterministic faker seed, portfolio card + case study + live demo link
+- [x] **Phase 21: Seed Data + Portfolio Integration** - Demo workspace with all three roles demonstrated, deterministic faker seed, portfolio card + case study + live demo link (completed 2026-02-18)
 
 ## Phase Details
 
@@ -182,9 +182,9 @@ Plans:
   4. A DevCollab case study page exists at `/projects/devcollab` with technology choices, architecture decisions, and lessons learned documented; the case study links to the live demo and source code
 **Plans**: 3 plans
 Plans:
-- [ ] 21-01-PLAN.md — Seed script (faker.seed(42), idempotent, 3 users + 5 snippets + 3 posts + activity events) + package.json seed script + docker-compose devcollab-seed service
-- [ ] 21-02-PLAN.md — Portfolio pages (DevCollab case study at /projects/devcollab, homepage card, projects listing card, login demo hints)
-- [ ] 21-03-PLAN.md — Seed verification against live devcollab-postgres + human-verify checkpoint for full recruiter flow
+- [x] 21-01-PLAN.md — Seed script (faker.seed(42), idempotent, 3 users + 5 snippets + 3 posts + activity events) + package.json seed script + docker-compose devcollab-seed service
+- [x] 21-02-PLAN.md — Portfolio pages (DevCollab case study at /projects/devcollab, homepage card, projects listing card, login demo hints)
+- [x] 21-03-PLAN.md — Seed verification against live devcollab-postgres + human-verify checkpoint for full recruiter flow
 
 ## Progress
 
@@ -211,4 +211,4 @@ Plans:
 | 18. Discussions + Reactions | 4/4 | Complete    | 2026-02-18 | - |
 | 19. Notifications + Activity Feed | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
 | 20. Full-Text Search | 2/3 | Complete    | 2026-02-18 | - |
-| 21. Seed Data + Portfolio Integration | 2/3 | In Progress|  | - |
+| 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
