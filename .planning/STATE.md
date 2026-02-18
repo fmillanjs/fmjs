@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (2 of 4 plans complete) — Discussions + Reactions
+**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (3 of 4 plans complete) — Discussions + Reactions
 
 ## Current Position
 
 Phase: 18 of 21 (Discussions + Reactions)
-Plan: 2 of 4 in Phase 18 — COMPLETE (2026-02-18)
-Status: Phase 18 Plan 02 complete — CommentsModule + ReactionsModule wired into AppModule; all 5 discussion API endpoints active and guarded
-Last activity: 2026-02-18 — Phase 18 Plan 02 complete: CommentsService (flat+tree, owner-only update, soft/hard-delete) + ReactionsService (toggle + P2002) + AppModule wiring (71dd778)
+Plan: 3 of 4 in Phase 18 — COMPLETE (2026-02-18)
+Status: Phase 18 Plan 03 complete — CommentForm, CommentItem, ThreadedComments, ReactionBar client components; all four compile cleanly; exported CommentNode type ready for Plan 04
+Last activity: 2026-02-18 — Phase 18 Plan 03 complete: 4 React client components for discussions and reactions (ff3cf7e)
 
 Progress: [████░░░░░░░░░░░░░░░░] ~27% (v2.0 phase 14-21, 12 plans complete across 18-01 plans)
 
@@ -49,6 +49,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 17 P04 | 2 | 2 tasks | 6 files |
 | Phase 17 P05 | 6 | 2 tasks | 4 files |
 | Phase 18-discussions-reactions P02 | 4 | 2 tasks | 10 files |
+| Phase 18-discussions-reactions P03 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -126,6 +127,8 @@ Key decisions for v2.0:
 - [Phase 18]: CommentsService.update is owner-only unconditionally — Admin role does NOT bypass ForbiddenException on comment edit
 - [Phase 18]: In-memory comment tree: flat Prisma findMany + Map loop assembly (max 2 DB queries); no recursive Prisma include
 - [Phase 18]: ReactionsService toggleReaction: findUnique first, delete if exists or create with P2002 catch for race condition idempotency
+- [Phase 18]: Import path from CommentItem to ReactionBar is ../reaction/ReactionBar (one level up from discussion/) — plan had incorrect ../../reaction/ReactionBar
+- [Phase 18]: CommentNode interface exported from ThreadedComments.tsx — canonical export for Plan 04 detail pages
 
 ### Pending Todos
 
@@ -147,6 +150,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Phase 18 Plan 02 complete — CommentsModule + ReactionsModule + AppModule wiring (71dd778)
+Stopped at: Completed 18-03-PLAN.md — CommentForm, CommentItem, ThreadedComments, ReactionBar (ff3cf7e)
 Resume file: None
-Next action: Execute Phase 18 Plan 03 (frontend comment/reaction components)
+Next action: Execute Phase 18 Plan 04 (wire ThreadedComments into post/snippet detail pages; e2e tests)

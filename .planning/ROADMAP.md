@@ -195,7 +195,7 @@ Plans:
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
-| 18. Discussions + Reactions | 2/4 | In Progress|  | - |
+| 18. Discussions + Reactions | 3/4 | In Progress|  | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
