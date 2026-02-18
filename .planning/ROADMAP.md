@@ -47,7 +47,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 16: Workspaces + Membership + RBAC** - Workspace CRUD with slug routing, invite-link flow, Admin/Contributor/Viewer roles enforced at guard level, last-admin protection (completed 2026-02-17)
 - [x] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start) (completed 2026-02-18)
 - [x] **Phase 18: Discussions + Reactions** - Threaded comments (1-level deep) on snippets and posts, emoji reactions, flat model with in-memory tree assembly (completed 2026-02-18)
-- [ ] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination
+- [x] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination (completed 2026-02-18)
 - [ ] **Phase 20: Full-Text Search** - Postgres tsvector with trigger pattern (NOT Meilisearch), GIN index, Cmd+K modal, grouped results with ts_headline() highlighting; validated with prisma migrate dev x3 ritual
 - [ ] **Phase 21: Seed Data + Portfolio Integration** - Demo workspace with all three roles demonstrated, deterministic faker seed, portfolio card + case study + live demo link
 
@@ -151,10 +151,10 @@ Plans:
   4. The workspace activity feed shows workspace events (member joins, content created, content updated) in reverse-chronological order, paginated with cursor pagination at 20 per page; the feed refreshes within 30 seconds without a page reload
 **Plans**: 4 plans
 Plans:
-- [ ] 19-01-PLAN.md — Prisma schema: Notification + ActivityEvent models, migration, PrismaService getters, CASL Subject union update
-- [ ] 19-02-PLAN.md — NestJS NotificationsModule + ActivityModule + mention hooks in CommentsService + activity logging in existing services + AppModule wiring + meta-test
-- [ ] 19-03-PLAN.md — Frontend: WorkspaceNav + BellIcon (60s poll) + NotificationList (mark read) + ActivityFeed (30s refresh + cursor pagination) + activity page
-- [ ] 19-04-PLAN.md — Human-verify checkpoint: @mention flow, bell badge, mark read, activity feed
+- [x] 19-01-PLAN.md — Prisma schema: Notification + ActivityEvent models, migration, PrismaService getters, CASL Subject union update
+- [x] 19-02-PLAN.md — NestJS NotificationsModule + ActivityModule + mention hooks in CommentsService + activity logging in existing services + AppModule wiring + meta-test
+- [x] 19-03-PLAN.md — Frontend: WorkspaceNav + BellIcon (60s poll) + NotificationList (mark read) + ActivityFeed (30s refresh + cursor pagination) + activity page
+- [x] 19-04-PLAN.md — Human-verify checkpoint: @mention flow, bell badge, mark read, activity feed
 
 ### Phase 20: Full-Text Search
 **Goal**: Workspace members can search across all posts and snippets using full-text search powered by Postgres tsvector; results are grouped and highlighted; the Cmd+K shortcut opens the search modal; GIN index migration drift is eliminated
@@ -201,6 +201,6 @@ Plans:
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
 | 18. Discussions + Reactions | 4/4 | Complete    | 2026-02-18 | - |
-| 19. Notifications + Activity Feed | 3/4 | In Progress|  | - |
+| 19. Notifications + Activity Feed | v2.0 | 4/4 | Complete | 2026-02-18 |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
