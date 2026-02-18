@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 16 of 21 (Workspaces Membership RBAC)
-Plan: 1 of 5 in Phase 16 — 16-01 COMPLETE
-Status: In progress — ready for 16-02
-Last activity: 2026-02-17 — 16-01 complete: Prisma schema extended with Workspace, WorkspaceMember, InviteLink models; migration SQL created; PrismaService accessors added
+Plan: 2 of 5 in Phase 16 — 16-02 COMPLETE
+Status: In progress — ready for 16-03
+Last activity: 2026-02-18 — 16-02 complete: WorkspaceAbilityFactory (CASL Admin/Contributor/Viewer rules), WorkspacesModule skeleton, async CaslAuthGuard with workspace-scoped ability evaluation, AppModule wired
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 7 plans complete)
 
@@ -37,11 +37,11 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
 | 15-authentication-system | 5 (of 5) | 13 min | 2.6 min |
-| 16-workspaces-membership-rbac | 1 (of 5) | 2 min | 2.0 min |
+| 16-workspaces-membership-rbac | 2 (of 5) | 3 min | 1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 16-P01 (2m), 15-P05 (1m), 15-P04 (2m), 15-P01 (8m), 15-P02 (2m)
-- Trend: Stable — database schema plans run fast with complete plan specs
+- Last 5 plans: 16-P02 (1m), 16-P01 (2m), 15-P05 (1m), 15-P04 (2m), 15-P01 (8m)
+- Trend: Stable — infrastructure plans run fast with complete plan specs
 
 *Updated after each plan completion*
 
@@ -88,6 +88,9 @@ Key decisions for v2.0:
 - [Phase 16]: WorkspaceMember @@unique([userId, workspaceId]) generates named Prisma accessor userId_workspaceId for findUnique queries (16-01)
 - [Phase 16]: prisma migrate diff --from-empty offline SQL requires manual extraction of workspace-only DDL — User table already covered by prior migration (16-01)
 - [Phase 16]: PrismaService one-accessor-per-model pattern extended to workspace, workspaceMember, inviteLink (16-01)
+- [Phase 16]: CaslAuthGuard workspace-scoped check: extract :slug from request.params, only build CASL ability when slug present — workspace-agnostic routes bypass to service layer
+- [Phase 16]: Contributor unconditional update on Post/Snippet/Comment (no authorId condition) — own-content-only constraint deferred to Phase 17 when authorId exists on Prisma models
+- [Phase 16]: WorkspacesModule exported as skeleton before controller added — Plan 03 adds WorkspacesController without module restructuring (16-02)
 
 ### Pending Todos
 
@@ -108,7 +111,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-17
-Stopped at: 16-01 complete — Prisma schema extended with Workspace/WorkspaceMember/InviteLink models; migration SQL created; PrismaService accessors added; TypeScript clean
+Last session: 2026-02-18
+Stopped at: 16-02 complete — WorkspaceAbilityFactory CASL rules; WorkspacesModule skeleton; async CaslAuthGuard with workspace-scoped ability evaluation; AppModule wired; TypeScript clean; meta-test 5/5 green
 Resume file: None
-Next action: Execute Phase 16 Plan 02 (Workspace service layer)
+Next action: Execute Phase 16 Plan 03 (Workspace CRUD endpoints — WorkspacesController + WorkspacesService)
