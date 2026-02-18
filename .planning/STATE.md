@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-04 complete)
+**Current focus:** v2.0 DevCollab — Phase 17 complete (all 5 plans complete — awaiting human verification at Task 2 checkpoint)
 
 ## Current Position
 
 Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 5 of 5 in Phase 17
-Status: In progress — Plan 04 complete (PostEditor split-pane component, MarkdownRenderer server component with Shiki rehype plugin, 4 post UI pages)
-Last activity: 2026-02-18 — Phase 17 Plan 04 complete: PostEditor, MarkdownRenderer (Shiki server-side), posts list/new/detail/edit pages
+Plan: 5 of 5 in Phase 17 — COMPLETE (automated portion)
+Status: Awaiting human-verify checkpoint (Task 2) — browser + RBAC confirmation needed
+Last activity: 2026-02-18 — Phase 17 Plan 05 automated: next build passes, RBAC Viewer=403, Contributor=201
 
 Progress: [████░░░░░░░░░░░░░░░░] ~25% (v2.0 phase 14-21, 11 plans complete across 17-03 plans)
 
@@ -47,6 +47,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 17 P02 | 2 | 2 tasks | 12 files |
 | Phase 17 P03 | 2 | 2 tasks | 11 files |
 | Phase 17 P04 | 2 | 2 tasks | 6 files |
+| Phase 17 P05 | 6 | 1 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,8 @@ Key decisions for v2.0:
 - [Phase 17]: MarkdownRenderer is a Server Component (no 'use client') — async rehype plugin calls lib/shiki.ts getHighlighter() server-side for zero client JS code highlighting on published post views (17-04)
 - [Phase 17]: PostEditor uses react-syntax-highlighter (client) for live preview — intentional; hard Shiki criterion only applies to MarkdownRenderer on published post detail page (17-04)
 - [Phase 17]: New post creation uses two API calls: POST creates Draft, then PATCH /status to Published if Publish button clicked (17-04)
+- [Phase 17]: [Phase 17 P05]: next build run locally (not via Docker) — faster, identical output; dist written to apps/devcollab-web/.next
+- [Phase 17]: [Phase 17 P05]: RBAC smoke test confirms default join role is Contributor — Viewer=403, Contributor=201 on snippet creation
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 17-04-PLAN.md — PostEditor split-pane component, MarkdownRenderer server component with Shiki rehype plugin, 4 post UI pages (list/new/detail/edit)
+Stopped at: 17-05-PLAN.md Task 2 checkpoint — human-verify required (snippet flow, post flow, browser console check, RBAC confirmation)
 Resume file: None
-Next action: Start Phase 17 Plan 05 — final plan in phase 17
+Next action: After human approves Task 2, Phase 17 is complete — proceed to Phase 18

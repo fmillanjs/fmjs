@@ -45,7 +45,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 14: Monorepo Scaffold + Infrastructure** - Two new Turborepo apps, separate Postgres, Docker compose extended, deny-by-default CASL guard established before any controllers (completed 2026-02-17)
 - [x] **Phase 15: Authentication System** - DevCollab-specific JWT auth (DEVCOLLAB_JWT_SECRET, completely separate from TeamFlow), httpOnly cookie session, deny-by-default RBAC guard with unit tests (completed 2026-02-17)
 - [x] **Phase 16: Workspaces + Membership + RBAC** - Workspace CRUD with slug routing, invite-link flow, Admin/Contributor/Viewer roles enforced at guard level, last-admin protection (completed 2026-02-17)
-- [ ] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start)
+- [x] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start) (completed 2026-02-18)
 - [ ] **Phase 18: Discussions + Reactions** - Threaded comments (1-level deep) on snippets and posts, emoji reactions, flat model with in-memory tree assembly
 - [ ] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination
 - [ ] **Phase 20: Full-Text Search** - Postgres tsvector with trigger pattern (NOT Meilisearch), GIN index, Cmd+K modal, grouped results with ts_headline() highlighting; validated with prisma migrate dev x3 ritual
@@ -189,7 +189,7 @@ Plans:
 | 14. Monorepo Scaffold + Infrastructure | v2.0 | Complete    | 2026-02-17 | - |
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
-| 17. Content Creation — Snippets + Posts | 4/5 | In Progress|  | - |
+| 17. Content Creation — Snippets + Posts | 5/5 | Complete   | 2026-02-18 | - |
 | 18. Discussions + Reactions | v2.0 | 0/TBD | Not started | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
