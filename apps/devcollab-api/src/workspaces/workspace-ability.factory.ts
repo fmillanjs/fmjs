@@ -50,11 +50,14 @@ export class WorkspaceAbilityFactory {
       can('update', 'Post');
       can('update', 'Snippet');
       can('update', 'Comment');
+      can('delete', 'Post');
+      can('delete', 'Snippet');
+      can('delete', 'Comment');
       cannot('manage', 'Workspace');
       cannot('manage', 'WorkspaceMember');
       cannot('create', 'InviteLink');
-      // NOTE: 'own content only' (authorId condition) is Phase 17 scope —
-      // requires authorId on Post/Snippet/Comment Prisma models.
+      // Owner-only enforcement (authorId check) is in service layer — guard passes,
+      // service fetches record and throws ForbiddenException if requester is not author
     } else if (membership.role === 'Viewer') {
       can('read', 'all');
       cannot('create', 'all');
