@@ -69,6 +69,18 @@ services:
     environment:
       DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER:-devcollab}:${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB:-devcollab}
 
+  devcollab-seed:
+    build:
+      context: .
+      dockerfile: packages/devcollab-database/Dockerfile.seed
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    networks:
+      - devcollab-network
+    environment:
+      DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER:-devcollab}:${DEVCOLLAB_POSTGRES_PASSWORD:-devcollab}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB:-devcollab}
+
   devcollab-api:
     build:
       context: .
@@ -79,6 +91,8 @@ services:
       - '3003:3003'
     depends_on:
       devcollab-migrate:
+        condition: service_completed_successfully
+      devcollab-seed:
         condition: service_completed_successfully
     networks:
       - devcollab-network

@@ -1,0 +1,12 @@
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy what's needed for seeding (includes src/ for prisma client)
+COPY packages/devcollab-database/prisma ./packages/devcollab-database/prisma
+COPY packages/devcollab-database/src ./packages/devcollab-database/src
+COPY node_modules ./node_modules
+
+ENV DEVCOLLAB_DATABASE_URL=${DEVCOLLAB_DATABASE_URL}
+
+CMD ["node_modules/.bin/tsx", "packages/devcollab-database/prisma/seed.ts"]
