@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { SnippetsModule } from './snippets/snippets.module';
 import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
+import { ReactionsModule } from './reactions/reactions.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { PostsModule } from './posts/posts.module';
     WorkspacesModule,
     SnippetsModule,
     PostsModule,
+    CommentsModule,
+    ReactionsModule,
   ],
   providers: [
     {
