@@ -6,24 +6,24 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 15 Authentication System in progress
+**Current focus:** v2.0 DevCollab — Phase 16 Workspaces Membership RBAC in progress
 
 ## Current Position
 
-Phase: 15 of 21 (Authentication System)
-Plan: 5 of 5 in Phase 15 — ALL PLANS COMPLETE
-Status: Phase 15 COMPLETE — ready for Phase 16
-Last activity: 2026-02-17 — 15-05 complete: Vitest config + deny-by-default meta-test; all 5 route handler tests pass; invariant live in CI
+Phase: 16 of 21 (Workspaces Membership RBAC)
+Plan: 1 of 5 in Phase 16 — 16-01 COMPLETE
+Status: In progress — ready for 16-02
+Last activity: 2026-02-17 — 16-01 complete: Prisma schema extended with Workspace, WorkspaceMember, InviteLink models; migration SQL created; PrismaService accessors added
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 6 plans complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 7 plans complete)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
 ## Performance Metrics
 
 **Velocity (v1.0 + v1.1 combined):**
-- Total plans completed: 45
-- Average duration: 9.5 min/plan
+- Total plans completed: 46
+- Average duration: 9.3 min/plan
 - Total execution time: ~7.1 hours
 
 **By Phase (historical):**
@@ -37,10 +37,11 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
 | 15-authentication-system | 5 (of 5) | 13 min | 2.6 min |
+| 16-workspaces-membership-rbac | 1 (of 5) | 2 min | 2.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-P05 (1m), 15-P04 (2m), 15-P01 (8m), 15-P02 (2m), 14-P04 (1m)
-- Trend: Stable — auth plans run fast with complete plan specs
+- Last 5 plans: 16-P01 (2m), 15-P05 (1m), 15-P04 (2m), 15-P01 (8m), 15-P02 (2m)
+- Trend: Stable — database schema plans run fast with complete plan specs
 
 *Updated after each plan completion*
 
@@ -84,6 +85,9 @@ Key decisions for v2.0:
 - [Phase 15]: GET handler for /api/logout allows <a href> logout without JavaScript — sufficient for this phase (15-04)
 - [Phase 15]: NEXT_PUBLIC_API_URL env var with localhost:3003 fallback used in all frontend API calls (15-04)
 - [Phase 15]: Reflect.getMetadata('path', handler) used to filter NestJS route handlers in invariant meta-test — private helpers excluded; reflect-metadata must be first import
+- [Phase 16]: WorkspaceMember @@unique([userId, workspaceId]) generates named Prisma accessor userId_workspaceId for findUnique queries (16-01)
+- [Phase 16]: prisma migrate diff --from-empty offline SQL requires manual extraction of workspace-only DDL — User table already covered by prior migration (16-01)
+- [Phase 16]: PrismaService one-accessor-per-model pattern extended to workspace, workspaceMember, inviteLink (16-01)
 
 ### Pending Todos
 
@@ -105,6 +109,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: 15-05 complete — Vitest config + controller deny-by-default invariant meta-test; all 5 tests pass; Phase 15 COMPLETE
+Stopped at: 16-01 complete — Prisma schema extended with Workspace/WorkspaceMember/InviteLink models; migration SQL created; PrismaService accessors added; TypeScript clean
 Resume file: None
-Next action: Execute Phase 16 (DevCollab Projects feature)
+Next action: Execute Phase 16 Plan 02 (Workspace service layer)
