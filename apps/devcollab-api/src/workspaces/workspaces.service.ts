@@ -96,13 +96,26 @@ export class WorkspacesService {
     });
 
     try {
-      return await this.prisma.workspaceMember.create({
+      const member = await this.prisma.workspaceMember.create({
         data: {
           userId,
           workspaceId: invite.workspaceId,
           role: 'Contributor',
         },
       });
+
+      // Log workspace join activity
+      await this.prisma.activityEvent.create({
+        data: {
+          type: 'MemberJoined',
+          workspaceId: invite.workspaceId,
+          actorId: userId,
+          entityId: userId,
+          entityType: 'User',
+        },
+      });
+
+      return member;
     } catch (e: any) {
       if (e?.code === 'P2002') {
         throw new ConflictException('Already a member of this workspace');

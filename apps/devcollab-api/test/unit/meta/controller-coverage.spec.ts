@@ -10,6 +10,10 @@ import { AuthController } from '../../../src/auth/auth.controller';
 import { WorkspacesController } from '../../../src/workspaces/workspaces.controller';
 import { SnippetsController } from '../../../src/snippets/snippets.controller';
 import { PostsController } from '../../../src/posts/posts.controller';
+import { CommentsController } from '../../../src/comments/comments.controller';
+import { ReactionsController } from '../../../src/reactions/reactions.controller';
+import { NotificationsController } from '../../../src/notifications/notifications.controller';
+import { ActivityController } from '../../../src/activity/activity.controller';
 
 // MAINTAINABILITY NOTE: When a new controller is added to devcollab-api, add its class here.
 // The test will then automatically enforce the deny-by-default invariant on all its methods.
@@ -19,6 +23,10 @@ const ALL_CONTROLLERS = [
   WorkspacesController,
   SnippetsController,
   PostsController,
+  CommentsController,
+  ReactionsController,
+  NotificationsController,
+  ActivityController,
 ] as const;
 
 describe('DevCollab deny-by-default invariant', () => {

@@ -14,9 +14,21 @@ export class SnippetsService {
     });
     if (!workspace) throw new NotFoundException('Workspace not found');
 
-    return this.prisma.snippet.create({
+    const snippet = await this.prisma.snippet.create({
       data: { ...dto, authorId, workspaceId: workspace.id },
     });
+
+    await this.prisma.activityEvent.create({
+      data: {
+        type: 'SnippetCreated',
+        workspaceId: workspace.id,
+        actorId: authorId,
+        entityId: snippet.id,
+        entityType: 'Snippet',
+      },
+    });
+
+    return snippet;
   }
 
   async findAll(slug: string) {
@@ -69,7 +81,19 @@ export class SnippetsService {
       throw new ForbiddenException('You can only edit your own snippets');
     }
 
-    return this.prisma.snippet.update({ where: { id }, data: dto });
+    const updated = await this.prisma.snippet.update({ where: { id }, data: dto });
+
+    await this.prisma.activityEvent.create({
+      data: {
+        type: 'SnippetUpdated',
+        workspaceId: workspace.id,
+        actorId: requesterId,
+        entityId: id,
+        entityType: 'Snippet',
+      },
+    });
+
+    return updated;
   }
 
   async remove(slug: string, id: string, requesterId: string) {

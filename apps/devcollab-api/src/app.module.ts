@@ -11,6 +11,8 @@ import { SnippetsModule } from './snippets/snippets.module';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { ReactionsModule } from './reactions/reactions.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ReactionsModule } from './reactions/reactions.module';
     PostsModule,
     CommentsModule,
     ReactionsModule,
+    NotificationsModule,
+    ActivityModule,
   ],
   providers: [
     {

@@ -12,6 +12,47 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private extractMentionedNames(content: string): string[] {
+    const matches = [...content.matchAll(/@(\w+)/g)];
+    return [...new Set(matches.map((m) => m[1]).filter((n): n is string => n !== undefined))];
+  }
+
+  private async notifyMentions(
+    content: string,
+    workspaceId: string,
+    authorId: string,
+    commentId: string,
+  ): Promise<void> {
+    const names = this.extractMentionedNames(content);
+    if (names.length === 0) return;
+
+    // Resolve @names to workspace members — workspace-scoped to prevent cross-workspace mentions
+    const mentioned = await this.prisma.user.findMany({
+      where: {
+        name: { in: names },
+        workspaceMemberships: { some: { workspaceId } },
+      },
+      select: { id: true },
+    });
+
+    // Exclude the author (don't notify yourself)
+    const recipients = mentioned.map((u) => u.id).filter((id) => id !== authorId);
+    if (recipients.length === 0) return;
+
+    // skipDuplicates: true prevents duplicate notifications on comment edit
+    await this.prisma.notification.createMany({
+      data: recipients.map((recipientId) => ({
+        recipientId,
+        actorId: authorId,
+        type: 'mention',
+        commentId,
+        workspaceId,
+        read: false,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
   async create(slug: string, dto: CreateCommentDto, authorId: string) {
     const workspace = await this.prisma.workspace.findUnique({
       where: { slug },
@@ -36,7 +77,7 @@ export class CommentsService {
       }
     }
 
-    return this.prisma.comment.create({
+    const comment = await this.prisma.comment.create({
       data: {
         content: dto.content,
         authorId,
@@ -45,6 +86,10 @@ export class CommentsService {
         parentId: dto.parentId,
       },
     });
+
+    // Resolve workspaceId for mention notification
+    await this.notifyMentions(dto.content, workspace.id, authorId, comment.id);
+    return comment;
   }
 
   async findAll(
@@ -128,10 +173,12 @@ export class CommentsService {
       throw new ForbiddenException('You can only edit your own comments');
     }
 
-    return this.prisma.comment.update({
+    const updated = await this.prisma.comment.update({
       where: { id },
       data: { content: dto.content },
     });
+    await this.notifyMentions(dto.content, workspace.id, requesterId, id);
+    return updated;
   }
 
   async remove(slug: string, id: string, requesterId: string) {

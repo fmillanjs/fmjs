@@ -14,9 +14,21 @@ export class PostsService {
     });
     if (!workspace) throw new NotFoundException('Workspace not found');
 
-    return this.prisma.post.create({
+    const post = await this.prisma.post.create({
       data: { ...dto, authorId, workspaceId: workspace.id, status: 'Draft' },
     });
+
+    await this.prisma.activityEvent.create({
+      data: {
+        type: 'PostCreated',
+        workspaceId: workspace.id,
+        actorId: authorId,
+        entityId: post.id,
+        entityType: 'Post',
+      },
+    });
+
+    return post;
   }
 
   async findAll(slug: string, requesterId: string) {
@@ -79,7 +91,19 @@ export class PostsService {
       throw new ForbiddenException('You can only edit your own posts');
     }
 
-    return this.prisma.post.update({ where: { id }, data: dto });
+    const updated = await this.prisma.post.update({ where: { id }, data: dto });
+
+    await this.prisma.activityEvent.create({
+      data: {
+        type: 'PostUpdated',
+        workspaceId: workspace.id,
+        actorId: requesterId,
+        entityId: id,
+        entityType: 'Post',
+      },
+    });
+
+    return updated;
   }
 
   async setStatus(slug: string, id: string, status: 'Draft' | 'Published', requesterId: string) {
