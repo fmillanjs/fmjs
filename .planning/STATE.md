@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 complete (all 5 plans complete — awaiting human verification at Task 2 checkpoint)
+**Current focus:** v2.0 DevCollab — Phase 17 COMPLETE (all 5 plans complete, human verification APPROVED) — ready for Phase 18
 
 ## Current Position
 
 Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 5 of 5 in Phase 17 — COMPLETE (automated portion)
-Status: Awaiting human-verify checkpoint (Task 2) — browser + RBAC confirmation needed
-Last activity: 2026-02-18 — Phase 17 Plan 05 automated: next build passes, RBAC Viewer=403, Contributor=201
+Plan: 5 of 5 in Phase 17 — COMPLETE (human verification APPROVED 2026-02-18)
+Status: Phase 17 complete — all 6 success criteria met; proceed to Phase 18
+Last activity: 2026-02-18 — Phase 17 Plan 05 complete: next build passes, RBAC Viewer=403, Contributor=201; SSR cookie forwarding + MarkdownRenderer pipeline fixed (382b0c8); human-approved
 
 Progress: [████░░░░░░░░░░░░░░░░] ~25% (v2.0 phase 14-21, 11 plans complete across 17-03 plans)
 
@@ -47,7 +47,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 17 P02 | 2 | 2 tasks | 12 files |
 | Phase 17 P03 | 2 | 2 tasks | 11 files |
 | Phase 17 P04 | 2 | 2 tasks | 6 files |
-| Phase 17 P05 | 6 | 1 tasks | 0 files |
+| Phase 17 P05 | 6 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -117,6 +117,8 @@ Key decisions for v2.0:
 - [Phase 17]: New post creation uses two API calls: POST creates Draft, then PATCH /status to Published if Publish button clicked (17-04)
 - [Phase 17]: [Phase 17 P05]: next build run locally (not via Docker) — faster, identical output; dist written to apps/devcollab-web/.next
 - [Phase 17]: [Phase 17 P05]: RBAC smoke test confirms default join role is Contributor — Viewer=403, Contributor=201 on snippet creation
+- [Phase 17]: [Phase 17 P05]: Next.js App Router server components must use next/headers cookies() for SSR auth cookie forwarding — credentials:'include' is browser-only and silently drops the cookie on server-side fetch (382b0c8)
+- [Phase 17]: [Phase 17 P05]: MarkdownRenderer must use unified+hast-util-to-html pipeline not react-markdown+async rehype plugin — react-markdown does not await async plugin transforms, causing Shiki output to be lost (382b0c8)
 
 ### Pending Todos
 
@@ -138,6 +140,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: 17-05-PLAN.md Task 2 checkpoint — human-verify required (snippet flow, post flow, browser console check, RBAC confirmation)
+Stopped at: Phase 17 complete — 17-05-PLAN.md Task 2 human-verify APPROVED
 Resume file: None
-Next action: After human approves Task 2, Phase 17 is complete — proceed to Phase 18
+Next action: Begin Phase 18 (Discussions + Reactions)

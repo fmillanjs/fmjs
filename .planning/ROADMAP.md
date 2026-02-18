@@ -117,11 +117,11 @@ Plans:
   6. A Viewer-role user receives 403 when attempting to create a snippet or post; a Contributor-role user succeeds — role enforcement is at the API level (RBAC-02/RBAC-03 exercised against real snippet/post endpoints)
 **Plans**: 5 plans
 Plans:
-- [ ] 17-01-PLAN.md — Prisma schema (Snippet + Post + PostStatus enum), migration, PrismaService getters, CASL Contributor delete ability
-- [ ] 17-02-PLAN.md — NestJS SnippetsModule + PostsModule (controllers, services, DTOs), AppModule wiring, meta-test update
-- [ ] 17-03-PLAN.md — Install npm packages + Shiki singleton + SnippetCodeBlock + CopyButton + LanguageSelector + snippet pages
-- [ ] 17-04-PLAN.md — PostEditor (textarea + react-markdown split pane) + MarkdownRenderer + post pages
-- [ ] 17-05-PLAN.md — Production build validation + RBAC smoke tests + human-verify checkpoint
+- [x] 17-01-PLAN.md — Prisma schema (Snippet + Post + PostStatus enum), migration, PrismaService getters, CASL Contributor delete ability
+- [x] 17-02-PLAN.md — NestJS SnippetsModule + PostsModule (controllers, services, DTOs), AppModule wiring, meta-test update
+- [x] 17-03-PLAN.md — Install npm packages + Shiki singleton + SnippetCodeBlock + CopyButton + LanguageSelector + snippet pages
+- [x] 17-04-PLAN.md — PostEditor (textarea + react-markdown split pane) + MarkdownRenderer + post pages
+- [x] 17-05-PLAN.md — Production build validation + RBAC smoke tests + human-verify checkpoint
 
 ### Phase 18: Discussions + Reactions
 **Goal**: Workspace members can comment on snippets and posts in a threaded structure (one level of replies), edit and delete their own comments, and react to content with emoji reactions
@@ -189,7 +189,7 @@ Plans:
 | 14. Monorepo Scaffold + Infrastructure | v2.0 | Complete    | 2026-02-17 | - |
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
-| 17. Content Creation — Snippets + Posts | 5/5 | Complete   | 2026-02-18 | - |
+| 17. Content Creation — Snippets + Posts | v2.0 | 5/5 | Complete | 2026-02-18 |
 | 18. Discussions + Reactions | v2.0 | 0/TBD | Not started | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
