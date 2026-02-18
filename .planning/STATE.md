@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 16 Workspaces Membership RBAC in progress
+**Current focus:** v2.0 DevCollab — Phase 16 COMPLETE; ready for Phase 17 Tiptap Content Editor
 
 ## Current Position
 
-Phase: 16 of 21 (Workspaces Membership RBAC)
-Plan: 4 of 5 in Phase 16 — 16-04 tasks complete; at checkpoint:human-verify
-Status: In progress — awaiting human verification of Phase 16 end-to-end
-Last activity: 2026-02-18 — 16-04: meta-test updated (13 tests pass), workspace UI pages created (/w/[slug], /join, /dashboard)
+Phase: 17 of 21 (Tiptap Content Editor — not started)
+Plan: 1 of TBD in Phase 17
+Status: Ready to start — Phase 16 fully verified and complete
+Last activity: 2026-02-17 — Phase 16 complete: meta-test 13/13 pass, workspace UI delivered, end-to-end Docker verification passed
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 7 plans complete)
+Progress: [████░░░░░░░░░░░░░░░░] ~19% (v2.0 phase 14-21, 8 plans complete across 16-04 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -37,14 +37,13 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
 | 15-authentication-system | 5 (of 5) | 13 min | 2.6 min |
-| 16-workspaces-membership-rbac | 3 (of 5) | 5 min | 1.7 min |
+| 16-workspaces-membership-rbac | 4 (of 4) | ~15 min | 3.8 min |
 
 **Recent Trend:**
-- Last 5 plans: 16-P02 (1m), 16-P01 (2m), 15-P05 (1m), 15-P04 (2m), 15-P01 (8m)
+- Last 5 plans: 16-P04 (~10m), 16-P02 (1m), 16-P01 (2m), 15-P05 (1m), 15-P04 (2m)
 - Trend: Stable — infrastructure plans run fast with complete plan specs
 
 *Updated after each plan completion*
-| Phase 16 P04 | 90 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -97,6 +96,8 @@ Key decisions for v2.0:
 - [Phase 16]: JwtPayload imported from current-user.decorator.ts in WorkspacesController — avoids local redefinition, single source of truth (16-03)
 - [Phase 16]: WorkspacesController added to ALL_CONTROLLERS in meta-test — 13 invariant tests pass including all 8 controller methods
 - [Phase 16]: Dashboard converted to client component; join page uses Suspense around useSearchParams; Next.js 15 async params awaited throughout
+- [Phase 16]: webpack.config.js added to devcollab-api (bcrypt external, dist/main.js at root) — required for NestJS Docker image to build and start correctly (16-04)
+- [Phase 16]: Workspace migration renamed to run after User table migration — FK constraint on WorkspaceMember.userId was failing on devcollab-migrate startup (16-04)
 
 ### Pending Todos
 
@@ -117,7 +118,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: 16-04 tasks 1-2 complete; stopped at checkpoint:human-verify for Phase 16 end-to-end verification
+Last session: 2026-02-17
+Stopped at: Phase 16 COMPLETE — all 4 plans done, end-to-end Docker verification passed
 Resume file: None
-Next action: Resume 16-04 after human verification (type "approved")
+Next action: Start Phase 17 — Tiptap Content Editor (run spike before full implementation)
