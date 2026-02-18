@@ -13,6 +13,7 @@ import { CommentsModule } from './comments/comments.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ActivityModule } from './activity/activity.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ActivityModule } from './activity/activity.module';
     ReactionsModule,
     NotificationsModule,
     ActivityModule,
+    SearchModule,
   ],
   providers: [
     {
