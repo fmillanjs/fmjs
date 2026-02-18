@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 16 COMPLETE; ready for Phase 17 Tiptap Content Editor
+**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plan 01 complete)
 
 ## Current Position
 
-Phase: 17 of 21 (Tiptap Content Editor — not started)
-Plan: 1 of TBD in Phase 17
-Status: Ready to start — Phase 16 fully verified and complete
-Last activity: 2026-02-17 — Phase 16 complete: meta-test 13/13 pass, workspace UI delivered, end-to-end Docker verification passed
+Phase: 17 of 21 (Content Creation — Snippets and Posts)
+Plan: 2 of 5 in Phase 17
+Status: In progress — Plan 01 complete (Prisma schema, migration, CASL fix)
+Last activity: 2026-02-18 — Phase 17 Plan 01 complete: Snippet/Post models migrated, PrismaService getters added, Contributor delete abilities granted
 
-Progress: [████░░░░░░░░░░░░░░░░] ~19% (v2.0 phase 14-21, 8 plans complete across 16-04 plans)
+Progress: [████░░░░░░░░░░░░░░░░] ~21% (v2.0 phase 14-21, 9 plans complete across 17-01 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -98,6 +98,9 @@ Key decisions for v2.0:
 - [Phase 16]: Dashboard converted to client component; join page uses Suspense around useSearchParams; Next.js 15 async params awaited throughout
 - [Phase 16]: webpack.config.js added to devcollab-api (bcrypt external, dist/main.js at root) — required for NestJS Docker image to build and start correctly (16-04)
 - [Phase 16]: Workspace migration renamed to run after User table migration — FK constraint on WorkspaceMember.userId was failing on devcollab-migrate startup (16-04)
+- [Phase 17]: Migration applied via prisma migrate deploy locally against devcollab-postgres on port 5435 — no need to start devcollab-api or devcollab-migrate containers for schema-only task (17-01)
+- [Phase 17]: Migration SQL generated with prisma migrate diff --from-url (live DB diff) — exact DDL, no drift (17-01)
+- [Phase 17]: Owner-only (authorId) enforcement deferred to service layer — CASL guard grants delete to Contributor unconditionally; service throws ForbiddenException if requester is not author (17-01)
 
 ### Pending Todos
 
@@ -118,7 +121,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-17
-Stopped at: Phase 16 COMPLETE — all 4 plans done, end-to-end Docker verification passed
+Last session: 2026-02-18
+Stopped at: Completed 17-01-PLAN.md — Prisma schema extended, migration applied, PrismaService getters, CASL fix
 Resume file: None
-Next action: Start Phase 17 — Tiptap Content Editor (run spike before full implementation)
+Next action: Start Phase 17 Plan 02 — Snippet CRUD API module

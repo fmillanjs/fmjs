@@ -32,23 +32,23 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 ### Access Control
 
 - [ ] **RBAC-01**: Admin can manage workspace members, roles, and all content
-- [ ] **RBAC-02**: Contributor can create and edit own snippets, posts, and comments
-- [ ] **RBAC-03**: Viewer can read all workspace content but cannot create or edit
+- [x] **RBAC-02**: Contributor can create and edit own snippets, posts, and comments
+- [x] **RBAC-03**: Viewer can read all workspace content but cannot create or edit
 - [ ] **RBAC-04**: All API endpoints deny access by default when no role decorator present
 
 ### Snippets
 
-- [ ] **SNIP-01**: User can create a code snippet (title, language, code body)
-- [ ] **SNIP-02**: Snippet displays with Shiki syntax highlighting and language selector
+- [x] **SNIP-01**: User can create a code snippet (title, language, code body)
+- [x] **SNIP-02**: Snippet displays with Shiki syntax highlighting and language selector
 - [ ] **SNIP-03**: User can copy snippet code with a copy button
-- [ ] **SNIP-04**: User can edit and delete own snippet
-- [ ] **SNIP-05**: Each snippet has a shareable URL (GitHub Gist-style)
+- [x] **SNIP-04**: User can edit and delete own snippet
+- [x] **SNIP-05**: Each snippet has a shareable URL (GitHub Gist-style)
 
 ### Posts
 
-- [ ] **POST-01**: User can create a Markdown post using a write/preview split-pane editor
-- [ ] **POST-02**: User can save post as draft or publish it
-- [ ] **POST-03**: User can edit and delete own post
+- [x] **POST-01**: User can create a Markdown post using a write/preview split-pane editor
+- [x] **POST-02**: User can save post as draft or publish it
+- [x] **POST-03**: User can edit and delete own post
 
 ### Discussions & Reactions
 
@@ -133,17 +133,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WORK-04 | Phase 16 | Complete |
 | WORK-05 | Phase 16 | Complete |
 | RBAC-01 | Phase 16 | Complete |
-| RBAC-02 | Phase 17 | Pending |
-| RBAC-03 | Phase 17 | Pending |
+| RBAC-02 | Phase 17 | Complete |
+| RBAC-03 | Phase 17 | Complete |
 | RBAC-04 | Phase 16 | Complete |
-| SNIP-01 | Phase 17 | Pending |
-| SNIP-02 | Phase 17 | Pending |
+| SNIP-01 | Phase 17 | Complete |
+| SNIP-02 | Phase 17 | Complete |
 | SNIP-03 | Phase 17 | Pending |
-| SNIP-04 | Phase 17 | Pending |
-| SNIP-05 | Phase 17 | Pending |
-| POST-01 | Phase 17 | Pending |
-| POST-02 | Phase 17 | Pending |
-| POST-03 | Phase 17 | Pending |
+| SNIP-04 | Phase 17 | Complete |
+| SNIP-05 | Phase 17 | Complete |
+| POST-01 | Phase 17 | Complete |
+| POST-02 | Phase 17 | Complete |
+| POST-03 | Phase 17 | Complete |
 | DISC-01 | Phase 18 | Pending |
 | DISC-02 | Phase 18 | Pending |
 | DISC-03 | Phase 18 | Pending |
