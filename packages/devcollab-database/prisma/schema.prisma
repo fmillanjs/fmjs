@@ -19,6 +19,8 @@ model User {
   workspaceMemberships WorkspaceMember[]
   snippets             Snippet[]
   posts                Post[]
+  comments             Comment[]
+  reactions            Reaction[]
 
   @@index([email])
 }
@@ -92,6 +94,7 @@ model Snippet {
 
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments  Comment[]
 
   @@index([workspaceId])
   @@index([authorId])
@@ -111,7 +114,57 @@ model Post {
 
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  reactions Reaction[]
 
   @@index([workspaceId, status])
   @@index([authorId])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  deletedAt DateTime?
+
+  authorId  String
+  parentId  String?
+  postId    String?
+  snippetId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[] @relation("CommentReplies")
+  post      Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  snippet   Snippet?  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  reactions Reaction[]
+
+  @@index([postId])
+  @@index([snippetId])
+  @@index([authorId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model Reaction {
+  id    String @id @default(cuid())
+  emoji String // 'thumbs_up' | 'heart' | 'plus_one' | 'laugh'
+
+  userId    String
+  postId    String?
+  commentId String?
+
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, emoji, postId])
+  @@unique([userId, emoji, commentId])
+  @@index([postId])
+  @@index([commentId])
+  @@index([userId])
 }
