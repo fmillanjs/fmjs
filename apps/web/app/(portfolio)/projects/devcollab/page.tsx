@@ -53,7 +53,7 @@ export default function DevCollabCaseStudy() {
         <div className="flex gap-4">
           <Button asChild>
             <a
-              href={`${DEVCOLLAB_URL}/login`}
+              href={`${DEVCOLLAB_URL}/w/devcollab-demo`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -410,7 +410,7 @@ export default function DevCollabCaseStudy() {
           </ul>
           <Button asChild>
             <a
-              href={`${DEVCOLLAB_URL}/login`}
+              href={`${DEVCOLLAB_URL}/w/devcollab-demo`}
               target="_blank"
               rel="noopener noreferrer"
             >
