@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plan 01 complete)
+**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-02 complete)
 
 ## Current Position
 
 Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 2 of 5 in Phase 17
-Status: In progress — Plan 01 complete (Prisma schema, migration, CASL fix)
-Last activity: 2026-02-18 — Phase 17 Plan 01 complete: Snippet/Post models migrated, PrismaService getters added, Contributor delete abilities granted
+Plan: 3 of 5 in Phase 17
+Status: In progress — Plan 02 complete (SnippetsModule + PostsModule CRUD APIs, AppModule wired, meta-test 24 passing)
+Last activity: 2026-02-18 — Phase 17 Plan 02 complete: SnippetsController (5 endpoints), PostsController (6 endpoints), owner-scoped services, AppModule updated, meta-test expanded to 24 checks
 
-Progress: [████░░░░░░░░░░░░░░░░] ~21% (v2.0 phase 14-21, 9 plans complete across 17-01 plans)
+Progress: [████░░░░░░░░░░░░░░░░] ~22% (v2.0 phase 14-21, 10 plans complete across 17-02 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -44,6 +44,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 - Trend: Stable — infrastructure plans run fast with complete plan specs
 
 *Updated after each plan completion*
+| Phase 17 P02 | 2 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,10 @@ Key decisions for v2.0:
 - [Phase 17]: Migration applied via prisma migrate deploy locally against devcollab-postgres on port 5435 — no need to start devcollab-api or devcollab-migrate containers for schema-only task (17-01)
 - [Phase 17]: Migration SQL generated with prisma migrate diff --from-url (live DB diff) — exact DDL, no drift (17-01)
 - [Phase 17]: Owner-only (authorId) enforcement deferred to service layer — CASL guard grants delete to Contributor unconditionally; service throws ForbiddenException if requester is not author (17-01)
+- [Phase 17]: SnippetsController routes use @Controller('workspaces/:slug/snippets') — workspace-scoped URL pattern consistent with WorkspacesController (17-02)
+- [Phase 17]: PostsService setStatus sets publishedAt to new Date() when transitioning to Published, null when reverting to Draft (17-02)
+- [Phase 17]: PostsController PATCH :id/status declared after PATCH :id — NestJS resolves specific paths before dynamic when using distinct segments (17-02)
+- [Phase 17]: Meta-test expanded from 3 to 5 controllers; test count grows from 13 to 24 as each handler is checked individually (17-02)
 
 ### Pending Todos
 
@@ -122,6 +127,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 17-01-PLAN.md — Prisma schema extended, migration applied, PrismaService getters, CASL fix
+Stopped at: Completed 17-02-PLAN.md — SnippetsModule, PostsModule CRUD APIs, AppModule wired, meta-test 24 passing
 Resume file: None
-Next action: Start Phase 17 Plan 02 — Snippet CRUD API module
+Next action: Start Phase 17 Plan 03 — frontend content creation UI

@@ -189,7 +189,7 @@ Plans:
 | 14. Monorepo Scaffold + Infrastructure | v2.0 | Complete    | 2026-02-17 | - |
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
-| 17. Content Creation — Snippets + Posts | 1/5 | In Progress|  | - |
+| 17. Content Creation — Snippets + Posts | 2/5 | In Progress|  | - |
 | 18. Discussions + Reactions | v2.0 | 0/TBD | Not started | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
