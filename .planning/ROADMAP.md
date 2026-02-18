@@ -44,7 +44,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 - [x] **Phase 14: Monorepo Scaffold + Infrastructure** - Two new Turborepo apps, separate Postgres, Docker compose extended, deny-by-default CASL guard established before any controllers (completed 2026-02-17)
 - [x] **Phase 15: Authentication System** - DevCollab-specific JWT auth (DEVCOLLAB_JWT_SECRET, completely separate from TeamFlow), httpOnly cookie session, deny-by-default RBAC guard with unit tests (completed 2026-02-17)
-- [ ] **Phase 16: Workspaces + Membership + RBAC** - Workspace CRUD with slug routing, invite-link flow, Admin/Contributor/Viewer roles enforced at guard level, last-admin protection
+- [x] **Phase 16: Workspaces + Membership + RBAC** - Workspace CRUD with slug routing, invite-link flow, Admin/Contributor/Viewer roles enforced at guard level, last-admin protection (completed 2026-02-17)
 - [ ] **Phase 17: Content Creation — Snippets + Posts** - Code snippets with Shiki syntax highlighting, Markdown posts with Tiptap write/preview editor (immediatelyRender: false validated with next build && next start)
 - [ ] **Phase 18: Discussions + Reactions** - Threaded comments (1-level deep) on snippets and posts, emoji reactions, flat model with in-memory tree assembly
 - [ ] **Phase 19: Notifications + Activity Feed** - @mention notifications with bell icon, unread badge, 60s poll; workspace activity feed with 30s poll and cursor pagination
@@ -90,30 +90,31 @@ Plans:
 ### Phase 16: Workspaces + Membership + RBAC
 **Goal**: Users can create workspaces, invite members via time-limited single-use links, and have role-based permissions enforced at the API guard level — Admin, Contributor, and Viewer roles all behave correctly
 **Depends on**: Phase 15
-**Requirements**: WORK-01, WORK-02, WORK-03, WORK-04, WORK-05, RBAC-01, RBAC-02, RBAC-03, RBAC-04
+**Requirements**: WORK-01, WORK-02, WORK-03, WORK-04, WORK-05, RBAC-01, RBAC-04
+**Note**: RBAC-02 and RBAC-03 (Contributor/Viewer enforcement on snippet/post endpoints) moved to Phase 17 — those endpoints don't exist until Phase 17; CASL rules are fully implemented in WorkspaceAbilityFactory and will be exercised there.
 **Success Criteria** (what must be TRUE):
   1. A logged-in user can create a workspace with a name and slug; the workspace is accessible at `/w/:slug`
   2. A workspace Admin can generate an invite link; the link expires after 72 hours and cannot be reused after the first successful join
   3. A user with an invite link can join the workspace and is assigned the Contributor role by default
-  4. A Viewer-role user receives 403 when attempting to create a snippet or post; a Contributor-role user succeeds — role enforcement is at the API level, not only in the UI
-  5. The last Admin in a workspace cannot be removed or demoted; the API returns an error and the member list is unchanged
+  4. The last Admin in a workspace cannot be removed or demoted; the API returns an error and the member list is unchanged
 **Plans**: 4 plans
 Plans:
-- [ ] 16-01-PLAN.md — Prisma schema: Workspace, WorkspaceMember, InviteLink models + PrismaService accessors
-- [ ] 16-02-PLAN.md — WorkspaceAbilityFactory + async CaslAuthGuard + AppModule wiring
-- [ ] 16-03-PLAN.md — WorkspacesService + WorkspacesController (8 endpoints) + DTOs
-- [ ] 16-04-PLAN.md — Controller meta-test update + Next.js 15 workspace UI pages
+- [x] 16-01-PLAN.md — Prisma schema: Workspace, WorkspaceMember, InviteLink models + PrismaService accessors
+- [x] 16-02-PLAN.md — WorkspaceAbilityFactory + async CaslAuthGuard + AppModule wiring
+- [x] 16-03-PLAN.md — WorkspacesService + WorkspacesController (8 endpoints) + DTOs
+- [x] 16-04-PLAN.md — Controller meta-test update + Next.js 15 workspace UI pages
 
 ### Phase 17: Content Creation — Snippets + Posts
 **Goal**: Contributors can create and share code snippets with syntax highlighting and Markdown posts with a write/preview editor; both content types are readable by all workspace members; Tiptap SSR is validated against a production build
 **Depends on**: Phase 16
-**Requirements**: SNIP-01, SNIP-02, SNIP-03, SNIP-04, SNIP-05, POST-01, POST-02, POST-03
+**Requirements**: SNIP-01, SNIP-02, SNIP-03, SNIP-04, SNIP-05, POST-01, POST-02, POST-03, RBAC-02, RBAC-03
 **Success Criteria** (what must be TRUE):
   1. A user can create a code snippet with a title, language selector, and code body; the snippet renders with Shiki syntax highlighting (server-side, zero client JS); a copy button copies the code to clipboard
   2. Each snippet has a shareable URL (`/w/:slug/snippets/:id`) accessible to any workspace member; the URL works when opened in a new tab (GitHub Gist-style)
   3. A user can create a Markdown post using a write/preview split-pane editor; the preview renders Shiki-highlighted code fences
   4. A user can save a post as draft (not visible to others) or publish it (visible to all workspace members); a published post can be reverted to draft
   5. `next build && next start` completes with zero React hydration errors and zero "Duplicate extension names" Tiptap warnings in the browser console — SSR validation is a hard acceptance criterion before merge
+  6. A Viewer-role user receives 403 when attempting to create a snippet or post; a Contributor-role user succeeds — role enforcement is at the API level (RBAC-02/RBAC-03 exercised against real snippet/post endpoints)
 **Plans**: TBD
 
 ### Phase 18: Discussions + Reactions
@@ -181,7 +182,7 @@ Plans:
 | 13. Automation & Optimization | v1.1 | 3/3 | Complete | 2026-02-17 |
 | 14. Monorepo Scaffold + Infrastructure | v2.0 | Complete    | 2026-02-17 | - |
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
-| 16. Workspaces + Membership + RBAC | v2.0 | 0/TBD | Not started | - |
+| 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
 | 17. Content Creation — Snippets + Posts | v2.0 | 0/TBD | Not started | - |
 | 18. Discussions + Reactions | v2.0 | 0/TBD | Not started | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
