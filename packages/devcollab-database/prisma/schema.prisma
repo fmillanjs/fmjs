@@ -97,9 +97,10 @@ model Snippet {
   authorId    String
   workspaceId String
 
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  comments  Comment[]
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments     Comment[]
+  searchVector Unsupported("tsvector")?
 
   @@index([workspaceId])
   @@index([authorId])
@@ -117,10 +118,11 @@ model Post {
   authorId    String
   workspaceId String
 
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  comments  Comment[]
-  reactions Reaction[]
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments     Comment[]
+  reactions    Reaction[]
+  searchVector Unsupported("tsvector")?
 
   @@index([workspaceId, status])
   @@index([authorId])
