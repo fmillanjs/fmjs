@@ -16,5 +16,56 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  workspaceMemberships WorkspaceMember[]
+
   @@index([email])
+}
+
+enum WorkspaceRole {
+  Admin
+  Contributor
+  Viewer
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     WorkspaceMember[]
+  inviteLinks InviteLink[]
+
+  @@index([slug])
+}
+
+model WorkspaceMember {
+  id       String        @id @default(cuid())
+  role     WorkspaceRole @default(Contributor)
+  joinedAt DateTime      @default(now())
+
+  userId      String
+  workspaceId String
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+model InviteLink {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([workspaceId])
 }
