@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 19 IN PROGRESS (2 of 4 plans) — Notifications + Activity Feed
+**Current focus:** v2.0 DevCollab — Phase 19 IN PROGRESS (3 of 4 plans) — Notifications + Activity Feed
 
 ## Current Position
 
 Phase: 19 of 21 (Notifications + Activity Feed)
-Plan: 2 of 4 in Phase 19 — COMPLETE (2026-02-18)
-Status: Phase 19 Plan 02 complete — NotificationsModule + ActivityModule created, @mention notifications + ActivityEvent logging wired, meta-test expanded to 9 controllers
-Last activity: 2026-02-18 — Phase 19 Plan 02 complete: Notifications + Activity Feed backend fully implemented (3cec0f9)
+Plan: 3 of 4 in Phase 19 — COMPLETE (2026-02-18)
+Status: Phase 19 Plan 03 complete — BellIcon (60s poll), NotificationList (mark-read), WorkspaceNav, ActivityFeed (30s merge poll + Load More), activity page
+Last activity: 2026-02-18 — Phase 19 Plan 03 complete: Notifications + Activity Feed frontend surfaces built (00b02ed)
 
 Progress: [█████░░░░░░░░░░░░░░░] ~34% (v2.0 phase 14-21, 15 plans complete across 19-02 plans)
 
@@ -53,6 +53,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 18-discussions-reactions P04 | ~30 | 2 tasks | 4 files |
 | Phase 19 P01 | 2 | 2 tasks | 4 files |
 | Phase 19 P02 | 2 | 2 tasks | 14 files |
+| Phase 19 P03 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,9 @@ Key decisions for v2.0:
 - [Phase 19]: JwtPayload imported from current-user.decorator.ts in NotificationsController — single source of truth
 - [Phase 19]: notifyMentions uses skipDuplicates:true in notification.createMany — prevents duplicate notifications on comment edits
 - [Phase 19]: ActivityService.findFeed returns workspaceSlug in response — enables frontend deep-links without secondary lookup
+- [Phase 19]: BellIcon badge uses red (#ef4444) — no purple per project rule
+- [Phase 19]: ActivityFeed merge logic: new events prepended, existing items not discarded on 30s poll — prevents Load More collapse
+- [Phase 19]: layout.tsx stays Server Component; only nav extracted into WorkspaceNav client component
 
 ### Pending Todos
 
@@ -161,6 +165,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 19-02-PLAN.md — NotificationsModule + ActivityModule created, @mention notifications + ActivityEvent logging wired into CommentsService/WorkspacesService/PostsService/SnippetsService, meta-test expanded to 9 controllers 34 tests (3cec0f9)
+Stopped at: Completed 19-03-PLAN.md — BellIcon + NotificationList + WorkspaceNav + ActivityFeed + activity/page.tsx created, workspace layout updated to use WorkspaceNav (00b02ed)
 Resume file: None
 Next action: Execute Phase 19 Plan 03 (frontend notification bell + unread badge)
