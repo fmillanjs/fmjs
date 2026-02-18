@@ -7,10 +7,11 @@ import { IS_PUBLIC_KEY } from '../../../src/common/decorators/public.decorator';
 import { CHECK_ABILITY_KEY } from '../../../src/common/decorators/check-ability.decorator';
 import { HealthController } from '../../../src/health/health.controller';
 import { AuthController } from '../../../src/auth/auth.controller';
+import { WorkspacesController } from '../../../src/workspaces/workspaces.controller';
 
 // MAINTAINABILITY NOTE: When a new controller is added to devcollab-api, add its class here.
 // The test will then automatically enforce the deny-by-default invariant on all its methods.
-const ALL_CONTROLLERS = [HealthController, AuthController] as const;
+const ALL_CONTROLLERS = [HealthController, AuthController, WorkspacesController] as const;
 
 describe('DevCollab deny-by-default invariant', () => {
   for (const Controller of ALL_CONTROLLERS) {
