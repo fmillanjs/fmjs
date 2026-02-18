@@ -149,7 +149,12 @@ Plans:
   2. The bell icon displays an unread badge with the correct count; clicking the bell shows the notification list with a link to the source comment
   3. A user can mark individual notifications as read or mark all as read; the unread badge updates immediately
   4. The workspace activity feed shows workspace events (member joins, content created, content updated) in reverse-chronological order, paginated with cursor pagination at 20 per page; the feed refreshes within 30 seconds without a page reload
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 19-01-PLAN.md — Prisma schema: Notification + ActivityEvent models, migration, PrismaService getters, CASL Subject union update
+- [ ] 19-02-PLAN.md — NestJS NotificationsModule + ActivityModule + mention hooks in CommentsService + activity logging in existing services + AppModule wiring + meta-test
+- [ ] 19-03-PLAN.md — Frontend: WorkspaceNav + BellIcon (60s poll) + NotificationList (mark read) + ActivityFeed (30s refresh + cursor pagination) + activity page
+- [ ] 19-04-PLAN.md — Human-verify checkpoint: @mention flow, bell badge, mark read, activity feed
 
 ### Phase 20: Full-Text Search
 **Goal**: Workspace members can search across all posts and snippets using full-text search powered by Postgres tsvector; results are grouped and highlighted; the Cmd+K shortcut opens the search modal; GIN index migration drift is eliminated
@@ -196,6 +201,6 @@ Plans:
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
 | 18. Discussions + Reactions | 4/4 | Complete    | 2026-02-18 | - |
-| 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
+| 19. Notifications + Activity Feed | v2.0 | 0/4 | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
