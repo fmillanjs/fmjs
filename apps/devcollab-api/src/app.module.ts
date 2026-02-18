@@ -6,6 +6,7 @@ import { CaslAuthGuard } from './guards/casl-auth.guard';
 import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './core/database/database.module';
 import { AuthModule } from './auth/auth.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     HealthModule,
     AuthModule,
+    WorkspacesModule,
   ],
   providers: [
     {
