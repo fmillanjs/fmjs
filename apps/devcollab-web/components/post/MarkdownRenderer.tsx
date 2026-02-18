@@ -1,60 +1,72 @@
-import ReactMarkdown from 'react-markdown';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
-import type { Plugin } from 'unified';
+import remarkRehype from 'remark-rehype';
+import { toHtml } from 'hast-util-to-html';
 import type { Root, Element, Text } from 'hast';
 import { visit } from 'unist-util-visit';
 import { getHighlighter } from '../../lib/shiki';
 
-// Custom rehype plugin: replaces <code class="language-X"> nodes with Shiki-highlighted HTML.
-// Runs entirely on the server — no WASM shipped to the browser.
-function rehypeShikiPlugin(): Plugin<[], Root> {
-  return () => async (tree: Root) => {
-    const highlighter = await getHighlighter();
-    const promises: Promise<void>[] = [];
+// Server Component — no 'use client'. Shiki runs server-side.
+// Uses unified pipeline directly so the async Shiki plugin is properly awaited,
+// then renders the final HTML string via dangerouslySetInnerHTML.
+async function processMarkdown(content: string): Promise<string> {
+  const highlighter = await getHighlighter();
 
-    visit(tree, 'element', (node: Element, index, parent) => {
-      if (
-        node.tagName !== 'code' ||
-        !parent ||
-        (parent as Element).tagName !== 'pre'
-      ) return;
+  const processor = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(() => async (tree: Root) => {
+      const promises: Promise<void>[] = [];
 
-      const classNames = (node.properties?.className as string[] | undefined) ?? [];
-      const langClass = classNames.find((c) => c.startsWith('language-'));
-      const lang = langClass ? langClass.replace('language-', '') : 'text';
-      const rawCode = (node.children[0] as Text | undefined)?.value ?? '';
+      visit(tree, 'element', (node: Element, _index, parent) => {
+        if (
+          node.tagName !== 'code' ||
+          !parent ||
+          (parent as Element).tagName !== 'pre'
+        )
+          return;
 
-      promises.push(
-        (async () => {
-          const html = highlighter.codeToHtml(rawCode, {
-            lang: lang ?? 'text',
-            theme: 'github-dark',
-          });
+        const classNames =
+          (node.properties?.className as string[] | undefined) ?? [];
+        const langClass = classNames.find((c) => c.startsWith('language-'));
+        const lang = langClass ? langClass.replace('language-', '') : 'text';
+        const rawCode = (node.children[0] as Text | undefined)?.value ?? '';
 
-          // Replace the <pre><code> node pair with raw Shiki HTML
-          const preNode = parent as Element;
-          preNode.tagName = 'div';
-          preNode.properties = { className: ['shiki-wrapper'], style: 'margin: 1em 0' };
-          preNode.children = [
-            {
-              type: 'raw' as never,
-              value: html,
-            } as never,
-          ];
-        })()
-      );
+        promises.push(
+          (async () => {
+            const shikiHtml = highlighter.codeToHtml(rawCode, {
+              lang,
+              theme: 'github-dark',
+            });
+
+            const preNode = parent as Element;
+            preNode.tagName = 'div';
+            preNode.properties = {
+              className: ['shiki-wrapper'],
+              style: 'margin: 1em 0',
+            };
+            preNode.children = [
+              { type: 'raw', value: shikiHtml } as never,
+            ];
+          })()
+        );
+      });
+
+      await Promise.all(promises);
     });
 
-    await Promise.all(promises);
-  };
+  const tree = await processor.run(processor.parse(content));
+  return toHtml(tree as Root, { allowDangerousHtml: true });
 }
 
 interface Props {
   content: string;
 }
 
-// Server Component — no 'use client'. Shiki runs server-side via rehype plugin.
-export default function MarkdownRenderer({ content }: Props) {
+export default async function MarkdownRenderer({ content }: Props) {
+  const html = await processMarkdown(content);
   return (
     <article
       style={{
@@ -63,13 +75,7 @@ export default function MarkdownRenderer({ content }: Props) {
         fontSize: '16px',
         color: '#111827',
       }}
-    >
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeShikiPlugin() as never]}
-      >
-        {content}
-      </ReactMarkdown>
-    </article>
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }

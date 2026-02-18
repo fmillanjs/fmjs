@@ -1,9 +1,13 @@
+import { cookies } from 'next/headers';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
 async function getWorkspace(slug: string) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('devcollab_token')?.value;
     const res = await fetch(`${API_URL}/workspaces/${slug}`, {
-      credentials: 'include',
+      headers: token ? { Cookie: `devcollab_token=${token}` } : {},
       cache: 'no-store',
     });
     if (!res.ok) return null;
