@@ -17,6 +17,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   workspaceMemberships WorkspaceMember[]
+  snippets             Snippet[]
+  posts                Post[]
 
   @@index([email])
 }
@@ -36,6 +38,8 @@ model Workspace {
 
   members     WorkspaceMember[]
   inviteLinks InviteLink[]
+  snippets    Snippet[]
+  posts       Post[]
 
   @@index([slug])
 }
@@ -68,4 +72,46 @@ model InviteLink {
 
   @@index([token])
   @@index([workspaceId])
+}
+
+enum PostStatus {
+  Draft
+  Published
+}
+
+model Snippet {
+  id          String   @id @default(cuid())
+  title       String
+  language    String
+  code        String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  workspaceId String
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([authorId])
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  content     String     @db.Text
+  status      PostStatus @default(Draft)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  authorId    String
+  workspaceId String
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@index([authorId])
 }
