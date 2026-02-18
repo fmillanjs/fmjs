@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 20 (Full-Text Search) — Plan 01 complete
+**Current focus:** v2.0 DevCollab — Phase 20 (Full-Text Search) — Plan 02 complete
 
 ## Current Position
 
 Phase: 20 of 21 (Full-Text Search) — In Progress
-Plan: 1 of 3 in Phase 20 — COMPLETE (2026-02-18)
-Status: Phase 20 Plan 01 complete — tsvector columns, GIN indexes, trigger functions, PrismaService $queryRaw delegation
-Last activity: 2026-02-18 — Phase 20 Plan 01 complete: Postgres FTS infrastructure (tsvector + GIN indexes) applied to devcollab-postgres
+Plan: 2 of 3 in Phase 20 — COMPLETE (2026-02-18)
+Status: Phase 20 Plan 02 complete — SearchModule with SearchService ($queryRaw FTS + ts_headline) + SearchController (@CheckAbility) + AppModule wiring
+Last activity: 2026-02-18 — Phase 20 Plan 02 complete: NestJS SearchModule — GET /workspaces/:slug/search?q= endpoint with workspace-scoped FTS
 
-Progress: [█████░░░░░░░░░░░░░░░] ~41% (v2.0 phase 14-21, 20 plans complete across 22 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~44% (v2.0 phase 14-21, 21 plans complete across 22 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -56,6 +56,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 19 P03 | 2 | 2 tasks | 6 files |
 | Phase 19 P04 | 0 | 1 task (human-verify) | 0 files |
 | Phase 20-full-text-search P01 | 3 | 2 tasks | 3 files |
+| Phase 20 P02 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -149,6 +150,8 @@ Key decisions for v2.0:
 - [Phase 20-full-text-search]: Trigger pattern (not GENERATED ALWAYS AS) for tsvector — eliminates Prisma migration drift
 - [Phase 20-full-text-search]: GIN indexes in manual migration SQL only, not in Prisma schema — prevents index recreation drift on every migrate dev
 - [Phase 20-full-text-search]: PrismaService $queryRaw and $executeRaw getters bound to this.client — mandatory for Prisma.sql tagged template this context
+- [Phase 20-full-text-search]: [Phase 20-02]: SearchController @CheckAbility('read', 'Post') required — deny-by-default CaslAuthGuard blocks all unauthenticated search requests
+- [Phase 20-full-text-search]: [Phase 20-02]: FTS input sanitization strips |&\!<>()'" chars then builds prefix tsquery (word:*) — prevents Postgres syntax errors from user input and supports partial-word search
 
 ### Pending Todos
 
@@ -170,6 +173,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 20-01-PLAN.md — FTS tsvector infrastructure: searchVector columns on Post/Snippet, GIN indexes, trigger functions, PrismaService $queryRaw delegation
+Stopped at: Completed 20-02-PLAN.md — NestJS SearchModule: SearchService ($queryRaw + ts_headline + prefix matching), SearchController (@CheckAbility), AppModule wired, meta-test passes 35/35
 Resume file: None
-Next action: Execute Phase 20 Plan 02 (Search API) — SearchModule, SearchController, SearchService with $queryRaw raw queries
+Next action: Execute Phase 20 Plan 03 (Frontend Search) — SearchBar component calling GET /workspaces/:slug/search?q=
