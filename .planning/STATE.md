@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 21 of 21 (Seed Data + Portfolio Integration) — In Progress
-Plan: 1 of 3 in Phase 21 — COMPLETE (2026-02-18)
-Status: Phase 21 Plan 01 complete — deterministic seed script + Dockerfile.seed + devcollab-seed docker service registered
-Last activity: 2026-02-18 — Phase 21 Plan 01: faker.seed(42) seed script with 3 users, 5 snippets, 3 posts, idempotency guard, docker-compose devcollab-seed service
+Plan: 2 of 3 in Phase 21 — COMPLETE (2026-02-18)
+Status: Phase 21 Plan 02 complete — DevCollab case study page + homepage two-card grid + projects listing + login demo credentials (PORT-01/02/03 satisfied)
+Last activity: 2026-02-18 — Phase 21 Plan 02: /projects/devcollab case study, Featured Projects two-card grid, DevCollab ProjectCard, login Demo Credentials panel + /w/devcollab-demo redirect
 
-Progress: [█████░░░░░░░░░░░░░░░] ~50% (v2.0 phase 14-21, 23 plans complete across 26 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~52% (v2.0 phase 14-21, 24 plans complete across 26 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -59,6 +59,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 20 P02 | 2 | 2 tasks | 6 files |
 | Phase 20 P03 | ~10 | 3 tasks (2 auto + 1 human-verify) | 3 files |
 | Phase 21 P01 | 2 | 2 tasks | 4 files |
+| Phase 21-seed-data-portfolio-integration P02 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -159,6 +160,9 @@ Key decisions for v2.0:
 - [Phase 20-full-text-search]: [Phase 20-03]: prisma migrate diff --from-schema-datasource used for x3 drift ritual — identical zero-drift verification when migrate dev is non-interactive
 - [Phase 21]: Separate Dockerfile.seed (not Dockerfile.migrate) needed — migrate image does not copy src/ required for relative import '../src/client'
 - [Phase 21]: devcollab-api depends on devcollab-seed:service_completed_successfully — ensures demo data exists before API starts
+- [Phase 21-02]: NEXT_PUBLIC_DEVCOLLAB_URL env var with localhost:3002 fallback — environment-agnostic deep-link to /w/devcollab-demo
+- [Phase 21-02]: Login page post-auth redirect changed from /dashboard to /w/devcollab-demo — recruiter lands directly in seeded workspace
+- [Phase 21-02]: Homepage changed from single Featured Project to Featured Projects two-column grid — both apps equally prominent
 
 ### Pending Todos
 
@@ -177,6 +181,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 20-03-PLAN.md — SearchModal + SearchResults components + WorkspaceNav injection + human verification approved + zero prisma migration drift confirmed
+Stopped at: Completed 21-02-PLAN.md — DevCollab case study page, homepage two-card grid, projects listing DevCollab card, login demo credentials panel + /w/devcollab-demo redirect (PORT-01/02/03 satisfied)
 Resume file: None
 Next action: Execute Phase 21 (Seed Data + Portfolio Integration)

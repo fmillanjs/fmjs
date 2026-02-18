@@ -72,9 +72,9 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 ### Portfolio
 
-- [ ] **PORT-01**: DevCollab project card appears on Fernando's portfolio homepage
-- [ ] **PORT-02**: DevCollab case study page exists at /projects/devcollab
-- [ ] **PORT-03**: Portfolio links to DevCollab live demo
+- [x] **PORT-01**: DevCollab project card appears on Fernando's portfolio homepage
+- [x] **PORT-02**: DevCollab case study page exists at /projects/devcollab
+- [x] **PORT-03**: Portfolio links to DevCollab live demo
 
 ### Seed Data
 
@@ -155,9 +155,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SRCH-01 | Phase 20 | Complete |
 | SRCH-02 | Phase 20 | Complete |
 | SRCH-03 | Phase 20 | Complete |
-| PORT-01 | Phase 21 | Pending |
-| PORT-02 | Phase 21 | Pending |
-| PORT-03 | Phase 21 | Pending |
+| PORT-01 | Phase 21 | Complete |
+| PORT-02 | Phase 21 | Complete |
+| PORT-03 | Phase 21 | Complete |
 | SEED-01 | Phase 21 | Complete |
 | SEED-02 | Phase 21 | Complete |
 
