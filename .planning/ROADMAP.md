@@ -206,5 +206,5 @@ Plans:
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
 | 18. Discussions + Reactions | 4/4 | Complete    | 2026-02-18 | - |
 | 19. Notifications + Activity Feed | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
-| 20. Full-Text Search | 2/3 | In Progress|  | - |
+| 20. Full-Text Search | 2/3 | Complete    | 2026-02-18 | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
