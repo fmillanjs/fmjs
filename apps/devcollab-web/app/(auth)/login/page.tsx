@@ -25,7 +25,7 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        router.push('/dashboard');
+        router.push('/w/devcollab-demo');
       } else {
         const data = await res.json().catch(() => ({}));
         setError((data as { message?: string }).message || 'Login failed. Check your credentials.');
@@ -79,6 +79,14 @@ export default function LoginPage() {
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
+      <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px solid #d1d5db', borderRadius: '6px', backgroundColor: '#f9fafb' }}>
+        <p style={{ fontWeight: '600', marginBottom: '0.75rem', fontSize: '0.875rem' }}>Demo Credentials</p>
+        <div style={{ fontSize: '0.8rem', lineHeight: '1.6', fontFamily: 'monospace' }}>
+          <div><strong>Admin:</strong> admin@demo.devcollab / Demo1234!</div>
+          <div><strong>Contributor:</strong> contributor@demo.devcollab / Demo1234!</div>
+          <div><strong>Viewer:</strong> viewer@demo.devcollab / Demo1234!</div>
+        </div>
+      </div>
       <p style={{ marginTop: '1rem', textAlign: 'center' }}>
         No account? <a href="/signup">Sign up</a>
       </p>
