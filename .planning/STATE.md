@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 16 of 21 (Workspaces Membership RBAC)
-Plan: 2 of 5 in Phase 16 — 16-02 COMPLETE
-Status: In progress — ready for 16-03
-Last activity: 2026-02-18 — 16-02 complete: WorkspaceAbilityFactory (CASL Admin/Contributor/Viewer rules), WorkspacesModule skeleton, async CaslAuthGuard with workspace-scoped ability evaluation, AppModule wired
+Plan: 3 of 5 in Phase 16 — 16-03 COMPLETE
+Status: In progress — ready for 16-04
+Last activity: 2026-02-18 — 16-03 complete: WorkspacesService (create/invite/join/manage, last-admin protection), WorkspacesController (8 CASL-guarded endpoints), 3 DTOs, WorkspacesModule updated
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 7 plans complete)
 
@@ -37,7 +37,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | 13-automation-optimization | 3 | 39 min | 13.0 min |
 | 14-monorepo-scaffold-infrastructure | 4 | 4 min | 1.0 min |
 | 15-authentication-system | 5 (of 5) | 13 min | 2.6 min |
-| 16-workspaces-membership-rbac | 2 (of 5) | 3 min | 1.5 min |
+| 16-workspaces-membership-rbac | 3 (of 5) | 5 min | 1.7 min |
 
 **Recent Trend:**
 - Last 5 plans: 16-P02 (1m), 16-P01 (2m), 15-P05 (1m), 15-P04 (2m), 15-P01 (8m)
@@ -91,6 +91,9 @@ Key decisions for v2.0:
 - [Phase 16]: CaslAuthGuard workspace-scoped check: extract :slug from request.params, only build CASL ability when slug present — workspace-agnostic routes bypass to service layer
 - [Phase 16]: Contributor unconditional update on Post/Snippet/Comment (no authorId condition) — own-content-only constraint deferred to Phase 17 when authorId exists on Prisma models
 - [Phase 16]: WorkspacesModule exported as skeleton before controller added — Plan 03 adds WorkspacesController without module restructuring (16-02)
+- [Phase 16]: POST /workspaces/join declared before GET /workspaces/:slug — NestJS resolves routes top-to-bottom, static path segments must precede dynamic (16-03)
+- [Phase 16]: DTO properties use ! definite assignment assertion (name!, token!, role!) — matches project strict TS pattern from auth DTOs (16-03)
+- [Phase 16]: JwtPayload imported from current-user.decorator.ts in WorkspacesController — avoids local redefinition, single source of truth (16-03)
 
 ### Pending Todos
 
@@ -112,6 +115,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: 16-02 complete — WorkspaceAbilityFactory CASL rules; WorkspacesModule skeleton; async CaslAuthGuard with workspace-scoped ability evaluation; AppModule wired; TypeScript clean; meta-test 5/5 green
+Stopped at: 16-03 complete — WorkspacesService (all WORK-01 to WORK-05 requirements); WorkspacesController (8 CASL-guarded endpoints); 3 DTOs; WorkspacesModule updated; TypeScript clean
 Resume file: None
-Next action: Execute Phase 16 Plan 03 (Workspace CRUD endpoints — WorkspacesController + WorkspacesService)
+Next action: Execute Phase 16 Plan 04
