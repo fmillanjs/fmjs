@@ -97,7 +97,12 @@ Plans:
   3. A user with an invite link can join the workspace and is assigned the Contributor role by default
   4. A Viewer-role user receives 403 when attempting to create a snippet or post; a Contributor-role user succeeds — role enforcement is at the API level, not only in the UI
   5. The last Admin in a workspace cannot be removed or demoted; the API returns an error and the member list is unchanged
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 16-01-PLAN.md — Prisma schema: Workspace, WorkspaceMember, InviteLink models + PrismaService accessors
+- [ ] 16-02-PLAN.md — WorkspaceAbilityFactory + async CaslAuthGuard + AppModule wiring
+- [ ] 16-03-PLAN.md — WorkspacesService + WorkspacesController (8 endpoints) + DTOs
+- [ ] 16-04-PLAN.md — Controller meta-test update + Next.js 15 workspace UI pages
 
 ### Phase 17: Content Creation — Snippets + Posts
 **Goal**: Contributors can create and share code snippets with syntax highlighting and Markdown posts with a write/preview editor; both content types are readable by all workspace members; Tiptap SSR is validated against a production build
