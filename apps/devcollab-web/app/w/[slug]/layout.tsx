@@ -1,3 +1,5 @@
+import WorkspaceNav from '../../../components/WorkspaceNav';
+
 export default async function WorkspaceLayout({
   children,
   params,
@@ -9,14 +11,7 @@ export default async function WorkspaceLayout({
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif' }}>
-      <nav style={{ padding: '1rem 2rem', borderBottom: '1px solid #e5e7eb', background: '#fff' }}>
-        <span style={{ fontWeight: 600 }}>Workspace: {slug}</span>
-        <span style={{ marginLeft: '1rem' }}>
-          <a href="/dashboard" style={{ color: '#3b82f6', textDecoration: 'none' }}>
-            ← Dashboard
-          </a>
-        </span>
-      </nav>
+      <WorkspaceNav slug={slug} />
       <main style={{ padding: '2rem' }}>{children}</main>
     </div>
   );
