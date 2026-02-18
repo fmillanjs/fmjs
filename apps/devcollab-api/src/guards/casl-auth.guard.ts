@@ -9,15 +9,17 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { IS_PUBLIC_KEY } from '../common/decorators/public.decorator';
 import { CHECK_ABILITY_KEY } from '../common/decorators/check-ability.decorator';
+import { WorkspaceAbilityFactory, Action, Subject } from '../workspaces/workspace-ability.factory';
 
 @Injectable()
 export class CaslAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
+    private workspaceAbilityFactory: WorkspaceAbilityFactory,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -25,7 +27,6 @@ export class CaslAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    // Not public: require valid JWT in devcollab_token cookie
     const request = context.switchToHttp().getRequest();
     const token = request.cookies?.['devcollab_token'];
 
@@ -40,18 +41,39 @@ export class CaslAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    // Set req.user so @CurrentUser() works in controllers
     request.user = payload;
 
     // Deny-by-default: every non-public endpoint must declare @CheckAbility
-    const ability = this.reflector.getAllAndOverride<{ action: string; subject: string }>(
+    const abilityReq = this.reflector.getAllAndOverride<{ action: string; subject: string }>(
       CHECK_ABILITY_KEY,
       [context.getHandler(), context.getClass()],
     );
 
-    if (!ability) {
+    if (!abilityReq) {
       throw new ForbiddenException(
         'Endpoint must declare @CheckAbility — deny-by-default security invariant',
+      );
+    }
+
+    // Workspace-agnostic routes (no :slug param): authenticated + @CheckAbility is sufficient.
+    // The service layer handles further workspace-scoped authorization.
+    const workspaceSlug: string | undefined = request.params?.slug;
+    if (!workspaceSlug) return true;
+
+    // Workspace-scoped route: build ability from user's membership role and evaluate
+    const ability = await this.workspaceAbilityFactory.createForUserInWorkspace(
+      payload.sub,
+      workspaceSlug,
+    );
+
+    if (!ability) {
+      throw new ForbiddenException('Not a member of this workspace');
+    }
+
+    const allowed = ability.can(abilityReq.action as Action, abilityReq.subject as Subject);
+    if (!allowed) {
+      throw new ForbiddenException(
+        `Forbidden: cannot ${abilityReq.action} ${abilityReq.subject} in this workspace`,
       );
     }
 
