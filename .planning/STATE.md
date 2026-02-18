@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 COMPLETE (all 5 plans complete, human verification APPROVED) — ready for Phase 18
+**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (1 of 4 plans complete) — Discussions + Reactions
 
 ## Current Position
 
-Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 5 of 5 in Phase 17 — COMPLETE (human verification APPROVED 2026-02-18)
-Status: Phase 17 complete — all 6 success criteria met; proceed to Phase 18
-Last activity: 2026-02-18 — Phase 17 Plan 05 complete: next build passes, RBAC Viewer=403, Contributor=201; SSR cookie forwarding + MarkdownRenderer pipeline fixed (382b0c8); human-approved
+Phase: 18 of 21 (Discussions + Reactions)
+Plan: 1 of 4 in Phase 18 — COMPLETE (2026-02-18)
+Status: Phase 18 Plan 01 complete — Comment + Reaction schema migrated; PrismaService getters ready
+Last activity: 2026-02-18 — Phase 18 Plan 01 complete: Comment + Reaction models + migration applied to devcollab-postgres + PrismaService .comment/.reaction getters (df6188b)
 
-Progress: [████░░░░░░░░░░░░░░░░] ~25% (v2.0 phase 14-21, 11 plans complete across 17-03 plans)
+Progress: [████░░░░░░░░░░░░░░░░] ~27% (v2.0 phase 14-21, 12 plans complete across 18-01 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -119,6 +119,9 @@ Key decisions for v2.0:
 - [Phase 17]: [Phase 17 P05]: RBAC smoke test confirms default join role is Contributor — Viewer=403, Contributor=201 on snippet creation
 - [Phase 17]: [Phase 17 P05]: Next.js App Router server components must use next/headers cookies() for SSR auth cookie forwarding — credentials:'include' is browser-only and silently drops the cookie on server-side fetch (382b0c8)
 - [Phase 17]: [Phase 17 P05]: MarkdownRenderer must use unified+hast-util-to-html pipeline not react-markdown+async rehype plugin — react-markdown does not await async plugin transforms, causing Shiki output to be lost (382b0c8)
+- [Phase 18]: Comment self-relation uses onDelete: NoAction, onUpdate: NoAction on parentId FK — prevents cascade-delete of replies when parent soft-deleted (18-01)
+- [Phase 18]: Reaction uses two separate nullable FKs (postId, commentId) not polymorphic targetType/targetId — preserves real FK referential integrity (18-01)
+- [Phase 18]: prisma migrate diff --from-url + prisma migrate deploy pattern for non-interactive migration generation — consistent with Phase 17 approach (18-01)
 
 ### Pending Todos
 
@@ -140,6 +143,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Phase 17 complete — 17-05-PLAN.md Task 2 human-verify APPROVED
+Stopped at: Phase 18 Plan 01 complete — Comment + Reaction schema + migration + PrismaService getters (df6188b)
 Resume file: None
-Next action: Begin Phase 18 (Discussions + Reactions)
+Next action: Execute Phase 18 Plan 02 (CommentsService + CommentsController)

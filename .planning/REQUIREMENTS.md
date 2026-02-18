@@ -52,10 +52,10 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 ### Discussions & Reactions
 
-- [ ] **DISC-01**: User can comment on a snippet or post
-- [ ] **DISC-02**: User can reply to a comment (one level deep)
-- [ ] **DISC-03**: User can edit and delete own comment
-- [ ] **DISC-04**: User can react to a post or comment (👍 ❤️ +1 😄)
+- [x] **DISC-01**: User can comment on a snippet or post
+- [x] **DISC-02**: User can reply to a comment (one level deep)
+- [x] **DISC-03**: User can edit and delete own comment
+- [x] **DISC-04**: User can react to a post or comment (👍 ❤️ +1 😄)
 
 ### Notifications & Feed
 
@@ -144,10 +144,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POST-01 | Phase 17 | Complete |
 | POST-02 | Phase 17 | Complete |
 | POST-03 | Phase 17 | Complete |
-| DISC-01 | Phase 18 | Pending |
-| DISC-02 | Phase 18 | Pending |
-| DISC-03 | Phase 18 | Pending |
-| DISC-04 | Phase 18 | Pending |
+| DISC-01 | Phase 18 | Complete |
+| DISC-02 | Phase 18 | Complete |
+| DISC-03 | Phase 18 | Complete |
+| DISC-04 | Phase 18 | Complete |
 | NOTF-01 | Phase 19 | Pending |
 | NOTF-02 | Phase 19 | Pending |
 | NOTF-03 | Phase 19 | Pending |
