@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (1 of 4 plans complete) — Discussions + Reactions
+**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (2 of 4 plans complete) — Discussions + Reactions
 
 ## Current Position
 
 Phase: 18 of 21 (Discussions + Reactions)
-Plan: 1 of 4 in Phase 18 — COMPLETE (2026-02-18)
-Status: Phase 18 Plan 01 complete — Comment + Reaction schema migrated; PrismaService getters ready
-Last activity: 2026-02-18 — Phase 18 Plan 01 complete: Comment + Reaction models + migration applied to devcollab-postgres + PrismaService .comment/.reaction getters (df6188b)
+Plan: 2 of 4 in Phase 18 — COMPLETE (2026-02-18)
+Status: Phase 18 Plan 02 complete — CommentsModule + ReactionsModule wired into AppModule; all 5 discussion API endpoints active and guarded
+Last activity: 2026-02-18 — Phase 18 Plan 02 complete: CommentsService (flat+tree, owner-only update, soft/hard-delete) + ReactionsService (toggle + P2002) + AppModule wiring (71dd778)
 
 Progress: [████░░░░░░░░░░░░░░░░] ~27% (v2.0 phase 14-21, 12 plans complete across 18-01 plans)
 
@@ -48,6 +48,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 17 P03 | 2 | 2 tasks | 11 files |
 | Phase 17 P04 | 2 | 2 tasks | 6 files |
 | Phase 17 P05 | 6 | 2 tasks | 4 files |
+| Phase 18-discussions-reactions P02 | 4 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -122,6 +123,9 @@ Key decisions for v2.0:
 - [Phase 18]: Comment self-relation uses onDelete: NoAction, onUpdate: NoAction on parentId FK — prevents cascade-delete of replies when parent soft-deleted (18-01)
 - [Phase 18]: Reaction uses two separate nullable FKs (postId, commentId) not polymorphic targetType/targetId — preserves real FK referential integrity (18-01)
 - [Phase 18]: prisma migrate diff --from-url + prisma migrate deploy pattern for non-interactive migration generation — consistent with Phase 17 approach (18-01)
+- [Phase 18]: CommentsService.update is owner-only unconditionally — Admin role does NOT bypass ForbiddenException on comment edit
+- [Phase 18]: In-memory comment tree: flat Prisma findMany + Map loop assembly (max 2 DB queries); no recursive Prisma include
+- [Phase 18]: ReactionsService toggleReaction: findUnique first, delete if exists or create with P2002 catch for race condition idempotency
 
 ### Pending Todos
 
@@ -143,6 +147,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Phase 18 Plan 01 complete — Comment + Reaction schema + migration + PrismaService getters (df6188b)
+Stopped at: Phase 18 Plan 02 complete — CommentsModule + ReactionsModule + AppModule wiring (71dd778)
 Resume file: None
-Next action: Execute Phase 18 Plan 02 (CommentsService + CommentsController)
+Next action: Execute Phase 18 Plan 03 (frontend comment/reaction components)
