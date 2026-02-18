@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 16 of 21 (Workspaces Membership RBAC)
-Plan: 3 of 5 in Phase 16 — 16-03 COMPLETE
-Status: In progress — ready for 16-04
-Last activity: 2026-02-18 — 16-03 complete: WorkspacesService (create/invite/join/manage, last-admin protection), WorkspacesController (8 CASL-guarded endpoints), 3 DTOs, WorkspacesModule updated
+Plan: 4 of 5 in Phase 16 — 16-04 tasks complete; at checkpoint:human-verify
+Status: In progress — awaiting human verification of Phase 16 end-to-end
+Last activity: 2026-02-18 — 16-04: meta-test updated (13 tests pass), workspace UI pages created (/w/[slug], /join, /dashboard)
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (v2.0 phase 14-21, 7 plans complete)
 
@@ -44,6 +44,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 - Trend: Stable — infrastructure plans run fast with complete plan specs
 
 *Updated after each plan completion*
+| Phase 16 P04 | 90 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,8 @@ Key decisions for v2.0:
 - [Phase 16]: POST /workspaces/join declared before GET /workspaces/:slug — NestJS resolves routes top-to-bottom, static path segments must precede dynamic (16-03)
 - [Phase 16]: DTO properties use ! definite assignment assertion (name!, token!, role!) — matches project strict TS pattern from auth DTOs (16-03)
 - [Phase 16]: JwtPayload imported from current-user.decorator.ts in WorkspacesController — avoids local redefinition, single source of truth (16-03)
+- [Phase 16]: WorkspacesController added to ALL_CONTROLLERS in meta-test — 13 invariant tests pass including all 8 controller methods
+- [Phase 16]: Dashboard converted to client component; join page uses Suspense around useSearchParams; Next.js 15 async params awaited throughout
 
 ### Pending Todos
 
@@ -115,6 +118,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: 16-03 complete — WorkspacesService (all WORK-01 to WORK-05 requirements); WorkspacesController (8 CASL-guarded endpoints); 3 DTOs; WorkspacesModule updated; TypeScript clean
+Stopped at: 16-04 tasks 1-2 complete; stopped at checkpoint:human-verify for Phase 16 end-to-end verification
 Resume file: None
-Next action: Execute Phase 16 Plan 04
+Next action: Resume 16-04 after human verification (type "approved")
