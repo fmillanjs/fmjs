@@ -28,4 +28,12 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get inviteLink() {
     return this.client.inviteLink;
   }
+
+  get snippet() {
+    return this.client.snippet;
+  }
+
+  get post() {
+    return this.client.post;
+  }
 }
