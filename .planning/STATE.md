@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-02 complete)
+**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-03 complete)
 
 ## Current Position
 
 Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 3 of 5 in Phase 17
-Status: In progress — Plan 02 complete (SnippetsModule + PostsModule CRUD APIs, AppModule wired, meta-test 24 passing)
-Last activity: 2026-02-18 — Phase 17 Plan 02 complete: SnippetsController (5 endpoints), PostsController (6 endpoints), owner-scoped services, AppModule updated, meta-test expanded to 24 checks
+Plan: 4 of 5 in Phase 17
+Status: In progress — Plan 03 complete (Shiki singleton, SnippetCodeBlock server component, 4 snippet UI pages)
+Last activity: 2026-02-18 — Phase 17 Plan 03 complete: lib/shiki.ts singleton, CopyButton, SnippetCodeBlock, LanguageSelector, 4 snippet pages (list/new/detail/edit)
 
-Progress: [████░░░░░░░░░░░░░░░░] ~22% (v2.0 phase 14-21, 10 plans complete across 17-02 plans)
+Progress: [████░░░░░░░░░░░░░░░░] ~25% (v2.0 phase 14-21, 11 plans complete across 17-03 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -45,6 +45,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
 *Updated after each plan completion*
 | Phase 17 P02 | 2 | 2 tasks | 12 files |
+| Phase 17 P03 | 2 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,9 @@ Key decisions for v2.0:
 - [Phase 17]: PostsService setStatus sets publishedAt to new Date() when transitioning to Published, null when reverting to Draft (17-02)
 - [Phase 17]: PostsController PATCH :id/status declared after PATCH :id — NestJS resolves specific paths before dynamic when using distinct segments (17-02)
 - [Phase 17]: Meta-test expanded from 3 to 5 controllers; test count grows from 13 to 24 as each handler is checked individually (17-02)
+- [Phase 17]: getHighlighter exported from lib/shiki.ts so plan 17-04 rehype plugin can call codeToHtml directly with custom options
+- [Phase 17]: Shiki singleton pattern: module-level promise lazy-initialized, reused across all requests — createHighlighter called once per process
+- [Phase 17]: LanguageSelector imports SNIPPET_LANGUAGES from lib/shiki.ts — single source of truth for the 20-language list
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 17-02-PLAN.md — SnippetsModule, PostsModule CRUD APIs, AppModule wired, meta-test 24 passing
+Stopped at: Completed 17-03-PLAN.md — Shiki singleton, SnippetCodeBlock server component, 4 snippet pages (list/new/detail/edit)
 Resume file: None
-Next action: Start Phase 17 Plan 03 — frontend content creation UI
+Next action: Start Phase 17 Plan 04 — post editor with react-markdown rendering

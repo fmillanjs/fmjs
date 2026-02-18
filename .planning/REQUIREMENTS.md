@@ -40,7 +40,7 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 - [x] **SNIP-01**: User can create a code snippet (title, language, code body)
 - [x] **SNIP-02**: Snippet displays with Shiki syntax highlighting and language selector
-- [ ] **SNIP-03**: User can copy snippet code with a copy button
+- [x] **SNIP-03**: User can copy snippet code with a copy button
 - [x] **SNIP-04**: User can edit and delete own snippet
 - [x] **SNIP-05**: Each snippet has a shareable URL (GitHub Gist-style)
 
@@ -138,7 +138,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RBAC-04 | Phase 16 | Complete |
 | SNIP-01 | Phase 17 | Complete |
 | SNIP-02 | Phase 17 | Complete |
-| SNIP-03 | Phase 17 | Pending |
+| SNIP-03 | Phase 17 | Complete |
 | SNIP-04 | Phase 17 | Complete |
 | SNIP-05 | Phase 17 | Complete |
 | POST-01 | Phase 17 | Complete |
