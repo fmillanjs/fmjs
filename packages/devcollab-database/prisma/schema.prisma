@@ -16,11 +16,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  workspaceMemberships WorkspaceMember[]
-  snippets             Snippet[]
-  posts                Post[]
-  comments             Comment[]
-  reactions            Reaction[]
+  workspaceMemberships  WorkspaceMember[]
+  snippets              Snippet[]
+  posts                 Post[]
+  comments              Comment[]
+  reactions             Reaction[]
+  notificationsReceived Notification[] @relation("NotificationRecipient")
+  notificationsSent     Notification[] @relation("NotificationActor")
+  activityEvents        ActivityEvent[]
 
   @@index([email])
 }
@@ -38,10 +41,12 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members     WorkspaceMember[]
-  inviteLinks InviteLink[]
-  snippets    Snippet[]
-  posts       Post[]
+  members        WorkspaceMember[]
+  inviteLinks    InviteLink[]
+  snippets       Snippet[]
+  posts          Post[]
+  notifications  Notification[]
+  activityEvents ActivityEvent[]
 
   @@index([slug])
 }
@@ -139,7 +144,8 @@ model Comment {
   replies   Comment[] @relation("CommentReplies")
   post      Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
   snippet   Snippet?  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  reactions Reaction[]
+  reactions     Reaction[]
+  notifications Notification[]
 
   @@index([postId])
   @@index([snippetId])
@@ -167,4 +173,51 @@ model Reaction {
   @@index([postId])
   @@index([commentId])
   @@index([userId])
+}
+
+enum ActivityEventType {
+  MemberJoined
+  PostCreated
+  PostUpdated
+  SnippetCreated
+  SnippetUpdated
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String   @default("mention")
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  recipientId String
+  actorId     String
+  commentId   String?
+  workspaceId String
+
+  recipient   User      @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor       User      @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  comment     Comment?  @relation(fields: [commentId], references: [id], onDelete: SetNull)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([recipientId, actorId, commentId, type])
+  @@index([recipientId, read])
+  @@index([recipientId, createdAt])
+  @@index([workspaceId])
+}
+
+model ActivityEvent {
+  id          String            @id @default(cuid())
+  type        ActivityEventType
+  entityId    String
+  entityType  String
+  createdAt   DateTime          @default(now())
+
+  workspaceId String
+  actorId     String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor       User      @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([actorId])
 }
