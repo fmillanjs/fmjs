@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 20 (Full-Text Search) — COMPLETE
+**Current focus:** v2.0 DevCollab — Phase 21 (Seed Data + Portfolio Integration) — In Progress
 
 ## Current Position
 
-Phase: 20 of 21 (Full-Text Search) — COMPLETE
-Plan: 3 of 3 in Phase 20 — COMPLETE (2026-02-18)
-Status: Phase 20 Plan 03 complete — SearchModal + SearchResults frontend components + WorkspaceNav injection + human verification approved + prisma migration drift confirmed zero
-Last activity: 2026-02-18 — Phase 20 complete: Cmd+K search modal with debounced FTS, grouped results, ts_headline amber highlights, zero migration drift
+Phase: 21 of 21 (Seed Data + Portfolio Integration) — In Progress
+Plan: 1 of 3 in Phase 21 — COMPLETE (2026-02-18)
+Status: Phase 21 Plan 01 complete — deterministic seed script + Dockerfile.seed + devcollab-seed docker service registered
+Last activity: 2026-02-18 — Phase 21 Plan 01: faker.seed(42) seed script with 3 users, 5 snippets, 3 posts, idempotency guard, docker-compose devcollab-seed service
 
-Progress: [█████░░░░░░░░░░░░░░░] ~47% (v2.0 phase 14-21, 22 plans complete across 23 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~50% (v2.0 phase 14-21, 23 plans complete across 26 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -58,6 +58,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 20-full-text-search P01 | 3 | 2 tasks | 3 files |
 | Phase 20 P02 | 2 | 2 tasks | 6 files |
 | Phase 20 P03 | ~10 | 3 tasks (2 auto + 1 human-verify) | 3 files |
+| Phase 21 P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -156,6 +157,8 @@ Key decisions for v2.0:
 - [Phase 20-full-text-search]: [Phase 20-03]: SearchModal manages its own open/close state — WorkspaceNav simply mounts it; modal self-manages via Cmd+K keyboard events
 - [Phase 20-full-text-search]: [Phase 20-03]: mark tag highlight color amber (#fef3c7 / #92400e) via inline style tag in SearchModal — no purple per project rule
 - [Phase 20-full-text-search]: [Phase 20-03]: prisma migrate diff --from-schema-datasource used for x3 drift ritual — identical zero-drift verification when migrate dev is non-interactive
+- [Phase 21]: Separate Dockerfile.seed (not Dockerfile.migrate) needed — migrate image does not copy src/ required for relative import '../src/client'
+- [Phase 21]: devcollab-api depends on devcollab-seed:service_completed_successfully — ensures demo data exists before API starts
 
 ### Pending Todos
 

@@ -78,8 +78,8 @@ Requirements for v2.0 DevCollab milestone. Each maps to roadmap phases.
 
 ### Seed Data
 
-- [ ] **SEED-01**: Demo workspace exists on first launch with realistic content (deterministic faker seed)
-- [ ] **SEED-02**: Demo workspace demonstrates all three roles (Admin, Contributor, Viewer accounts)
+- [x] **SEED-01**: Demo workspace exists on first launch with realistic content (deterministic faker seed)
+- [x] **SEED-02**: Demo workspace demonstrates all three roles (Admin, Contributor, Viewer accounts)
 
 ## v3.0 Requirements (Deferred)
 
@@ -158,8 +158,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-01 | Phase 21 | Pending |
 | PORT-02 | Phase 21 | Pending |
 | PORT-03 | Phase 21 | Pending |
-| SEED-01 | Phase 21 | Pending |
-| SEED-02 | Phase 21 | Pending |
+| SEED-01 | Phase 21 | Complete |
+| SEED-02 | Phase 21 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 41 total
