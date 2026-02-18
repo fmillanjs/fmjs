@@ -52,4 +52,12 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get activityEvent() {
     return this.client.activityEvent;
   }
+
+  get $queryRaw() {
+    return this.client.$queryRaw.bind(this.client);
+  }
+
+  get $executeRaw() {
+    return this.client.$executeRaw.bind(this.client);
+  }
 }
