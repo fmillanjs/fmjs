@@ -6,14 +6,14 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-03 complete)
+**Current focus:** v2.0 DevCollab — Phase 17 in progress (Plans 01-04 complete)
 
 ## Current Position
 
 Phase: 17 of 21 (Content Creation — Snippets and Posts)
-Plan: 4 of 5 in Phase 17
-Status: In progress — Plan 03 complete (Shiki singleton, SnippetCodeBlock server component, 4 snippet UI pages)
-Last activity: 2026-02-18 — Phase 17 Plan 03 complete: lib/shiki.ts singleton, CopyButton, SnippetCodeBlock, LanguageSelector, 4 snippet pages (list/new/detail/edit)
+Plan: 5 of 5 in Phase 17
+Status: In progress — Plan 04 complete (PostEditor split-pane component, MarkdownRenderer server component with Shiki rehype plugin, 4 post UI pages)
+Last activity: 2026-02-18 — Phase 17 Plan 04 complete: PostEditor, MarkdownRenderer (Shiki server-side), posts list/new/detail/edit pages
 
 Progress: [████░░░░░░░░░░░░░░░░] ~25% (v2.0 phase 14-21, 11 plans complete across 17-03 plans)
 
@@ -46,6 +46,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 *Updated after each plan completion*
 | Phase 17 P02 | 2 | 2 tasks | 12 files |
 | Phase 17 P03 | 2 | 2 tasks | 11 files |
+| Phase 17 P04 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,9 @@ Key decisions for v2.0:
 - [Phase 17]: getHighlighter exported from lib/shiki.ts so plan 17-04 rehype plugin can call codeToHtml directly with custom options
 - [Phase 17]: Shiki singleton pattern: module-level promise lazy-initialized, reused across all requests — createHighlighter called once per process
 - [Phase 17]: LanguageSelector imports SNIPPET_LANGUAGES from lib/shiki.ts — single source of truth for the 20-language list
+- [Phase 17]: MarkdownRenderer is a Server Component (no 'use client') — async rehype plugin calls lib/shiki.ts getHighlighter() server-side for zero client JS code highlighting on published post views (17-04)
+- [Phase 17]: PostEditor uses react-syntax-highlighter (client) for live preview — intentional; hard Shiki criterion only applies to MarkdownRenderer on published post detail page (17-04)
+- [Phase 17]: New post creation uses two API calls: POST creates Draft, then PATCH /status to Published if Publish button clicked (17-04)
 
 ### Pending Todos
 
@@ -131,6 +135,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 17-03-PLAN.md — Shiki singleton, SnippetCodeBlock server component, 4 snippet pages (list/new/detail/edit)
+Stopped at: Completed 17-04-PLAN.md — PostEditor split-pane component, MarkdownRenderer server component with Shiki rehype plugin, 4 post UI pages (list/new/detail/edit)
 Resume file: None
-Next action: Start Phase 17 Plan 04 — post editor with react-markdown rendering
+Next action: Start Phase 17 Plan 05 — final plan in phase 17
