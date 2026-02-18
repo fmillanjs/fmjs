@@ -133,7 +133,12 @@ Plans:
   3. A user can edit their own comment (an "edited" timestamp appears) and delete it (content becomes "[deleted]" preserving thread structure); an Admin can hard-delete any comment
   4. A user can add a reaction (thumbs up, heart, +1, laugh) to a post or comment; reaction counts update without a full page reload; a second click on the same reaction removes it
   5. The total number of Prisma queries per thread fetch stays below 5 (flat model + in-memory tree assembly — no N+1 recursive include)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 18-01-PLAN.md — Prisma schema: Comment + Reaction models, back-refs on User/Post/Snippet, migration, PrismaService getters
+- [ ] 18-02-PLAN.md — NestJS CommentsModule + ReactionsModule (controllers, services, DTOs), AppModule wiring
+- [ ] 18-03-PLAN.md — Web components: CommentForm, CommentItem, ThreadedComments, ReactionBar
+- [ ] 18-04-PLAN.md — Wire components into post/snippet detail pages + human-verify checkpoint
 
 ### Phase 19: Notifications + Activity Feed
 **Goal**: Users are notified when mentioned by @name in comments; the workspace activity feed shows a reverse-chronological stream of workspace events; both surfaces use polling (not WebSockets)
@@ -190,7 +195,7 @@ Plans:
 | 15. Authentication System | v2.0 | Complete    | 2026-02-17 | - |
 | 16. Workspaces + Membership + RBAC | v2.0 | 4/4 | Complete | 2026-02-17 |
 | 17. Content Creation — Snippets + Posts | v2.0 | Complete    | 2026-02-18 | 2026-02-18 |
-| 18. Discussions + Reactions | v2.0 | 0/TBD | Not started | - |
+| 18. Discussions + Reactions | v2.0 | 0/4 | Planned | - |
 | 19. Notifications + Activity Feed | v2.0 | 0/TBD | Not started | - |
 | 20. Full-Text Search | v2.0 | 0/TBD | Not started | - |
 | 21. Seed Data + Portfolio Integration | v2.0 | 0/TBD | Not started | - |
