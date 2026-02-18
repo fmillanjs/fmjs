@@ -21,7 +21,13 @@ export class CommentsService {
 
     if (dto.parentId) {
       const parent = await this.prisma.comment.findFirst({
-        where: { id: dto.parentId, post: { workspaceId: workspace.id } },
+        where: {
+          id: dto.parentId,
+          OR: [
+            { post: { workspaceId: workspace.id } },
+            { snippet: { workspaceId: workspace.id } },
+          ],
+        },
         select: { id: true, parentId: true },
       });
       if (!parent) throw new NotFoundException('Parent comment not found');
