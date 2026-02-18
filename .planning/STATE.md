@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 18 IN PROGRESS (3 of 4 plans complete) — Discussions + Reactions
+**Current focus:** v2.0 DevCollab — Phase 18 COMPLETE (4 of 4 plans) — Discussions + Reactions — Next: Phase 19 Search
 
 ## Current Position
 
 Phase: 18 of 21 (Discussions + Reactions)
-Plan: 3 of 4 in Phase 18 — COMPLETE (2026-02-18)
-Status: Phase 18 Plan 03 complete — CommentForm, CommentItem, ThreadedComments, ReactionBar client components; all four compile cleanly; exported CommentNode type ready for Plan 04
-Last activity: 2026-02-18 — Phase 18 Plan 03 complete: 4 React client components for discussions and reactions (ff3cf7e)
+Plan: 4 of 4 in Phase 18 — COMPLETE (2026-02-18)
+Status: Phase 18 complete — Post/snippet detail pages wire ThreadedComments + ReactionBar; bug fix for snippet parent comment lookup (OR post/snippet workspaceId); all 11 human-verify steps approved
+Last activity: 2026-02-18 — Phase 18 Plan 04 complete: post/snippet detail pages wired with discussions + reactions; human-approved (4f65d4b)
 
-Progress: [████░░░░░░░░░░░░░░░░] ~27% (v2.0 phase 14-21, 12 plans complete across 18-01 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~30% (v2.0 phase 14-21, 13 plans complete across 18-04 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -50,6 +50,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 17 P05 | 6 | 2 tasks | 4 files |
 | Phase 18-discussions-reactions P02 | 4 | 2 tasks | 10 files |
 | Phase 18-discussions-reactions P03 | 2 | 2 tasks | 4 files |
+| Phase 18-discussions-reactions P04 | ~30 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Key decisions for v2.0:
 - [Phase 18]: ReactionsService toggleReaction: findUnique first, delete if exists or create with P2002 catch for race condition idempotency
 - [Phase 18]: Import path from CommentItem to ReactionBar is ../reaction/ReactionBar (one level up from discussion/) — plan had incorrect ../../reaction/ReactionBar
 - [Phase 18]: CommentNode interface exported from ThreadedComments.tsx — canonical export for Plan 04 detail pages
+- [Phase 18]: PostsService.findOne includes reactions (id, emoji, userId) — enables SSR to pass initialReactions to ReactionBar without extra client fetch (18-04)
+- [Phase 18]: CommentsService.create parent comment lookup uses OR: [{ post: { workspaceId } }, { snippet: { workspaceId } }] — plain post: { workspaceId } silently failed for snippet comments (18-04 bug fix)
 
 ### Pending Todos
 
@@ -150,6 +153,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 18-03-PLAN.md — CommentForm, CommentItem, ThreadedComments, ReactionBar (ff3cf7e)
+Stopped at: Completed 18-04-PLAN.md — post/snippet detail pages wired with ThreadedComments + ReactionBar; human-approved all 11 acceptance criteria (4f65d4b)
 Resume file: None
-Next action: Execute Phase 18 Plan 04 (wire ThreadedComments into post/snippet detail pages; e2e tests)
+Next action: Execute Phase 19 (Search)
