@@ -44,4 +44,12 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get reaction() {
     return this.client.reaction;
   }
+
+  get notification() {
+    return this.client.notification;
+  }
+
+  get activityEvent() {
+    return this.client.activityEvent;
+  }
 }

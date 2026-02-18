@@ -10,6 +10,10 @@ export type Subject =
   | 'Post'
   | 'Snippet'
   | 'Comment'
+  | 'Reaction'
+  | 'Notification'
+  | 'ActivityEvent'
+  | 'User'
   | 'all';
 
 export type AppAbility = MongoAbility<[Action, Subject]>;
@@ -56,6 +60,9 @@ export class WorkspaceAbilityFactory {
       cannot('manage', 'Workspace');
       cannot('manage', 'WorkspaceMember');
       cannot('create', 'InviteLink');
+      can('read', 'ActivityEvent');
+      can('read', 'Notification');
+      can('update', 'Notification');
       // Owner-only enforcement (authorId check) is in service layer — guard passes,
       // service fetches record and throws ForbiddenException if requester is not author
     } else if (membership.role === 'Viewer') {
