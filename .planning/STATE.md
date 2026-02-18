@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Prove senior full-stack engineering skills through a deployed, production-ready SaaS application that recruiters can actually use and interact with.
 
-**Current focus:** v2.0 DevCollab — Phase 19 IN PROGRESS (1 of 4 plans) — Notifications + Activity Feed
+**Current focus:** v2.0 DevCollab — Phase 19 IN PROGRESS (2 of 4 plans) — Notifications + Activity Feed
 
 ## Current Position
 
 Phase: 19 of 21 (Notifications + Activity Feed)
-Plan: 1 of 4 in Phase 19 — COMPLETE (2026-02-18)
-Status: Phase 19 Plan 01 complete — Notification + ActivityEvent Prisma models, migration applied to devcollab-postgres, PrismaService getters, CASL Subject union extended
-Last activity: 2026-02-18 — Phase 19 Plan 01 complete: schema + migration + PrismaService + CASL foundation (afc764a)
+Plan: 2 of 4 in Phase 19 — COMPLETE (2026-02-18)
+Status: Phase 19 Plan 02 complete — NotificationsModule + ActivityModule created, @mention notifications + ActivityEvent logging wired, meta-test expanded to 9 controllers
+Last activity: 2026-02-18 — Phase 19 Plan 02 complete: Notifications + Activity Feed backend fully implemented (3cec0f9)
 
-Progress: [█████░░░░░░░░░░░░░░░] ~32% (v2.0 phase 14-21, 14 plans complete across 19-01 plans)
+Progress: [█████░░░░░░░░░░░░░░░] ~34% (v2.0 phase 14-21, 15 plans complete across 19-02 plans)
 
 Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 
@@ -52,6 +52,7 @@ Previous milestones: v1.1 COMPLETE (16/16 requirements) | v1.0: complete
 | Phase 18-discussions-reactions P03 | 2 | 2 tasks | 4 files |
 | Phase 18-discussions-reactions P04 | ~30 | 2 tasks | 4 files |
 | Phase 19 P01 | 2 | 2 tasks | 4 files |
+| Phase 19 P02 | 2 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,9 @@ Key decisions for v2.0:
 - [Phase 19]: prisma migrate diff --from-url + direct psql apply + prisma migrate resolve --applied for non-interactive migration on live devcollab-postgres (19-01)
 - [Phase 19]: entityType on ActivityEvent is String not enum — stores Post/Snippet/User as plain string for future entity type flexibility (19-01)
 - [Phase 19]: CASL Subject union extended with Reaction and User (were missing before) + Notification and ActivityEvent — Contributor granted read/update Notification and read ActivityEvent (19-01)
+- [Phase 19]: JwtPayload imported from current-user.decorator.ts in NotificationsController — single source of truth
+- [Phase 19]: notifyMentions uses skipDuplicates:true in notification.createMany — prevents duplicate notifications on comment edits
+- [Phase 19]: ActivityService.findFeed returns workspaceSlug in response — enables frontend deep-links without secondary lookup
 
 ### Pending Todos
 
@@ -157,6 +161,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 19-01-PLAN.md — Notification + ActivityEvent schema, migration applied to devcollab-postgres, PrismaService getters, CASL Subject union extended (afc764a)
+Stopped at: Completed 19-02-PLAN.md — NotificationsModule + ActivityModule created, @mention notifications + ActivityEvent logging wired into CommentsService/WorkspacesService/PostsService/SnippetsService, meta-test expanded to 9 controllers 34 tests (3cec0f9)
 Resume file: None
-Next action: Execute Phase 19 Plan 02 (NestJS notification + activity-feed services)
+Next action: Execute Phase 19 Plan 03 (frontend notification bell + unread badge)
