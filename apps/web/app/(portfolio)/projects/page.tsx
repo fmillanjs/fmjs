@@ -20,6 +20,13 @@ export default function ProjectsPage() {
           href="/projects/teamflow"
           featured
         />
+        <ProjectCard
+          title="DevCollab"
+          description="A developer collaboration platform with code snippets, Markdown posts, full-text search, and role-based workspaces"
+          techStack={['Next.js', 'NestJS', 'TypeScript', 'PostgreSQL', 'Prisma', 'Tiptap', 'Shiki']}
+          href="/projects/devcollab"
+          featured
+        />
       </div>
     </div>
   );

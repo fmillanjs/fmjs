@@ -17,29 +17,27 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Featured Project
+              Featured Projects
             </h2>
             <p className="text-lg text-muted-foreground">
-              Real-time collaboration platform showcasing full-stack expertise
+              Two production-ready SaaS applications showcasing full-stack expertise
             </p>
           </div>
 
-          {/* TeamFlow Card */}
-          <div className="max-w-4xl mx-auto">
+          {/* Project Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            {/* TeamFlow Card */}
             <Link
               href="/projects/teamflow"
               className="block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow"
             >
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                    TeamFlow
-                  </h3>
-                  <p className="text-base text-muted-foreground">
-                    Production-Ready SaaS Collaboration Platform
-                  </p>
-                </div>
-                <Badge variant="default">Featured</Badge>
+              <div className="mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  TeamFlow
+                </h3>
+                <p className="text-base text-muted-foreground">
+                  Production-Ready SaaS Collaboration Platform
+                </p>
               </div>
 
               <p className="text-foreground mb-6 leading-relaxed">
@@ -59,6 +57,50 @@ export default function HomePage() {
                   'PostgreSQL',
                   'Prisma',
                   'Redis',
+                  'Docker',
+                  'Tailwind',
+                ].map((tech) => (
+                  <Badge key={tech} variant="secondary">
+                    {tech}
+                  </Badge>
+                ))}
+              </div>
+
+              <div className="text-primary font-medium hover:underline">
+                Read full case study →
+              </div>
+            </Link>
+
+            {/* DevCollab Card */}
+            <Link
+              href="/projects/devcollab"
+              className="block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow"
+            >
+              <div className="mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  DevCollab
+                </h3>
+                <p className="text-base text-muted-foreground">
+                  Developer Collaboration Platform
+                </p>
+              </div>
+
+              <p className="text-foreground mb-6 leading-relaxed">
+                A platform for developer teams combining code snippets with Shiki syntax
+                highlighting, Markdown posts with Tiptap editor, full-text search via
+                Postgres tsvector, threaded discussions, emoji reactions, and @mention
+                notifications.
+              </p>
+
+              {/* Tech Stack Badges */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {[
+                  'Next.js',
+                  'NestJS',
+                  'TypeScript',
+                  'PostgreSQL',
+                  'Tiptap',
+                  'Shiki',
                   'Docker',
                   'Tailwind',
                 ].map((tech) => (
