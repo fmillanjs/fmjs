@@ -12,9 +12,11 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private extractMentionedNames(content: string): string[] {
-    const matches = [...content.matchAll(/@(\w+)/g)];
-    return [...new Set(matches.map((m) => m[1]).filter((n): n is string => n !== undefined))];
+  private extractMentionedTerms(content: string): string[] {
+    // @"Full Name" for multi-word names, @Word as first-word shorthand
+    const quoted = [...content.matchAll(/@"([^"]+)"/g)].map((m) => m[1]);
+    const words = [...content.matchAll(/@(\w+)/g)].map((m) => m[1]);
+    return [...new Set([...quoted, ...words])].filter((n): n is string => !!n);
   }
 
   private async notifyMentions(
@@ -23,14 +25,23 @@ export class CommentsService {
     authorId: string,
     commentId: string,
   ): Promise<void> {
-    const names = this.extractMentionedNames(content);
-    if (names.length === 0) return;
+    const terms = this.extractMentionedTerms(content);
+    if (terms.length === 0) return;
 
-    // Resolve @names to workspace members — workspace-scoped to prevent cross-workspace mentions
+    // Resolve mention terms to workspace members (case-insensitive).
+    // Each term matches either an exact full name (@"Admin User") or any name
+    // whose first word matches (@Admin → "Admin User", "Admin Test").
     const mentioned = await this.prisma.user.findMany({
       where: {
-        name: { in: names },
-        workspaceMemberships: { some: { workspaceId } },
+        AND: [
+          { workspaceMemberships: { some: { workspaceId } } },
+          {
+            OR: terms.flatMap((t) => [
+              { name: { equals: t, mode: 'insensitive' as const } },
+              { name: { startsWith: `${t} `, mode: 'insensitive' as const } },
+            ]),
+          },
+        ],
       },
       select: { id: true },
     });
