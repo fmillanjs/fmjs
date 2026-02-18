@@ -180,7 +180,11 @@ Plans:
   2. The seed is deterministic: running the seed script twice produces identical content (fixed `faker.seed()` number); no duplicate entries are created on re-run
   3. Fernando's portfolio homepage displays a DevCollab project card alongside the TeamFlow card; the card includes a live demo link that opens DevCollab in the demo workspace
   4. A DevCollab case study page exists at `/projects/devcollab` with technology choices, architecture decisions, and lessons learned documented; the case study links to the live demo and source code
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 21-01-PLAN.md — Seed script (faker.seed(42), idempotent, 3 users + 5 snippets + 3 posts + activity events) + package.json seed script + docker-compose devcollab-seed service
+- [ ] 21-02-PLAN.md — Portfolio pages (DevCollab case study at /projects/devcollab, homepage card, projects listing card, login demo hints)
+- [ ] 21-03-PLAN.md — Seed verification against live devcollab-postgres + human-verify checkpoint for full recruiter flow
 
 ## Progress
 
