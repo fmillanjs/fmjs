@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import SnippetCodeBlock from '../../../../../components/snippet/SnippetCodeBlock';
+import ThreadedComments from '../../../../../components/discussion/ThreadedComments';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
@@ -14,12 +15,33 @@ async function getSnippet(slug: string, id: string) {
   return res.json();
 }
 
+async function getCurrentUser(token: string) {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    headers: { Cookie: `devcollab_token=${token}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.user as { sub: string; email: string };
+}
+
+async function getComments(slug: string, snippetId: string, token?: string) {
+  const res = await fetch(`${API_URL}/workspaces/${slug}/comments?snippetId=${snippetId}`, {
+    headers: token ? { Cookie: `devcollab_token=${token}` } : {},
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
 export default async function SnippetDetailPage({
   params,
 }: {
   params: Promise<{ slug: string; id: string }>;
 }) {
   const { slug, id } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('devcollab_token')?.value;
   const snippet = await getSnippet(slug, id);
 
   if (!snippet) {
@@ -30,6 +52,9 @@ export default async function SnippetDetailPage({
       </div>
     );
   }
+
+  const currentUser = token ? await getCurrentUser(token) : null;
+  const initialComments = await getComments(slug, snippet.id, token);
 
   return (
     <div style={{ padding: '2rem', maxWidth: '900px' }}>
@@ -57,6 +82,14 @@ export default async function SnippetDetailPage({
       </div>
 
       <SnippetCodeBlock code={snippet.code} lang={snippet.language} />
+      <div style={{ marginTop: '2rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem' }}>
+        <ThreadedComments
+          workspaceSlug={slug}
+          snippetId={snippet.id}
+          currentUserId={currentUser?.sub ?? ''}
+          initialComments={initialComments}
+        />
+      </div>
     </div>
   );
 }

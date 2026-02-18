@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
 import MarkdownRenderer from '../../../../../components/post/MarkdownRenderer';
+import ThreadedComments from '../../../../../components/discussion/ThreadedComments';
+import ReactionBar from '../../../../../components/reaction/ReactionBar';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
@@ -14,12 +16,33 @@ async function getPost(slug: string, id: string) {
   return res.json();
 }
 
+async function getCurrentUser(token: string) {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    headers: { Cookie: `devcollab_token=${token}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.user as { sub: string; email: string };
+}
+
+async function getComments(slug: string, postId: string, token?: string) {
+  const res = await fetch(`${API_URL}/workspaces/${slug}/comments?postId=${postId}`, {
+    headers: token ? { Cookie: `devcollab_token=${token}` } : {},
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
 export default async function PostDetailPage({
   params,
 }: {
   params: Promise<{ slug: string; id: string }>;
 }) {
   const { slug, id } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('devcollab_token')?.value;
   const post = await getPost(slug, id);
 
   if (!post) {
@@ -30,6 +53,9 @@ export default async function PostDetailPage({
       </div>
     );
   }
+
+  const currentUser = token ? await getCurrentUser(token) : null;
+  const initialComments = await getComments(slug, post.id, token);
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px' }}>
@@ -62,6 +88,22 @@ export default async function PostDetailPage({
       </div>
       <hr style={{ marginBottom: '1.5rem', borderColor: '#e5e7eb' }} />
       <MarkdownRenderer content={post.content} />
+      <div style={{ marginTop: '2rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem' }}>
+        <ReactionBar
+          postId={post.id}
+          initialReactions={post.reactions ?? []}
+          currentUserId={currentUser?.sub ?? ''}
+          workspaceSlug={slug}
+        />
+      </div>
+      <div style={{ marginTop: '2rem' }}>
+        <ThreadedComments
+          workspaceSlug={slug}
+          postId={post.id}
+          currentUserId={currentUser?.sub ?? ''}
+          initialComments={initialComments}
+        />
+      </div>
     </div>
   );
 }

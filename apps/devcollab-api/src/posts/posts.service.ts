@@ -50,7 +50,10 @@ export class PostsService {
         workspaceId: workspace.id,
         OR: [{ status: 'Published' }, { authorId: requesterId }],
       },
-      include: { author: { select: { id: true, name: true, email: true } } },
+      include: {
+        author: { select: { id: true, name: true, email: true } },
+        reactions: { select: { id: true, emoji: true, userId: true } },
+      },
     });
     if (!post) throw new NotFoundException('Post not found or not accessible');
     return post;
