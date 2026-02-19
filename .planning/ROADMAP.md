@@ -91,7 +91,13 @@ Plans:
   3. `lhci autorun` reports performance score ≥ 0.90 on all five portfolio URLs (`/`, `/projects`, `/projects/teamflow`, `/projects/devcollab`, `/contact`) — this is a hard gate; Phase 24 does not start until this passes
   4. The canvas animation does not start when OS Reduce Motion is active — the RAF loop is skipped entirely, verified by toggling OS accessibility setting
   5. After 10+ client-side navigations, Chrome Memory tab shows a stable heap with no growth — the RAF loop is fully canceled on component unmount
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — MatrixRainCanvas component + hero-section integration via next/dynamic (ANIM-02)
+- [ ] 23-02-PLAN.md — Install @lhci/cli + fix lighthouserc.json URL list to five required routes (ANIM-03)
+- [ ] 23-03-PLAN.md — Regenerate Playwright homepage snapshots + accessibility gate (ANIM-02)
+- [ ] 23-04-PLAN.md — Production build + lhci autorun performance gate (ANIM-03 hard gate)
 
 ### Phase 24: Scroll Animations + Entrance
 **Goal**: Section headings and project cards animate in as the visitor scrolls through every portfolio page, with the MotionConfig reduced-motion gate active globally — the portfolio feels alive but respects system accessibility preferences
@@ -144,6 +150,6 @@ Plans:
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
-| 23. Canvas Matrix Rain | v2.5 | 0/? | Not started | — |
+| 23. Canvas Matrix Rain | v2.5 | 0/4 | Not started | — |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
