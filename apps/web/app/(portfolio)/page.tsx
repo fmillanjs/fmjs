@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { AnimateIn } from '@/components/portfolio/animate-in';
 import { StaggerContainer, StaggerItem } from '@/components/portfolio/stagger-container';
+import { EvervaultCard } from '@/components/portfolio/evervault-card';
 
 export const metadata: Metadata = {
   title: 'Fernando Millan - Full-Stack Engineer',
@@ -36,44 +37,46 @@ export default function HomePage() {
               href="/projects/teamflow"
               className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
             >
-              <div className="mb-6">
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  TeamFlow
-                </h3>
-                <p className="text-base text-muted-foreground">
-                  Production-Ready SaaS Collaboration Platform
+              <EvervaultCard className="min-h-full">
+                <div className="mb-6">
+                  <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                    TeamFlow
+                  </h3>
+                  <p className="text-base text-muted-foreground">
+                    Production-Ready SaaS Collaboration Platform
+                  </p>
+                </div>
+
+                <p className="text-foreground mb-6 leading-relaxed">
+                  A comprehensive team collaboration platform featuring real-time updates,
+                  role-based access control, task management with Kanban/List views,
+                  WebSocket-powered presence indicators, and complete audit logging.
+                  Built with Next.js 15, NestJS, PostgreSQL, Redis, and deployed with Docker.
                 </p>
-              </div>
 
-              <p className="text-foreground mb-6 leading-relaxed">
-                A comprehensive team collaboration platform featuring real-time updates,
-                role-based access control, task management with Kanban/List views,
-                WebSocket-powered presence indicators, and complete audit logging.
-                Built with Next.js 15, NestJS, PostgreSQL, Redis, and deployed with Docker.
-              </p>
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {[
+                    'Next.js',
+                    'NestJS',
+                    'TypeScript',
+                    'WebSocket',
+                    'PostgreSQL',
+                    'Prisma',
+                    'Redis',
+                    'Docker',
+                    'Tailwind',
+                  ].map((tech) => (
+                    <Badge key={tech} variant="secondary">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
 
-              {/* Tech Stack Badges */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {[
-                  'Next.js',
-                  'NestJS',
-                  'TypeScript',
-                  'WebSocket',
-                  'PostgreSQL',
-                  'Prisma',
-                  'Redis',
-                  'Docker',
-                  'Tailwind',
-                ].map((tech) => (
-                  <Badge key={tech} variant="secondary">
-                    {tech}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="text-primary font-medium hover:underline">
-                Read full case study →
-              </div>
+                <div className="text-primary font-medium hover:underline">
+                  Read full case study →
+                </div>
+              </EvervaultCard>
             </Link>
             </StaggerItem>
 
@@ -83,43 +86,45 @@ export default function HomePage() {
               href="/projects/devcollab"
               className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
             >
-              <div className="mb-6">
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  DevCollab
-                </h3>
-                <p className="text-base text-muted-foreground">
-                  Developer Collaboration Platform
+              <EvervaultCard className="min-h-full">
+                <div className="mb-6">
+                  <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                    DevCollab
+                  </h3>
+                  <p className="text-base text-muted-foreground">
+                    Developer Collaboration Platform
+                  </p>
+                </div>
+
+                <p className="text-foreground mb-6 leading-relaxed">
+                  A platform for developer teams combining code snippets with Shiki syntax
+                  highlighting, Markdown posts with Tiptap editor, full-text search via
+                  Postgres tsvector, threaded discussions, emoji reactions, and @mention
+                  notifications.
                 </p>
-              </div>
 
-              <p className="text-foreground mb-6 leading-relaxed">
-                A platform for developer teams combining code snippets with Shiki syntax
-                highlighting, Markdown posts with Tiptap editor, full-text search via
-                Postgres tsvector, threaded discussions, emoji reactions, and @mention
-                notifications.
-              </p>
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {[
+                    'Next.js',
+                    'NestJS',
+                    'TypeScript',
+                    'PostgreSQL',
+                    'Tiptap',
+                    'Shiki',
+                    'Docker',
+                    'Tailwind',
+                  ].map((tech) => (
+                    <Badge key={tech} variant="secondary">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
 
-              {/* Tech Stack Badges */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {[
-                  'Next.js',
-                  'NestJS',
-                  'TypeScript',
-                  'PostgreSQL',
-                  'Tiptap',
-                  'Shiki',
-                  'Docker',
-                  'Tailwind',
-                ].map((tech) => (
-                  <Badge key={tech} variant="secondary">
-                    {tech}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="text-primary font-medium hover:underline">
-                Read full case study →
-              </div>
+                <div className="text-primary font-medium hover:underline">
+                  Read full case study →
+                </div>
+              </EvervaultCard>
             </Link>
             </StaggerItem>
           </StaggerContainer>
