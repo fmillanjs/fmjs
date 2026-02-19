@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 25: Personality Effects — IN PROGRESS (3/4 plans done)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 25: Personality Effects — COMPLETE (4/4 plans done)
 
 ## Current Position
 
-Phase: 25 — Personality Effects — IN PROGRESS
-Plan: 25-03 of 25-04 — COMPLETE
-Status: Phase 25 plan 03 (FX-04 dot-grid spotlight) complete — DotGridSpotlight component + CSS + portfolio layout integration
-Last activity: 2026-02-19 — 25-03 (FX-04 dot-grid: CSS custom properties cursor tracking, zero re-renders, commits f65e0ae + 908899e)
+Phase: 25 — Personality Effects — COMPLETE
+Plan: 25-04 of 25-04 — COMPLETE
+Status: Phase 25 complete — all four plans done: FX-01 scramble, FX-02 research, FX-03 Evervault card, FX-04 dot-grid spotlight, quality gate verified
+Last activity: 2026-02-19 — 25-04 (quality gate: lhci 0.99-1.00 on all 5 URLs, human approved SC-1 through SC-5)
 
-Progress: [████████████████████] 77% — v2.5 Phase 25 IN PROGRESS; 25-01 (FX-01) + 25-02 (FX-03) + 25-03 (FX-04) done, 25-04 remaining
+Progress: [████████████████████] 82% — v2.5 Phase 25 COMPLETE; all 12 v2.5 requirements confirmed done (FX-01, FX-03, FX-04 human-verified)
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -40,6 +40,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 25-personality-effects P01 | a3609ab | 2 tasks | 3 files |
 | Phase 25-personality-effects P02 | a956a1c | 2 tasks | 2 files |
 | Phase 25-personality-effects P03 | 908899e | 2 tasks | 3 files |
+| Phase 25-personality-effects P04 | 190f5db | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 25-03]: opacity: 0.08 for dot-grid overlay — maximum subtlety, atmospheric depth not distracting
 - [Phase 25-03]: any-hover: hover CSS guard (not pointer: fine) — correctly enables spotlight on hybrid laptop+touch devices
 - [Phase 25-03]: Initial --cursor-x: -9999px positions spotlight off-screen before first mousemove event
+- [Phase 25-04]: Quality gate plan pattern — final plan in phase runs lhci autorun (automated) + human-verify checkpoint; both must pass before phase is marked complete
+- [Phase 25-04]: Phase 25 human verification approved on first attempt — SC-1 through SC-5 all confirmed without rework
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -112,6 +115,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 25-03-PLAN.md — FX-04 dot-grid spotlight implemented and committed
+Stopped at: Completed 25-04-PLAN.md — Phase 25 quality gate passed, all SC human-verified
 Resume file: None
-Next action: Phase 25 plan 04 (final plan in phase — review, polish, or additional effects)
+Next action: Phase 26 (deployment) or as per ROADMAP

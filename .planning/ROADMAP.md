@@ -60,7 +60,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 - [x] **Phase 22: Token Foundation** — CSS token system, animation packages, pure-CSS effects, reduced-motion foundation
 - [x] **Phase 23: Canvas Matrix Rain** — Hero digital rain canvas, isolated Lighthouse validation
 - [x] **Phase 24: Scroll Animations + Entrance** — Motion provider, scroll-reveal animations across all portfolio pages (completed 2026-02-19)
-- [ ] **Phase 25: Personality Effects** — Text scramble, Evervault card hover, dot grid + spotlight cursor
+- [x] **Phase 25: Personality Effects** — Text scramble, Evervault card hover, dot grid + spotlight cursor (completed 2026-02-19)
 
 ## Phase Details
 
@@ -163,4 +163,4 @@ Plans:
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | 3/3 | Complete    | 2026-02-19 | — |
-| 25. Personality Effects | 3/4 | In Progress|  | — |
+| 25. Personality Effects | 4/4 | Complete   | 2026-02-19 | — |
