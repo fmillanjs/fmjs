@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 02 complete (@lhci/cli installed, lighthouserc.json fixed to ANIM-03 spec)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 03 complete (homepage snapshots regenerated with canvas baseline, axe-core accessibility gate passed)
 
 ## Current Position
 
 Phase: 23 — Canvas + RAF (In Progress)
-Plan: 02 of 04 complete
-Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 done (@lhci/cli + lighthouserc.json), 23-03 next
-Last activity: 2026-02-19 — 23-02 (@lhci/cli installed in apps/web, lighthouserc.json corrected to five ANIM-03 URLs: /, /projects, /projects/teamflow, /projects/devcollab, /contact)
+Plan: 03 of 04 complete
+Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 done (@lhci/cli + lighthouserc.json), 23-03 done (snapshots regenerated + a11y gate passed), 23-04 next
+Last activity: 2026-02-18 — 23-03 (homepage visual regression snapshots regenerated with canvas layer baseline; axe-core confirmed canvas aria-hidden passes cleanly)
 
-Progress: [██████████░░░░░░░░░░] 33% — v2.5 Phase 23 in progress (2/4 plans), ANIM-02 + ANIM-03 infra complete
+Progress: [███████████████░░░░░] 50% — v2.5 Phase 23 in progress (3/4 plans), ANIM-02 + ANIM-03 infra + snapshot baseline complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -31,6 +31,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
+| Phase 23-canvas-matrix-rain P03 | 1 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -51,6 +52,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 23-01]: hero-section.tsx converted to 'use client' — Next.js 15 blocks dynamic(ssr:false) from Server Components (#72236)
 - [Phase 23-02]: @lhci/cli scoped to apps/web devDependencies only — Lighthouse CI is a portfolio web concern, not a monorepo root concern
 - [Phase 23-02]: lighthouserc.json URL list corrected to ANIM-03 spec: /about and /login replaced with /projects/devcollab and /contact
+- [Phase 23-03]: Pre-existing axe violations (button-name on theme toggle, color-contrast on nav links) accepted as out-of-scope — canvas aria-hidden passes cleanly; use --grep flag to limit Playwright snapshot regeneration to targeted test names only
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -81,7 +83,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 23-02-PLAN.md — @lhci/cli installed in apps/web, lighthouserc.json corrected to ANIM-03 spec (five portfolio URLs + minScore 0.9)
+Last session: 2026-02-18
+Stopped at: Completed 23-03-PLAN.md — homepage visual regression snapshots regenerated with canvas layer baseline; axe-core accessibility gate confirmed passing (canvas aria-hidden="true" zero violations)
 Resume file: None
-Next action: Phase 23 Plan 03 — canvas RAF prefers-reduced-motion gate + dot-grid background
+Next action: Phase 23 Plan 04 — production build + lhci autorun performance gate (ANIM-03 hard gate)
