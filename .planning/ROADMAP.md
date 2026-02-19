@@ -165,7 +165,7 @@ Plans:
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | 3/3 | Complete    | 2026-02-19 | — |
 | 25. Personality Effects | 4/4 | Complete    | 2026-02-19 | — |
-| 26. Navigation Redesign | 2/2 | Complete   | 2026-02-19 | — |
+| 26. Navigation Redesign | 2/2 | Complete    | 2026-02-19 | — |
 
 ### Phase 26: Navigation Redesign — Awwwards-style horizontal nav with Matrix personality
 
