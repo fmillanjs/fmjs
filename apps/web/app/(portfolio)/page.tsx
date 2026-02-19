@@ -29,7 +29,7 @@ export default function HomePage() {
             {/* TeamFlow Card */}
             <Link
               href="/projects/teamflow"
-              className="block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow"
+              className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
             >
               <div className="mb-6">
                 <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
@@ -74,7 +74,7 @@ export default function HomePage() {
             {/* DevCollab Card */}
             <Link
               href="/projects/devcollab"
-              className="block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent hover:shadow-xl transition-shadow"
+              className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
             >
               <div className="mb-6">
                 <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">

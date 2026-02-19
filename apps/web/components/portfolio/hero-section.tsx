@@ -12,7 +12,7 @@ export function HeroSection() {
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
+        <p className="cursor-blink text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
           Specializing in Next.js, NestJS, TypeScript, and real-time collaboration systems.
           I build scalable, production-ready applications with clean architecture and type safety.
         </p>

@@ -142,6 +142,32 @@
   animation: slide-in-up 0.3s ease-out;
 }
 
+/* FX-02: Blinking terminal cursor after hero tagline */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "_";
+  display: inline-block;
+  margin-left: 1px;
+  animation: cursor-blink 1s steps(2, start) infinite;
+  color: var(--matrix-green);
+}
+
+/* UX-01: Matrix green border glow on project card hover */
+.card-glow-hover {
+  transition: box-shadow 0.2s ease;
+}
+
+.card-glow-hover:hover {
+  box-shadow:
+    0 0 0 1px var(--matrix-green),
+    0 0 20px 0 var(--matrix-green-ghost),
+    0 4px 24px 0 rgba(0, 255, 65, 0.15);
+}
+
 /* THEME-04: Stop all animations when OS Reduce Motion is active */
 /* Phase 22 portion — covers CSS animations/transitions globally */
 /* Canvas RAF check (Phase 23) and MotionConfig (Phase 24) handle JS animation layers */

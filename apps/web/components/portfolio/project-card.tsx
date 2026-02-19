@@ -12,8 +12,8 @@ interface ProjectCardProps {
 
 export function ProjectCard({ title, description, techStack, href, featured }: ProjectCardProps) {
   return (
-    <Link href={href} className="block group">
-      <Card className="transition-shadow hover:shadow-lg h-full">
+    <Link href={href} className="card-glow-hover block group">
+      <Card className="h-full">
         <CardHeader>
           {featured && (
             <Badge variant="default" className="w-fit mb-2">Featured</Badge>
