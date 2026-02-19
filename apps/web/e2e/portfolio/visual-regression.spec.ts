@@ -16,6 +16,7 @@ const portfolioRoutes = [
 test.describe('Portfolio Visual Regression - Light Mode', () => {
   for (const { name, path } of portfolioRoutes) {
     test(name, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(path)
       await page.waitForLoadState('networkidle')
       await expect(page).toHaveScreenshot(`${name}-light.png`, {
@@ -29,6 +30,7 @@ test.describe('Portfolio Visual Regression - Light Mode', () => {
 test.describe('Portfolio Visual Regression - Dark Mode', () => {
   for (const { name, path } of portfolioRoutes) {
     test(name, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       // Set dark mode in localStorage BEFORE navigation so next-themes initializes
       // in dark mode — ensures CSS variables resolve correctly on first render.
       // Consistent with accessibility tests dark mode approach.
