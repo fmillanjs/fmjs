@@ -182,6 +182,38 @@ html:not(.dark) .matrix-theme {
     0 4px 24px 0 rgba(0, 255, 65, 0.15);
 }
 
+/* FX-04: Dot grid background + green spotlight cursor */
+/* Hidden entirely on touch / coarse-pointer / no-hover devices via @media guard */
+/* On hover-capable devices: dot grid is always visible; spotlight follows mouse */
+@media (any-hover: hover) {
+  .dot-grid-spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 0;           /* behind content layers (content uses z-10+) */
+    pointer-events: none; /* NEVER block clicks — mandatory */
+    /* Three-layer background:
+       1. Green radial spotlight at cursor position
+       2+3. Offset dot grid (two patterns create a denser grid by offset) */
+    background-image:
+      radial-gradient(
+        circle 250px at var(--cursor-x, -9999px) var(--cursor-y, -9999px),
+        var(--matrix-green-ghost),
+        transparent 80%
+      ),
+      radial-gradient(circle, var(--matrix-green-dim) 1px, transparent 1px),
+      radial-gradient(circle, var(--matrix-green-dim) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      28px 28px,
+      28px 28px;
+    background-position:
+      0 0,
+      0 0,
+      14px 14px;   /* offset second pattern by half-step for denser grid */
+    opacity: 0.08; /* subtle — visible but not distracting; content remains primary focus */
+  }
+}
+
 /* THEME-04: Stop all animations when OS Reduce Motion is active */
 /* Phase 22 portion — covers CSS animations/transitions globally */
 /* Canvas RAF check (Phase 23) and MotionConfig (Phase 24) handle JS animation layers */
