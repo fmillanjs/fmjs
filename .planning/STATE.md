@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 22: Token Foundation COMPLETE — next: Phase 23 (Canvas + RAF)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 01 complete (MatrixRainCanvas + hero integration)
 
 ## Current Position
 
-Phase: 22 — Token Foundation COMPLETE
-Plan: 04 of 04 complete
-Status: Phase complete — ready for Phase 23
-Last activity: 2026-02-18 — 22-04 (Gap Closure: activate .matrix-theme CSS) executed: THEME-01 dark-first portfolio rendering fully active, REQUIREMENTS.md traceability updated
+Phase: 23 — Canvas + RAF (In Progress)
+Plan: 01 of 04 complete
+Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 next
+Last activity: 2026-02-19 — 23-01 (MatrixRainCanvas + hero integration) executed: ANIM-02 falling matrix rain behind hero content, SSR-safe via next/dynamic ssr:false
 
-Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 22 complete (4/4 plans), Phase 23 next
+Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 23 in progress (1/4 plans), ANIM-02 complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,9 +26,10 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 6/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01 complete) |
-| Total shipped | 85/91 |
+| v2.5 requirements | 7/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02 complete) |
+| Total shipped | 86/91 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
+| Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -45,6 +46,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - **22-03:** No new reduced-motion CSS needed — Plan 01 block covers cursor-blink::after via animation-duration: 0.01ms
 - **22-03:** Removed hover:shadow-xl transition-shadow from inline cards and transition-shadow hover:shadow-lg from ProjectCard — card-glow-hover replaces both
 - [Phase 22]: 22-04: .matrix-theme uses raw hex literals (#0a0a0a bg, #e8e8e8 fg) — var(--background) resolves to light values outside .dark context
+- [Phase 23-01]: CSS opacity 0.05 on canvas element (not ctx.globalAlpha) — composites entire frame at 5% so trail effect works correctly
+- [Phase 23-01]: hero-section.tsx converted to 'use client' — Next.js 15 blocks dynamic(ssr:false) from Server Components (#72236)
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -75,7 +78,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 22-04-PLAN.md — Gap Closure: .matrix-theme CSS activated (THEME-01 dark-first rendering fully active)
+Last session: 2026-02-19
+Stopped at: Completed 23-01-PLAN.md — MatrixRainCanvas component + hero integration (ANIM-02 complete)
 Resume file: None
-Next action: Begin Phase 23 (Canvas + RAF) — dot grid background + reduced-motion RAF check
+Next action: Phase 23 Plan 02 — canvas dot-grid background component

@@ -150,6 +150,6 @@ Plans:
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
-| 23. Canvas Matrix Rain | v2.5 | 0/4 | Not started | — |
+| 23. Canvas Matrix Rain | 1/4 | In Progress|  | — |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
