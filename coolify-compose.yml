@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  devcollab-postgres:
+    image: postgres:16-alpine
+    container_name: devcollab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DEVCOLLAB_POSTGRES_USER:-devcollab}
+      POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DEVCOLLAB_POSTGRES_DB:-devcollab}
+    volumes:
+      - devcollab-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DEVCOLLAB_POSTGRES_USER:-devcollab}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-migrate:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/devcollab-migrate:latest
+    restart: "no"
+    depends_on:
+      devcollab-postgres:
+        condition: service_healthy
+    environment:
+      DEVCOLLAB_DATABASE_URL: ${DEVCOLLAB_DATABASE_URL}
+
+  devcollab-api:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/devcollab-api:latest
+    container_name: devcollab-api
+    restart: unless-stopped
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DEVCOLLAB_DATABASE_URL: ${DEVCOLLAB_DATABASE_URL}
+      DEVCOLLAB_JWT_SECRET: ${DEVCOLLAB_JWT_SECRET}
+      DEVCOLLAB_WEB_URL: ${DEVCOLLAB_WEB_URL}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-web:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/devcollab-web:latest
+    container_name: devcollab-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  devcollab-pgdata:
+
+networks:
+  default:
+    name: devcollab-network
