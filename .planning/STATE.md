@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 22 — Token Foundation
-Plan: —
-Status: Not started
-Last activity: 2026-02-18 — v2.5 roadmap created (4 phases, 12 requirements mapped)
+Plan: 02 of 03 complete
+Status: In progress
+Last activity: 2026-02-19 — 22-02 (Animation Libraries) executed: motion@12.34.2, gsap@3.14.2, @gsap/react@2.1.2, lenis@1.3.17 installed workspace-scoped to apps/web
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% — v2.5 Phase 22 ready to plan
+Progress: [████░░░░░░░░░░░░░░░░] 18% — v2.5 Phase 22 Plan 02/03 complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,14 +26,19 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 0/12 |
-| Total shipped | 79/91 |
+| v2.5 requirements | 4/12 (THEME-01, THEME-02, THEME-03, THEME-04 complete) |
+| Total shipped | 83/91 |
 
 ## Accumulated Context
 
 ### Decisions
 
-All decisions logged in PROJECT.md Key Decisions table.
+- **22-01:** Matrix tokens in :root (not @theme) — raw CSS vars consumed as var(--matrix-green), not Tailwind utility tokens
+- **22-01:** matrix-theme first class on portfolio layout div — no CSS rules attached in Phase 22 (dormant selector hook)
+- **22-01:** THEME-04 layered: CSS global rule (Phase 22), RAF check (Phase 23), MotionConfig (Phase 24)
+- **22-02:** Use motion (NOT framer-motion) — import path is motion/react in all downstream phases
+- **22-02:** Lenis installed but not initialized — activation deferred to Phase 26 (ANIM-06) with "use client" wrapper
+- **22-02:** Animation packages as runtime dependencies (not devDependencies) — used in client components at runtime
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -64,7 +69,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: v2.5 roadmap created. Phase 22 ready to plan.
+Last session: 2026-02-19
+Stopped at: Completed 22-01-PLAN.md — Token Foundation Plan 01 (tokens + reduced-motion + matrix-theme class)
 Resume file: None
-Next action: `/gsd:plan-phase 22` to plan and execute Token Foundation
+Next action: Execute 22-02 (npm package installs) and 22-03 (pure CSS effects) to complete Phase 22

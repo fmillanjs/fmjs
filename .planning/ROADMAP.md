@@ -77,7 +77,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 **Plans**: 3 plans
 
 Plans:
-- [ ] 22-01-PLAN.md — CSS tokens + reduced-motion rule + dormant `.matrix-theme` class on portfolio layout
+- [x] 22-01-PLAN.md — CSS tokens + reduced-motion rule + dormant `.matrix-theme` class on portfolio layout (complete 2026-02-19)
 - [ ] 22-02-PLAN.md — Install motion, gsap, @gsap/react, lenis workspace-scoped to apps/web
 - [ ] 22-03-PLAN.md — FX-02 blinking cursor + UX-01 card glow + Playwright snapshot update
 
@@ -143,7 +143,7 @@ Plans:
 | 19. Notifications + Activity Feed | v2.0 | 4/4 | Complete | 2026-02-18 |
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
-| 22. Token Foundation | v2.5 | 0/3 | Planned | — |
+| 22. Token Foundation | v2.5 | 1/3 | In progress | — |
 | 23. Canvas Matrix Rain | v2.5 | 0/? | Not started | — |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
