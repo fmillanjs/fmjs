@@ -2,23 +2,11 @@
 
 ## What This Is
 
-A professional portfolio showcasing two production-quality SaaS applications built by Fernando Millan: **TeamFlow** (work management with real-time collaboration, RBAC, and audit logging) and **DevCollab** (a developer collaboration platform with GitHub-style code snippets, Markdown posts, threaded discussions, notifications, full-text search, and workspace RBAC). Both applications live in a Turborepo monorepo with separate databases, separate auth systems, and shared CI/CD infrastructure. The portfolio presents both apps with live demos, case studies, and source code — targeting senior full-stack developer hiring managers.
+A professional portfolio showcasing two production-quality SaaS applications built by Fernando Millan: **TeamFlow** (work management with real-time collaboration, RBAC, and audit logging) and **DevCollab** (a developer collaboration platform with GitHub-style code snippets, Markdown posts, threaded discussions, notifications, full-text search, and workspace RBAC). Both applications live in a Turborepo monorepo with separate databases, separate auth systems, and shared CI/CD infrastructure. The portfolio presents both apps with live demos, case studies, and source code — wrapped in a Matrix-inspired dark aesthetic with scroll-reveal animations, canvas digital rain, mouse spotlight effects, and Awwwards-quality navigation — targeting senior full-stack developer hiring managers.
 
 ## Core Value
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-
-## Current Milestone: v2.5 Matrix Portfolio Overhaul
-
-**Goal:** Transform the portfolio website into a dark, Matrix-inspired experience with scroll animations, mouse-reactive effects, and green glow aesthetics — making it memorable while conveying senior engineering craft.
-
-**Target features:**
-- Dark-first theme across full portfolio site (Matrix green `#00FF41` family on dark backgrounds)
-- Hero section restructured with dramatic terminal/code-rain concept
-- Scroll-triggered reveal animations throughout all pages
-- Mouse-reactive effects (parallax, magnetic buttons, cursor glow)
-- Card micro-interactions (glow on hover, lift effects)
-- Shifting gradient / aurora backgrounds with green glow accent system
 
 ## Requirements
 
@@ -58,24 +46,29 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 - ✓ Seed data (demo workspace with all three roles, deterministic faker.seed(42)) — v2.0
 - ✓ Portfolio site: DevCollab project card, case study at /projects/devcollab, live demo link — v2.0
 
+**v2.5 (Matrix Portfolio Overhaul):**
+- ✓ Dark-first Matrix theme scoped to portfolio routes via `.matrix-theme` class — v2.5 (THEME-01, THEME-02)
+- ✓ Animation packages (motion v12, gsap, @gsap/react, lenis) installed workspace-scoped — v2.5 (THEME-03)
+- ✓ Full reduced-motion gate: CSS global rule + RAF check + MotionConfig — v2.5 (THEME-04)
+- ✓ Hero Matrix digital rain canvas (30fps, aria-hidden, memory-safe, SSR-safe) — v2.5 (ANIM-02)
+- ✓ Lighthouse CI ≥ 0.90 on all five portfolio URLs after canvas added — v2.5 (ANIM-03)
+- ✓ Scroll-reveal animations across all portfolio pages (fade + slide-up, stagger on cards) — v2.5 (ANIM-01)
+- ✓ Hero text scramble effect (fires once on load, hand-rolled RAF hook) — v2.5 (FX-01)
+- ✓ Blinking terminal cursor after hero tagline via pure CSS ::after — v2.5 (FX-02)
+- ✓ Evervault-style noise decryption on project card hover — v2.5 (FX-03)
+- ✓ Dot-grid background + mouse spotlight (any-hover guard, no touch artifacts) — v2.5 (FX-04)
+- ✓ Matrix green border glow on project card hover — v2.5 (UX-01)
+- ✓ Awwwards-style nav with Motion layoutId active indicator + sliding hover underline — v2.5 (UX-04)
+
 ### Active
 
-**v2.5 Requirements (Portfolio Redesign — Matrix Aesthetic):**
-- [ ] Dark-first theme across full portfolio site (Matrix green on dark, replacing current light theme)
-- [ ] Hero section restructured with dramatic terminal/code-rain first impression
-- [ ] Scroll-triggered reveal animations on all major sections
-- [ ] Mouse-reactive effects (parallax layers, magnetic buttons, cursor glow)
-- [ ] Card hover micro-interactions (glow, lift, green border reveal)
-- [ ] Shifting gradient / aurora backgrounds with Matrix green glow
-- [ ] Green accent system integrated with existing Radix/Shadcn component library
-
-**v3.0 Requirements (Future — Deployment):**
+**v3.0 Requirements (Deployment):**
 - [ ] DevCollab deployed to Coolify (custom domain, HTTPS, env vars locked)
 - [ ] TeamFlow deployed to Coolify (custom domain, HTTPS, env vars locked)
 - [ ] NEXT_PUBLIC_API_URL set correctly in Coolify deployment for devcollab-web
 - [ ] Real resume PDF at /resume.pdf
 
-**v3.0 Requirements (Future — Tech Debt Closure):**
+**v3.0 Requirements (Tech Debt Closure):**
 - [ ] Invite link UI: Admin can generate invite links through the browser (currently API-only)
 - [ ] Member management UI: Admin can view/promote/demote workspace members via UI (currently API-only)
 - [ ] Dashboard auth guard: /dashboard page redirects unauthenticated users to /login (currently shows empty state)
@@ -94,16 +87,25 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 | Voice/video channels | Out of DevCollab scope |
 | Meilisearch | Postgres tsvector sufficient at portfolio scale; no extra Docker service needed |
 | Multi-tenant billing | Not applicable to portfolio demo |
+| Full-screen Matrix rain at readable opacity | Content becomes unreadable; vestibular accessibility violation |
+| Looping typewriter cycling role titles | Overused since 2019; hiring managers flagged as junior red flag |
+| Loading screen or splash animation | Mandatory wait causes tab closes from recruiters |
+| p5.js or three.js for rain effect | 9MB / 600KB — destroys Lighthouse score |
+| Purple in any design element | User requirement, all milestones |
+| ANIM-04/05/06 entrance animations + GSAP parallax + Lenis | Deferred to v3.0+ after v2.5 shipped without them |
+| UX-02/03 magnetic buttons + stat counters | Deferred to v3.0+ |
 
 ## Context
 
 **Purpose:** Job hunting for senior full-stack developer roles. Need an impressive, interactive demo showcasing production-level thinking and execution.
 
-**Current state:** v2.0 shipped 2026-02-18. Both TeamFlow and DevCollab are feature-complete locally. DevCollab: ~8,288 LOC TypeScript/TSX. Not yet deployed to production (Coolify deployment is v3.0 scope).
+**Current state:** v2.5 shipped 2026-02-19. Both TeamFlow and DevCollab are feature-complete locally with a Matrix-inspired portfolio presentation. Portfolio: ~15,726 TypeScript/TSX LOC (apps/web). Not yet deployed to production (Coolify deployment is v3.0 scope).
 
 **Tech stack (TeamFlow):** Next.js 15 + NestJS 11 + Prisma + Postgres + NextAuth v5 + Socket.io + Radix UI + Shadcn UI + Tailwind v4 + dnd-kit + TanStack Table + Playwright + Vitest
 
 **Tech stack (DevCollab):** Next.js 15 + NestJS 11 + Prisma + Postgres (separate DB, port 5435) + CASL + Shiki + Tiptap v3 + Vitest
+
+**Tech stack (Portfolio UI):** motion v12, gsap + @gsap/react, lenis (installed, not yet activated for smooth scroll), @lhci/cli
 
 **Deployment status:** Docker infrastructure ready for both apps. CI/CD pipeline builds and pushes all 4 images (teamflow-web, teamflow-api, devcollab-web, devcollab-api) to GHCR on push to main. Coolify deployment not yet configured.
 
@@ -139,7 +141,18 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 | Flat comment model + in-memory tree assembly | <5 Prisma queries per thread fetch, no N+1 | ✓ Good — scalable at demo scale |
 | faker.seed(42) deterministic seed | Identical content on every seed run, no duplicates on re-run | ✓ Good — idempotency verified in Phase 21-03 |
 | Login redirect to /w/devcollab-demo post-auth | Recruiter lands directly in seeded workspace without navigation | ✓ Good — zero friction demo experience |
+| Matrix tokens in :root (not @theme) | Raw CSS vars consumed as var(--matrix-green), not Tailwind utility tokens | ✓ Good — additive, no Tailwind cascade conflict |
+| .matrix-theme CSS class on portfolio layout div | Scoped dark-first theming without touching html/body or dashboard routes | ✓ Good — clean cascade, zero dashboard side effects |
+| motion (NOT framer-motion) import from motion/react | Required for React 19 + Next.js 15 compatibility | ✓ Good — no peer dep issues |
+| Hero canvas loaded via next/dynamic(ssr:false) from 'use client' wrapper | Next.js 15 regression #72236 blocks dynamic(ssr:false) from Server Components | ✓ Good — SSR-safe, hydration-clean |
+| CSS opacity 0.05 on canvas element (not ctx.globalAlpha) | Composites entire frame at 5% so trail effect works correctly | ✓ Good — visual correctness preserved |
+| THEME-04 three-layer reduced-motion implementation | CSS rule (Phase 22) + RAF check (Phase 23) + MotionConfig (Phase 24) | ✓ Good — comprehensive, no animation leaks |
+| Hand-rolled useTextScramble RAF hook (not use-scramble package) | Avoids React 19 peer dep uncertainty; ~50 lines, zero risk | ✓ Good — no dependency issues |
+| EvervaultCard noise overlay uses pointer-events-none | Prevents click interception on project card links | ✓ Good — card links still work |
+| any-hover: hover CSS guard for spotlight (not pointer: fine) | Correctly enables spotlight on hybrid laptop+touch devices | ✓ Good — no touch artifacts |
+| No LayoutGroup wrapper for nav active indicator | Only one nav in DOM, layoutId resolves within same tree | ✓ Good — simpler, correct |
+| lhci startServerCommand uses node .next/standalone/apps/web/server.js | next start returns 500 on output:standalone builds | ✓ Good — lhci runs correctly on production build |
 | Coolify deployment deferred to v3.0 | DevCollab feature-complete locally; Coolify per-service webhook behavior for second app needs hands-on iteration | — Pending v3.0 |
 
 ---
-*Last updated: 2026-02-18 after v2.5 milestone started — Matrix Portfolio Overhaul*
+*Last updated: 2026-02-19 after v2.5 milestone — Matrix Portfolio Overhaul shipped*

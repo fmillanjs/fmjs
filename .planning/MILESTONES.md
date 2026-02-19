@@ -48,3 +48,25 @@
 **Requirements satisfied:** 16/16 (FOUND-01–03, COLOR-01–04, COMP-01–05, MIG-01–04)
 
 ---
+
+## v2.5 Matrix Portfolio Overhaul (Shipped: 2026-02-19)
+
+**Phases:** 22–26 (5 phases, 17 plans)
+**Timeline:** 2026-02-18 → 2026-02-19 (~2 days)
+**Files changed:** 109 files, 67 commits
+**Current LOC:** ~15,726 TypeScript/TSX (apps/web)
+**Git range:** `1169803` → `eb4005b`
+
+**Key accomplishments:**
+- Matrix green CSS token system (`--matrix-green: #00FF41`, `--matrix-green-dim`, `--matrix-green-ghost`) added to `:root` with `.matrix-theme` scoped to portfolio layout wrapper — dark-first `#0a0a0a` background activated without touching dashboard routes
+- Hero `MatrixRainCanvas` component (30fps RAF, `aria-hidden`, `next/dynamic ssr:false`) passing Lighthouse CI ≥ 0.90 on all five portfolio URLs — memory-safe via `cancelAnimationFrame` on unmount
+- Motion v12 scroll-reveal (`AnimateIn`, `StaggerContainer`, `StaggerItem`) applied across all portfolio pages with `MotionConfig reducedMotion="user"` gate — zero hydration warnings, animations fire exactly once per page visit
+- Personality effects: hand-rolled `useTextScramble` RAF hook (no new dependency), Evervault card noise-decryption hover (motion/react mask-image + `useMotionTemplate`), dot-grid + mouse spotlight (`any-hover: hover` guard, CSS custom property cursor tracking)
+- Awwwards-style navigation with Motion `layoutId` active indicator, sliding Matrix-green hover underline, refined Awwwards typography — Playwright 10/10 + lhci 1.0 on all 5 URLs, human SC-1–SC-5 approved
+
+**Requirements satisfied:** 13/13 (THEME-01–04, ANIM-01–03, FX-01–04, UX-01, UX-04)
+
+**Archive:** `.planning/milestones/v2.5-ROADMAP.md`, `.planning/milestones/v2.5-REQUIREMENTS.md`
+
+---
+
