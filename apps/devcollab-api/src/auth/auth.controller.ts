@@ -46,7 +46,12 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('devcollab_token', { httpOnly: true, sameSite: 'strict' });
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('devcollab_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'strict',
+    });
     return { message: 'Logged out' };
   }
 
@@ -57,10 +62,11 @@ export class AuthController {
   }
 
   private setAuthCookie(res: Response, token: string): void {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('devcollab_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
