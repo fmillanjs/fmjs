@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError } from '.prisma/devcollab-client/runtime/library';
 import { PrismaService } from '../core/database/prisma.service';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto';
 
