@@ -71,4 +71,4 @@ EXPOSE 4000
 
 ENV PORT=4000
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma db push --schema=./packages/database/prisma/schema.prisma --skip-generate && node dist/main.js"]

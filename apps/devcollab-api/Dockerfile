@@ -32,4 +32,4 @@ COPY --from=builder --chown=nestjs:nestjs /app/packages ./packages
 USER nestjs
 EXPOSE 3003
 ENV PORT=3003
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy --schema=./packages/devcollab-database/prisma/schema.prisma && node dist/main.js"]
