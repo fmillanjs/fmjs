@@ -74,7 +74,12 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
   3. Project card border glows Matrix green (`box-shadow` with `--matrix-green`) when the cursor hovers over it
   4. A blinking `_` cursor appears after the hero tagline with no JavaScript — visible in the DOM as a CSS `::after` pseudo-element
   5. All existing Playwright visual regression snapshots pass unchanged — Matrix CSS tokens are defined in `:root` but the `.matrix-theme` class is not yet applied, so no visual diff occurs; OS Reduce Motion toggled ON produces a fully static page (no animations fire, canvas RAF does not start)
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 22-01-PLAN.md — CSS tokens + reduced-motion rule + dormant `.matrix-theme` class on portfolio layout
+- [ ] 22-02-PLAN.md — Install motion, gsap, @gsap/react, lenis workspace-scoped to apps/web
+- [ ] 22-03-PLAN.md — FX-02 blinking cursor + UX-01 card glow + Playwright snapshot update
 
 ### Phase 23: Canvas Matrix Rain
 **Goal**: The hero section has a functioning Matrix digital rain canvas that passes the Lighthouse CI performance gate on all five portfolio URLs — proving canvas does not degrade site performance before any animation library is layered on top
@@ -138,7 +143,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 | 19. Notifications + Activity Feed | v2.0 | 4/4 | Complete | 2026-02-18 |
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
-| 22. Token Foundation | v2.5 | 0/? | Not started | — |
+| 22. Token Foundation | v2.5 | 0/3 | Planned | — |
 | 23. Canvas Matrix Rain | v2.5 | 0/? | Not started | — |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
