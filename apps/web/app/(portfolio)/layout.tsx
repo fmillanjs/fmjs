@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PortfolioNav } from '@/components/portfolio/nav';
 import { PortfolioFooter } from '@/components/portfolio/footer';
 import { CommandPalette } from '@/components/ui/command-palette';
+import { MotionProvider } from '@/components/portfolio/motion-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -19,7 +20,7 @@ export default function PortfolioLayout({
   return (
     <div className="matrix-theme min-h-screen flex flex-col">
       <PortfolioNav />
-      <main className="flex-1">{children}</main>
+      <MotionProvider><main className="flex-1">{children}</main></MotionProvider>
       <PortfolioFooter />
       <CommandPalette />
     </div>
