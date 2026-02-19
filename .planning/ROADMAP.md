@@ -58,7 +58,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 ### v2.5 Matrix Portfolio Overhaul
 
 - [x] **Phase 22: Token Foundation** — CSS token system, animation packages, pure-CSS effects, reduced-motion foundation
-- [ ] **Phase 23: Canvas Matrix Rain** — Hero digital rain canvas, isolated Lighthouse validation
+- [x] **Phase 23: Canvas Matrix Rain** — Hero digital rain canvas, isolated Lighthouse validation
 - [ ] **Phase 24: Scroll Animations + Entrance** — Motion provider, scroll-reveal animations across all portfolio pages
 - [ ] **Phase 25: Personality Effects** — Text scramble, Evervault card hover, dot grid + spotlight cursor
 
@@ -97,7 +97,7 @@ Plans:
 - [x] 23-01-PLAN.md — MatrixRainCanvas component + hero-section integration via next/dynamic (ANIM-02) (complete 2026-02-18)
 - [x] 23-02-PLAN.md — Install @lhci/cli + fix lighthouserc.json URL list to five required routes (ANIM-03) (complete 2026-02-19)
 - [x] 23-03-PLAN.md — Regenerate Playwright homepage snapshots + accessibility gate (ANIM-02) (complete 2026-02-18)
-- [ ] 23-04-PLAN.md — Production build + lhci autorun performance gate (ANIM-03 hard gate)
+- [x] 23-04-PLAN.md — Production build + lhci autorun performance gate (ANIM-03 hard gate) (complete 2026-02-19)
 
 ### Phase 24: Scroll Animations + Entrance
 **Goal**: Section headings and project cards animate in as the visitor scrolls through every portfolio page, with the MotionConfig reduced-motion gate active globally — the portfolio feels alive but respects system accessibility preferences
@@ -150,6 +150,6 @@ Plans:
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
-| 23. Canvas Matrix Rain | 3/4 | In Progress|  | — |
+| 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |

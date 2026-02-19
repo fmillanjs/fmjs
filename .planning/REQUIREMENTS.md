@@ -87,4 +87,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-18*
-*Last updated: 2026-02-18 — THEME-01 visual activation complete via 22-04 (infrastructure: 22-01)*
+*Last updated: 2026-02-19 — ANIM-03 verified: lhci autorun passed on all five portfolio URLs (23-04); Phase 23 complete*

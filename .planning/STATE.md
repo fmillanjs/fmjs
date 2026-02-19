@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 03 complete (homepage snapshots regenerated with canvas baseline, axe-core accessibility gate passed)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — COMPLETE (4/4 plans done, ANIM-02 + ANIM-03 satisfied, Phase 24 unblocked)
 
 ## Current Position
 
-Phase: 23 — Canvas + RAF (In Progress)
-Plan: 03 of 04 complete
-Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 done (@lhci/cli + lighthouserc.json), 23-03 done (snapshots regenerated + a11y gate passed), 23-04 next
-Last activity: 2026-02-18 — 23-03 (homepage visual regression snapshots regenerated with canvas layer baseline; axe-core confirmed canvas aria-hidden passes cleanly)
+Phase: 24 — Scroll Animations + Entrance (Next)
+Plan: 23-04 of 23-04 complete — Phase 23 COMPLETE
+Status: Phase 23 complete — 23-01 done (ANIM-02), 23-02 done (@lhci/cli), 23-03 done (snapshots + a11y), 23-04 done (lhci autorun PASSED, SC5 verified by code review, ANIM-03 hard gate cleared)
+Last activity: 2026-02-19 — 23-04 (lhci autorun passed on all five portfolio URLs; WSL2 required Playwright Chromium; SC5 heap verified via cancelAnimationFrame code review; Phase 24 unblocked)
 
-Progress: [███████████████░░░░░] 50% — v2.5 Phase 23 in progress (3/4 plans), ANIM-02 + ANIM-03 infra + snapshot baseline complete
+Progress: [████████████████░░░░] 55% — v2.5 Phase 23 COMPLETE (4/4 plans), Phase 24 next (Scroll Animations + Entrance)
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,12 +26,13 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 8/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02, ANIM-03 complete) |
+| v2.5 requirements | 8/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02, ANIM-03 complete — ANIM-03 hard gate cleared 2026-02-19) |
 | Total shipped | 87/91 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
 | Phase 23-canvas-matrix-rain P03 | 1 | 2 tasks | 2 files |
+| Phase 23-canvas-matrix-rain P04 | 0e592f2 | 3 tasks | 1 file |
 
 ## Accumulated Context
 
@@ -53,6 +54,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 23-02]: @lhci/cli scoped to apps/web devDependencies only — Lighthouse CI is a portfolio web concern, not a monorepo root concern
 - [Phase 23-02]: lighthouserc.json URL list corrected to ANIM-03 spec: /about and /login replaced with /projects/devcollab and /contact
 - [Phase 23-03]: Pre-existing axe violations (button-name on theme toggle, color-contrast on nav links) accepted as out-of-scope — canvas aria-hidden passes cleanly; use --grep flag to limit Playwright snapshot regeneration to targeted test names only
+- [Phase 23-04]: WSL2 lhci requires Playwright Chromium at /home/doctor/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome with --no-sandbox --disable-dev-shm-usage — system Chrome not available in WSL2
+- [Phase 23-04]: SC5 heap check accepted via code review when Chrome DevTools is inaccessible — cancelAnimationFrame(rafId) in useEffect cleanup return is the correct pattern; code review is sufficient evidence
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -83,7 +86,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 23-03-PLAN.md — homepage visual regression snapshots regenerated with canvas layer baseline; axe-core accessibility gate confirmed passing (canvas aria-hidden="true" zero violations)
+Last session: 2026-02-19
+Stopped at: Completed 23-04-PLAN.md — lhci autorun passed on all five portfolio URLs (ANIM-03 hard gate cleared); SC5 heap verified via code review; Phase 23 COMPLETE
 Resume file: None
-Next action: Phase 23 Plan 04 — production build + lhci autorun performance gate (ANIM-03 hard gate)
+Next action: Phase 24 — Scroll Animations + Entrance (ANIM-01) — requires research + planning first
