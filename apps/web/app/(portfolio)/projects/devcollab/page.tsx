@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CaseStudySection } from '@/components/portfolio/case-study-section';
+import { AnimateIn } from '@/components/portfolio/animate-in';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
 
@@ -22,7 +23,7 @@ export default function DevCollabCaseStudy() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-4xl">
       {/* Header */}
-      <div className="mb-12">
+      <AnimateIn className="mb-12">
         <Link
           href="/projects"
           className="inline-flex items-center text-primary underline hover:no-underline mb-6"
@@ -72,7 +73,7 @@ export default function DevCollabCaseStudy() {
             </a>
           </Button>
         </div>
-      </div>
+      </AnimateIn>
 
       {/* Overview */}
       <CaseStudySection title="Overview">
