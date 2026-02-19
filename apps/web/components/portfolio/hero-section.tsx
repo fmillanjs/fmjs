@@ -1,10 +1,19 @@
+'use client'
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import dynamic from 'next/dynamic';
+
+const MatrixRainCanvas = dynamic(
+  () => import('./matrix-rain-canvas'),
+  { ssr: false }
+)
 
 export function HeroSection() {
   return (
     <section className="relative bg-gradient-to-b from-background to-muted/30 py-24 md:py-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <MatrixRainCanvas />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
           <span className="block mb-2">Fernando Millan</span>
           <span className="block text-primary">
