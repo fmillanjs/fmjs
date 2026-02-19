@@ -1,8 +1,8 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm run start",
-      "startServerReadyPattern": "ready",
+      "startServerCommand": "node .next/standalone/apps/web/server.js",
+      "startServerReadyPattern": "Ready",
       "startServerReadyTimeout": 30000,
       "chromePath": "/home/doctor/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
       "settings": {
