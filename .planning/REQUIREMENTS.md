@@ -67,7 +67,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | Phase 22 | Complete (22-01) |
+| THEME-01 | Phase 22 | Complete (22-01 + 22-04) |
 | THEME-02 | Phase 22 | Complete (22-01) |
 | THEME-03 | Phase 22 | Complete |
 | THEME-04 | Phase 22 | Complete (22-01, CSS layer) |
@@ -87,4 +87,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-18*
-*Last updated: 2026-02-19 — THEME-01, THEME-02, THEME-04 complete via 22-01*
+*Last updated: 2026-02-18 — THEME-01 visual activation complete via 22-04 (infrastructure: 22-01)*
