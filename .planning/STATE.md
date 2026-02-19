@@ -74,6 +74,10 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 25-01]: Non-breaking space (\\u00A0) fallback in ScrambleHero prevents layout collapse when display is empty string on first frame
 - [Phase 25-01]: aria-label={text} on scramble span — screen readers announce real name, not noise characters
 - [Phase 25-01]: ScrambleHero not wrapped in next/dynamic — already inside 'use client' HeroSection loaded via dynamic(ssr:false)
+- [Phase 25-02]: EvervaultCard noise overlay uses pointer-events-none — prevents click interception on project card links
+- [Phase 25-02]: useMotionValue + useMotionTemplate for mask-image updates outside React render cycle — no re-render per mousemove for gradient position
+- [Phase 25-02]: EvervaultCard wraps inner card content, not Link wrapper — preserves card-glow-hover behavior on the Link element
+- [Phase 25-02]: page.tsx remains a Server Component; RSC can import and render Client Components without 'use client'
 - [Phase 25-03]: opacity: 0.08 for dot-grid overlay — maximum subtlety, atmospheric depth not distracting
 - [Phase 25-03]: any-hover: hover CSS guard (not pointer: fine) — correctly enables spotlight on hybrid laptop+touch devices
 - [Phase 25-03]: Initial --cursor-x: -9999px positions spotlight off-screen before first mousemove event
