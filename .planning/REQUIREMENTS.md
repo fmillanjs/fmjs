@@ -67,24 +67,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | — | Pending |
-| THEME-02 | — | Pending |
-| THEME-03 | — | Pending |
-| THEME-04 | — | Pending |
-| ANIM-01 | — | Pending |
-| ANIM-02 | — | Pending |
-| ANIM-03 | — | Pending |
-| FX-01 | — | Pending |
-| FX-02 | — | Pending |
-| FX-03 | — | Pending |
-| FX-04 | — | Pending |
-| UX-01 | — | Pending |
+| THEME-01 | Phase 22 | Pending |
+| THEME-02 | Phase 22 | Pending |
+| THEME-03 | Phase 22 | Pending |
+| THEME-04 | Phase 22 | Pending |
+| FX-02 | Phase 22 | Pending |
+| UX-01 | Phase 22 | Pending |
+| ANIM-02 | Phase 23 | Pending |
+| ANIM-03 | Phase 23 | Pending |
+| ANIM-01 | Phase 24 | Pending |
+| FX-01 | Phase 25 | Pending |
+| FX-03 | Phase 25 | Pending |
+| FX-04 | Phase 25 | Pending |
 
 **Coverage:**
 - v2.5 requirements: 12 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 12 ⚠️
+- Mapped to phases: 12 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-18*
-*Last updated: 2026-02-18 after initial definition*
+*Last updated: 2026-02-18 — traceability populated by roadmap creation*
