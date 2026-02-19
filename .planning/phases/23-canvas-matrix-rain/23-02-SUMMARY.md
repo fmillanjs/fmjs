@@ -64,7 +64,7 @@ Each task was committed atomically:
 1. **Task 1: Install @lhci/cli devDependency in apps/web** - `bed5c88` (chore)
 2. **Task 2: Fix lighthouserc.json URL list to Phase 23 spec** - `9a6b854` (chore)
 
-**Plan metadata:** (docs commit pending)
+**Plan metadata:** `21d26e2` (docs: complete Lighthouse CI setup plan)
 
 ## Files Created/Modified
 - `apps/web/package.json` - Added @lhci/cli ^0.15.1 to devDependencies
@@ -91,6 +91,15 @@ None - no external service configuration required.
 - `lhci autorun` can now be run after `npm run build` and `npm run start` to validate performance scores
 - ANIM-03 gate requires all five URLs to score >= 0.90 on performance before Phase 24 starts
 - Phase 23 Plan 03 is next — canvas animation RAF prefers-reduced-motion gate
+
+## Self-Check: PASSED
+
+- apps/web/package.json: FOUND
+- apps/web/lighthouserc.json: FOUND
+- 23-02-SUMMARY.md: FOUND
+- Commit bed5c88 (Task 1 — @lhci/cli install): FOUND
+- Commit 9a6b854 (Task 2 — lighthouserc.json fix): FOUND
+- Commit 21d26e2 (metadata): FOUND
 
 ---
 *Phase: 23-canvas-matrix-rain*
