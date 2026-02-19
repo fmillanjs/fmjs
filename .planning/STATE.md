@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — IN PROGRESS (2/3 plans done, animations wired into all 5 portfolio routes)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — AWAITING HUMAN VERIFY (3/3 plans: Task 1 done, checkpoint pending at Task 2)
 
 ## Current Position
 
 Phase: 24 — Scroll Animations + Entrance
-Plan: 24-02 of 24-03 complete
-Status: 24-02 done (AnimateIn + StaggerContainer applied to all 5 portfolio routes; headings fade+slide-up, project cards stagger in)
-Last activity: 2026-02-19 — 24-02 (animated homepage, projects, teamflow, devcollab, contact pages; CaseStudySection h2 animated via shared component)
+Plan: 24-03 of 24-03 — Task 1 complete, stopped at checkpoint:human-verify (Task 2)
+Status: 24-03 Task 1 done (visual regression test updated with reducedMotion emulation; 12 baselines regenerated; build clean); awaiting human visual verification of 5 success criteria
+Last activity: 2026-02-19 — 24-03 (emulateMedia reducedMotion added; snapshots regenerated; all 13 playwright tests pass)
 
-Progress: [█████████████████░░░] 62% — v2.5 Phase 24 IN PROGRESS (2/3 plans), all route animations active
+Progress: [█████████████████░░░] 65% — v2.5 Phase 24 checkpoint:human-verify pending (all automation complete)
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -35,6 +35,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 23-canvas-matrix-rain P04 | 0e592f2 | 3 tasks | 1 file |
 | Phase 24-scroll-animations-entrance P01 | a0cc624 | 3 tasks | 4 files |
 | Phase 24 P02 | 3 | 3 tasks | 6 files |
+| Phase 24-scroll-animations-entrance P03 | 5 | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 24-01]: StaggerItem uses variants prop only (no initial/whileInView) — inherits animation state from StaggerContainer parent via motion variant propagation
 - [Phase 24]: Modified CaseStudySection at shared component level — h2 AnimateIn covers all case study routes without touching individual page files
 - [Phase 24]: All portfolio page files remain Server Components — AnimateIn/StaggerContainer 'use client' boundary stays inside those components
+- [Phase 24-03]: emulateMedia({ reducedMotion: 'reduce' }) before page.goto() in visual regression tests — captures final state, not mid-animation state, for deterministic baselines
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -94,6 +96,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 24-02-PLAN.md — AnimateIn applied to all 5 portfolio routes; StaggerContainer on home + projects card grids; ANIM-01 fully wired into pages
+Stopped at: 24-03-PLAN.md Task 2 — checkpoint:human-verify — Task 1 done (reducedMotion emulation added to visual regression tests, baselines regenerated, build clean); human must verify 5 SC in browser at http://localhost:3000
 Resume file: None
-Next action: Phase 24 Plan 03 — remaining scroll animation tasks
+Next action: After human approves checkpoint, Phase 24 is complete. Next: Phase 25 (FX-01 text scramble + FX-04 spotlight cursor)
