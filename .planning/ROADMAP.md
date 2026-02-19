@@ -109,7 +109,12 @@ Plans:
   3. With OS Reduce Motion toggled ON, all scroll animations are completely disabled — elements appear at their final state immediately with no transition, verified by scrolling through the full page
   4. Zero hydration warnings appear in the browser console on first page load for any portfolio route — verified in Chrome DevTools Console with React strict mode active
   5. Navigating between portfolio pages three or more times does not cause animations to replay incorrectly or trigger multiple times — each section animates exactly once per page visit
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Animation primitives: MotionProvider + AnimateIn + StaggerContainer/StaggerItem + layout wire
+- [ ] 24-02-PLAN.md — Apply animations across all portfolio pages (/, /projects, case studies, /contact)
+- [ ] 24-03-PLAN.md — Visual regression snapshot regen + production build + human verification checkpoint
 
 ### Phase 25: Personality Effects
 **Goal**: The hero name scrambles from noise to readable text on load, project cards reveal a noise-decryption effect on hover, and a green spotlight follows the mouse cursor over a dot-grid background — the portfolio has a distinct "serious engineer with craft" personality that is memorable without being distracting
@@ -151,5 +156,5 @@ Plans:
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
-| 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
+| 24. Scroll Animations + Entrance | v2.5 | 0/3 | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
