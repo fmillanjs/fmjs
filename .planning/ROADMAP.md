@@ -126,7 +126,13 @@ Plans:
   3. A green spotlight circle follows the mouse cursor across portfolio pages and illuminates the dot-grid background beneath it — the effect tracks cursor position in real time without visible lag
   4. On a touch device (or any device where `pointer: coarse` or `any-hover: none` applies), the spotlight cursor effect is completely absent — no visual artifact, no broken layout
   5. Lighthouse CI performance score remains ≥ 0.90 on all five portfolio URLs after Phase 25 ships — verifiable by running `lhci autorun` after all effects are in place
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — FX-01: useTextScramble hook + ScrambleHero component + hero-section integration (Wave 1)
+- [ ] 25-02-PLAN.md — FX-03: EvervaultCard component + home page project card integration (Wave 1)
+- [ ] 25-03-PLAN.md — FX-04: DotGridSpotlight component + globals.css + portfolio layout integration (Wave 1)
+- [ ] 25-04-PLAN.md — Lighthouse CI gate + human verification of all 5 success criteria (Wave 2)
 
 ## Progress
 
