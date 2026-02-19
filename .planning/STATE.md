@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 01 complete (MatrixRainCanvas + hero integration)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — Plan 02 complete (@lhci/cli installed, lighthouserc.json fixed to ANIM-03 spec)
 
 ## Current Position
 
 Phase: 23 — Canvas + RAF (In Progress)
-Plan: 01 of 04 complete
-Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 next
-Last activity: 2026-02-19 — 23-01 (MatrixRainCanvas + hero integration) executed: ANIM-02 falling matrix rain behind hero content, SSR-safe via next/dynamic ssr:false
+Plan: 02 of 04 complete
+Status: In progress — 23-01 done (ANIM-02 shipped), 23-02 done (@lhci/cli + lighthouserc.json), 23-03 next
+Last activity: 2026-02-19 — 23-02 (@lhci/cli installed in apps/web, lighthouserc.json corrected to five ANIM-03 URLs: /, /projects, /projects/teamflow, /projects/devcollab, /contact)
 
-Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 23 in progress (1/4 plans), ANIM-02 complete
+Progress: [██████████░░░░░░░░░░] 33% — v2.5 Phase 23 in progress (2/4 plans), ANIM-02 + ANIM-03 infra complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,10 +26,11 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 7/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02 complete) |
-| Total shipped | 86/91 |
+| v2.5 requirements | 8/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02, ANIM-03 complete) |
+| Total shipped | 87/91 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
+| Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -48,6 +49,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 22]: 22-04: .matrix-theme uses raw hex literals (#0a0a0a bg, #e8e8e8 fg) — var(--background) resolves to light values outside .dark context
 - [Phase 23-01]: CSS opacity 0.05 on canvas element (not ctx.globalAlpha) — composites entire frame at 5% so trail effect works correctly
 - [Phase 23-01]: hero-section.tsx converted to 'use client' — Next.js 15 blocks dynamic(ssr:false) from Server Components (#72236)
+- [Phase 23-02]: @lhci/cli scoped to apps/web devDependencies only — Lighthouse CI is a portfolio web concern, not a monorepo root concern
+- [Phase 23-02]: lighthouserc.json URL list corrected to ANIM-03 spec: /about and /login replaced with /projects/devcollab and /contact
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -79,6 +82,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 23-01-PLAN.md — MatrixRainCanvas component + hero integration (ANIM-02 complete)
+Stopped at: Completed 23-02-PLAN.md — @lhci/cli installed in apps/web, lighthouserc.json corrected to ANIM-03 spec (five portfolio URLs + minScore 0.9)
 Resume file: None
-Next action: Phase 23 Plan 02 — canvas dot-grid background component
+Next action: Phase 23 Plan 03 — canvas RAF prefers-reduced-motion gate + dot-grid background
