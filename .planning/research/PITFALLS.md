@@ -1,686 +1,707 @@
-# Pitfalls Research: Matrix Animation Milestone — Adding Animations to Existing Next.js 15 Portfolio
+# Pitfalls Research: DevCollab Deployment + Admin UI Milestone
 
-**Domain:** Adding Matrix-inspired animations (canvas rain, scroll animations, magnetic buttons, cursor effects, dark-first theme) to an existing Next.js 15 App Router portfolio sharing a Turborepo monorepo with a production SaaS app.
-**Researched:** 2026-02-18
-**Confidence:** HIGH (canvas/SSR/hydration patterns), HIGH (Framer Motion/GSAP + Next.js 15 specifics), HIGH (accessibility), HIGH (Tailwind v4 + Radix Colors dark mode), MEDIUM (Lighthouse CLS specifics for animation)
+**Domain:** Coolify deployment (Next.js 15 standalone + NestJS 11) from GHCR private registry, plus admin UI pages (invite links, member management) added to existing Next.js 15 App Router + NestJS CASL application.
+**Researched:** 2026-02-19
+**Confidence:** HIGH (NEXT_PUBLIC build-time footgun — official Next.js docs + direct codebase evidence), HIGH (CORS with httpOnly cookies — official NestJS docs), HIGH (Coolify GHCR auth — confirmed GitHub issue #4604), HIGH (Next.js 15 async params/cookies — official migration docs), HIGH (CASL deny-by-default — direct codebase analysis), MEDIUM (Coolify internal networking — community docs + NestJS microservices guides), MEDIUM (Prisma custom output path in Docker — confirmed GitHub issue #25833)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Canvas Component Crashes With `window is not defined` in Next.js 15 App Router
+### Pitfall 1: NEXT_PUBLIC_API_URL Is Baked Into the Image at Build Time — Coolify Runtime Env Has No Effect
 
 **Severity: CRITICAL**
 
 **What goes wrong:**
-The Matrix rain canvas component imports a browser API (`window`, `document`, `HTMLCanvasElement`) at module load time. Next.js 15 App Router pre-renders all components on the server. The module is evaluated server-side before any `'use client'` boundary can protect it, causing a `ReferenceError: window is not defined` build crash or runtime error.
+`NEXT_PUBLIC_*` variables are inlined into the JavaScript bundle by the Next.js compiler at `next build` time. Setting `NEXT_PUBLIC_API_URL` in Coolify's environment variable UI and expecting it to take effect at container start does NOT work. The container starts with whatever value was baked in during the GitHub Actions build step. The app silently falls back to `http://localhost:3003` (the `??` fallback in `dashboard/page.tsx` and `login/page.tsx`) and all API calls fail in production.
 
-A secondary variant: the component has `'use client'` but uses `dynamic()` with `ssr: false` inside a Server Component file. Next.js 15 introduced a regression where `dynamic()` with `ssr: false` called directly from a Server Component causes a build-time error. The workaround (using a wrapper Client Component solely for the dynamic import) is required.
+This is confirmed by direct codebase evidence:
+- `apps/devcollab-web/app/dashboard/page.tsx` line 5: `const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';`
+- `apps/devcollab-web/app/(auth)/login/page.tsx` line 5: `const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';`
+
+Neither fallback is reachable in production — the value is either baked-in (correct) or baked-in as empty string (broken).
 
 **Why it happens:**
-App Router renders all components on the server first. `'use client'` marks a boundary but does not prevent the module graph from being evaluated on the server — it only prevents the *render* from running server-side. Libraries that access `window` at import time (not inside hooks) still crash. Additionally, the `ssr: false` regression in Next.js 15 blocks the standard pattern from Next.js 14.
+Developers assume that Docker environment variables work at runtime for all env vars. They do for server-side variables (like `DEVCOLLAB_DATABASE_URL`, `JWT_SECRET`). But the `NEXT_PUBLIC_` prefix is a compile-time signal: Next.js replaces the variable reference with the literal value during `next build`. After the Docker image is built, no amount of runtime env injection can change what was inlined.
 
 **How to avoid:**
-1. Place ALL canvas/animation initialization inside `useEffect`, never at module level:
-   ```typescript
-   'use client';
-   import { useEffect, useRef } from 'react';
+Set `NEXT_PUBLIC_API_URL` as a **GitHub Actions build argument**, not as a Coolify runtime environment variable.
 
-   export function MatrixRain() {
-     const canvasRef = useRef<HTMLCanvasElement>(null);
-     useEffect(() => {
-       // Safe: window/document available here, runs client-only
-       const canvas = canvasRef.current;
-       if (!canvas) return;
-       const ctx = canvas.getContext('2d');
-       // ... animation setup
-     }, []);
-     return <canvas ref={canvasRef} />;
-   }
-   ```
-2. Never call `window.innerWidth` or `document.*` outside `useEffect` or event handlers.
-3. If you must use `dynamic()` with `ssr: false`, create a dedicated wrapper Client Component:
-   ```typescript
-   // MatrixRainWrapper.tsx — Client Component wrapper
-   'use client';
-   import dynamic from 'next/dynamic';
-   const MatrixRain = dynamic(() => import('./MatrixRainCanvas'), { ssr: false });
-   export { MatrixRain };
-   ```
-4. Never import the canvas module directly from a Server Component file.
+In the GitHub Actions workflow, pass it at build time:
+```yaml
+# .github/workflows/deploy.yml — build-and-push-devcollab job
+- name: Build and push devcollab-web image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    file: apps/devcollab-web/Dockerfile
+    push: true
+    build-args: |
+      NEXT_PUBLIC_API_URL=${{ secrets.DEVCOLLAB_NEXT_PUBLIC_API_URL }}
+    tags: |
+      ghcr.io/${{ github.repository }}/devcollab-web:latest
+```
+
+In the Dockerfile, declare and use the ARG:
+```dockerfile
+FROM node:20-alpine AS builder
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+RUN npx turbo build --filter=devcollab-web
+```
+
+Add `DEVCOLLAB_NEXT_PUBLIC_API_URL=https://api.yourdomain.com` to GitHub repository secrets.
 
 **Warning signs:**
-- Build fails with `ReferenceError: window is not defined`
-- `dynamic(() => import('./Canvas'), { ssr: false })` causes a build error (Next.js 15 regression)
-- Component renders blank in production but works in `next dev` (dev has more lenient SSR behavior)
-- Lighthouse reports blank LCP element
+- Login page appears but clicking "Sign in" shows "Unable to connect to server" immediately
+- Browser DevTools Network tab shows requests going to `localhost:3003` (the fallback) instead of the production domain
+- In Coolify logs, the container starts and serves pages, but all fetch calls return network errors
+- `docker inspect` of the running container shows `NEXT_PUBLIC_API_URL` is set in env, but the bundled JS still contains `localhost:3003`
 
 **Phase to address:**
-Phase where Matrix rain canvas is first introduced — day one of implementation. Verify with `next build && next start` before writing any animation logic.
+Deployment phase — before the container is first built for production. Verify by running `docker build --build-arg NEXT_PUBLIC_API_URL=https://api.yourdomain.com .` and then `docker run` and checking the served page source for the correct URL.
 
 ---
 
-### Pitfall 2: requestAnimationFrame Loop Not Canceled — Memory Leak on Every Route Change
+### Pitfall 2: Coolify GHCR Authentication — Docker Credentials Must Be Stored as Root on the VPS
 
 **Severity: CRITICAL**
 
 **What goes wrong:**
-The Matrix rain animation runs an infinite `requestAnimationFrame` loop. When the user navigates away (Next.js App Router client-side navigation), the component unmounts but the animation loop continues running in the background, holding a reference to the canvas element and accumulating ~8KB of memory per mount/unmount cycle. After 10+ navigations the tab becomes sluggish. The canvas element is garbage-collected but the RAF callback keeps executing against a detached context.
+GitHub Actions pushes devcollab images to `ghcr.io` (private repository). Coolify pulls images from GHCR to deploy. Coolify fails with:
+```
+Error response from daemon: Head 'https://ghcr.io/v2/...': unauthorized: authentication required
+```
+or silently deploys the old image because the pull fails and Coolify falls back to whatever is cached locally.
+
+The root cause is confirmed by Coolify GitHub issue #4604: the `coolify-helper` container (which executes Docker commands on behalf of Coolify) reads credentials from `/root/.docker/config.json`. If `docker login ghcr.io` was run as a non-root user (e.g., `ubuntu`, `deploy`, or any sudo user), the credentials are stored under that user's home directory, not root's, and the helper container cannot see them.
 
 **Why it happens:**
-Developers write `requestAnimationFrame(animate)` inside `useEffect` without returning a cleanup function. React's `useEffect` cleanup runs on unmount, but if the RAF ID is not stored and `cancelAnimationFrame` is not called, the loop outlives the component. Recursive RAF scheduling is the worst variant: the next frame is scheduled at the end of each frame, so canceling requires storing the LATEST ID at each frame boundary, not the initial one.
+Coolify's internal architecture runs Docker operations through the `coolify-helper` sidecar container, which mounts the Docker socket and reads credentials from the root user's Docker config. When a user SSHes into the VPS and runs `docker login` under their own user account (even with `sudo`), the credential file ends up in the wrong location.
+
+Additionally, the GitHub Actions `GITHUB_TOKEN` that was used to push images cannot be used to pull from Coolify — `GITHUB_TOKEN` is scoped to the workflow run and expires. A separate Personal Access Token (PAT) with `read:packages` scope is required.
 
 **How to avoid:**
-Store the animation frame ID in a ref and cancel it in the cleanup function. Use a ref (not state) to avoid re-renders:
+1. Generate a **classic** GitHub PAT (fine-grained tokens have partial GHCR support as of 2025 — use classic to be safe) with `read:packages` scope. Set expiry to 1 year or "No expiration" and store in a secure vault.
 
+2. SSH into the Coolify VPS and run as root:
+```bash
+sudo su -
+echo "YOUR_CLASSIC_PAT" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+# Verify: cat /root/.docker/config.json — should show ghcr.io entry
+```
+
+3. Verify Coolify can pull:
+```bash
+# Still as root — test pull directly
+docker pull ghcr.io/YOUR_ORG/devcollab-web:latest
+```
+
+4. In Coolify UI: set the image source to `ghcr.io/YOUR_ORG/devcollab-web:latest` and configure the PAT in Coolify's "Container Registries" settings if the UI supports it (Coolify v4+). The `docker login` on the VPS root is the fallback.
+
+5. When the PAT expires, redeploy will silently fail — set a calendar reminder to rotate the token before it expires.
+
+**Warning signs:**
+- Coolify deployment logs show "unauthorized" or "denied" when pulling the image
+- Coolify shows "Deployment successful" but the running container is the old version (cached from last successful pull)
+- `docker pull ghcr.io/your-org/devcollab-web:latest` fails as root on the VPS
+- GitHub shows the GHCR package as "Private" — this requires authentication; packages are private by default for private repositories
+
+**Phase to address:**
+Deployment setup phase — before any production deployment attempt. Run `docker pull` manually as root on the VPS to confirm auth works before triggering the first Coolify deployment.
+
+---
+
+### Pitfall 3: NestJS CORS Blocks httpOnly Cookie in Production — Whitelist Only the Production Domain
+
+**Severity: CRITICAL**
+
+**What goes wrong:**
+The existing `main.ts` configures CORS with:
 ```typescript
-'use client';
-import { useEffect, useRef } from 'react';
+app.enableCors({
+  origin: process.env.DEVCOLLAB_WEB_URL || 'http://localhost:3002',
+  credentials: true,
+});
+```
+In production, if `DEVCOLLAB_WEB_URL` is not set in Coolify, the CORS origin stays `http://localhost:3002`. The browser sends a preflight `OPTIONS` to the production API from the production domain (`https://devcollab.yourdomain.com`) and receives a CORS rejection. The `devcollab_token` cookie is never set, and all authenticated requests silently fail with 401.
 
-export function MatrixRain() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number>(0);
+A second variant: `DEVCOLLAB_WEB_URL` is set to the correct domain but without `https://` — the CORS comparison is exact string match. `https://devcollab.yourdomain.com` does not match `devcollab.yourdomain.com` — CORS blocked.
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+A third variant: wildcard `*` is used to "fix" CORS quickly. With `credentials: true`, `origin: '*'` is rejected by the browser's CORS security model. The error is: `"The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'."` — this breaks cookie authentication entirely.
 
-    const animate = () => {
-      // ... draw frame
-      rafRef.current = requestAnimationFrame(animate); // store LATEST ID
-    };
-    rafRef.current = requestAnimationFrame(animate);
+**Why it happens:**
+Developers set the origin to fix a CORS error they can see, but don't realize that `credentials: true` requires an exact origin match with the full scheme + domain + port. The localhost config works locally because the origin matches. In production, the env var either isn't set or uses the wrong format.
 
-    // REQUIRED cleanup — cancels the loop when component unmounts
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+**How to avoid:**
+In Coolify, set `DEVCOLLAB_WEB_URL=https://devcollab.yourdomain.com` (exact match, including `https://`, no trailing slash).
 
-  return <canvas ref={canvasRef} />;
+For multi-origin support (e.g., staging + production), use array form:
+```typescript
+app.enableCors({
+  origin: (process.env.DEVCOLLAB_WEB_URL || 'http://localhost:3002').split(','),
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+});
+```
+Set `DEVCOLLAB_WEB_URL=https://devcollab.yourdomain.com,https://staging.yourdomain.com` in Coolify.
+
+Also, ensure the cookie attributes match production. When crossing `http` → `https`, the `Set-Cookie` response must include `SameSite=None; Secure` for cookies to be accepted by the browser. Verify in the NestJS JWT login handler that production cookies set these attributes.
+
+**Warning signs:**
+- Browser console shows: `Access to fetch at 'https://api.yourdomain.com' from origin 'https://devcollab.yourdomain.com' has been blocked by CORS policy`
+- Network tab shows `OPTIONS` preflight request returning 204 but `Access-Control-Allow-Origin` header is missing or wrong
+- Login POST succeeds (200) but no cookie appears in Application > Cookies (SameSite/Secure issue)
+- All API calls return 401 after login (cookie wasn't stored because CORS blocked the Set-Cookie)
+
+**Phase to address:**
+Deployment phase — test CORS before any UI work. Use `curl` from a different origin to verify:
+```bash
+curl -v -X OPTIONS https://api.yourdomain.com/auth/login \
+  -H "Origin: https://devcollab.yourdomain.com" \
+  -H "Access-Control-Request-Method: POST"
+# Response must include: Access-Control-Allow-Origin: https://devcollab.yourdomain.com
+```
+
+---
+
+### Pitfall 4: Prisma Custom Output Path (`.prisma/devcollab-client`) Lost in Multi-Stage Docker Build
+
+**Severity: CRITICAL**
+
+**What goes wrong:**
+The Prisma schema uses a custom client output:
+```prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/devcollab-client"
+}
+```
+The `devcollab-api/Dockerfile` builder stage runs `npx prisma generate --schema=packages/devcollab-database/prisma/schema.prisma`, which writes the generated client to `node_modules/.prisma/devcollab-client` in the builder stage. Then the runner stage copies `COPY --from=builder /app/node_modules ./node_modules`.
+
+The failure mode: if the Docker build context is large, the turbo prune step filters only the files needed for `devcollab-api`. If the Prisma schema or the `prisma` binary is not in the pruned output, `prisma generate` silently fails or generates to the wrong path, and the runner gets a `node_modules/.prisma/devcollab-client` that is empty or missing — causing runtime crash:
+```
+Error: @prisma/client did not initialize yet. Please run "prisma generate"
+```
+or:
+```
+Cannot find module '.prisma/devcollab-client'
+```
+
+**Why it happens:**
+Turbo's `prune` command for Docker builds includes only files referenced in the dependency graph of the target app. The `prisma generate` step requires the Prisma CLI (a dev dependency) and the schema file. If `packages/devcollab-database` is correctly included in the pruned output, it works. If the prune is too aggressive or the lockfile hash changed, the generated client is from an older run (Docker layer cache) and may be stale.
+
+The secondary failure: the monorepo's `node_modules` is copied in the runner stage (`COPY --from=builder /app/node_modules ./node_modules`), but `.prisma/devcollab-client` is a generated artifact, not an installed package. It lives inside `node_modules` but is not tracked by npm — it only exists if `prisma generate` ran in that exact build stage.
+
+**How to avoid:**
+Verify the Dockerfile builder stage explicitly:
+```dockerfile
+FROM node:20-alpine AS builder
+# After npm ci and COPY of full source:
+RUN npx prisma generate --schema=packages/devcollab-database/prisma/schema.prisma
+# Verify generate succeeded before the app build:
+RUN test -d node_modules/.prisma/devcollab-client || (echo "Prisma generate failed" && exit 1)
+RUN npx turbo build --filter=devcollab-api
+```
+
+In the runner stage, verify the generated client is present:
+```dockerfile
+FROM node:20-alpine AS runner
+COPY --from=builder /app/node_modules ./node_modules
+# Sanity check at start — catches missing client immediately
+RUN test -d node_modules/.prisma/devcollab-client || (echo "FATAL: devcollab-client missing from node_modules" && exit 1)
+```
+
+Also: import from the correct path. The `packages/devcollab-database/src/client.ts` correctly uses `import { PrismaClient } from '.prisma/devcollab-client'`. Any new code that imports `from '@prisma/client'` instead will silently get the default Prisma client (which is the teamflow schema, not the devcollab schema) — causing type errors and wrong database queries.
+
+**Warning signs:**
+- Container starts but crashes immediately with `Cannot find module '.prisma/devcollab-client'`
+- Container starts but all database operations return empty results or wrong schema errors (got `@prisma/client` instead of `.prisma/devcollab-client`)
+- TypeScript error: `Property 'workspace' does not exist on type 'PrismaClient'` — indicates wrong client import path
+- Docker build logs do not show `Generated Prisma Client (version X.XX.X) to .../devcollab-client`
+
+**Phase to address:**
+Deployment phase — verify Prisma client generation in the Docker build log before pushing any image. Add the `test -d` assertion to the Dockerfile builder stage as a permanent guardrail.
+
+---
+
+### Pitfall 5: Prisma Migration Against Production Database — `migrate deploy` Must Run as a Separate Step, Not in the Container CMD
+
+**Severity: CRITICAL**
+
+**What goes wrong:**
+A common pattern is to add `npx prisma migrate deploy` to the container startup command so migrations run automatically on deploy:
+```dockerfile
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+```
+In Coolify, when using the internal Docker network, the database service may not yet be ready when the API container starts. The migration command races with the database healthcheck, fails, and the container exits. Coolify marks the deployment as failed and rolls back to the previous container — meaning new schema changes never reach the database.
+
+Alternatively, if migrations succeed but are destructive (e.g., removing a column), they run before the old container is stopped, causing the old container to crash mid-request — a brief data inconsistency window.
+
+**Why it happens:**
+Developers bundle migration into startup for simplicity. This works locally (docker-compose `depends_on` with healthcheck) but Coolify's deployment model does not guarantee service start order the same way. Coolify's database service may have a startup delay, and the API container's healthcheck may timeout before the database is ready.
+
+**How to avoid:**
+Use Coolify's **Post-Deploy Hook** (available in Coolify v4 via the UI or API) to run migrations after the new container is live:
+```bash
+# In Coolify application settings → Post-Deploy Command:
+docker exec devcollab-api node -e "const {execSync} = require('child_process'); execSync('npx prisma migrate deploy', {stdio:'inherit'})"
+```
+
+Alternatively, use the dedicated `Dockerfile.migrate` already present in the codebase:
+```bash
+ls /home/doctor/fernandomillan/packages/devcollab-database/Dockerfile.migrate
+```
+Run it as a one-off task in Coolify before switching traffic to the new API container.
+
+For the database readiness race: add a startup wait in the API `main.ts`:
+```typescript
+// Wait for database to be ready — max 30 seconds
+async function waitForDb(prisma: PrismaService, retries = 10) {
+  for (let i = 0; i < retries; i++) {
+    try { await prisma.$queryRaw`SELECT 1`; return; } catch { await new Promise(r => setTimeout(r, 3000)); }
+  }
+  throw new Error('Database not ready after 30 seconds');
 }
 ```
 
-Additionally: cancel and restart the animation on canvas resize to prevent stale dimensions.
-
 **Warning signs:**
-- Chrome DevTools Memory tab shows heap growing with each portfolio page navigation
-- CPU usage does not drop to 0% when navigating away from the page with the animation
-- React Strict Mode (dev) triggers the effect twice: if no cleanup exists, two animation loops run simultaneously
-- Animation appears choppy after 5+ navigations (GPU battling two loops)
+- Coolify deployment logs show `Error: Can't reach database server at ...` during container startup
+- New database columns are missing in production (migration never ran because container crashed before applying)
+- Coolify shows deployment as "Healthy" but API returns 500 on requests that use new schema fields
+- `docker logs devcollab-api` shows migration error followed by process exit code 1
 
 **Phase to address:**
-Phase where Matrix rain canvas is introduced. Verify cleanup with React Strict Mode — it intentionally mounts/unmounts twice in development, so any leak is immediately visible. Run Chrome Performance profiler: CPU should return to baseline after navigating away.
+Deployment phase — establish the migration strategy before the first production deploy. Never put `migrate deploy` in `CMD`.
 
 ---
 
-### Pitfall 3: Canvas Causes LCP Regression — Lighthouse Score Drops Below 90 Gate
+## High-Severity Pitfalls
 
-**Severity: CRITICAL**
-
-**What goes wrong:**
-The portfolio has a Lighthouse CI gate of `categories:performance >= 0.9` (90+). Adding a full-viewport canvas animation as a background element behind the hero section can drop LCP by 300-800ms and drop the performance score below the gate, blocking CI. This happens through two mechanisms: (1) the canvas element itself becomes the LCP candidate if it renders before text, blocking the score; (2) even when not the LCP element, canvas initialization on the main thread delays paint of the actual LCP element (the hero heading).
-
-Additionally, a canvas that draws on every frame without GPU compositing (`will-change: transform` or hardware-accelerated draws) causes excessive main thread work, raising Total Blocking Time (TBT, 30% of Lighthouse score).
-
-**Why it happens:**
-Canvas 2D context operations are main-thread CPU work. A full-viewport Matrix rain running at 60fps can consume 15-30% CPU on a mid-range laptop. Lighthouse emulates a 4x CPU slowdown (Moto G4 profile) — on simulated mobile the canvas can block for 300-500ms before the LCP element can paint. The `categories:performance: ["error", { "minScore": 0.9 }]` assertion in `lighthouserc.json` makes this a hard CI failure.
-
-**How to avoid:**
-1. Start the canvas animation with a `requestIdleCallback` or `setTimeout(..., 0)` delay — let the LCP element paint first:
-   ```typescript
-   useEffect(() => {
-     const timer = setTimeout(() => {
-       // start animation after LCP has painted
-       rafRef.current = requestAnimationFrame(animate);
-     }, 100);
-     return () => {
-       clearTimeout(timer);
-       cancelAnimationFrame(rafRef.current);
-     };
-   }, []);
-   ```
-2. Set canvas `aria-hidden="true"` and do not give it explicit width/height attributes that would make it an LCP candidate — use CSS sizing instead.
-3. Throttle frame rate to 30fps for the Matrix rain (it's decorative):
-   ```typescript
-   let lastTime = 0;
-   const animate = (time: number) => {
-     if (time - lastTime > 33) { // ~30fps cap
-       drawFrame(ctx);
-       lastTime = time;
-     }
-     rafRef.current = requestAnimationFrame(animate);
-   };
-   ```
-4. Use `position: fixed` or `position: absolute` with `z-index: -1` so the canvas is composited independently and does not block layout.
-5. Run `ANALYZE=true next build` and verify the canvas component is not in the initial bundle critical path.
-
-**Warning signs:**
-- `lhci autorun` returns `performance` assertion failure
-- Chrome DevTools Performance tab shows long tasks during page load (> 50ms)
-- LCP in Lighthouse report points to the canvas element, not the hero heading
-- Lighthouse "Avoid large layout shifts" or "Reduce JavaScript execution time" flags reference canvas-related code
-
-**Phase to address:**
-Phase where Matrix rain canvas is introduced. Run Lighthouse CI after adding animation, before merging. The existing `lighthouserc.json` already runs 3 passes on the portfolio URLs — compare before/after scores.
-
----
-
-### Pitfall 4: Framer Motion / `motion/react` — Wrong Import Package for React 19
-
-**Severity: CRITICAL**
-
-**What goes wrong:**
-The project uses React 19 and Next.js 15. Installing `framer-motion` and importing from `"framer-motion"` causes peer dependency warnings, and in dev mode with React Strict Mode enabled, all animations break: initial state is stuck in its final state and exit animations snap instantly rather than playing. The animations appear correct in production builds but are broken during development, giving false confidence.
-
-**Why it happens:**
-`framer-motion` < 12.0 is incompatible with React 19's Strict Mode behavior, which double-invokes refs and effects. The library was rebranded to `motion` and the correct import path for React 19 is `"motion/react"`. Installing the old `framer-motion` package (which many tutorials still reference) will install a version that has not been updated for React 19 compatibility.
-
-**How to avoid:**
-1. Install the correct package: `npm install motion` (not `framer-motion`)
-2. Import from `motion/react`, not `framer-motion`:
-   ```typescript
-   // WRONG — old package, React 19 issues
-   import { motion, AnimatePresence } from 'framer-motion';
-
-   // CORRECT — React 19 compatible
-   import { motion, AnimatePresence } from 'motion/react';
-   ```
-3. Use `LazyMotion` with `domAnimation` features to keep bundle additions to ~15KB instead of the full 34KB:
-   ```typescript
-   import { LazyMotion, domAnimation, m } from 'motion/react';
-
-   // Wrap your animation root once
-   <LazyMotion features={domAnimation}>
-     <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-       {children}
-     </m.div>
-   </LazyMotion>
-   ```
-4. Never import `motion` in Server Components — all `motion.*` usage requires `'use client'`.
-
-**Warning signs:**
-- Npm install shows `WARN: peer dependency "react": "^18"` from `framer-motion`
-- In dev mode (Strict Mode), all `initial` states are permanently stuck — elements don't animate in
-- `exit` animations snap immediately without playing
-- Works in `next build && next start` but broken in `next dev`
-
-**Phase to address:**
-Phase where Framer Motion scroll animations are introduced. Verify React 19 compatibility immediately with a single animated element in Strict Mode before building out the full animation system.
-
----
-
-### Pitfall 5: Missing `prefers-reduced-motion` — Accessibility Violation on Every Animated Element
-
-**Severity: CRITICAL**
-
-**What goes wrong:**
-Every animated element (Matrix rain, scroll-in animations, magnetic buttons, cursor effects) violates WCAG 2.3.3 (Animation from Interactions) for users who have enabled "Reduce Motion" in their OS. The Lighthouse CI assertion `categories:accessibility: ["warn", { "minScore": 1 }]` will flag this. More critically, users with vestibular disorders experience nausea or disorientation from parallax and full-viewport animations. The Matrix rain background canvas — a full-screen rapidly-changing animation — is one of the most problematic patterns for this group.
-
-**Why it happens:**
-Developers add animations and test visually but never toggle the OS "Reduce Motion" preference during development. Accessibility test tools (axe-core via Playwright) do not automatically detect motion preference violations — they must be manually verified. The existing `@axe-core/playwright` in the project will not catch this.
-
-**How to avoid:**
-1. Add a global `prefers-reduced-motion` check at the CSS level as the baseline:
-   ```css
-   @media (prefers-reduced-motion: reduce) {
-     *, *::before, *::after {
-       animation-duration: 0.01ms !important;
-       animation-iteration-count: 1 !important;
-       transition-duration: 0.01ms !important;
-     }
-   }
-   ```
-2. For the canvas Matrix rain — the most critical case — check the media query in JavaScript and completely skip the animation loop:
-   ```typescript
-   useEffect(() => {
-     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-     if (mediaQuery.matches) return; // No canvas animation at all
-
-     const startAnimation = () => { rafRef.current = requestAnimationFrame(animate); };
-     startAnimation();
-     mediaQuery.addEventListener('change', (e) => {
-       if (e.matches) cancelAnimationFrame(rafRef.current);
-       else startAnimation();
-     });
-     return () => cancelAnimationFrame(rafRef.current);
-   }, []);
-   ```
-3. For Framer Motion (motion/react): use `MotionConfig` with `reducedMotion="user"` at the root — this automatically disables transform/layout animations:
-   ```typescript
-   import { MotionConfig } from 'motion/react';
-   <MotionConfig reducedMotion="user">
-     {/* All motion.* children respect OS reduced motion preference */}
-   </MotionConfig>
-   ```
-4. For GSAP: check `window.matchMedia('(prefers-reduced-motion: reduce)').matches` before registering ScrollTrigger animations.
-5. Test: enable "Reduce Motion" in System Settings → Accessibility and verify the portfolio is fully static.
-
-**Warning signs:**
-- Chrome DevTools → Rendering → "Emulate CSS media feature prefers-reduced-motion: reduce" shows animations still playing
-- Playwright axe test with `--force-reduced-motion` flag fails
-- OS "Reduce Motion" is enabled and full-screen canvas is still animating
-- No `prefers-reduced-motion` media query anywhere in `globals.css`
-
-**Phase to address:**
-Every animation phase. Add the global CSS rule in the first animation phase. Add OS-level motion check to canvas in the Matrix rain phase. Wrap all Framer Motion usage in `MotionConfig reducedMotion="user"` at provider level before adding any animated component.
-
----
-
-### Pitfall 6: GSAP ScrollTrigger Stale Triggers After App Router Navigation
+### Pitfall 6: Coolify Internal Docker Network — Server-Side Fetch From Next.js to NestJS Must Use Internal Hostname, Not the Public Domain
 
 **Severity: HIGH**
 
 **What goes wrong:**
-GSAP ScrollTrigger instances created on page A are not killed when Next.js App Router navigates to page B. On returning to page A, new ScrollTrigger instances are created for the same elements, resulting in duplicate animations running simultaneously. Elements animate twice, scroll positions are wrong (triggers fire at stale DOM positions), and ScrollTrigger's internal proxy scroll position conflicts with the real scroll position.
+Next.js 15 server components and server-side fetch calls (the `getWorkspace` function in `app/w/[slug]/page.tsx`) use `NEXT_PUBLIC_API_URL` as the base. In production, `NEXT_PUBLIC_API_URL` is baked as `https://api.yourdomain.com` — the public-facing URL. Server-side fetch from inside a Docker container to the public domain creates an unnecessary network round-trip: container → VPS network interface → reverse proxy → back into the same Docker network. This causes latency, may fail if the reverse proxy is not configured to resolve internal traffic back to itself, and adds TLS termination overhead for server-only calls.
 
 **Why it happens:**
-ScrollTrigger maintains a global registry of all triggers. The `useGSAP()` hook automatically cleans up triggers created inside the hook's scope on unmount. But when developers create GSAP animations outside `useGSAP()` (in event handlers, in module scope, or in plain `useEffect` without calling `ScrollTrigger.kill()` in cleanup), they leak into the global registry. App Router's soft navigation does not full-page-reload, so leaked triggers persist across navigation.
+`NEXT_PUBLIC_API_URL` is a single value used by both client-side (browser) fetch calls and server-side (Node.js) fetch calls in the same codebase. The browser must use the public domain. The server can use the internal Docker hostname. Using one variable for both forces you to use the public domain everywhere.
 
 **How to avoid:**
-1. Always use `@gsap/react`'s `useGSAP()` hook instead of plain `useEffect` for all GSAP animation initialization:
-   ```typescript
-   'use client';
-   import { useGSAP } from '@gsap/react';
-   import { gsap } from 'gsap';
-   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-   gsap.registerPlugin(ScrollTrigger); // Register once at module level
+Add a server-only internal API URL env var:
+```typescript
+// In server components / server utilities:
+const API_URL_INTERNAL = process.env.DEVCOLLAB_API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+```
 
-   export function ScrollSection({ containerRef }: { containerRef: RefObject<HTMLDivElement> }) {
-     useGSAP(() => {
-       gsap.from('.animate-in', {
-         opacity: 0,
-         y: 60,
-         scrollTrigger: {
-           trigger: '.animate-in',
-           start: 'top 80%',
-         }
-       });
-       // useGSAP automatically calls ScrollTrigger.kill() on unmount
-     }, { scope: containerRef }); // scope prevents selecting elements from other components
-   }
-   ```
-2. For animations created in event handlers, wrap with `contextSafe()`:
-   ```typescript
-   const { contextSafe } = useGSAP({ scope: containerRef });
-   const onHover = contextSafe(() => {
-     gsap.to(buttonRef.current, { scale: 1.1 });
-   });
-   ```
-3. Call `ScrollTrigger.refresh()` once after all animations are registered, not on each component mount.
-4. Do NOT call `ScrollTrigger.refresh()` in every component — only once at the page level.
+In Coolify, set `DEVCOLLAB_API_INTERNAL_URL` to the internal Docker hostname (e.g., `http://devcollab-api:3003` — using the container name as the hostname, as Docker DNS resolves it within the same Coolify project network).
+
+The internal hostname format in Coolify follows the container name/service name set in the application settings. Check Coolify UI → Application → "Internal Docker Network" for the exact hostname.
+
+For the current codebase, server-side fetches are in:
+- `app/w/[slug]/page.tsx` — uses `NEXT_PUBLIC_API_URL`
+- `app/w/[slug]/*/page.tsx` files — likely use same pattern
+
+Client-side fetches (in `'use client'` components) must keep using `NEXT_PUBLIC_API_URL` (the public domain) because the browser cannot resolve Docker-internal hostnames.
 
 **Warning signs:**
-- Elements animate twice (stutter) after navigating back to a page
-- Console: "ScrollTrigger refresh: updating positions" fires multiple times for the same trigger
-- Scroll animations fire at wrong positions after client-side navigation
-- Memory grows with each navigation cycle (visible in DevTools Memory tab)
+- Server component page loads are slow in production (500ms+ for simple data fetches)
+- Server-side fetch returns ECONNREFUSED or ENOTFOUND for the internal API call
+- Coolify logs show the API container receiving many requests with `X-Forwarded-For` pointing to the reverse proxy, not the Next.js container — indicates traffic is going through the proxy when it shouldn't
 
 **Phase to address:**
-Phase where scroll-triggered animations are introduced. Test by navigating between portfolio pages at least 3 times and verify scroll animations play exactly once per page visit.
+Deployment phase — implement internal URL separation. Not urgent for MVP (public URL works, just slower), but important before performance-sensitive features.
 
 ---
 
-### Pitfall 7: Dark-First Theme Migration Breaks Existing Radix Colors Token Resolution
+### Pitfall 7: New Admin UI Pages Silently Return 403 Because `@CheckAbility` Is Not Declared on the New Controller Endpoint
 
 **Severity: HIGH**
 
 **What goes wrong:**
-The existing codebase uses Radix Colors with a carefully designed semantic token layer in `globals.css`. Light-mode values are set in `:root`, dark-mode values activate automatically when `.dark` is on `<html>` via the Radix dark CSS imports. Converting to dark-first (making dark the default, light the override) requires moving the dark Radix scale variables to `:root` and the light values to `:root.light`. If done incorrectly, components using `var(--background)`, `var(--foreground)`, `var(--primary)`, etc. stop resolving correctly — either both modes display dark, or the existing WCAG-validated contrast ratios break because dark values were designed for `oklch` contrast against dark backgrounds, not light.
+The CASL guard enforces deny-by-default: any endpoint that is not marked `@Public` AND does not have `@CheckAbility` throws `ForbiddenException('Endpoint must declare @CheckAbility — deny-by-default security invariant')`. When adding new invite link or member management API endpoints (e.g., `GET /workspaces/:slug/invite-links`), forgetting the `@CheckAbility` decorator causes ALL authenticated requests to return 403 — including Admin requests. The UI admin page shows "Forbidden" with no explanation.
+
+This is the most likely pitfall when adding new endpoints to the `WorkspacesController` or a new controller, because the error message is `ForbiddenException` (403) rather than `UnauthorizedException` (401) — developers often look for auth issues, not permission decorator issues.
+
+Direct evidence from `apps/devcollab-api/src/guards/casl-auth.guard.ts` line 52-56:
+```typescript
+if (!abilityReq) {
+  throw new ForbiddenException(
+    'Endpoint must declare @CheckAbility — deny-by-default security invariant',
+  );
+}
+```
 
 **Why it happens:**
-The current architecture relies on Radix Colors' own dark CSS files (`@radix-ui/colors/slate-dark.css`) which scope dark variables to `.dark` and `.dark-theme` selectors. These are not `:root` overrides — they live in separate CSS cascade layers. Switching to dark-first by simply inverting which set is in `:root` breaks the Radix cascade assumptions. Additionally, Tailwind v4's `@custom-variant dark (&:where(.dark, .dark *))` in the codebase is already correctly configured — any change to how `next-themes` writes the class (e.g., switching from `class` strategy to `data-theme` attribute) breaks this custom variant.
+Adding a new route handler and forgetting to copy the `@CheckAbility` decorator. This is especially easy to miss when generating a new module with `nest generate resource` — the generated controller methods have no `@CheckAbility` decorators and will immediately throw 403 for all requests.
 
 **How to avoid:**
-1. Do NOT change how `next-themes` applies dark mode — keep `attribute="class"` strategy. The existing `@custom-variant dark (&:where(.dark, .dark *))` in `globals.css` is correctly configured.
-2. For dark-first default: set `defaultTheme="dark"` in the `ThemeProvider` — this is the only change needed. Do not restructure the CSS variable cascade:
-   ```typescript
-   // providers/theme-provider.tsx
-   <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-     {children}
-   </ThemeProvider>
-   ```
-3. After changing `defaultTheme`, run the full Lighthouse CI suite across all portfolio URLs — validate that contrast ratios still pass for both themes.
-4. Validate dark-first does not flash light theme on first load: `next-themes` uses `localStorage` — first-time visitors see dark by default, returning visitors see their preference.
-5. Test the specific tokens that changed during the Phase 8 color audit (muted-foreground, warning, accent) in both themes after the defaultTheme change.
+Every new route handler in the API must declare either:
+```typescript
+@Public() // For auth endpoints like login/register
+```
+or:
+```typescript
+@CheckAbility('create', 'InviteLink')  // Admin-only: action + subject from workspace-ability.factory.ts
+```
+
+For admin-only invite link management, the correct decorators based on the existing `WorkspaceAbilityFactory`:
+```typescript
+// Admin only — InviteLink operations:
+@CheckAbility('create', 'InviteLink')  // Generate invite link — Admin only
+@CheckAbility('read', 'InviteLink')    // List invite links — Admin only (Contributor cannot 'create', but can they 'read'? Verify in factory)
+
+// Member management (already in controller, but for new endpoints):
+@CheckAbility('update', 'WorkspaceMember')  // Change role — Admin only
+@CheckAbility('delete', 'WorkspaceMember')  // Remove member — Admin only
+```
+
+Verify the ability matrix in `workspace-ability.factory.ts` before assigning subjects — `InviteLink` is explicitly `cannot('create', 'InviteLink')` for Contributors and Viewers.
 
 **Warning signs:**
-- After changing defaultTheme, components that worked before now show incorrect colors in either mode
-- First-time visitor sees a flash of light theme before dark loads (FOUC — Flash of Unstyled Content)
-- Radix `--slate-1` resolves to the wrong end of the scale in one of the themes
-- Lighthouse accessibility score drops due to contrast failures in dark mode
+- New route returns 403 for Admin user (not 401) — the guard is running but the decorator is missing
+- Error message in response body: `"Endpoint must declare @CheckAbility — deny-by-default security invariant"` — this is the exact string from the guard
+- The route works if you temporarily add `@Public()` but breaks when you add `@CheckAbility` with wrong action/subject
+- NestJS startup log shows no error — the guard issue only manifests at request time
 
 **Phase to address:**
-Dark-first theme phase. Change only `defaultTheme="dark"` in ThemeProvider. Run Lighthouse on all routes before and after. Do not restructure the CSS token hierarchy.
+Every phase that adds new API endpoints. Add a unit test that calls every new endpoint without a valid session and expects 401 (not 403), and with a valid Viewer session expects 403 for admin operations — this catches missing `@CheckAbility` immediately.
 
 ---
 
-### Pitfall 8: Scroll Animations Cause CLS (Cumulative Layout Shift) — Breaking the 90+ Score
+### Pitfall 8: Admin UI Does Not Check CASL Permissions Client-Side — Shows Admin Controls to Non-Admin Users
 
 **Severity: HIGH**
 
 **What goes wrong:**
-Scroll-triggered entrance animations (fade-in, slide-up, scale-in) that use `initial={{ opacity: 0, y: 60 }}` or GSAP's `from` with `y: 60` cause elements to initially render off their final position. During the Lighthouse audit (which measures CLS over the full page load), these displaced elements count as layout shifts, directly penalizing the CLS score (25% of Lighthouse performance score). A single mishandled scroll animation section can drop CLS from 0.0 to 0.15+, dropping the Lighthouse score below 90.
+New invite link and member management UI pages are added to `app/w/[slug]/members/` and `app/w/[slug]/invite-links/`. These pages fetch member data and display "Invite Member" buttons, "Change Role" dropdowns, and "Remove Member" buttons. Without a client-side permission check, a Contributor or Viewer navigating to these pages sees the full admin UI. Clicking "Remove Member" returns 403 from the API (the CASL guard correctly denies it), but the UI shows a confusing error rather than simply not rendering the button.
 
 **Why it happens:**
-CLS is measured from layout shift events during page load. An element that starts at `transform: translateY(60px)` and then moves to `translateY(0)` is a layout shift IF the element affects surrounding layout. CSS `transform` does not trigger layout shifts (it is GPU-composited), but `opacity: 0` followed by layout-affecting properties DO. Additionally, if elements start invisible and then become visible, they can shift surrounding elements if they are not `position: absolute/fixed`.
-
-The Lighthouse CI collects 3 runs on portfolio pages including `/` (hero), `/projects`, and individual project pages — all scroll-animation-heavy pages.
+The API correctly enforces permissions (deny-by-default CASL guard), so there is no security breach. But the UI leaks capability context — showing controls that cannot succeed. This is a UX bug that commonly appears because developers implement API authorization first and forget to gate the UI components.
 
 **How to avoid:**
-1. Use only `transform` and `opacity` for animation — never animate `height`, `width`, `top`, `left`, `margin`, or `padding`:
-   ```typescript
-   // GOOD — transform + opacity are compositor-safe (no CLS)
-   initial={{ opacity: 0, y: 40 }}
-   animate={{ opacity: 1, y: 0 }}
+Fetch the current user's role from `GET /workspaces/:slug/members` (which is already implemented) and use it to conditionally render admin controls:
 
-   // BAD — margin/padding changes trigger layout recalculation (causes CLS)
-   initial={{ marginTop: 40, opacity: 0 }}
-   animate={{ marginTop: 0, opacity: 1 }}
-   ```
-2. Pre-allocate space for animated elements. Never set `display: none` as the initial state — use `opacity: 0` with `visibility: hidden`:
-   ```css
-   .animate-target {
-     opacity: 0;
-     /* Space is reserved, no layout shift */
-   }
-   ```
-3. Use `IntersectionObserver` with a threshold (e.g., 0.1) instead of scroll position — elements only animate when already in the viewport frame, not when they shift into it.
-4. Add `will-change: transform, opacity` to elements that will animate (applied before animation starts, removed after).
-5. Test CLS specifically: Chrome DevTools → Performance → record a full page scroll, inspect "Layout Shift" events in the timeline.
+```typescript
+// Server component: app/w/[slug]/members/page.tsx
+const members = await getMembers(slug); // calls GET /workspaces/:slug/members
+const currentUser = // get from cookie-decoded JWT or separate /me endpoint
+const currentMember = members.find(m => m.user.id === currentUser.sub);
+const isAdmin = currentMember?.role === 'Admin';
+
+// Pass isAdmin down to child components or read via context
+```
+
+For client components that need the role, either:
+1. Pass `isAdmin` as a prop from the server component (preferred — no extra fetch)
+2. Decode the JWT from the `devcollab_token` cookie (available client-side since it's not `HttpOnly` by default — verify this assumption)
+
+Do not implement a client-side CASL ability — that would duplicate the server logic. A simple `role === 'Admin'` check in the UI is sufficient because the API remains the authoritative enforcer.
 
 **Warning signs:**
-- Lighthouse performance score drops after adding scroll animations but TBT and LCP remain stable — CLS is the culprit
-- Chrome DevTools Performance timeline shows orange "Layout Shift" badges on animated elements
-- `lhci autorun` fails with CLS > 0.1 assertion
-- Elements visibly "jump" on the first paint before animation starts
+- Viewer or Contributor can see "Remove Member" or "Change Role" buttons
+- Clicking those buttons returns an error modal with "Forbidden" — correct security, bad UX
+- Admin page is accessible via direct URL navigation by non-admin users (no server-side redirect)
+- No conditional rendering on action buttons based on role
 
 **Phase to address:**
-Phase where scroll animations are introduced. Measure CLS before (baseline 0.0) and after each animation type is added. Roll back any animation type that raises CLS above 0.05.
+Admin UI implementation phase. Fetch the current user's role as the first step of any admin page server component, and gate all mutation UI behind `isAdmin` before rendering.
 
 ---
 
-### Pitfall 9: Magnetic / Parallax Effects Degrade on Mobile — Touch Devices Fire No `mousemove`
+### Pitfall 9: `cookies()` and `params` Are Async in Next.js 15 — Synchronous Access Causes Silent Fallback or TypeScript Error
 
 **Severity: HIGH**
 
 **What goes wrong:**
-Magnetic button effects and parallax cursor-follow effects are built around the `mousemove` event. On touch devices (iOS Safari, Android Chrome — the majority of portfolio viewers on mobile), `mousemove` fires once on tap with a "sacrificial" single synthetic event, not continuously. The magnetic button snaps to one position on tap and never releases, creating a broken broken interaction. On iOS specifically, the momentum scrolling model conflicts with `mousemove`-based parallax, causing the background to appear frozen while content scrolls.
+Next.js 15 made `cookies()`, `headers()`, and route `params` asynchronous. The existing codebase already correctly handles this (confirmed in `layout.tsx` and `page.tsx` files). But when adding new admin pages and copying patterns from older code or Stack Overflow answers for Next.js 14, the developer may use the synchronous pattern:
+
+```typescript
+// WRONG in Next.js 15 — synchronous access
+const cookieStore = cookies(); // Missing await
+const token = cookieStore.get('devcollab_token')?.value;
+```
+
+In Next.js 15, this does not throw immediately (there is a backwards-compatibility shim), but it logs a deprecation warning in development and may behave incorrectly in production builds where the shim is less lenient. For `params`, the TypeScript type is `Promise<{ slug: string }>` — accessing `params.slug` directly returns `undefined` without an error, causing the page to render with an undefined workspace slug.
 
 **Why it happens:**
-`mousemove` is a pointer device event, not a touch event. Touch devices simulate a single `mousemove` before `mousedown` for compatibility, but do not continuously fire during touch movement. Developers build and test magnetic effects on desktop without checking mobile behavior. The effect looks polished on desktop but actively breaks on mobile, which is problematic for a recruiter-facing portfolio.
+Next.js 14 code used synchronous `cookies()` and `params`. Stack Overflow answers, tutorials, and GitHub Copilot suggestions still use the old pattern. The synchronous access in Next.js 15 shows a deprecation warning but does not immediately break, so developers miss the issue until a future upgrade.
 
 **How to avoid:**
-1. Gate all `mousemove`-based effects behind a `(any-hover: hover) and (pointer: fine)` media query — this targets only devices with a precise pointer (mouse/trackpad):
-   ```typescript
-   useEffect(() => {
-     const mediaQuery = window.matchMedia('(any-hover: hover) and (pointer: fine)');
-     if (!mediaQuery.matches) return; // Skip entirely on touch devices
+All new server components MUST use the async pattern. Copy from the existing correct implementation in `layout.tsx`:
 
-     const handleMouseMove = (e: MouseEvent) => { /* magnetic effect */ };
-     window.addEventListener('mousemove', handleMouseMove);
-     return () => window.removeEventListener('mousemove', handleMouseMove);
-   }, []);
-   ```
-2. For the CSS `cursor: none` custom cursor: guard it with the same media query so mobile users keep the default cursor.
-3. Throttle `mousemove` handlers with `requestAnimationFrame` — never do DOM manipulation directly in the handler:
-   ```typescript
-   let ticking = false;
-   const handleMouseMove = (e: MouseEvent) => {
-     if (!ticking) {
-       requestAnimationFrame(() => {
-         updateMagneticPosition(e.clientX, e.clientY);
-         ticking = false;
-       });
-       ticking = true;
-     }
-   };
-   ```
-4. Test on real mobile: open the portfolio on an iPhone/Android. Magnetic buttons and parallax should be completely absent (not broken).
+```typescript
+// CORRECT — Next.js 15 async pattern (from existing layout.tsx)
+export default async function WorkspaceMembersPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;  // REQUIRED: Promise<> wrapper on type
+}) {
+  const { slug } = await params;  // REQUIRED: await params
+
+  const cookieStore = await cookies();  // REQUIRED: await cookies()
+  const token = cookieStore.get('devcollab_token')?.value;
+  if (!token) redirect('/login');
+
+  // ... rest of page
+}
+```
 
 **Warning signs:**
-- Magnetic button on mobile: button snaps to a position on tap and stays there
-- Parallax background on iOS: appears frozen or stutters on scroll
-- DevTools mobile emulation shows `mousemove` events — this is misleading (emulated mouse); test on a real device
-- Portfolio reviewer on mobile reports "buttons are stuck"
+- New page shows workspace data for `undefined` slug (API returns 404, page renders "workspace not found")
+- `cookies()` returns a value but it's an object with `.then()` instead of `.get()` — indicates synchronous access in async context
+- TypeScript error: `Type '{ slug: string }' is not assignable to type 'Promise<{ slug: string }>'` — the type annotation is missing `Promise<>`
+- Development console shows: `Warning: cookies() should be awaited before using its value`
 
 **Phase to address:**
-Phase where magnetic buttons and parallax effects are introduced. Test on a real mobile device before the feature is considered complete. Add a mobile-detection guard on day one of the implementation.
+Every phase that adds new page.tsx or layout.tsx files. Use the existing `layout.tsx` as the template — it is correct. Never copy from external Next.js 14 examples.
 
 ---
 
-### Pitfall 10: Custom Cursor Breaks Existing Cursor Behaviors and Violates Accessibility
+### Pitfall 10: Next.js Standalone Static Files Not Copied in Docker — `/public` Returns 404
 
 **Severity: HIGH**
 
 **What goes wrong:**
-Setting `cursor: none` globally to replace the system cursor with a custom `div`-based cursor breaks three things: (1) existing Shadcn/Radix components that set `cursor: pointer` on interactive elements — the custom cursor must read these states and change appearance accordingly; (2) users who rely on the OS cursor for accessibility (enlarged cursor, high-contrast cursor, inverted cursor) lose their customizations entirely; (3) on focus-only navigation (Tab key), the cursor element follows mouse position, not keyboard focus — making the custom cursor completely misleading for keyboard users.
+Next.js `output: 'standalone'` mode generates a minimal `server.js` that serves the app. However, the `public/` directory and `.next/static/` directory are NOT included in the standalone output — they must be explicitly copied in the Dockerfile. Looking at the existing `devcollab-web/Dockerfile`:
+
+```dockerfile
+COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/.next/static ./apps/devcollab-web/.next/static
+COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/public ./apps/devcollab-web/public 2>/dev/null || true
+```
+
+The `2>/dev/null || true` on the `public` directory copy means: if `devcollab-web/public/` does not exist, the copy silently succeeds. This is fine if there are no public assets. But when adding a favicon, OG images, or any public assets for the admin UI, a missing `public/` directory causes 404 for all those assets silently.
 
 **Why it happens:**
-Developers set `cursor: none` on `body` or `:root` and add a custom cursor element, but forget that all interactive elements (Shadcn Button, Link, dialog trigger) had `cursor: pointer` in their CSS — this is now invisible since the real cursor is hidden. The custom `div` cursor only responds to `mousemove` and does not know which element has keyboard focus.
+The `|| true` was added to make the Dockerfile work when the `public/` directory doesn't exist yet. As soon as a `public/` directory is created, the `|| true` is harmless. But if the directory is accidentally not created or is empty, developers assume static assets are served when they are not.
 
 **How to avoid:**
-1. Gate custom cursor behind `(any-hover: hover) and (pointer: fine)` media query — same as magnetic effects. Touch users and keyboard-primary users never see it:
-   ```css
-   @media (any-hover: hover) and (pointer: fine) {
-     * { cursor: none !important; }
-   }
-   ```
-2. The cursor `div` must also be hidden when using this CSS — apply the same media query to the cursor element's visibility.
-3. Do not use `cursor: none` on interactive elements like buttons, links, inputs. Consider keeping the real cursor and only adding a trailing visual effect, rather than replacing the cursor entirely.
-4. If replacing the cursor: implement cursor-state tracking that reads `data-cursor` attributes or listens to `mouseenter`/`mouseleave` on interactive elements to change cursor appearance (e.g., expand on hover over links).
-5. Verify the cursor element has `pointer-events: none` so it never blocks clicks on elements beneath it.
+When adding public assets (favicons, OG images, any static files for the admin UI pages):
+1. Create `apps/devcollab-web/public/` directory with the assets
+2. Verify the Dockerfile copies it: the existing `COPY ... public ... 2>/dev/null || true` handles it
+3. After Docker build, verify: `docker run devcollab-web wget -qO- http://localhost:3002/favicon.ico | head -c 5` (should not return empty)
+4. Remove `2>/dev/null || true` once a `public/` directory with at least one file exists — this silences real errors
+
+Also verify `.next/static` path alignment: the runner copies static files to `./apps/devcollab-web/.next/static`, and `server.js` serves them from the path it expects relative to its location. The CMD is `node apps/devcollab-web/server.js` from `/app` — verify the static path resolution matches.
 
 **Warning signs:**
-- Users cannot click interactive elements (cursor element is intercepting clicks) — missing `pointer-events: none`
-- Shadcn buttons show no cursor state change on hover (the pointer cursor is hidden but custom cursor isn't responding)
-- Tab-navigating through the portfolio: the cursor element stays in the last mouse position
-- Screen reader users report confusion (cursor effects should not announce anything to AT)
+- CSS styles missing in production (`.next/static/css/` not served)
+- Favicon 404 in production
+- `next/image` with `src="/images/logo.png"` returns 404
+- Browser DevTools shows 404 for `/_next/static/chunks/*.js` (indicates `.next/static` copy path mismatch)
 
 **Phase to address:**
-Phase where cursor effects are introduced. Test: (1) keyboard-only navigation through all interactive elements; (2) enable OS high-contrast mode and verify the cursor is visible; (3) `pointer-events: none` on cursor element (clicking must reach elements beneath).
+Any phase that adds public static assets. Verify immediately after each Docker build by running the container locally and checking static asset URLs.
 
 ---
 
-### Pitfall 11: Framer Motion Added to Monorepo Portfolio (`apps/web`) Affects TeamFlow Bundle
+### Pitfall 11: Optimistic UI for Role Change Shows Stale Role After Server Revalidation Flash
 
-**Severity: HIGH**
+**Severity: MEDIUM**
 
 **What goes wrong:**
-The monorepo shares a `node_modules` via npm workspaces. Installing `motion` (Framer Motion) in `apps/web`'s `package.json` adds it to the workspace `node_modules`, and if `apps/devcollab-web` or any shared `packages/*` imports from `motion/react`, it pulls the full animation library into bundles that don't need it. Additionally, Turborepo caches the `node_modules` hash — adding `motion` changes the hash, invalidating the cache for ALL apps in the monorepo, triggering full rebuilds of TeamFlow (`apps/web`) on the next CI run even when TeamFlow files didn't change.
+When implementing `useOptimistic` for member role changes in the admin UI, there is a confirmed Next.js race condition (GitHub issue #49619): `useOptimistic` reverts to the server state BEFORE `revalidatePath` renders the fresh data. The user sees:
+1. Role showing "Admin" (optimistic update applied immediately)
+2. Briefly flashes back to "Contributor" (optimistic reverted)
+3. Then shows "Admin" again (revalidated data arrives)
+
+This double-flash makes the UI feel broken and is visible for ~200-500ms after each role change.
 
 **Why it happens:**
-npm workspaces hoists dependencies to the root `node_modules`. A package installed only in `apps/web` can be accidentally imported from any app because the module resolution walks up to the root `node_modules`. Turborepo's cache key includes `package-lock.json` at the root — any `node_modules` change invalidates all app caches.
+`useOptimistic` reverts when the Server Action completes, but `revalidatePath` triggers an asynchronous re-render. There is a window where optimistic state is gone but fresh server state hasn't arrived yet.
 
 **How to avoid:**
-1. Install `motion` scoped to the portfolio app only: `npm install motion --workspace=apps/web`
-2. Verify it is in `apps/web/package.json` dependencies, NOT in root `package.json` or any shared `packages/*`
-3. Verify neither `apps/api`, `apps/devcollab-web`, nor `apps/devcollab-api` import from `motion/react` (they have no reason to)
-4. After installing, run `turbo run build --dry-run` to confirm only `apps/web` and its dependents are in the build pipeline — TeamFlow API should not be affected
-5. Accept the one-time cache invalidation from the `package-lock.json` change — all subsequent builds should hit cache correctly
+Two options:
+
+Option A — Skip `useOptimistic`, use Server Actions with `revalidatePath` only. The "loading" state (button disabled, spinner) provides feedback without the flash:
+```typescript
+async function changeRole(formData: FormData) {
+  'use server';
+  await updateMemberRole(slug, userId, newRole);
+  revalidatePath(`/w/${slug}/members`);
+  // Page re-renders with fresh data — no optimistic needed for low-frequency admin actions
+}
+```
+
+Option B — If optimistic is required: call `addOptimistic` AFTER `await serverAction()` (not before):
+```typescript
+const [optimisticMembers, addOptimistic] = useOptimistic(members, (state, update) => ...);
+
+async function handleRoleChange() {
+  const result = await updateMemberRoleAction(userId, newRole);
+  if (result.success) {
+    addOptimistic({ userId, newRole }); // After success — avoids the revert flash
+  }
+}
+```
+
+For member management (low-frequency admin action), Option A is simpler and sufficient. Reserve `useOptimistic` for high-frequency actions (reactions, notifications).
 
 **Warning signs:**
-- `motion` appears in `apps/api` or `apps/devcollab-api` bundle analyzer output
-- CI shows full rebuild of ALL apps when only portfolio animation files changed
-- `package-lock.json` shows `motion` hoisted to root `node_modules` as a top-level dependency
+- UI flickers on role change (old value briefly appears between update and revalidation)
+- User reports "the role keeps going back to Contributor and then changing" — this is the flash
+- `useOptimistic` with `addOptimistic` called before `await serverAction()` — this is the race setup
 
 **Phase to address:**
-Phase where Framer Motion / `motion` package is first installed. Verify workspace scoping before writing any animation code.
+Admin UI member management implementation. Default to Server Actions without `useOptimistic` for admin operations, and only add optimistic UI if UX testing shows the round-trip is too slow.
 
 ---
 
 ## Technical Debt Patterns
 
-Shortcuts that seem reasonable but create long-term problems.
-
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| `suppressHydrationWarning={true}` on canvas parent | Silences hydration warning quickly | Hides real rendering mismatches that may affect content | Never — fix the root cause instead |
-| Checking `typeof window !== 'undefined'` at module level instead of inside `useEffect` | Works in dev | Causes hydration mismatch in production (server renders undefined branch, client renders defined branch) | Never — always use `useEffect` |
-| Importing `framer-motion` instead of `motion/react` | All tutorials use old import | React 19 dev-mode animation breakage, TypeScript peer dep warnings | Never — use `motion/react` |
-| Using `position: fixed` canvas without `aria-hidden="true"` | Canvas shows immediately | Canvas is announced as empty region by screen readers; confusing for AT users | Never — always add `aria-hidden="true"` |
-| Global `cursor: none` without media query guard | Custom cursor always visible | Breaks mobile, breaks accessibility cursor customizations | Never — always gate behind pointer media query |
-| GSAP in `useEffect` instead of `useGSAP` | Familiar React pattern | ScrollTrigger instances leak on route changes | Never — use `useGSAP` exclusively |
-| Running Lighthouse CI only on `/` | Faster CI | Scroll animations on `/projects` and project detail pages never measured | Never — the existing `lighthouserc.json` already correctly tests 5 URLs |
-| Setting `will-change: transform` on every animated element | Animations feel smoother | GPU memory pressure; most elements don't need it | Only on elements animating at 60fps continuously |
+| Using `NEXT_PUBLIC_API_URL` for both client and server fetches | Single variable to configure | Server-side calls go through public reverse proxy, adding latency | MVP only — add `DEVCOLLAB_API_INTERNAL_URL` before performance matters |
+| Setting `DEVCOLLAB_WEB_URL=*` in CORS | Stops CORS errors immediately | Breaks cookie authentication entirely (`credentials: true` + wildcard is rejected by browsers) | Never |
+| Running `prisma migrate deploy` in container CMD | Auto-migration on startup | Race with database readiness; migration errors crash container and prevent deployment | Never — use post-deploy hook |
+| Skipping `@CheckAbility` with `@Public()` on new admin endpoints | Stops 403 errors quickly | Opens endpoint to unauthenticated access | Never for admin endpoints |
+| Using `params.slug` synchronously in Next.js 15 page | Works in dev (backward-compat shim) | Deprecation warning; will break in Next.js 16+ when shim is removed | Never in new code |
+| Classic PAT with `write:packages` scope for Coolify pull | One token for everything | PAT can push to GHCR — over-privileged for a pull-only operation | Acceptable for MVP; rotate to `read:packages` only PAT when feasible |
 
 ---
 
 ## Integration Gotchas
 
-Common mistakes when integrating these animation features into the existing Radix/Shadcn/Tailwind v4 stack.
-
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Canvas + Next.js 15 App Router | Using `dynamic(import, { ssr: false })` directly in a Server Component | Create a wrapper Client Component solely for the dynamic import — Next.js 15 regression blocks `ssr: false` in Server Components |
-| Framer Motion + React 19 | Installing `framer-motion` from npm (old package) | Install `motion` and import from `motion/react`; framer-motion@12+ supports React 19 |
-| GSAP + App Router navigation | Creating ScrollTrigger in plain `useEffect` | Use `useGSAP()` from `@gsap/react` — auto-kills all triggers on unmount |
-| `prefers-reduced-motion` + canvas | Checking once at mount, not reacting to changes | Add `mediaQuery.addEventListener('change', ...)` to react to OS setting changes at runtime |
-| Radix Colors dark theme + dark-first default | Restructuring CSS variable cascade for dark-first | Only change `defaultTheme="dark"` in ThemeProvider — never touch the CSS variable structure |
-| `@custom-variant dark` + next-themes | Switching next-themes to `data-theme` attribute mode | Keep `attribute="class"` — the existing `@custom-variant dark (&:where(.dark, .dark *))` requires the class strategy |
-| Magnetic buttons + Radix/Shadcn | Adding `mousemove` listener directly on Shadcn `Button` component | Wrap Shadcn Button in a container div and track mouse relative to the container, not the button itself |
-| Custom cursor + Radix dialogs | `cursor: none` applies inside Radix Portal (appended to body) | Radix portals are children of `document.body` — `cursor: none` on `body` covers them. Verify the cursor element is also appended to `body` and z-indexed above portals. |
-| GSAP + Tailwind v4 CSS variables | Animating Tailwind v4 CSS custom properties with GSAP | GSAP can animate CSS variables: `gsap.to(element, { '--color-primary': newValue })` — but Tailwind v4 regenerates styles on build, verify variable names haven't changed |
+| Coolify + NEXT_PUBLIC vars | Setting `NEXT_PUBLIC_API_URL` in Coolify environment variables | Pass as `--build-arg` in GitHub Actions `docker/build-push-action`; set in GitHub Secrets |
+| Coolify + GHCR | Running `docker login ghcr.io` as a non-root user on the VPS | SSH in, `sudo su -`, then run `docker login ghcr.io` as root; verify `/root/.docker/config.json` |
+| NestJS CORS + httpOnly cookies | `origin: '*'` with `credentials: true` | Exact origin string(s) matching production domain including `https://` scheme; never wildcard with credentials |
+| Prisma custom output + Docker | Assuming `node_modules/.prisma/devcollab-client` copies automatically | Explicitly run `prisma generate` in builder stage; verify with `test -d` assertion before runner stage |
+| Next.js standalone + static files | Missing `public/` directory silently ignored by `|| true` | Verify public asset URLs after every Docker build with `wget` or `curl` |
+| CASL guard + new endpoints | Adding new controller method without `@CheckAbility` | Every non-public route gets `@CheckAbility` — treat missing decorator as a compile error (can be enforced with a lint rule) |
+| Coolify internal Docker network + server fetches | Server-side Next.js fetch using public domain URL | Use `DEVCOLLAB_API_INTERNAL_URL` env var for server-side fetches; `NEXT_PUBLIC_API_URL` only for client-side |
+| Coolify database service + Prisma | Using `localhost` as DB host in container | Use Coolify's internal Docker hostname (shown in Coolify UI under the database service details) as `DEVCOLLAB_DATABASE_URL` |
 
 ---
 
 ## Performance Traps
 
-Patterns that work at small scale but fail under real conditions.
-
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Full-viewport canvas at native 60fps | Passes Lighthouse on fast laptop; fails on simulated mobile | Cap canvas to 30fps for decorative animations; use `requestIdleCallback` delay at start | Lighthouse emulates 4x CPU slowdown — any Moto G4 emulation |
-| `mousemove` handler doing DOM manipulation directly | Works on desktop, laggy on slower machines | Throttle with RAF: store coordinates in ref, apply in RAF callback | On mid-range laptops during portfolio review |
-| Multiple GSAP ScrollTrigger instances per element | Correct on first load; doubles on second navigation | Use `useGSAP` scope + single trigger per element | After 2+ client-side navigations |
-| `will-change: transform` on all animated elements simultaneously | Perceived smoothness on page load | Apply only during animation, remove after; use sparingly | >10 elements with `will-change` causes GPU memory exhaustion on mobile |
-| `motion/react` full import without LazyMotion | ~34KB added to portfolio initial JS bundle | Use `LazyMotion` with `domAnimation` features (~15KB) | Lighthouse TBT increases on slow connections; scores above 90 but margin narrows |
-| Canvas resize not debounced | Canvas distorts on window resize | Debounce resize handler at 100ms; recalculate columns and drop arrays | Any window resize event, common during portfolio review on ultrawide monitors |
+| Server-side Next.js fetch going through public reverse proxy | 300-500ms latency on server component page loads | Separate `DEVCOLLAB_API_INTERNAL_URL` for internal calls | Every page load that uses server-side data fetching |
+| `useOptimistic` flash on member role changes | Double-render UI flicker visible to admin users | Use Server Actions without optimistic for low-frequency admin ops | Every role change when using `addOptimistic` before server action completes |
+| No request deduplication on admin pages that fetch members list multiple times | Multiple identical API calls on single page render | Use `cache: 'no-store'` only where necessary; use React `cache()` for repeated reads within a single render | Pages with multiple server components each fetching the same member list |
 
 ---
 
 ## Security Mistakes
 
-These are minimal for an animation milestone, but two issues apply specifically to this context.
-
 | Mistake | Risk | Prevention |
 |---------|------|------------|
-| Reading `window.location` for animation triggers in SSR | Server-side crash leaks stack trace in Vercel/Coolify logs | All `window.*` access in `useEffect` only |
-| Canvas element without `aria-hidden` and with focusable content inside | Screen readers attempt to navigate canvas; confusing/broken AT experience | Always `aria-hidden="true"` on decorative canvas; never place interactive content inside canvas |
+| CORS wildcard with `credentials: true` | Browser blocks all cookie-based auth — effective DoS of authentication for all users | Exact origin match in `enableCors`; no wildcards when `credentials: true` |
+| Invite link token exposed in GET query param (`?token=xxx`) | Token logged in server access logs, proxy logs, browser history | Always POST invite link tokens in request body; never in URL |
+| Admin UI visible to non-admin users (UI-only gap, not API gap) | Non-admins see member management controls; confusing UX; may trigger user error reports | Server-side role check in page.tsx before rendering admin controls |
+| `@Public()` on a new endpoint that should require auth | Unauthenticated access to data | Audit every `@Public()` usage — should only be on auth endpoints (`/auth/login`, `/auth/register`) |
+| Classic PAT stored as GitHub secret with `write:packages` | If GitHub secret is compromised, attacker can push malicious images | Use a separate PAT with `read:packages` only for Coolify; use `write:packages` only in GitHub Actions GITHUB_TOKEN (auto-generated) |
 
 ---
 
 ## UX Pitfalls
 
-Common user experience mistakes specific to this animation feature set.
-
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| Matrix rain obscures portfolio content (text readability) | Recruiters cannot read hero heading, skills, or project descriptions | Apply the canvas with low opacity (0.05-0.15) and `z-index: -1`; verify text contrast with Lighthouse accessibility audit |
-| Animation starts playing during initial page load before content is ready | Users see the animation before the content it's decorating | Delay canvas start by 100-200ms with `setTimeout`; use opacity fade-in on the canvas element itself |
-| Scroll animations block scroll momentum on iOS | iOS Safari users experience "stuck" scrolling | Never use `e.preventDefault()` in scroll listeners; use `passive: true` on all scroll event listeners |
-| Magnetic effect "follows" buttons too aggressively (large displacement) | Feels broken, not polished | Limit magnetic displacement to 20-30% of the element's size; use easing (spring physics) not linear interpolation |
-| Cursor effect lags visibly behind mouse on slower machines | Looks buggy, unprofessional | Use CSS transform (GPU-composited) not `top`/`left` for cursor positioning; keep cursor DOM element lightweight |
-| Dark theme default breaks OG image sharing (images designed for light) | Social preview images look wrong against dark background | OG images should use explicit dark backgrounds, not inherit from the page theme |
+| Admin shows "Forbidden" on member actions without role check | Contributor sees "Invite Member" button, clicks it, gets confusing 403 error | Server component checks role before rendering action buttons; Contributors see read-only view |
+| Invite link copy button shows a raw UUID token | Admin confused about what to share with invitees | Format the invite link as a full URL: `https://devcollab.yourdomain.com/join?token=UUID` |
+| Role change dropdown with no confirmation | Admin accidentally changes Admin to Viewer with a misclick | Confirmation step or undo capability for destructive role changes |
+| "Member removed" without knowing who was removed | Admin cannot verify the right person was removed | Show member name/email in the removal confirmation and in the success state |
+| Loading state missing on member list fetch | Page flashes empty state before data loads | Add `loading.tsx` to `app/w/[slug]/members/` for Suspense-based skeleton |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-Things that appear complete but are missing critical pieces.
-
-- [ ] **Matrix rain canvas:** Renders in browser — verify `cancelAnimationFrame` cleanup exists AND `prefers-reduced-motion` check skips the loop entirely
-- [ ] **Canvas SSR:** Works in `next dev` — verify `next build && next start` (production SSR) shows no `window is not defined` errors
-- [ ] **Framer Motion install:** Animations play in dev — verify they play in Strict Mode dev AND `motion/react` (not `framer-motion`) is the import
-- [ ] **Scroll animations:** Elements animate in — verify CLS is 0.0 with Chrome DevTools Performance tab after adding each animation type
-- [ ] **Lighthouse CI:** Passes locally — run `lhci autorun` (not just browser DevTools Lighthouse) using the 3-run averaging; local single runs can pass while CI fails
-- [ ] **prefers-reduced-motion:** Looks accessible — actually toggle "Reduce Motion" in OS Settings and verify the portfolio is completely static (not just slower)
-- [ ] **Magnetic buttons:** Looks polished on desktop — open on a real iPhone/Android and verify buttons have no broken snap-to-position behavior
-- [ ] **Custom cursor:** Custom cursor shows — verify `pointer-events: none` is set on the cursor element (click on a button, it must work)
-- [ ] **Dark theme default:** Dark mode looks correct — verify light mode still works by toggling the theme toggle (both directions)
-- [ ] **GSAP cleanup:** Animations run — navigate to portfolio, then to `/dashboard`, then back; verify animations play exactly once and no console errors appear
-- [ ] **Monorepo isolation:** Portfolio animations work — verify `turbo run build` shows `apps/api` and `apps/devcollab-api` did NOT rebuild due to the animation changes
+- [ ] **NEXT_PUBLIC_API_URL:** Set in Coolify env → verify by opening browser devtools and checking the actual URL in `fetch()` calls — it must be the production domain, not `localhost:3003`
+- [ ] **GHCR auth:** Coolify shows image pulled → verify the timestamp on the image in Coolify UI matches the latest GitHub Actions push, not an older cached version
+- [ ] **CORS:** Login succeeds with 200 → verify the `devcollab_token` cookie actually appears in Application > Cookies in Chrome DevTools after login
+- [ ] **Prisma client:** API container starts → verify by calling an actual database-backed endpoint (e.g., `GET /workspaces`) returns data, not 500
+- [ ] **Admin UI permissions:** Admin can see controls → verify Contributor and Viewer navigating to `/w/slug/members` see a read-only view, not action buttons
+- [ ] **New API endpoints:** Returns data for Admin → verify with curl using a Contributor JWT token that the endpoint returns 403, not 200
+- [ ] **Invite link URL:** Copy button copies "token string" → verify the copied value is a full URL (`https://...`) that opens the `/join` page when pasted in a browser
+- [ ] **Migrations:** New columns exist → verify by connecting to the production database directly and running `\d workspace_members` (or equivalent) to confirm schema matches local
 
 ---
 
 ## Recovery Strategies
 
-When pitfalls occur despite prevention, how to recover.
-
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Canvas `window is not defined` in production | LOW | Move all browser API access inside `useEffect`; run `next build` locally to confirm before pushing |
-| RAF memory leak discovered (heap growing) | LOW | Add `return () => cancelAnimationFrame(rafRef.current)` to `useEffect`; test with React Strict Mode double-mount |
-| Lighthouse CI fails after adding canvas | MEDIUM | Add 100ms delay to canvas start; cap to 30fps; add `aria-hidden`; run local `lhci` to verify before pushing |
-| Framer Motion dev-mode animations broken | LOW | Uninstall `framer-motion`, install `motion`; change all imports to `motion/react`; clear `.next` cache |
-| GSAP ScrollTrigger ghost triggers | MEDIUM | Replace all `useEffect(gsap...)` with `useGSAP(...)`; add `scope` parameter; navigate through pages 3x to verify no doubles |
-| CLS score dropped (scroll animations) | MEDIUM | Audit each animated element: replace any `y` offset with `transform: translateY` in CSS; remove `height`/`margin` animations |
-| Dark theme migration breaks contrast | MEDIUM | Revert CSS changes; only change `defaultTheme="dark"` in ThemeProvider; re-run WCAG contrast validation on the semantic tokens |
-| Custom cursor blocks clicks | LOW | Add `pointer-events: none` to cursor element immediately; verify with DevTools element picker |
+| NEXT_PUBLIC baked as localhost | MEDIUM | Add `--build-arg NEXT_PUBLIC_API_URL=...` to GitHub Actions; trigger new build; old image is still running until new one deploys |
+| GHCR auth fails on Coolify | LOW | SSH to VPS as root; `docker login ghcr.io`; in Coolify UI click "Force Redeploy" |
+| CORS blocking cookies | LOW | Set `DEVCOLLAB_WEB_URL` in Coolify env; redeploy API (runtime env var, takes effect on restart) |
+| Prisma client missing from Docker | HIGH | Rebuild image with corrected Dockerfile; push to GHCR; redeploy via Coolify; no data loss but deployment downtime |
+| Migration ran before DB ready | LOW | In Coolify, redeploy to trigger fresh container start; or SSH and run `docker exec devcollab-api npx prisma migrate deploy` manually |
+| 403 on new endpoint (missing @CheckAbility) | LOW | Add decorator to controller method; push; CI builds new image; Coolify redeploys |
+| Admin controls visible to non-admins | LOW | Add server-side role check to page; push; CI/CD deploys; no data exposure, only UX fix |
 
 ---
 
 ## Pitfall-to-Phase Mapping
 
-How roadmap phases should address these pitfalls.
-
 | Pitfall | Severity | Prevention Phase | Verification |
 |---------|----------|------------------|--------------|
-| Pitfall 1: Canvas `window is not defined` | CRITICAL | Matrix rain canvas phase — before writing animation logic | `next build && next start` zero errors; no blank canvas in production |
-| Pitfall 2: RAF memory leak | CRITICAL | Matrix rain canvas phase — same day as animation loop | React Strict Mode double-mount shows no duplicate loops; Chrome Memory tab stable after 10 navigations |
-| Pitfall 3: Canvas causes LCP regression | CRITICAL | Matrix rain canvas phase — after animation works | `lhci autorun` performance score >= 0.9 with canvas enabled |
-| Pitfall 4: Wrong Framer Motion package | CRITICAL | Scroll animations phase — day one, package install | `motion/react` import; Strict Mode animations play correctly in dev |
-| Pitfall 5: Missing prefers-reduced-motion | CRITICAL | First animation phase (applied globally) — checked on every subsequent animation addition | OS "Reduce Motion" enabled: portfolio fully static; canvas loop exits immediately |
-| Pitfall 6: GSAP ScrollTrigger leaks | HIGH | Scroll animations phase | Navigate to portfolio → other page → back; scroll animations play once only |
-| Pitfall 7: Dark theme migration breaks tokens | HIGH | Dark-first theme phase | Both themes verified in Lighthouse; WCAG contrast validation script passes for dark-first |
-| Pitfall 8: Scroll animations cause CLS | HIGH | Scroll animations phase | CLS = 0.0 in Chrome Performance tab; Lighthouse score unchanged from baseline |
-| Pitfall 9: Magnetic/parallax broken on mobile | HIGH | Magnetic buttons phase | Real device testing on iOS Safari; magnetic buttons absent (not broken) on touch |
-| Pitfall 10: Custom cursor breaks interactions | HIGH | Cursor effects phase | Keyboard navigation test; `pointer-events: none` verified; high-contrast cursor test |
-| Pitfall 11: Monorepo bundle isolation | HIGH | Package install phase (first animation dependency) | `turbo run build --dry-run` shows only `apps/web` affected; `apps/api` cache unchanged |
+| NEXT_PUBLIC_API_URL baked at build time | CRITICAL | Deployment setup phase | Browser devtools confirms fetch URL is production domain |
+| GHCR auth — docker login as root | CRITICAL | Deployment setup phase | `docker pull ghcr.io/org/devcollab-web:latest` succeeds as root on VPS |
+| NestJS CORS wrong origin | CRITICAL | Deployment setup phase | `curl -v OPTIONS` from different origin returns correct `Access-Control-Allow-Origin` |
+| Prisma custom output path lost in Docker | CRITICAL | Deployment setup phase | `GET /workspaces` returns data (not 500); Dockerfile has `test -d` assertion |
+| Prisma migrate in container CMD | CRITICAL | Deployment setup phase | Container starts in < 5 seconds; no migration error in logs |
+| Internal Docker hostname for server fetches | HIGH | Deployment setup phase (MVP optional) | Page load time < 100ms for server components |
+| Missing @CheckAbility on new endpoint | HIGH | Every phase adding API endpoints | Contributor JWT gets 403 on admin endpoints |
+| Admin UI visible to non-admins | HIGH | Admin UI implementation phase | Contributor session sees read-only member list |
+| Next.js 15 async params/cookies | HIGH | Every phase adding new pages | TypeScript type: `params: Promise<{ slug: string }>`; `await params` in component |
+| Standalone static files not copied | HIGH | Any phase adding public assets | `curl` the production container for a static file URL |
+| Optimistic UI role change flash | MEDIUM | Member management implementation | No visible flicker on role change in browser recording |
 
 ---
 
 ## Sources
 
-**Canvas / SSR / Hydration:**
-- [Next.js Hydration Error docs](https://nextjs.org/docs/messages/react-hydration-error) — official hydration mismatch documentation (HIGH confidence)
-- [Next.js Discussion #72236: `ssr: false` not working in Next.js 15](https://github.com/vercel/next.js/discussions/72236) — confirmed regression requiring wrapper Client Component (HIGH confidence)
-- [CSS-Tricks: requestAnimationFrame with React hooks](https://css-tricks.com/using-requestanimationframe-with-react-hooks/) — cleanup patterns (HIGH confidence)
-- [Memory Leaks in React & Next.js (Jan 2026)](https://medium.com/@essaadani.yo/memory-leaks-in-react-next-js-what-nobody-tells-you-91c72b53d84d) — RAF leak benchmarked at ~8KB/cycle (MEDIUM confidence)
+**NEXT_PUBLIC build-time footgun:**
+- [Next.js Environment Variables docs](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables) — confirms `NEXT_PUBLIC_*` inlined at build time (HIGH confidence — official)
+- [Next.js environment switching in 2025](https://gdsks.medium.com/next-js-environment-switching-in-2025-build-once-deploy-anywhere-efe76c55c09f) — build-once deploy-anywhere patterns (MEDIUM confidence)
+- Direct codebase analysis: `apps/devcollab-web/app/dashboard/page.tsx` line 5 — `NEXT_PUBLIC_API_URL ?? 'http://localhost:3003'` (HIGH confidence — direct code)
 
-**Framer Motion / motion/react:**
-- [Motion GitHub Issue #2668](https://github.com/motiondivision/motion/issues/2668) — React 19 incompatibility confirmed resolved in framer-motion@12+ / `motion` package (HIGH confidence)
-- [Motion bundle size docs](https://motion.dev/docs/react-reduce-bundle-size) — 34KB full, ~15KB with LazyMotion domAnimation (HIGH confidence)
-- [Next.js Discussion #72228: framer-motion in Next.js 15](https://github.com/vercel/next.js/discussions/72228) — import path issues (HIGH confidence)
+**Coolify GHCR authentication:**
+- [Coolify GitHub Issue #4604: Unable to use GitHub registry with Docker image resources](https://github.com/coollabsio/coolify/issues/4604) — root user credential requirement confirmed (HIGH confidence — confirmed bug)
+- [Coolify Docs: Expired GitHub Personal Access Token](https://coolify.io/docs/troubleshoot/docker/expired-github-personal-access-token) — official troubleshooting (HIGH confidence)
+- [GitHub Docs: Working with the Container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) — PAT scopes for GHCR (HIGH confidence — official)
 
-**GSAP + Next.js 15:**
-- [GSAP React Resources](https://gsap.com/resources/React/) — `useGSAP` cleanup requirements, `contextSafe`, Strict Mode behavior (HIGH confidence — official GSAP docs)
-- [Optimizing GSAP in Next.js 15](https://medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15-best-practices-for-initialization-and-cleanup-2ebaba7d0232) — cleanup best practices (MEDIUM confidence)
-- [GSAP community: ScrollTrigger in Next.js with useGSAP](https://gsap.com/community/forums/topic/40128-using-scrolltriggers-in-nextjs-with-usegsap/) — official community guidance (HIGH confidence)
+**NestJS CORS with credentials:**
+- [NestJS CORS Documentation](https://docs.nestjs.com/security/cors) — credentials + exact origin requirement (HIGH confidence — official)
+- [The Ultimate NestJS CORS Guide](https://felixastner.com/articles/the-ultimate-nestjs-cors-guide-fixing-5-common-production-errors) — production CORS patterns (MEDIUM confidence)
+- Direct codebase analysis: `apps/devcollab-api/src/main.ts` — `DEVCOLLAB_WEB_URL || 'http://localhost:3002'` (HIGH confidence)
 
-**Accessibility / prefers-reduced-motion:**
-- [Pope Tech Blog: Accessible animation (Dec 2025)](https://blog.pope.tech/2025/12/08/design-accessible-animation-and-movement/) — WCAG 2.3.3 requirements (HIGH confidence)
-- [CSS-Tricks: prefers-reduced-motion](https://css-tricks.com/almanac/rules/m/media/prefers-reduced-motion/) — implementation patterns (HIGH confidence)
-- [Custom Cursor Accessibility (dbushell.com, Oct 2025)](https://dbushell.com/2025/10/27/custom-cursor-accessibility/) — cursor accessibility violations (HIGH confidence — recent, specific)
+**Next.js 15 async params/cookies:**
+- [Next.js 15 Async APIs migration guide](https://nextjs.org/docs/messages/sync-dynamic-apis) — official breaking change docs (HIGH confidence)
+- [Next.js 15 Release Notes](https://nextjs.org/blog/next-15) — async cookies/headers/params (HIGH confidence — official)
+- [Supabase issue: new asynchronous cookies() in Next.js 15](https://github.com/supabase/supabase/issues/30021) — ecosystem impact (MEDIUM confidence)
 
-**CLS / Lighthouse:**
-- [Chrome Developers: Lighthouse Performance Scoring](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring) — CLS is 25% of score; LCP is 25% (HIGH confidence)
-- [DebugBear: 2025 In Review Web Performance](https://www.debugbear.com/blog/2025-in-web-performance) — INP replaced FID; current metric weights (HIGH confidence)
-- [Scroll animations techniques 2025](https://mroy.club/articles/scroll-animations-techniques-and-considerations-for-2025) — CLS-safe animation patterns (MEDIUM confidence)
+**Prisma custom output path + Docker:**
+- [Prisma Issue #25833: Cannot find module '.prisma/client/default' with custom output](https://github.com/prisma/prisma/issues/25833) — custom output Docker failure (HIGH confidence — confirmed issue)
+- [Prisma Turborepo Guide](https://www.prisma.io/docs/guides/turborepo) — generate before build requirement (HIGH confidence — official)
+- Direct codebase analysis: `packages/devcollab-database/prisma/schema.prisma` — `output = "../../../node_modules/.prisma/devcollab-client"` (HIGH confidence)
 
-**Dark theme / Radix Colors / Tailwind v4:**
-- [Tailwind GitHub Discussion #16517: dark mode issues in v4](https://github.com/tailwindlabs/tailwindcss/discussions/16517) — confirmed `@custom-variant` conflicts (HIGH confidence)
-- [iifx.dev: Enabling class-based dark mode Next.js 15 + Tailwind 4](https://iifx.dev/en/articles/456423217/solved-enabling-class-based-dark-mode-with-next-15-next-themes-and-tailwind-4) — `@custom-variant` configuration (MEDIUM confidence)
-- [Medium: Theme colors with Tailwind v4 and next-themes](https://medium.com/@kevstrosky/theme-colors-with-tailwind-css-v4-0-and-next-themes-dark-light-custom-mode-36dca1e20419) — dark-first default pattern (MEDIUM confidence)
+**Coolify internal networking:**
+- [Host NestJS Microservices on Coolify](https://www.arijit.dev/blog/host-nestjs-microservices-on-coolify) — internal Docker DNS patterns (MEDIUM confidence)
+- [How to add Redis in Coolify with NestJS](https://peturgeorgievv.com/blog/how-to-add-redis-in-coolify-with-nestjs) — internal hostname pattern (MEDIUM confidence)
 
-**Mobile / Touch / Performance:**
-- [MDN: mousemove event](https://developer.mozilla.org/en-US/docs/Web/API/Element/mousemove_event) — single synthetic event on touch (HIGH confidence)
-- [Apple Support: Reduce Motion on iOS](https://support.apple.com/en-us/111781) — OS-level prefers-reduced-motion (HIGH confidence)
-- [Direct codebase analysis: `apps/web/lighthouserc.json`](file://.) — `minScore: 0.9` performance gate confirmed (HIGH confidence — direct code)
+**CASL deny-by-default:**
+- Direct codebase analysis: `apps/devcollab-api/src/guards/casl-auth.guard.ts` lines 52-56 — explicit ForbiddenException for missing @CheckAbility (HIGH confidence)
+- Direct codebase analysis: `apps/devcollab-api/src/workspaces/workspace-ability.factory.ts` — full RBAC matrix (HIGH confidence)
+
+**Optimistic UI race condition:**
+- [Next.js Issue #49619: useOptimistic revert before revalidatePath render](https://github.com/vercel/next.js/issues/49619) — confirmed race condition (HIGH confidence — confirmed bug)
+- [Next.js docs: Server Actions and Mutations](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations) — recommended patterns (HIGH confidence — official)
+
+**Next.js standalone static files:**
+- [Next.js Issue #33895: outputStandalone does not include public directory](https://github.com/vercel/next.js/issues/33895) — confirmed behavior (HIGH confidence)
+- [Next.js output standalone docs](https://nextjs.org/docs/pages/api-reference/config/next-config-js/output) — manual copy required (HIGH confidence — official)
+- Direct codebase analysis: `apps/devcollab-web/Dockerfile` — `2>/dev/null || true` pattern on public copy (HIGH confidence)
 
 ---
 
-*Pitfalls research for: Matrix-animation additions to existing Next.js 15 portfolio (Turborepo monorepo, Tailwind v4, Radix Colors, Shadcn UI)*
-*Researched: 2026-02-18*
-*Confidence: HIGH — all critical pitfalls verified against official documentation, confirmed GitHub issues, or direct codebase analysis*
+*Pitfalls research for: Coolify deployment (Next.js 15 standalone + NestJS 11 from GHCR) + DevCollab invite/member management admin UI (Next.js 15 App Router + NestJS CASL)*
+*Researched: 2026-02-19*
+*Confidence: HIGH on all critical pitfalls — verified against official documentation, confirmed GitHub issues, or direct codebase analysis*

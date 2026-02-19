@@ -1,8 +1,8 @@
-# Architecture Research: Matrix-Aesthetic Portfolio Redesign
+# Architecture Research
 
-**Domain:** Animation integration into existing Next.js 15 App Router portfolio site
-**Researched:** 2026-02-18
-**Confidence:** HIGH (client/server boundaries, hydration patterns, canvas SSR); MEDIUM (Tailwind v4 token migration, Framer Motion App Router specifics); LOW (canvas Lighthouse impact at specific animation density)
+**Domain:** Coolify multi-service deployment + DevCollab UI gaps (full-stack monorepo)
+**Researched:** 2026-02-19
+**Confidence:** HIGH (Coolify networking, Next.js auth pattern, existing API endpoints); MEDIUM (Coolify GHCR pull auth, env var baking tradeoffs)
 
 ---
 
@@ -11,848 +11,641 @@
 ### System Overview
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│                      apps/web — Next.js 15 App Router              │
-├────────────────────────────────────────────────────────────────────┤
-│  (portfolio) Route Group — Server Components by default            │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐   │
-│  │ /page.tsx  │  │ /about     │  │ /projects  │  │ /resume    │   │
-│  │ (RSC)      │  │ /page.tsx  │  │ /page.tsx  │  │ /page.tsx  │   │
-│  │            │  │ (RSC)      │  │ (RSC)      │  │ (RSC)      │   │
-│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘   │
-│        │               │               │               │           │
-│        └───────────────┴───────────────┴───────────────┘           │
-│                                │                                    │
-│                   ┌────────────▼───────────────┐                   │
-│                   │ (portfolio)/layout.tsx (RSC)│                   │
-│                   │  + MotionProvider (client)  │                   │
-│                   │  + .matrix-theme class      │                   │
-│                   │  PortfolioNav (client)      │                   │
-│                   │  PortfolioFooter (RSC)      │                   │
-│                   │  CommandPalette (client)    │                   │
-│                   └────────────┬───────────────┘                   │
-│                                │                                    │
-├────────────────────────────────┼───────────────────────────────────┤
-│               CLIENT BOUNDARY (all animations live here)           │
-├────────────────────────────────┼───────────────────────────────────┤
-│                                │                                    │
-│  ┌────────────────────────────────────────────────────────────┐    │
-│  │          New Animation Client Components ("use client")    │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │    │
-│  │  │  MatrixRainCanvas   │  │  AnimatedHeroSection        │  │    │
-│  │  │  canvas + rAF loop  │  │  Framer Motion m.div        │  │    │
-│  │  │  dynamic(ssr:false) │  │  wraps RSC hero children    │  │    │
-│  │  └─────────────────────┘  └─────────────────────────────┘  │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │    │
-│  │  │  GlitchText         │  │  MotionProvider             │  │    │
-│  │  │  CSS @keyframes     │  │  LazyMotion + MotionConfig  │  │    │
-│  │  │  + useReducedMotion │  │  reducedMotion="user"       │  │    │
-│  │  └─────────────────────┘  └─────────────────────────────┘  │    │
-│  └────────────────────────────────────────────────────────────┘    │
-│                                                                     │
-├────────────────────────────────────────────────────────────────────┤
-│          CSS Token Layer (globals.css + @theme inline)             │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  Layer 1: Radix Colors imports (existing, unchanged)         │  │
-│  │  Layer 2: :root semantic tokens (existing + .matrix-theme)   │  │
-│  │  Layer 3: @theme inline Tailwind utilities (additive)        │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                        INTERNET / DNS                             │
+│  devcollab.fernandomillan.dev  ─────┐                            │
+│  devcollab-api.fernandomillan.dev ──┤                            │
+└─────────────────────────────────────┼────────────────────────────┘
+                                      │
+┌─────────────────────────────────────▼────────────────────────────┐
+│                 COOLIFY SERVER (Traefik Reverse Proxy)            │
+│  Let's Encrypt SSL termination, Host()-based routing              │
+│  Labels configured automatically by Coolify UI domain settings   │
+└──────────────────────────────────────────────────────────────────┘
+                                      │
+┌─────────────────────────────────────▼────────────────────────────┐
+│         DOCKER COMPOSE STACK (single Coolify resource)           │
+│  Coolify-managed bridge network — services communicate by name   │
+│                                                                   │
+│  ┌────────────────┐    ┌──────────────────┐                      │
+│  │  devcollab-web │    │  devcollab-api   │                      │
+│  │  Next.js 15    │───▶│  NestJS 11       │                      │
+│  │  port 3002     │    │  port 3003       │                      │
+│  │  standalone    │    │  CASL + JWT      │                      │
+│  └────────────────┘    └────────┬─────────┘                      │
+│                                 │                                 │
+│               ┌─────────────────▼──────────────┐                 │
+│               │       devcollab-postgres        │                 │
+│               │       postgres:16-alpine        │                 │
+│               │       port 5432 (internal only) │                 │
+│               └────────────────────────────────┘                 │
+│                                                                   │
+│  devcollab-migrate (one-shot: runs prisma migrate deploy, exits) │
+└──────────────────────────────────────────────────────────────────┘
+
+NOTE: teamflow-web, teamflow-api, teamflow-postgres, and Redis live
+in a SEPARATE Coolify stack on the same server. No cross-stack
+communication is needed — each product is fully isolated.
 ```
 
 ### Component Responsibilities
 
-| Component | Type | Responsibility | New or Modified |
-|-----------|------|----------------|-----------------|
-| `(portfolio)/layout.tsx` | RSC | Shell: nav + footer + command palette. Add MotionProvider + matrix-theme class. | Modified |
-| `(portfolio)/page.tsx` | RSC | Home page markup. Imports `AnimatedHeroSection` wrapping existing hero. | Modified |
-| `PortfolioNav` | Client (existing) | Already client (uses `usePathname`). Matrix terminal-style active-link CSS. | Modified (CSS only) |
-| `HeroSection` | RSC (existing) | Stays RSC. Content passes as `children` to `AnimatedHeroSection`. | Unchanged |
-| `MatrixRainCanvas` | **Client (new)** | Canvas element + `requestAnimationFrame` loop. Uses `dynamic(ssr:false)`. | New |
-| `AnimatedHeroSection` | **Client (new)** | Wraps RSC hero children with Framer Motion entrance animation. | New |
-| `GlitchText` | **Client (new)** | CSS `@keyframes` glitch effect on headings. Respects `useReducedMotion`. | New |
-| `MotionProvider` | **Client (new)** | `LazyMotion` + `MotionConfig reducedMotion="user"`. In portfolio layout. | New |
-| `ThemeProvider` | Client (existing) | `next-themes` wrapper. Already in `app/layout.tsx`. | Unchanged |
-| `globals.css` | CSS | Add Matrix color tokens; add `.matrix-theme` block; keep all existing tokens. | Modified (additive) |
+| Component | Responsibility | Implementation |
+|-----------|----------------|----------------|
+| Traefik (Coolify-managed) | SSL termination, domain routing via Host() labels | Set domain in Coolify UI; labels auto-generated |
+| devcollab-web | UI pages, SSR data fetching, httpOnly cookie auth gate | Next.js 15, standalone output, port 3002 |
+| devcollab-api | Business logic, CASL RBAC, JWT via httpOnly cookie, Prisma ORM | NestJS 11, port 3003 |
+| devcollab-postgres | Persistent storage for devcollab domain | postgres:16-alpine, internal port 5432 |
+| devcollab-migrate | One-shot Prisma migration runner | Exits cleanly; API depends on `service_completed_successfully` |
+| GitHub Actions CI | Test, build Docker images, push to GHCR, trigger Coolify webhook | `.github/workflows/deploy.yml` |
 
 ---
 
-## Question 1: Client/Server Boundary Decisions
+## New Files vs Modified Files
 
-### The Core Rule
+### Coolify Deployment
 
-Next.js 15 App Router renders all components as React Server Components (RSC) by default. Animations require DOM access and browser APIs unavailable server-side. The boundary is created with `"use client"`.
+**New files to create:**
 
-**Decision principle:** Push the `"use client"` boundary as far down the tree as possible. Server components can import and render client components. Client components cannot render server components as children except via the `children` prop pattern.
+| File | Purpose |
+|------|---------|
+| `coolify-compose.yml` | Production Docker Compose used by Coolify. Contains devcollab-web, devcollab-api, devcollab-postgres, devcollab-migrate. References GHCR images (not build: blocks). No `networks:` keys — Coolify manages networking. |
 
-### Boundary Map for the Portfolio
+**Existing files to modify:**
 
-```
-app/layout.tsx (RSC)
-  └── ThemeProvider (client, existing) — must be client for next-themes
-      └── (portfolio)/layout.tsx (RSC) — stays RSC
-          └── MotionProvider (client, new) — LazyMotion context
-              ├── PortfolioNav (client, existing — uses usePathname)
-              │     CSS-only Matrix styling added here; no new boundary
-              ├── main > {children} (RSC pages flow through)
-              │     └── (portfolio)/page.tsx (RSC)
-              │           └── AnimatedHeroSection (CLIENT, new)
-              │                 ├── RSC hero content (children — server-rendered)
-              │                 └── MatrixRainCanvas (CLIENT, dynamic ssr:false)
-              └── PortfolioFooter (RSC — no interaction needed)
-```
+| File | What changes | Why |
+|------|--------------|-----|
+| `apps/devcollab-web/Dockerfile` | Add `ARG NEXT_PUBLIC_API_URL` and `ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL` before the builder RUN stage | NEXT_PUBLIC vars are baked into the JS bundle at build time; must arrive via `--build-arg` in CI — cannot be set at runtime |
+| `.github/workflows/deploy.yml` | Add `build-args: NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev` to the devcollab-web Docker build step; add separate Coolify webhook trigger job for the devcollab stack (`COOLIFY_DEVCOLLAB_WEBHOOK` secret) | CI currently only triggers the teamflow Coolify webhook in the `deploy` job; devcollab needs its own trigger |
+| `apps/devcollab-api/src/main.ts` | Change the `enableCors` origin from fallback `http://localhost:3002` to read `process.env.DEVCOLLAB_WEB_URL` with the production domain as the expected value | CORS will block browser fetches in production if origin does not match |
 
-**Key insight:** The existing `HeroSection` is a pure RSC. Rather than converting it, wrap it: create `AnimatedHeroSection` as a client component that receives the hero content as `children`. This keeps the hero text markup server-rendered (good for SEO and LCP) while the animation layer hydrates on the client.
-
-```typescript
-// components/portfolio/animated-hero-section.tsx
-'use client';
-import { m } from 'framer-motion';
-
-interface AnimatedHeroSectionProps {
-  children: React.ReactNode; // RSC children pass through — valid pattern
-}
-
-export function AnimatedHeroSection({ children }: AnimatedHeroSectionProps) {
-  return (
-    <section className="relative overflow-hidden">
-      {/* Canvas behind content — absolutely positioned, decorative */}
-      <MatrixRainCanvasLazy />
-      {/* Animated wrapper — children are the RSC hero content */}
-      <m.div
-        className="relative z-10"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        {children}
-      </m.div>
-    </section>
-  );
-}
-```
-
-```typescript
-// app/(portfolio)/page.tsx — RSC, structure barely changes
-import { HeroSection } from '@/components/portfolio/hero-section';
-import { AnimatedHeroSection } from '@/components/portfolio/animated-hero-section';
-
-export default function HomePage() {
-  return (
-    <>
-      <AnimatedHeroSection>
-        <HeroSection />   {/* RSC passed as children — valid */}
-      </AnimatedHeroSection>
-      {/* rest of page content unchanged */}
-    </>
-  );
-}
-```
-
-### Boundary Decision Table
-
-| Component | Boundary Decision | Reason |
-|-----------|------------------|--------|
-| `(portfolio)/layout.tsx` | RSC | No interactive state needed at layout level |
-| `MotionProvider` | Client | `LazyMotion` and React context providers must be client |
-| `AnimatedHeroSection` | Client | Uses `m.div` (Framer Motion) — needs DOM |
-| `MatrixRainCanvas` | Client + `dynamic(ssr:false)` | Canvas API not available server-side |
-| `GlitchText` | Client | Uses `useReducedMotion` hook — needs browser |
-| `HeroSection` | RSC (unchanged) | Static content; passed as children |
-| `ProjectCard` | RSC (unchanged) if no hover animation; Client if `m.div` added | Depends on whether hover animation is CSS-only or Framer Motion |
-| `TechStack` | RSC (unchanged) | CSS hover via Tailwind is RSC-safe |
-| `PortfolioFooter` | RSC (unchanged) | No interaction |
-
----
-
-## Question 2: Canvas-Based Matrix Rain in SSR Context
-
-### The Problem
-
-`<canvas>` requires the DOM. During SSR, there is no DOM. Any component that calls `useRef` on a canvas and starts a `requestAnimationFrame` loop will throw during server rendering.
-
-### The Solution: `dynamic` with `ssr: false`
-
-`next/dynamic` with `{ ssr: false }` skips server rendering for the component entirely. Next.js does not attempt to render it in the server HTML. The component mounts on the client after hydration.
-
-```typescript
-// In animated-hero-section.tsx (which is already "use client"):
-import dynamic from 'next/dynamic';
-
-const MatrixRainCanvasLazy = dynamic(
-  () => import('./matrix-rain-canvas').then(m => m.MatrixRainCanvas),
-  {
-    ssr: false,
-    loading: () => null, // No loading state — canvas appears on hydration, no flash
-  }
-);
-```
-
-```typescript
-// components/portfolio/matrix-rain-canvas.tsx
-'use client';
-import { useEffect, useRef } from 'react';
-
-const MATRIX_GREEN = '#00FF41';
-const MATRIX_DARK = 'rgba(0, 13, 3, 0.05)'; // semi-transparent fade per frame
-
-export function MatrixRainCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationIdRef = useRef<number>(0); // useRef NOT useState — no rerender on mutation
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Respect prefers-reduced-motion — skip loop entirely
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    const fontSize = 14;
-    const cols = Math.floor(canvas.width / fontSize);
-    const drops: number[] = Array(cols).fill(1);
-
-    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
-
-    // Cap at 30fps to protect Lighthouse performance score
-    let lastTime = 0;
-    const FPS_CAP = 30;
-    const INTERVAL = 1000 / FPS_CAP;
-
-    const animate = (timestamp: number) => {
-      animationIdRef.current = requestAnimationFrame(animate);
-      if (timestamp - lastTime < INTERVAL) return;
-      lastTime = timestamp;
-
-      // Semi-transparent overlay creates fade trail effect
-      ctx.fillStyle = MATRIX_DARK;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = MATRIX_GREEN;
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const char = CHARS[Math.floor(Math.random() * CHARS.length)];
-        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    };
-
-    animationIdRef.current = requestAnimationFrame(animate);
-
-    // Cleanup: prevents memory leaks and stacked loops on navigation
-    return () => {
-      cancelAnimationFrame(animationIdRef.current);
-      window.removeEventListener('resize', resize);
-    };
-  }, []); // Empty deps: run once on mount
-
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"       // Decorative — screen readers must skip
-      className="absolute inset-0 w-full h-full pointer-events-none opacity-20"
-      // opacity-20 keeps it ambient, not overwhelming
-    />
-  );
-}
-```
-
-### Canvas and Lighthouse Performance Gates
-
-The existing `lighthouserc.json` enforces `categories:performance: error at 0.9` on `/`, `/about`, `/projects`, `/projects/teamflow`, and `/login`.
-
-| Metric | Canvas Impact | Mitigation |
-|--------|--------------|------------|
-| **LCP** | Zero — canvas elements are excluded from LCP candidate set by all browsers | Verify hero heading remains the LCP candidate |
-| **CLS** | Zero — `position: absolute` removes canvas from document flow | No layout shift possible |
-| **INP** | Low risk — 30fps cap, GPU-composited, `pointer-events-none` | Monitor with Lighthouse post-integration |
-| **FCP** | Zero — canvas renders after hydration; FCP is the first text/image paint | Server-rendered hero text is FCP candidate |
-| **TBT** | Low risk — `rAF` loop is async, does not block the main thread | Cap frame rate, avoid heavy per-frame computation |
-
-**Critical:** Add `will-change: contents` or promote canvas to its own GPU layer via `transform: translateZ(0)` CSS to prevent the canvas animation from forcing paint invalidation on parent layers.
-
----
-
-## Question 3: Framer Motion with App Router — Avoiding Hydration Errors
-
-### Root Cause of Hydration Errors
-
-Hydration errors occur when server HTML differs from what React expects during client-side hydration. Framer Motion's `motion.*` components inject animation state into the DOM immediately at mount, which differs from static server HTML. The fix is to ensure Framer Motion components never run during SSR.
-
-The `"use client"` directive on a component file prevents that component from running on the server. Since `AnimatedHeroSection`, `GlitchText`, and any other animation components have `"use client"`, Framer Motion code inside them is safe from SSR.
-
-### Recommended Integration: `LazyMotion` + `m` Components
-
-Framer Motion's full bundle is ~34KB gzipped. Using `LazyMotion` with the `m` (lightweight) component variant reduces the initial client bundle contribution to ~4.6KB, loading animation features asynchronously. This is the performance-correct and hydration-safe pattern.
-
-```typescript
-// lib/motion-features.ts
-// Async feature loader — loaded by LazyMotion on demand
-const loadFeatures = () =>
-  import('framer-motion').then((mod) => mod.domAnimation);
-
-export default loadFeatures;
-```
-
-```typescript
-// components/providers/motion-provider.tsx
-'use client';
-import { LazyMotion, MotionConfig } from 'framer-motion';
-import loadFeatures from '@/lib/motion-features';
-
-interface MotionProviderProps {
-  children: React.ReactNode;
-}
-
-export function MotionProvider({ children }: MotionProviderProps) {
-  return (
-    <LazyMotion features={loadFeatures} strict>
-      {/* reducedMotion="user" automatically disables transform animations
-          for users with prefers-reduced-motion enabled — global accessibility gate */}
-      <MotionConfig reducedMotion="user">
-        {children}
-      </MotionConfig>
-    </LazyMotion>
-  );
-}
-```
-
-```typescript
-// app/(portfolio)/layout.tsx — add MotionProvider
-// This file is RSC. MotionProvider is a client component used as a wrapper.
-import { MotionProvider } from '@/components/providers/motion-provider';
-import { PortfolioNav } from '@/components/portfolio/nav';
-import { PortfolioFooter } from '@/components/portfolio/footer';
-import { CommandPalette } from '@/components/ui/command-palette';
-
-export default function PortfolioLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <MotionProvider>
-      <div className="matrix-theme min-h-screen flex flex-col">
-        <PortfolioNav />
-        <main className="flex-1">{children}</main>
-        <PortfolioFooter />
-        <CommandPalette />
-      </div>
-    </MotionProvider>
-  );
-}
-```
-
-### Hydration Safety Rules
-
-| Rule | Reason |
-|------|--------|
-| Put `"use client"` in every file that imports from `framer-motion` | Framer Motion accesses DOM APIs unavailable during SSR |
-| Use `m.div`, `m.span` etc. inside `LazyMotion` — never `motion.div` inside it | `motion.*` eagerly loads all features; defeats LazyMotion's bundle splitting |
-| Import `m` from `framer-motion`, not `motion` | `m` is the lightweight variant; `motion` is the full bundle |
-| `LazyMotion` must be an ancestor of all `m.*` usage | React context: features unavailable if `LazyMotion` is not above the component |
-| Do not place `AnimatePresence` in RSC files | Must be client-side; App Router navigation causes known quirks with AnimatePresence |
-| `suppressHydrationWarning` on `<html>` is already present | In `app/layout.tsx` for next-themes; covers theme flashes; no change needed |
-
-### Page Transitions Warning
-
-App Router navigation causes pages to unmount and remount. `AnimatePresence` wrapping `{children}` in a layout is documented to have quirks with App Router (vercel/next.js #49279 — App Router's aggressive client transitions interfere with AnimatePresence exit animations).
-
-**Recommendation:** Do not implement cross-page AnimatePresence transitions in this milestone. Entrance animations on individual sections (hero, project cards scrolling into view) are reliable and sufficient for the Matrix aesthetic. Page transitions can be added later once the known App Router friction is resolved upstream.
-
----
-
-## Question 4: Tailwind v4 Token Migration for Matrix Dark-First
-
-### Existing Token Architecture (Confirmed from Codebase)
-
-The project uses a 3-layer pattern in `globals.css`:
-
-- **Layer 1:** `@import "@radix-ui/colors/slate.css"` etc. Defines `--slate-1` through `--slate-12`. Dark variants loaded via separate dark CSS imports that automatically update variables when `.dark` is applied to `<html>`.
-- **Layer 2:** `:root` block defines semantic tokens (`--background: var(--slate-1)`, `--primary: var(--blue-11)`, etc.) and a `.dark` block with overrides.
-- **Layer 3:** `@theme inline` block maps semantic tokens to Tailwind utilities (`--color-background: var(--background)` → `bg-background` class).
-
-### Non-Breaking Addition Strategy
-
-**Principle: additive only.** Do not modify any existing Layer 1, 2, or 3 entries. All existing components use `bg-background`, `text-foreground`, `border-border` etc. — these must keep working.
-
-**Add a new parallel section** for Matrix colors, then override the semantic tokens scoped to a `.matrix-theme` class applied to the portfolio layout div.
-
-```css
-/* globals.css additions — append after existing content */
-
-/* ============================================================
-   Matrix color raw scale
-   No Radix dependency — defined directly as hex values
-   Verified contrast: #00FF41 on #000d03 = ~15:1 (passes WCAG AAA)
-   ============================================================ */
-:root {
-  --matrix-1:  #000d03;   /* near-black green — page background */
-  --matrix-2:  #001a07;   /* deep green — surface/card */
-  --matrix-3:  #00290d;   /* panel background */
-  --matrix-4:  #003b13;   /* hover state */
-  --matrix-5:  #005218;   /* border / separator */
-  --matrix-6:  #006e20;   /* muted / disabled */
-  --matrix-7:  #009429;   /* secondary text */
-  --matrix-8:  #00bb33;   /* placeholder */
-  --matrix-9:  #00cc38;   /* UI elements (3:1+ on --matrix-1) */
-  --matrix-10: #00e040;   /* large text / icons */
-  --matrix-11: #00FF41;   /* THE Matrix green — accent/headings ONLY */
-  --matrix-12: #80ff90;   /* near-white green — body text on dark */
-
-  /* Semantic aliases */
-  --matrix-bg:          var(--matrix-1);
-  --matrix-surface:     var(--matrix-2);
-  --matrix-border:      var(--matrix-5);
-  --matrix-text:        var(--matrix-12);
-  --matrix-text-muted:  var(--matrix-9);
-  --matrix-accent:      var(--matrix-11);
-  --matrix-glow:        rgba(0, 255, 65, 0.12);
-}
-
-/* Expose Matrix tokens as Tailwind utilities via @theme inline */
-@theme inline {
-  --color-matrix-1:           var(--matrix-1);
-  --color-matrix-2:           var(--matrix-2);
-  --color-matrix-3:           var(--matrix-3);
-  --color-matrix-4:           var(--matrix-4);
-  --color-matrix-5:           var(--matrix-5);
-  --color-matrix-6:           var(--matrix-6);
-  --color-matrix-7:           var(--matrix-7);
-  --color-matrix-8:           var(--matrix-8);
-  --color-matrix-9:           var(--matrix-9);
-  --color-matrix-10:          var(--matrix-10);
-  --color-matrix-11:          var(--matrix-11);
-  --color-matrix-12:          var(--matrix-12);
-  --color-matrix-bg:          var(--matrix-bg);
-  --color-matrix-surface:     var(--matrix-surface);
-  --color-matrix-border:      var(--matrix-border);
-  --color-matrix-text:        var(--matrix-text);
-  --color-matrix-text-muted:  var(--matrix-text-muted);
-  --color-matrix-accent:      var(--matrix-accent);
-  --color-matrix-glow:        var(--matrix-glow);
-}
-
-/* Portfolio-specific semantic token overrides
-   Scoped to .matrix-theme — applied ONLY on (portfolio)/layout.tsx
-   Does NOT affect TeamFlow dashboard, auth pages, or any other route group */
-.matrix-theme {
-  --background:         var(--matrix-bg);
-  --foreground:         var(--matrix-text);
-  --card:               var(--matrix-surface);
-  --card-foreground:    var(--matrix-text);
-  --popover:            var(--matrix-surface);
-  --popover-foreground: var(--matrix-text);
-  --primary:            var(--matrix-11);        /* #00FF41 */
-  --primary-foreground: var(--matrix-1);         /* dark text on bright green */
-  --secondary:          var(--matrix-3);
-  --secondary-foreground: var(--matrix-10);
-  --muted:              var(--matrix-3);
-  --muted-foreground:   var(--matrix-text-muted);
-  --accent:             var(--matrix-4);
-  --accent-foreground:  var(--matrix-10);
-  --border:             var(--matrix-border);
-  --input:              var(--matrix-border);
-  --ring:               var(--matrix-9);
-}
-
-/* Matrix dark mode — even darker terminal feel
-   When both .dark and .matrix-theme are active */
-.dark.matrix-theme,
-.dark .matrix-theme {
-  /* Dark mode with Matrix is the default experience.
-     The :root Matrix values above already assume dark.
-     This block handles edge cases if light mode is somehow toggled
-     on the portfolio. Keep Matrix bg even in "light" mode for brand
-     consistency — the portfolio is dark-first by design. */
-  --background: var(--matrix-1);
-  --foreground: var(--matrix-12);
-}
-```
-
-### WCAG Accessibility for Matrix Colors
-
-`#00FF41` (Matrix accent) on `#000d03` (Matrix background):
-- WCAG relative luminance of `#00FF41` = 0.6028 (green channel dominates)
-- WCAG relative luminance of `#000d03` ≈ 0.00007
-- Contrast ratio ≈ (0.6028 + 0.05) / (0.00007 + 0.05) ≈ 13.1:1 — passes WCAG AAA (7:1 threshold)
-
-**Confidence: MEDIUM** — calculated manually; verify with WebAIM Contrast Checker before shipping. The project has `@axe-core/playwright` in devDependencies and a `categories:accessibility: warn at 1.0` Lighthouse gate that will surface any failures.
-
-**Color blindness note:** `#00FF41` is near-pure saturated green. Deuteranopia/protanopia (~8% of men) reduces discrimination of green from yellow/amber. Never use `--matrix-accent` as the sole indicator of meaning — always pair with text, icons, or shape. The existing Radix Colors system handled this via their perceptually-uniform scale; the Matrix palette does not — require manual review for interactive elements.
-
----
-
-## Question 5: Suggested Build Order
-
-Build order is driven by:
-1. **Dependency order:** Token system must exist before components use it
-2. **Regression risk:** Never break Lighthouse gates; build in additive layers
-3. **Independent verifiability:** Each phase is testable in isolation
-
-### Phase A: Token Foundation (Zero Visual Change)
-
-**What:** Add Matrix color tokens to `globals.css` and `.matrix-theme` class. No components modified yet.
-**Why first:** All subsequent phases depend on having the tokens available. Zero regression risk — purely additive CSS that is not referenced by anything yet.
-**Deliverable:** `bg-matrix-bg`, `text-matrix-accent`, `border-matrix-border` Tailwind utilities available.
-**Test:** All existing visual regression snapshots pass unchanged (Matrix tokens unused).
-
-```
-Files touched: apps/web/app/globals.css
-Risk: None
-Gate: Existing snapshots unaffected
-```
-
-### Phase B: Canvas Matrix Rain (Isolated)
-
-**What:** Build `MatrixRainCanvas` client component with `dynamic(ssr:false)`. Add to a `relative`-positioned container on the home page hero only (not all pages yet).
-**Why second:** Fully standalone — no Framer Motion dependency. Test canvas performance before adding more animation layers.
-**Critical gate:** Run Lighthouse CI after this phase. Confirm performance score remains 90+. If score drops, reduce frame rate cap or animation opacity before continuing.
-**Visual regression:** Canvas renders random characters — exclude canvas from E2E screenshot comparison. Add env variable check:
-
-```typescript
-// In MatrixRainCanvas useEffect:
-if (process.env.NEXT_PUBLIC_DISABLE_MATRIX_RAIN === 'true') return;
-```
-
-Set `NEXT_PUBLIC_DISABLE_MATRIX_RAIN=true` in `.env.test` so Playwright snapshots are stable.
-
-```
-Files touched:
-  components/portfolio/matrix-rain-canvas.tsx (new)
-  components/portfolio/animated-hero-section.tsx (new — canvas + position wrapper only)
-  app/(portfolio)/page.tsx (swap HeroSection for AnimatedHeroSection wrapper)
-Risk: Moderate — canvas performance. Lighthouse gates will surface issues.
-Gate: Lighthouse performance 90+ on /
-```
-
-### Phase C: Motion Provider + Entrance Animations
-
-**What:** Add `MotionProvider` (LazyMotion + MotionConfig) to `(portfolio)/layout.tsx`. Add entrance animations to `AnimatedHeroSection` (hero text fade-in). Add scroll-triggered entrance animations to project cards.
-**Why third:** Requires stable canvas baseline from Phase B. `MotionProvider` must be in place before any `m.*` components mount.
-**Hydration check:** After first client-side load, check browser console for hydration warnings. Zero hydration errors is the pass gate.
-
-```
-Files touched:
-  components/providers/motion-provider.tsx (new)
-  lib/motion-features.ts (new)
-  app/(portfolio)/layout.tsx (add MotionProvider)
-  components/portfolio/animated-hero-section.tsx (add m.div entrance)
-  components/portfolio/project-card.tsx (add m.div with scroll trigger)
-Risk: Moderate — hydration errors possible if Framer Motion crosses client/server boundary
-Gate: Zero console hydration errors; Lighthouse 90+
-```
-
-### Phase D: Matrix Dark Theme Applied to Portfolio Routes
-
-**What:** Apply `matrix-theme` class to the wrapping `<div>` in `(portfolio)/layout.tsx`. All portfolio pages will now use Matrix-green token values. Update `PortfolioNav` with Matrix terminal styling (monospace font in nav links, green glow on active link).
-**Why fourth:** Depends on token foundation (Phase A) and animation stability (B, C). Making the visual overhaul after animations are confirmed stable is lower regression risk than doing both simultaneously.
-**Visual regression:** All portfolio route snapshots will fail intentionally — the visual redesign changes the appearance. Update baseline snapshots after confirming the new appearance is correct.
-
-```
-Files touched:
-  app/(portfolio)/layout.tsx (add matrix-theme to wrapper div)
-  components/portfolio/nav.tsx (Matrix terminal styling)
-  app/globals.css (already done in Phase A; no new changes)
-Risk: High for visual regression — expected baseline updates
-Gate: Update all portfolio snapshots in e2e/portfolio/visual-regression.spec.ts-snapshots/
-```
-
-### Phase E: Typography and Micro-Animations
-
-**What:** Add `GlitchText` client component for heading glitch on hover. Add Matrix-green glow `box-shadow` to primary buttons. CSS-only hover transitions on tech stack cards.
-**Why last:** Cosmetic polish. Each piece is independent — any can be deferred without blocking others.
-
-```
-Files touched:
-  components/portfolio/glitch-text.tsx (new)
-  components/portfolio/hero-section.tsx (use GlitchText on h1)
-  components/ui/button.tsx (add Matrix glow variant or override)
-  components/portfolio/tech-stack.tsx (CSS hover classes)
-Risk: Low — CSS only; GlitchText is simple @keyframes
-Gate: No new Lighthouse regressions
-```
-
----
-
-## Component Boundaries Reference
-
-### New Components to Create
-
-| File | Directive | Why Client |
-|------|-----------|------------|
-| `components/portfolio/matrix-rain-canvas.tsx` | `"use client"` + `dynamic(ssr:false)` | Canvas API, `requestAnimationFrame`, `window.matchMedia` — all browser-only |
-| `components/portfolio/animated-hero-section.tsx` | `"use client"` | Contains `m.div` (Framer Motion) — requires DOM; wraps canvas dynamic import |
-| `components/portfolio/animated-project-card.tsx` | `"use client"` | `m.div` for hover/scroll entrance animations |
-| `components/portfolio/glitch-text.tsx` | `"use client"` | Uses `useReducedMotion` hook from Framer Motion |
-| `components/providers/motion-provider.tsx` | `"use client"` | `LazyMotion`, `MotionConfig` — React context providers |
-| `lib/motion-features.ts` | Module (no directive) | Pure async feature loader for `LazyMotion` — no DOM access |
-
-### Modified Components (Existing)
-
-| File | Type of Change | Risk |
-|------|---------------|------|
-| `app/(portfolio)/layout.tsx` | Add `MotionProvider` wrapper; add `matrix-theme` class to div | LOW — additive |
-| `app/(portfolio)/page.tsx` | Swap `<HeroSection />` for `<AnimatedHeroSection><HeroSection /></AnimatedHeroSection>` | LOW |
-| `components/portfolio/hero-section.tsx` | Add `relative` positioning to outer section for canvas | LOW |
-| `components/portfolio/nav.tsx` | CSS class additions for Matrix glow styling — no logic change | LOW |
-| `app/globals.css` | Append Matrix token block; `.matrix-theme` block | LOW — additive CSS only |
-| `apps/web/package.json` | Add `framer-motion` dependency | LOW |
-
-### Components That Must Stay RSC
+**No changes needed:**
 
 | File | Reason |
 |------|--------|
-| `app/(portfolio)/page.tsx` | Must stay RSC — passes server-rendered content as children to client wrappers |
-| `app/(portfolio)/about/page.tsx` | Pure content; no animation logic at page level |
-| `app/(portfolio)/projects/page.tsx` | Lists projects; animated cards handle their own client boundary |
-| `components/portfolio/hero-section.tsx` | Content only; `AnimatedHeroSection` is the animation wrapper |
-| `components/portfolio/footer.tsx` | No interaction; stays RSC |
-| `components/portfolio/tech-stack.tsx` | Static data; CSS hover is RSC-safe |
-| `components/portfolio/case-study-section.tsx` | Static wrapper; no animation needed |
+| `apps/devcollab-web/next.config.ts` | Already has `output: 'standalone'` — correct |
+| `apps/devcollab-api/Dockerfile` | Correct; runs `prisma generate` during build, exposes port 3003 |
+| `packages/devcollab-database/Dockerfile.migrate` | Correct; runs `prisma migrate deploy` and exits |
+| `packages/devcollab-database/Dockerfile.seed` | Seed is for local dev only; production Coolify stack should NOT include the seed container (real data would be wiped) |
+
+---
+
+### DevCollab Invite UI
+
+**New files to create:**
+
+| File | Purpose |
+|------|---------|
+| `apps/devcollab-web/app/w/[slug]/members/page.tsx` | Server component. Reads `devcollab_token` cookie, fetches `GET /workspaces/:slug/members`, passes data to `MemberTable`. Auth gate is already handled by parent `w/[slug]/layout.tsx`. |
+| `apps/devcollab-web/app/w/[slug]/members/invite/page.tsx` | Server component. Renders `InvitePanel`. API Admin enforcement is done by CASL guard — non-admins see the page but the API returns 403 on generate. |
+| `apps/devcollab-web/components/members/MemberTable.tsx` | Client component. Renders a table (inline styles or Shadcn Table if installed) with Name, Email, Role Badge per member. Admin users see a role dropdown (PATCH) and Remove button (DELETE) per row. Calls API with `credentials: 'include'`. |
+| `apps/devcollab-web/components/members/InvitePanel.tsx` | Client component. "Generate Invite Link" button calls `POST /workspaces/:slug/invite-links`. Displays the returned token URL as a copyable string (e.g., `https://devcollab.fernandomillan.dev/join?token=<uuid>`). Shows 403 message if user is not Admin. |
+
+**Existing files to modify:**
+
+| File | What changes | Why |
+|------|--------------|-----|
+| `apps/devcollab-web/components/WorkspaceNav.tsx` | Add a "Members" `<a>` link: `href="/w/${slug}/members"` | The nav has Overview, Posts, Snippets, Activity links but no Members entry — the page is unreachable without a link |
+
+---
+
+### Dashboard Auth Guard
+
+**Existing files to modify:**
+
+| File | What changes | Why |
+|------|--------------|-----|
+| `apps/devcollab-web/app/dashboard/page.tsx` | Convert from `'use client'` to a server component. Read `devcollab_token` via `cookies()`, call `redirect('/login')` if absent. Move the `fetch('/workspaces')` call to server-side using the cookie header. Pass data as props to a child client component for the create-workspace form. | The current client component has no auth gate — any unauthenticated user can load the dashboard page. The form interactions still need client state, so extract a `WorkspaceList` client component for that part. |
+
+---
+
+## Recommended Project Structure (new additions only)
+
+```
+apps/devcollab-web/
+├── app/
+│   └── w/[slug]/
+│       └── members/
+│           ├── page.tsx              # Server component: member list
+│           └── invite/
+│               └── page.tsx          # Server component: invite panel
+├── components/
+│   └── members/
+│       ├── MemberTable.tsx           # Client component: role management table
+│       └── InvitePanel.tsx           # Client component: generate invite URL
+
+coolify-compose.yml                   # Root of monorepo — Coolify production stack
+```
 
 ---
 
 ## Architectural Patterns
 
-### Pattern 1: RSC Shell + Client Animation Leaf
+### Pattern 1: Server Component Auth Gate (extend to dashboard)
 
-**What:** RSC page renders content. A thin client wrapper applies animation. Content stays server-rendered.
-**When to use:** Any existing RSC component that needs entrance animations.
-**Trade-offs:** One more file per animated section. Avoids converting RSC pages to client which would re-render all children client-side and degrade LCP.
+**What:** Server components read the `devcollab_token` httpOnly cookie using Next.js `cookies()` and call `redirect('/login')` before any rendering occurs.
 
+**When to use:** Any page route that requires authentication. The `w/[slug]/layout.tsx` already implements this correctly for all workspace sub-routes. The `/dashboard` route currently bypasses this because it is `'use client'`.
+
+**Trade-offs:** Server-side redirect means zero flash of unauthenticated content. The Next.js layer does not validate the JWT cryptographically — it only checks presence. The API validates the JWT on every data fetch, which is the correct separation of concerns.
+
+**Example — applying to dashboard:**
 ```typescript
-// Pattern: RSC page wraps RSC content in client animation shell
-<AnimatedHeroSection>  {/* CLIENT — animation wrapper */}
-  <HeroSection />      {/* RSC — server-rendered content */}
-</AnimatedHeroSection>
+// apps/devcollab-web/app/dashboard/page.tsx
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+
+async function getWorkspaces(token: string) {
+  const res = await fetch(`${API_URL}/workspaces`, {
+    headers: { Cookie: `devcollab_token=${token}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('devcollab_token')?.value;
+  if (!token) redirect('/login');
+
+  const workspaces = await getWorkspaces(token);
+  // render server-side with data; extract client components for form interactions
+}
 ```
-
-### Pattern 2: Dynamic Import for Browser-Only Components
-
-**What:** `next/dynamic` with `ssr: false` for canvas and other browser-only components.
-**When to use:** Canvas, WebGL, `window.*`, `document.*`, third-party browser-only libraries.
-**Trade-offs:** Component is absent from SSR HTML. Use `loading: () => null` to prevent layout shift on hydration. Never use `ssr: false` for content that matters for SEO or LCP.
-
-```typescript
-const MatrixRainCanvasLazy = dynamic(
-  () => import('./matrix-rain-canvas').then(m => m.MatrixRainCanvas),
-  { ssr: false, loading: () => null }
-);
-```
-
-### Pattern 3: Scoped Theme Override via CSS Class
-
-**What:** A `.matrix-theme` class on the portfolio layout wrapper overrides Layer 2 semantic tokens (CSS variable values) for the portfolio route group only.
-**When to use:** When the visual redesign must not affect other app routes (TeamFlow dashboard, auth pages).
-**Trade-offs:** More CSS specificity to manage. Must document clearly. The `.dark` Radix Colors override still works correctly because both `.dark` and `.matrix-theme` can be active simultaneously.
-
-```css
-.matrix-theme { /* --background: --matrix-bg; --primary: --matrix-11; etc. */ }
-/* Both active: class="dark matrix-theme" on the layout div — valid */
-```
-
-### Pattern 4: Reduced Motion as Animation Gate
-
-**What:** `MotionConfig reducedMotion="user"` disables Framer Motion transforms globally for the portfolio. Canvas uses `window.matchMedia('(prefers-reduced-motion: reduce)')` for the same check.
-**When to use:** All animations — non-negotiable for Lighthouse accessibility gate.
-**Trade-offs:** None — required for WCAG 2.1 success criterion 2.3.3.
-
-```typescript
-// Framer Motion: handled globally in MotionProvider
-<MotionConfig reducedMotion="user">...</MotionConfig>
-
-// Canvas: manual check in useEffect
-const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (prefersReduced) return; // Skip rAF loop
-```
-
-### Pattern 5: `useRef` for Animation Frame IDs (Not `useState`)
-
-**What:** Store `requestAnimationFrame` IDs in `useRef`, never `useState`.
-**When to use:** Every canvas animation loop.
-**Trade-offs:** None — this is the correct pattern. `useState` causes re-renders on set; re-rendering during a `rAF` loop is incorrect behavior that causes double-loop bugs and stale closures.
 
 ---
 
-## Anti-Patterns
+### Pattern 2: Server Fetch → Client Interaction (existing pattern — extend to members)
 
-### Anti-Pattern 1: Converting RSC Pages to Client for Animation
+**What:** The page (server component) fetches initial data by forwarding the cookie to the API. It passes that data as props to a client component that handles user interactions (buttons, dropdowns, form submits) via direct `fetch` with `credentials: 'include'`.
 
-**What people do:** Add `"use client"` to `app/(portfolio)/page.tsx` to use Framer Motion there directly.
-**Why it's wrong:** Converts the entire page subtree to client-side rendering. Next.js loses RSC benefits (server data fetching, smaller bundle, no JS for static content). LCP typically degrades because the hero text is now client-rendered instead of arriving in the initial HTML.
-**Do this instead:** Keep pages RSC. Create thin client wrapper components. Pass RSC content as `children` through the client boundary.
+**When to use:** All devcollab-web pages already follow this pattern (e.g., `snippets/page.tsx` fetches list server-side, interactive elements are client components). Apply for members and invite pages.
 
-### Anti-Pattern 2: Mixing `motion.*` with `LazyMotion`
+**Trade-offs:** Initial load is fast and does not require client JavaScript for the first paint. Mutations are handled by client-side fetch calls to the API, consistent with every other page in the app. No server actions required.
 
-**What people do:** Import and use `motion.div` inside a component that lives inside `<LazyMotion>`.
-**Why it's wrong:** `motion.div` eagerly loads all features regardless of `LazyMotion`, defeating the bundle split. The bundle grows back to ~34KB.
-**Do this instead:** Inside any component rendered inside `<LazyMotion>`, always import and use `m.div`, `m.span`, etc. from `framer-motion`.
+**Example — members page:**
+```typescript
+// apps/devcollab-web/app/w/[slug]/members/page.tsx
+import { cookies } from 'next/headers';
+import MemberTable from '../../../../components/members/MemberTable';
 
-### Anti-Pattern 3: Canvas Without `cancelAnimationFrame` Cleanup
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
-**What people do:** Start a `rAF` loop in `useEffect` without returning a cleanup function.
-**Why it's wrong:** When the user navigates away, React unmounts the component but the loop continues in the background. Each navigation stacks another loop. After five navigations, five loops run simultaneously — memory leak and CPU spike.
-**Do this instead:** Always store `rAF` ID in `useRef`. Return a cleanup function from `useEffect` that calls `cancelAnimationFrame(animationIdRef.current)`.
+async function getMembers(slug: string, token: string) {
+  const res = await fetch(`${API_URL}/workspaces/${slug}/members`, {
+    headers: { Cookie: `devcollab_token=${token}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
 
-### Anti-Pattern 4: Inline Matrix Hex Values Bypassing Token System
+export default async function MembersPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('devcollab_token')?.value ?? '';
+  const members = await getMembers(slug, token);
 
-**What people do:** Write `className="text-[#00FF41]"` during fast iteration to get the Matrix green applied quickly.
-**Why it's wrong:** Bypasses `--matrix-accent`. If the shade changes, must update every file. The existing `DESIGN-SYSTEM.md` governance rule explicitly prohibits hardcoded color values; the Matrix redesign must follow the same rule.
-**Do this instead:** Use `text-matrix-accent` (the Tailwind utility registered via `@theme inline`).
+  return (
+    <div>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>
+        Members
+      </h1>
+      <a href={`/w/${slug}/members/invite`} style={{ display: 'inline-block', marginBottom: '1.5rem' }}>
+        Generate Invite Link
+      </a>
+      <MemberTable slug={slug} initialMembers={members} />
+    </div>
+  );
+}
+```
 
-### Anti-Pattern 5: Decorative Canvas Without `aria-hidden`
+---
 
-**What people do:** Leave the Matrix rain canvas accessible to screen readers.
-**Why it's wrong:** Screen readers announce `<canvas>` elements. Without `aria-hidden="true"`, the screen reader will announce "canvas" — confusing and meaningless for the user. The Lighthouse accessibility gate will surface this as a violation.
-**Do this instead:** Always set `aria-hidden="true"` on decorative canvas elements.
+### Pattern 3: Coolify Single Docker Compose Stack
 
-### Anti-Pattern 6: Framer Motion `AnimatePresence` for Page Transitions in App Router
+**What:** All devcollab services are defined in one `coolify-compose.yml` and deployed as a single Coolify resource. Services communicate by Docker service name as hostname. Coolify manages the network automatically.
 
-**What people do:** Wrap `{children}` in `(portfolio)/layout.tsx` with `AnimatePresence` for page exit transitions.
-**Why it's wrong:** App Router's client-side navigation timing conflicts with `AnimatePresence` exit phase (documented in vercel/next.js #49279). The exit animation is cut short or skipped because the route has already unmounted by the time the animation completes.
-**Do this instead:** Use per-section entrance animations (triggered by `IntersectionObserver` / Framer Motion `whileInView`) which are reliable and compose well with the Matrix aesthetic.
+**When to use:** Services that are always deployed together and need to talk to each other directly.
+
+**Critical rules:**
+- Do NOT define `networks:` keys in the compose file used by Coolify. Coolify manages its own network per stack; manual network definitions cause Gateway Timeout errors.
+- Set `restart: 'no'` on `devcollab-migrate`. Migration is a one-shot job. `restart: unless-stopped` on a job container causes infinite restart loops.
+- Do NOT include the seed container in the production Coolify compose file. Seeds overwrite data.
+
+**Example — coolify-compose.yml skeleton:**
+```yaml
+# coolify-compose.yml (root of monorepo)
+# Used ONLY by Coolify in production.
+# Local dev uses docker-compose.yml.
+version: '3.8'
+
+services:
+  devcollab-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: devcollab
+      POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD}
+      POSTGRES_DB: devcollab
+    volumes:
+      - devcollab-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U devcollab']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-migrate:
+    image: ghcr.io/OWNER/devcollab-api:latest  # reuse API image which has prisma
+    restart: 'no'                               # CRITICAL: job container, not a service
+    depends_on:
+      devcollab-postgres:
+        condition: service_healthy
+    environment:
+      DEVCOLLAB_DATABASE_URL: postgresql://devcollab:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/devcollab
+    command: ["node_modules/.bin/prisma", "migrate", "deploy", "--schema=./packages/devcollab-database/prisma/schema.prisma"]
+
+  devcollab-api:
+    image: ghcr.io/OWNER/devcollab-api:latest
+    restart: unless-stopped
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DEVCOLLAB_DATABASE_URL: postgresql://devcollab:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/devcollab
+      DEVCOLLAB_JWT_SECRET: ${DEVCOLLAB_JWT_SECRET}
+      DEVCOLLAB_WEB_URL: ${DEVCOLLAB_WEB_URL}   # set in Coolify UI to https://devcollab.fernandomillan.dev
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-web:
+    image: ghcr.io/OWNER/devcollab-web:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # NEXT_PUBLIC_API_URL is baked into the image at build time via --build-arg
+      # Runtime env vars here are for server-side only env vars if any are added later
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  devcollab-pgdata:
+# NO networks: block — Coolify manages networking automatically
+```
 
 ---
 
 ## Data Flow
 
-### Animation Rendering Flow
+### Coolify Deployment Flow (CI to Production)
 
 ```
-Server
-  └── Renders HTML for HeroSection text, project cards, about content
-  └── MatrixRainCanvas is NOT in server HTML (ssr:false)
-  └── Sends initial HTML to browser
-
-Browser
-  └── Displays server HTML immediately (fast FCP + LCP from server-rendered text)
-  └── Hydrates: React claims the server HTML
-  └── LazyMotion features load asynchronously (~4.6KB)
-  └── MatrixRainCanvas mounts (dynamic import resolves)
-      └── canvas starts rAF loop (30fps max)
-  └── AnimatedHeroSection: m.div animates from opacity:0 → opacity:1 (0.6s)
-  └── Project cards: entrance animation fires as user scrolls
+git push → main
+    │
+    ▼
+GitHub Actions: test job (existing)
+    │
+    ▼
+build-and-push-devcollab job:
+  docker build \
+    --build-arg NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev \
+    -f apps/devcollab-web/Dockerfile .
+  docker push ghcr.io/OWNER/devcollab-web:latest
+  docker push ghcr.io/OWNER/devcollab-api:latest
+    │
+    ▼
+deploy-devcollab job:
+  curl -X GET $COOLIFY_DEVCOLLAB_WEBHOOK \
+    -H "Authorization: Bearer $COOLIFY_TOKEN"
+    │
+    ▼
+Coolify server:
+  docker pull ghcr.io/OWNER/devcollab-web:latest
+  docker pull ghcr.io/OWNER/devcollab-api:latest
+  docker compose up -d (recreates changed containers)
+  devcollab-migrate runs → exits 0
+  devcollab-api starts
+  devcollab-web starts
 ```
 
-### Theme Resolution Flow
+### Coolify Service Startup Dependency Chain
 
 ```
-Browser visits / (portfolio route)
-  └── next-themes reads localStorage or system preference
-  └── Applies class="dark" (or "light") to <html>
-  └── Radix Colors dark imports activate under .dark
-  └── (portfolio)/layout.tsx wrapper has class="matrix-theme"
-  └── .matrix-theme overrides --background, --primary etc. with Matrix values
-  └── All portfolio components see Matrix-themed tokens via existing utilities:
-       bg-background → #000d03 (Matrix black-green)
-       text-primary  → #00FF41 (Matrix green)
-       border-border → #005218 (Matrix dark border)
+devcollab-postgres
+  └── healthcheck: pg_isready passes
+      │
+      ▼
+  devcollab-migrate
+    └── condition: service_healthy (postgres)
+    └── runs prisma migrate deploy
+    └── exits 0
+        │
+        ▼
+    devcollab-api
+      └── condition: service_completed_successfully (migrate)
+      └── starts NestJS on :3003
+          │
+          (no hard depends_on but API must be up before web requests flow)
+          │
+          ▼
+      devcollab-web
+        └── starts Next.js standalone on :3002
 ```
+
+### Browser Authentication Flow
+
+```
+Browser visits /login (no cookie)
+    │
+    ▼
+LoginPage (client component)
+  POST https://devcollab-api.fernandomillan.dev/auth/login
+  { credentials: 'include' }
+    │
+    ▼
+devcollab-api
+  validates credentials
+  Set-Cookie: devcollab_token=<jwt>; HttpOnly; Secure; SameSite=None
+    │
+    ▼
+Browser stores cookie (httpOnly — not accessible to JS)
+Browser navigates to /dashboard
+    │
+    ▼
+Next.js server component DashboardPage
+  cookies().get('devcollab_token')
+  if missing → redirect('/login')          ← NEW: currently missing
+  if present → fetch /workspaces with Cookie header
+    │
+    ▼
+devcollab-api validates JWT from cookie → returns workspaces
+    │
+    ▼
+Server renders DashboardPage with data → sends HTML to browser
+```
+
+### Invite Link Flow (new feature)
+
+```
+Admin navigates to /w/:slug/members/invite
+    │
+    ▼
+InvitePage (server component) renders InvitePanel (client component)
+    │
+    ▼
+Admin clicks "Generate Invite Link"
+InvitePanel → POST /workspaces/:slug/invite-links { credentials: 'include' }
+    │
+    ▼
+devcollab-api
+  CaslAuthGuard: checks Admin role via WorkspaceAbilityFactory
+  Non-admin → 403 Forbidden
+  Admin → workspaces.service.generateInviteLink(slug)
+  creates InviteLink { token: uuid, expiresAt: now+72h }
+  returns { token, expiresAt }
+    │
+    ▼
+InvitePanel displays:
+  "Share this link:"
+  https://devcollab.fernandomillan.dev/join?token=<uuid>
+  [Copy button]
+    │
+    ▼
+Admin sends link to new user
+New user opens /join?token=<uuid>
+  (must be logged in — POST /workspaces/join requires auth cookie)
+  POST /workspaces/join { token } { credentials: 'include' }
+    │
+    ▼
+devcollab-api
+  validates token → marks usedAt → creates WorkspaceMember { role: Contributor }
+  redirect to /dashboard
+```
+
+### Member Management Flow (new feature)
+
+```
+Admin navigates to /w/:slug/members
+    │
+    ▼
+MembersPage (server component)
+  GET /workspaces/:slug/members (with Cookie header)
+  returns Member[] with { id, role, user: { id, name, email } }
+    │
+    ▼
+MemberTable (client component) renders:
+  Name | Email | Role (Badge) | Actions
+    │
+    ├─ Admin: role dropdown → PATCH /workspaces/:slug/members/:userId/role { role }
+    │   API: 400 if demoting last Admin (service-level guard)
+    │   API: 403 if requester is not Admin (CASL guard)
+    │
+    └─ Admin: Remove button → DELETE /workspaces/:slug/members/:userId
+        API: 400 if removing last Admin (service-level guard)
+        API: 403 if requester is not Admin (CASL guard)
+```
+
+---
+
+## Coolify Deployment: Step-by-Step Integration Points
+
+### Pre-Deployment: GHCR Auth on Coolify Server
+
+```bash
+# SSH into the Coolify server as the user Coolify is configured to use
+ssh user@coolify-server
+
+# Authenticate Docker with GHCR using a GitHub Personal Access Token
+# Scope required: read:packages
+docker login ghcr.io -u <github-username> -p <ghcr-pat-with-read-packages>
+
+# Coolify auto-detects ~/.docker/config.json and uses credentials for all pulls
+```
+
+Note: This is a one-time server setup step. Without it, Coolify cannot pull private GHCR images and the deployment will fail with a pull access denied error.
+
+### Coolify Resource Setup Order
+
+```
+1. Create Project in Coolify UI: "fernandomillan"
+   └── Add Environment: "production"
+
+2. Deploy devcollab stack:
+   └── New Resource → Docker Compose
+   └── Paste contents of coolify-compose.yml
+   └── Set domains in Coolify UI:
+       devcollab-web  → https://devcollab.fernandomillan.dev  → port 3002
+       devcollab-api  → https://devcollab-api.fernandomillan.dev  → port 3003
+   └── Set secret environment variables in Coolify UI:
+       DEVCOLLAB_POSTGRES_PASSWORD = <strong-password>
+       DEVCOLLAB_JWT_SECRET        = <min-32-char-secret>
+       DEVCOLLAB_WEB_URL           = https://devcollab.fernandomillan.dev
+
+3. Get Deploy Webhook URL:
+   └── Resource Settings → Webhooks → copy URL
+   └── Add as GitHub repo secret: COOLIFY_DEVCOLLAB_WEBHOOK
+   └── Also confirm COOLIFY_TOKEN exists (shared across all webhooks)
+
+4. Deploy teamflow stack separately (if not already deployed):
+   └── Same process; separate Coolify resource
+   └── No shared networking with devcollab stack
+```
+
+### Traefik Domain Routing
+
+Coolify automatically generates the correct Traefik labels when a domain is entered in the resource UI. Do NOT add Traefik labels manually to `coolify-compose.yml`. Coolify's label injection is the only supported method; manual labels conflict and cause routing failures.
+
+---
+
+## NEXT_PUBLIC_API_URL: The Build-Time Baking Problem
+
+This is the most important architectural constraint for the devcollab-web deployment.
+
+**The problem:** `NEXT_PUBLIC_*` environment variables are inlined into JavaScript bundles at `next build` time. The value is a string literal in the compiled output. Setting a different value at container runtime has no effect on client-side code.
+
+**The constraint in this codebase:** Both server components and client components use `process.env.NEXT_PUBLIC_API_URL`. Server components at runtime can read env vars normally, but client components use the baked literal.
+
+**Strategy A (recommended — bake the public URL):**
+- At CI build time: `--build-arg NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev`
+- In `apps/devcollab-web/Dockerfile`: add `ARG NEXT_PUBLIC_API_URL` and `ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL`
+- Result: browser fetches go to `https://devcollab-api.fernandomillan.dev` (Traefik routes to devcollab-api:3003)
+- Result: server fetches also go to `https://devcollab-api.fernandomillan.dev` (extra network hop through Traefik, but works correctly)
+
+**Strategy B (do not use — bake internal URL):**
+- Baking `http://devcollab-api:3003` (Docker internal hostname) works for server components
+- Fails catastrophically for browser clients — Docker hostnames are not resolvable from user browsers
+- All client components (`LoginPage`, `DashboardPage`, `JoinPage`, inline fetch calls) break in production
+
+Strategy A is the correct choice. The minor overhead of server components routing through Traefik is acceptable for a portfolio project.
 
 ---
 
 ## Integration Points
 
-### External Dependency Addition
+### External Services
 
-| Dependency | Action | Notes |
-|------------|--------|-------|
-| `framer-motion` | `npm install framer-motion --workspace=apps/web` | Not currently installed in apps/web. New addition. |
-
-Verify framer-motion version after install. As of research date (2026-02-18), the package is published under `motion` (new name) at motion.dev, but `framer-motion` npm name still works and resolves to the same package.
+| Service | Integration Pattern | Notes |
+|---------|---------------------|-------|
+| GHCR | `docker login ghcr.io` on Coolify server SSH | One-time setup; Coolify uses `~/.docker/config.json` automatically |
+| Let's Encrypt / Traefik | Set domain in Coolify UI | Coolify handles certificate provisioning and renewal; no manual config |
+| GitHub Actions → Coolify | `curl GET $COOLIFY_WEBHOOK -H "Authorization: Bearer $COOLIFY_TOKEN"` | One webhook URL per Coolify resource; teamflow and devcollab need separate webhooks |
 
 ### Internal Boundaries
 
 | Boundary | Communication | Notes |
 |----------|---------------|-------|
-| RSC pages → client animation wrappers | `children` prop | RSC content server-rendered; client wrapper animates without re-rendering content |
-| `MotionProvider` → all `m.*` components | React context (`LazyMotion`) | MotionProvider must be ancestor of all `m.*` usage; placed in portfolio layout |
-| `ThemeProvider` ↔ `.matrix-theme` CSS | No coupling — CSS specificity | Both coexist: `<html class="dark">` + `<div class="matrix-theme">` is valid |
-| `MatrixRainCanvas` ↔ page layout | `position: absolute` inside `relative` container | Canvas is decorative overlay; does not participate in document flow |
-| Lighthouse CI ↔ animation performance | `lighthouserc.json` gates | Canvas must not degrade score; Playwright tests must disable canvas via env var |
+| devcollab-web (server) → devcollab-api | `fetch(${API_URL}/...)` forwarding Cookie header | `API_URL` baked as `https://devcollab-api.fernandomillan.dev`; server hits Traefik which routes back to devcollab-api container |
+| devcollab-web (browser) → devcollab-api | `fetch(${API_URL}/...)` with `credentials: 'include'` | Same baked URL; browser reaches it via DNS → Traefik → devcollab-api |
+| devcollab-api → devcollab-postgres | Prisma connection string: `postgresql://devcollab:${PWD}@devcollab-postgres:5432/devcollab` | Docker internal DNS; service name `devcollab-postgres` is the hostname |
+| devcollab-migrate → devcollab-postgres | Same connection string | One-shot; dependency via `service_completed_successfully` |
+| devcollab-api CORS | `DEVCOLLAB_WEB_URL` env var in `app.enableCors({ origin })` | Must be `https://devcollab.fernandomillan.dev` in production; currently only reads this env var with localhost:3002 as fallback |
+| devcollab-api ↔ teamflow-api | No communication | Fully isolated; separate stacks, separate databases, separate domains |
 
-### Files Requiring Snapshot Updates (Phase D)
+---
 
-When `.matrix-theme` activates, these snapshot baselines will fail intentionally and need regeneration:
+## Anti-Patterns
 
-```
-e2e/portfolio/visual-regression.spec.ts-snapshots/
-  homepage-dark-chromium-linux.png   — WILL CHANGE
-  homepage-light-chromium-linux.png  — WILL CHANGE
-  about-dark-chromium-linux.png      — WILL CHANGE
-  about-light-chromium-linux.png     — WILL CHANGE
-  projects-dark-chromium-linux.png   — WILL CHANGE
-  projects-light-chromium-linux.png  — WILL CHANGE
-  resume-dark-chromium-linux.png     — WILL CHANGE
-  resume-light-chromium-linux.png    — WILL CHANGE
-  contact-dark-chromium-linux.png    — WILL CHANGE
-  contact-light-chromium-linux.png   — WILL CHANGE
-  teamflow-case-study-dark-chromium-linux.png   — WILL CHANGE
-  teamflow-case-study-light-chromium-linux.png  — WILL CHANGE
-```
+### Anti-Pattern 1: Baking the Internal Docker Hostname into NEXT_PUBLIC_API_URL
 
-Run `playwright test --update-snapshots` after Phase D to update baselines.
+**What people do:** Set `NEXT_PUBLIC_API_URL=http://devcollab-api:3003` at build time so server components can use the fast internal path.
+
+**Why it's wrong:** Browser JavaScript cannot resolve `devcollab-api` — that hostname only exists inside Docker. Every client-side fetch in every client component (`LoginPage`, `DashboardPage`, `JoinPage`) fails with a network error in production.
+
+**Do this instead:** Bake `NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev`. Both browser and server can reach it. The extra Traefik hop from server components is negligible.
+
+---
+
+### Anti-Pattern 2: Defining `networks:` in the Coolify Compose File
+
+**What people do:** Copy the local `docker-compose.yml` network configuration (`devcollab-network:`, `driver: bridge`) into the file used by Coolify.
+
+**Why it's wrong:** Coolify assigns each compose stack its own isolated network automatically. Adding explicit network definitions conflicts with Coolify's internal management and causes Gateway Timeout errors. This is explicitly documented in Coolify's Docker Compose knowledge base.
+
+**Do this instead:** Remove all `networks:` keys from `coolify-compose.yml`. Services in the same stack communicate by service name without any network configuration.
+
+---
+
+### Anti-Pattern 3: `restart: unless-stopped` on the Migration Container
+
+**What people do:** Treat `devcollab-migrate` the same as the other services and set `restart: unless-stopped`.
+
+**Why it's wrong:** `prisma migrate deploy` exits with code 0 after completing. A restart policy of `unless-stopped` causes Coolify to restart the exited container repeatedly — creating noise, log spam, and a potential race condition where migrations run against the API's live database.
+
+**Do this instead:** Set `restart: 'no'` on `devcollab-migrate`. Use `depends_on: condition: service_completed_successfully` on `devcollab-api` so it waits for clean migration exit.
+
+---
+
+### Anti-Pattern 4: Leaving /dashboard Without a Server-Side Auth Gate
+
+**What people do:** Leave `apps/devcollab-web/app/dashboard/page.tsx` as `'use client'` and trust the API's 401 response to prevent data access.
+
+**Why it's wrong:** An unauthenticated user successfully loads the dashboard page — they see the workspace creation form and page chrome. The 401 just means the workspace list is empty. This is confusing UX and means the route is publicly crawlable/indexable.
+
+**Do this instead:** Convert to a server component, read `devcollab_token` with `cookies()`, redirect immediately if absent. The pattern is already established in `w/[slug]/layout.tsx` — apply the same approach.
+
+---
+
+### Anti-Pattern 5: Including the Seed Container in the Production Coolify Stack
+
+**What people do:** Copy the full local `docker-compose.yml` (which includes `devcollab-seed`) into `coolify-compose.yml`.
+
+**Why it's wrong:** The seed script truncates tables and inserts demo data. Running seed in production resets all real user data. On every deployment, all workspaces, posts, snippets, and users created by real visitors would be deleted.
+
+**Do this instead:** `coolify-compose.yml` must only include: `devcollab-postgres`, `devcollab-migrate`, `devcollab-api`, `devcollab-web`. Never include `devcollab-seed` or `devcollab-minio` (MinIO is local dev only).
 
 ---
 
 ## Scaling Considerations
 
-This is a portfolio site. Scaling concerns are performance budget concerns:
+| Scale | Architecture Adjustments |
+|-------|--------------------------|
+| Current (portfolio demo) | Single Coolify compose stack; single postgres instance; no Redis; single Next.js process |
+| 100–1k active users | Add PgBouncer for connection pooling; Redis for session revocation if needed |
+| 10k+ users | Split services to separate Coolify resources for independent scaling; add Postgres read replicas; Next.js horizontal scale (stateless by design — cookie auth works) |
 
-| Concern | Threshold | Approach |
-|---------|-----------|----------|
-| Canvas CPU | 30fps cap | Already in the implementation; monitor with Chrome DevTools Performance |
-| Framer Motion bundle | 34KB full → 4.6KB with LazyMotion | Always use `LazyMotion` + `m.*` pattern; never `motion.*` inside LazyMotion |
-| CSS custom properties | No practical limit | Additive token strategy adds ~40 new properties — negligible |
-| Visual regression suite | 12 snapshots to update | Phase D snapshot update is expected and necessary; not a risk |
+### Scaling Priorities
+
+1. **First bottleneck:** Postgres connections — NestJS/Prisma opens a connection pool per process; under concurrent load the database becomes the bottleneck before the API does. Add PgBouncer before horizontal scaling.
+2. **Second bottleneck:** Next.js standalone is a single Node.js process. Horizontal scaling is straightforward because JWT cookie auth is stateless — any instance can validate any request.
 
 ---
 
 ## Sources
 
-**HIGH Confidence — Official Documentation:**
-- [Next.js: Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) — Boundary rules, `"use client"` propagation
-- [Next.js: Hydration Error Docs](https://nextjs.org/docs/messages/react-hydration-error) — Official hydration mismatch guidance
-- [Motion (Framer): Reduce Bundle Size](https://motion.dev/docs/react-reduce-bundle-size) — `LazyMotion` + `m.*` pattern; 4.6KB vs 34KB
-- [Motion (Framer): LazyMotion API](https://motion.dev/docs/react-lazy-motion) — Feature loading, strict mode
-- [Motion (Framer): Accessibility](https://motion.dev/docs/react-accessibility) — `reducedMotion="user"` on MotionConfig
-- [Tailwind CSS v4 Theme Variables](https://tailwindcss.com/docs/theme) — `@theme inline` directive
-- [Tailwind CSS v4 Dark Mode](https://tailwindcss.com/docs/dark-mode) — Class-based dark mode
-- [Chrome Lighthouse: Non-Composited Animations](https://developer.chrome.com/docs/lighthouse/performance/non-composited-animations) — CLS and compositing
-- [CSS Tricks: requestAnimationFrame with React Hooks](https://css-tricks.com/using-requestanimationframe-with-react-hooks/) — Correct `useRef` + `useEffect` + cleanup pattern
+**HIGH Confidence — Official / Direct Inspection:**
+- [Coolify Docker Compose Networking Docs](https://coolify.io/docs/knowledge-base/docker/compose) — network-per-stack isolation, service name DNS, no `networks:` rule
+- [Coolify Environment Variables](https://coolify.io/docs/knowledge-base/environment-variables) — variable injection behavior, all-containers sharing
+- [Coolify GitHub Actions Integration](https://coolify.io/docs/applications/ci-cd/github/actions) — webhook mechanism, COOLIFY_WEBHOOK + COOLIFY_TOKEN pattern
+- [Coolify Docker Registry Authentication](https://coolify.io/docs/knowledge-base/docker/registry) — `docker login` on server SSH, Coolify auto-detects config.json
+- [Coolify Concepts (Projects/Environments/Resources)](https://coolify.io/docs/get-started/concepts) — resource model, Traefik domain routing
+- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication) — server-side redirect pattern, `cookies()` API
+- [Next.js cookies() API Reference](https://nextjs.org/docs/app/api-reference/functions/cookies) — Next.js 15 async cookies()
+- [Next.js NEXT_PUBLIC build-time env discussion](https://github.com/vercel/next.js/discussions/17641) — confirmed NEXT_PUBLIC vars are baked at build time
+- Codebase direct inspection: `apps/devcollab-web/`, `apps/devcollab-api/src/`, `docker-compose.yml`, `.github/workflows/deploy.yml`, `packages/devcollab-database/`
 
-**MEDIUM Confidence — Verified Community Sources:**
-- [Framer Motion Compatibility in Next.js: use client pattern](https://medium.com/@dolce-emmy/resolving-framer-motion-compatibility-in-next-js-14-the-use-client-workaround-1ec82e5a0c75) — Confirmed still valid in v15
-- [Optimizing GSAP in Next.js 15](https://medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15-best-practices-for-initialization-and-cleanup-2ebaba7d0232) — Cleanup patterns; same patterns apply to rAF
-- [Next.js 15 Hydration Errors 2026](https://medium.com/@blogs-world/next-js-hydration-errors-in-2026-the-real-causes-fixes-and-prevention-checklist-4a8304d53702) — Current hydration guidance
-- [App Router + AnimatePresence GitHub Issue #49279](https://github.com/vercel/next.js/issues/49279) — Known limitation with page transitions
-- [Theming Tailwind v4: Multiple Color Schemes](https://medium.com/@sir.raminyavari/theming-in-tailwind-css-v4-support-multiple-color-schemes-and-dark-mode-ba97aead5c14) — Scoped theme class pattern
-- [GSAP vs Motion bundle comparison](https://motion.dev/docs/gsap-vs-motion) — Bundle size data; Framer Motion chosen for React-native API
-
-**Codebase Analysis (HIGH Confidence — direct inspection):**
-- `apps/web/app/globals.css` — Existing 3-layer Radix Colors + @theme inline pattern confirmed. Addition strategy derived from existing structure.
-- `apps/web/app/layout.tsx` — `suppressHydrationWarning` on `<html>` confirmed. ThemeProvider client wrapper pattern confirmed.
-- `apps/web/app/(portfolio)/layout.tsx` — RSC confirmed; safe to add MotionProvider wrapper and matrix-theme class.
-- `apps/web/components/portfolio/hero-section.tsx` — RSC confirmed (no `"use client"`); safe to use as children.
-- `apps/web/components/portfolio/nav.tsx` — Already `"use client"` (uses `usePathname`); safe to add CSS Matrix styling.
-- `apps/web/components/ui/theme-toggle.tsx` — `useState(false)` + `useEffect setMounted` pattern confirmed as the hydration-safe model for client components reading browser state.
-- `apps/web/lighthouserc.json` — `categories:performance: error at 0.9` confirmed. Affects `/`, `/about`, `/projects`, `/projects/teamflow`, `/login`.
-- `apps/web/package.json` — `framer-motion` not present; must be installed. `tailwindcss: ^4.1.18` confirmed.
+**MEDIUM Confidence — Community / Verified:**
+- [Coolify Cross-Stack Communication Discussion](https://github.com/coollabsio/coolify/discussions/5059) — confirmed cross-stack requires "Connect to Predefined Network"; internal DNS breaks
+- [Coolify Env Var Sharing Security Issue #7655](https://github.com/coollabsio/coolify/issues/7655) — confirmed all env vars shared across all containers in a compose stack
+- [Coolify Next.js deployment guide (external)](https://www.nico.fyi/blog/deploy-next-js-prisma-postgres-using-coolify) — build-arg pattern for NEXT_PUBLIC vars in Coolify confirmed
 
 ---
 
-*Architecture research for: Matrix-aesthetic portfolio redesign on Next.js 15 App Router*
-*Researched: 2026-02-18*
-*Scope: apps/web — Fernando Millan portfolio routes `(portfolio)/**`*
-*Existing DevCollab monorepo architecture: see archived v2.0 research (ARCHITECTURE.md prior state)*
+*Architecture research for: Coolify multi-service deployment + DevCollab UI gaps*
+*Researched: 2026-02-19*
+*Scope: coolify-compose.yml (new), apps/devcollab-web/ members pages (new), dashboard auth guard (fix)*

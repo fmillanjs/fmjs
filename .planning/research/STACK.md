@@ -1580,7 +1580,7 @@ export default function RootLayout({ children }) {
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `framer-motion` (any v≤11) | React 19 peer dep conflict. Will fail `npm install` without `--legacy-peer-deps`. Don't use the flag — it masks real compatibility issues. | `motion` v12 — identical API, correct peer dep |
+| `framer-motion` (any v<=11) | React 19 peer dep conflict. Will fail `npm install` without `--legacy-peer-deps`. Don't use the flag — it masks real compatibility issues. | `motion` v12 — identical API, correct peer dep |
 | `AOS` (Animate on Scroll) | Global CSS class injection conflicts with Tailwind v4 scoped CSS. Not SSR safe. Adds 15KB for what `useInView` from `motion` does in 10 lines. | `motion` `useInView` with `once: true` |
 | `ScrollReveal.js` | Unmaintained for React 19. Assumes DOM access at module load — SSR crash without `dynamic()` guard. | GSAP ScrollTrigger or Motion `useInView` |
 | `anime.js` alongside GSAP | Two animation engines competing for DOM control. Race conditions and unpredictable behavior when both animate the same elements. | GSAP exclusively for DOM animation |
@@ -1642,3 +1642,473 @@ export default function RootLayout({ children }) {
 
 *Matrix Portfolio animation stack research completed 2026-02-18.*
 *Existing TeamFlow + DevCollab stack sections above are preserved and unchanged.*
+
+---
+
+## v3.0: Coolify Deployment + DevCollab UI Tech Debt
+
+**Focus:** Coolify-specific deployment configuration and Next.js/NestJS patterns for closing v3.0 gaps.
+**Researched:** 2026-02-19
+**Confidence:** HIGH (Coolify patterns), HIGH (Next.js middleware/Prisma fixes)
+
+This section covers ONLY what is new for milestone v3.0. No new npm packages are required. All changes are configuration, environment variable structure, and small code patterns.
+
+---
+
+### 1. Coolify Deployment — Architecture Decision
+
+**Recommendation: Single Docker Compose resource in Coolify (not four separate services)**
+
+The existing CI/CD (`deploy.yml`) builds and pushes four images to GHCR:
+- `ghcr.io/<owner>/fernandomillan/web:latest`
+- `ghcr.io/<owner>/fernandomillan/api:latest`
+- `ghcr.io/<owner>/fernandomillan/devcollab-web:latest`
+- `ghcr.io/<owner>/fernandomillan/devcollab-api:latest`
+
+**Why one Docker Compose resource, not four individual Docker Image resources:**
+
+Coolify's "Docker Image" resource type is designed for single-container workloads. Deploying four containers this way requires four resources, four domain configurations, four separate environment variable sets, and — critically — four separate Coolify-managed networks that cannot communicate without the buggy "Connect to Predefined Network" option.
+
+Using a single `docker-compose.coolify.yml` resource:
+- All services share one Coolify-managed network automatically
+- `devcollab-web` reaches `devcollab-api` at `http://devcollab-api:3003` (internal Docker DNS)
+- `devcollab-api` reaches `devcollab-postgres` at `http://devcollab-postgres:5432` (internal Docker DNS)
+- One webhook triggers a coordinated redeploy of all services
+- Environment variables managed in one place
+
+**Coolify deployment flow:**
+1. GitHub Actions builds + pushes 4 images to GHCR on push to `main`
+2. GitHub Actions sends POST to Coolify webhook URL
+3. Coolify pulls updated images and restarts containers from `docker-compose.coolify.yml`
+
+---
+
+### 2. Coolify Docker Compose Configuration
+
+**Create `docker-compose.coolify.yml` at repo root.** This is a separate file from `docker-compose.yml` (which is for local dev). The Coolify file references GHCR pre-built images instead of building.
+
+```yaml
+# docker-compose.coolify.yml
+# Used exclusively by Coolify. References pre-built GHCR images.
+# Do not use for local development — use docker-compose.yml instead.
+
+services:
+  devcollab-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DEVCOLLAB_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DEVCOLLAB_POSTGRES_DB}
+    volumes:
+      - devcollab-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DEVCOLLAB_POSTGRES_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devcollab-migrate:
+    image: ghcr.io/${GITHUB_REPOSITORY}/devcollab-api:latest
+    # Override the default CMD to run migrations instead of starting the server
+    command: ["node", "-e", "require('./dist/migrate.js')"]
+    depends_on:
+      devcollab-postgres:
+        condition: service_healthy
+    environment:
+      DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER}:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB}
+    # exclude_from_hc: true tells Coolify not to health-check this one-shot container
+    labels:
+      - coolify.exclude_from_hc=true
+
+  devcollab-api:
+    image: ghcr.io/${GITHUB_REPOSITORY}/devcollab-api:latest
+    restart: unless-stopped
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DEVCOLLAB_DATABASE_URL: postgresql://${DEVCOLLAB_POSTGRES_USER}:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/${DEVCOLLAB_POSTGRES_DB}
+      DEVCOLLAB_JWT_SECRET: ${DEVCOLLAB_JWT_SECRET}
+      DEVCOLLAB_WEB_URL: ${DEVCOLLAB_WEB_URL}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  devcollab-web:
+    image: ghcr.io/${GITHUB_REPOSITORY}/devcollab-web:latest
+    restart: unless-stopped
+    depends_on:
+      devcollab-api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_API_URL: ${DEVCOLLAB_API_PUBLIC_URL}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  devcollab-pgdata:
+```
+
+**Key decisions in this compose file:**
+
+| Decision | Reason |
+|----------|--------|
+| No `networks:` block | Coolify creates and manages the network automatically for each Docker Compose resource. Adding a custom network overrides this and breaks Traefik integration. |
+| No `ports:` on internal services | `devcollab-postgres` and `devcollab-api` do not need host port bindings. Traefik routes external traffic to `devcollab-web` via domain. Internal service-to-service uses Docker DNS. |
+| No `container_name:` | Coolify appends its UUID to container names to avoid collisions. Setting explicit container names breaks Coolify's multi-deployment management. |
+| `${GITHUB_REPOSITORY}` variable | Coolify substitutes env vars in the compose file. Set `GITHUB_REPOSITORY=fernandomillan/fernandomillan` (or repo owner/name) in Coolify's environment variable UI. |
+
+---
+
+### 3. Coolify Environment Variables
+
+**How Coolify env vars work with Docker Compose:**
+- Coolify detects `${VAR_NAME}` and `${VAR_NAME:-default}` syntax in the compose file
+- These appear as editable fields in the Coolify UI
+- Values are injected at deploy time — they never appear in source code or the compose file itself
+- Coolify supports marking variables as "Secret" (encrypted at rest, masked in logs)
+
+**Required environment variables to set in Coolify UI:**
+
+| Variable | Value | Secret? | Notes |
+|----------|-------|---------|-------|
+| `GITHUB_REPOSITORY` | `fernandomillan/fernandomillan` | No | Constructs GHCR image pull paths |
+| `DEVCOLLAB_POSTGRES_USER` | `devcollab` | No | PostgreSQL username |
+| `DEVCOLLAB_POSTGRES_PASSWORD` | `<strong password>` | YES | PostgreSQL password |
+| `DEVCOLLAB_POSTGRES_DB` | `devcollab` | No | PostgreSQL database name |
+| `DEVCOLLAB_JWT_SECRET` | `<min 32 char random string>` | YES | JWT signing secret for custom auth |
+| `DEVCOLLAB_WEB_URL` | `https://devcollab.fernandomillan.dev` | No | CORS origin for the API. Must match the domain assigned to devcollab-web in Coolify |
+| `DEVCOLLAB_API_PUBLIC_URL` | `https://api.devcollab.fernandomillan.dev` | No | URL the browser uses to reach the API. Passed as `NEXT_PUBLIC_API_URL` to Next.js |
+
+**Coolify built-in variables (auto-set, no action needed):**
+
+| Variable | What It Is |
+|----------|-----------|
+| `COOLIFY_FQDN` | Fully qualified domain name assigned in Coolify UI |
+| `PORT` | Defaults to first exposed port if not set |
+| `HOST` | Defaults to `0.0.0.0` if not set |
+
+---
+
+### 4. Coolify Domain Assignment and HTTPS
+
+**Traefik handles all routing and Let's Encrypt certificates automatically.**
+
+Domain assignment per service in Coolify:
+- `devcollab-web` gets assigned domain: `devcollab.fernandomillan.dev` (port 3002 internally)
+- `devcollab-api` gets assigned domain: `api.devcollab.fernandomillan.dev` (port 3003 internally)
+- `devcollab-postgres` gets NO domain (internal only)
+
+**How Traefik discovers services:**
+Coolify adds Traefik labels to containers automatically based on the domain you set in the UI. You do NOT need to add `traefik.*` labels manually unless using "Raw Compose Deployment" mode (do not use that mode — it strips Coolify automation).
+
+**HTTPS requirement for CORS:**
+The NestJS API's CORS configuration uses `DEVCOLLAB_WEB_URL`:
+```typescript
+app.enableCors({
+  origin: process.env.DEVCOLLAB_WEB_URL || 'http://localhost:3002',
+  credentials: true,
+});
+```
+In production, `DEVCOLLAB_WEB_URL` must be `https://devcollab.fernandomillan.dev` (exact match, no trailing slash). The `credentials: true` setting requires the origin to match exactly — wildcard `*` cannot be used with credentials.
+
+---
+
+### 5. GHCR Authentication for Coolify
+
+**Pattern: SSH into Coolify server and `docker login` to GHCR once.**
+
+```bash
+# On the Coolify host server (SSH access required)
+echo "<GITHUB_PAT>" | docker login ghcr.io -u <github_username> --password-stdin
+```
+
+Coolify reads Docker's credential store (`~/.docker/config.json`) automatically. All subsequent pulls from `ghcr.io` are authenticated without any Coolify-specific configuration.
+
+**GitHub PAT requirements:**
+- Scope: `read:packages` only (pull images)
+- The PAT used in `docker login` on the server is separate from `GITHUB_TOKEN` used in GitHub Actions
+- Store the PAT securely — if it expires, pulls fail silently with "unauthorized" errors
+
+**Trigger redeployment from GitHub Actions:**
+The existing `deploy.yml` sends a webhook:
+```yaml
+- name: Trigger Coolify deployment
+  uses: fjogeleit/http-request-action@v1
+  with:
+    url: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+    method: 'POST'
+```
+`COOLIFY_WEBHOOK_URL` is the webhook URL from Coolify's resource settings (Settings > Webhook). This triggers Coolify to pull latest images and restart.
+
+**No `COOLIFY_TOKEN` needed for this pattern** — the webhook URL itself is the auth mechanism. Generate it in Coolify: resource > Settings > Webhook tab.
+
+---
+
+### 6. Health Checks in Coolify
+
+**Traefik will only route traffic to healthy containers.** If health checks fail, Traefik returns 404 / "No available server."
+
+The existing health checks in `docker-compose.yml` carry over to `docker-compose.coolify.yml` unchanged:
+
+```yaml
+# devcollab-api (NestJS has /health endpoint via @nestjs/terminus or manual controller)
+healthcheck:
+  test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
+  interval: 15s
+  timeout: 5s
+  retries: 5
+
+# devcollab-web (Next.js — curl root path)
+healthcheck:
+  test: ['CMD', 'curl', '-f', 'http://localhost:3002']
+  interval: 15s
+  timeout: 5s
+  retries: 5
+```
+
+**Requirements:**
+- Both Dockerfiles already install `curl` via `apk add --no-cache libc6-compat curl` — health checks will work
+- NestJS must respond at `GET /health` with HTTP 200. The existing `health.controller.ts` confirms this endpoint exists
+- Interval set to 15s (not 10s) in Coolify — gives containers more startup time before first check
+
+**Startup ordering:**
+```
+devcollab-postgres (healthy) → devcollab-migrate (completed) → devcollab-api (healthy) → devcollab-web (starts)
+```
+This `depends_on` chain prevents the API from starting before migrations run.
+
+---
+
+### 7. Next.js Standalone Output — Static File Serving (resume.pdf)
+
+**No npm package needed. This is a Dockerfile copy pattern.**
+
+Next.js standalone output does NOT automatically copy the `public/` folder. The existing `devcollab-web/Dockerfile` already copies it:
+
+```dockerfile
+COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/public ./apps/devcollab-web/public 2>/dev/null || true
+```
+
+The `|| true` at the end means if `public/` doesn't exist, the build continues. This is correct behavior but means if `public/resume.pdf` exists during build, it gets copied. If not, it silently skips.
+
+**Action required:** Place `resume.pdf` in `apps/devcollab-web/public/resume.pdf`. It will be served at `https://devcollab.fernandomillan.dev/resume.pdf` automatically by `server.js`.
+
+**Verification pattern (after confirming public/ copy in Dockerfile):**
+```bash
+# Test that the file is accessible in the built container
+docker run --rm -p 3002:3002 ghcr.io/<owner>/fernandomillan/devcollab-web:latest node apps/devcollab-web/server.js &
+curl -I http://localhost:3002/resume.pdf
+# Expect: HTTP/1.1 200 OK, Content-Type: application/pdf
+```
+
+---
+
+### 8. Next.js Auth Redirect Guard for /dashboard
+
+**No npm package needed. Uses Next.js built-in middleware.**
+
+The current `apps/devcollab-web/app/dashboard/page.tsx` is a `'use client'` component with no server-side auth check. The `/dashboard` route is accessible without authentication.
+
+**Pattern: Next.js `middleware.ts` (file name, not `proxy.ts`)**
+
+Note: The Next.js docs show `middleware.ts` being renamed to `proxy.ts` — but this is a canary/v16 change documented as of v16.0.0. The installed version is `^15.0.0` (resolved to 15.5.12 at runtime). Use `middleware.ts` for stability; check if the installed version actually uses `proxy.ts` before renaming.
+
+```typescript
+// apps/devcollab-web/middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('devcollab_token');
+
+  if (!token) {
+    const loginUrl = new URL('/', request.url); // redirect to homepage/login
+    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*'],
+};
+```
+
+**Why this pattern:**
+- `devcollab_token` is the httpOnly cookie set by the NestJS auth endpoint (already used in the app — `credentials: 'include'` fetch calls throughout the code)
+- No JWT verification in middleware — edge runtime has no access to the Prisma database or NestJS service. The cookie presence check is sufficient as a first-pass guard; the NestJS API validates the JWT on every API call
+- The `matcher` limits the middleware to `/dashboard` and its sub-routes only — no performance overhead on other pages
+- `redirect` query param allows the login page to redirect back after auth
+
+**Limitation (LOW confidence area):** If `devcollab_token` cookie has a custom name set by NestJS, verify it matches. Check `apps/devcollab-api/src/auth/auth.service.ts` for the exact cookie name used in `Set-Cookie`.
+
+---
+
+### 9. Prisma Import Fix — reactions.service.ts
+
+**No npm package needed. One-line import change.**
+
+Current code in `apps/devcollab-api/src/reactions/reactions.service.ts`:
+```typescript
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+```
+
+**Problem:** `@prisma/client/runtime/library` is a private, internal module. Prisma does not guarantee its stability across minor or patch versions. This is documented as a known antipattern in Prisma's GitHub discussions.
+
+**Fix:**
+```typescript
+import { Prisma } from '@devcollab/database';
+// Then use: Prisma.PrismaClientKnownRequestError
+```
+
+Or, since the `PrismaService` imports from `@devcollab/database`, and `@devcollab/database` re-exports from `@prisma/client`:
+```typescript
+import { Prisma } from '@prisma/client';
+// Then use: Prisma.PrismaClientKnownRequestError
+```
+
+**In context:**
+```typescript
+// Before
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+// ...
+if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002') {
+
+// After
+import { Prisma } from '@prisma/client';
+// ...
+if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+```
+
+This is the pattern recommended in Prisma's official documentation and public GitHub discussions. `Prisma.PrismaClientKnownRequestError` is a public API with semver guarantees.
+
+**Confidence:** HIGH — Verified against Prisma GitHub discussions and official documentation.
+
+---
+
+### 10. Invite Link UI and Member Management UI
+
+**No npm packages needed.** The NestJS endpoints already exist. The UI work is React component authoring using what's already installed.
+
+**Existing NestJS endpoints (confirmed from `workspaces.controller.ts`):**
+
+| Endpoint | Method | Auth | Purpose |
+|----------|--------|------|---------|
+| `POST /workspaces/:slug/invite-links` | POST | Admin only (CASL: `create InviteLink`) | Generate a time-limited invite token, returns `{ token, expiresAt }` |
+| `POST /workspaces/join` | POST | Any authenticated user | Accept invite token, join workspace |
+| `GET /workspaces/:slug/members` | GET | Any workspace member (CASL: `read WorkspaceMember`) | List all members with roles |
+| `PATCH /workspaces/:slug/members/:userId/role` | PATCH | Admin only (CASL: `update WorkspaceMember`) | Promote/demote member role |
+| `DELETE /workspaces/:slug/members/:userId` | DELETE | Admin only (CASL: `delete WorkspaceMember`) | Remove member from workspace |
+
+**UI pattern for invite link generation (Next.js client component):**
+```typescript
+// Pattern: fetch to NEXT_PUBLIC_API_URL, credentials: 'include'
+// No special library needed — plain fetch with the existing cookie auth
+async function generateInviteLink(slug: string) {
+  const res = await fetch(`${API_URL}/workspaces/${slug}/invite-links`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  const data = await res.json();
+  // data.token — display this as ?token=<value> appended to /join page URL
+  return `${window.location.origin}/join?token=${data.token}`;
+}
+```
+
+**UI pattern for member management:**
+```typescript
+// List members
+const members = await fetch(`${API_URL}/workspaces/${slug}/members`, {
+  credentials: 'include',
+}).then(r => r.json());
+
+// Promote/demote member
+await fetch(`${API_URL}/workspaces/${slug}/members/${userId}/role`, {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({ role: 'ADMIN' }), // or 'CONTRIBUTOR', 'VIEWER'
+});
+
+// Remove member
+await fetch(`${API_URL}/workspaces/${slug}/members/${userId}`, {
+  method: 'DELETE',
+  credentials: 'include',
+});
+```
+
+**Role check pattern for conditional UI rendering:**
+The current `dashboard/page.tsx` already fetches workspaces. Member data includes `{ role, userId }` per member. To determine if the current user is ADMIN, compare `currentUserId` against the members list. `currentUserId` is available by calling `GET /auth/me` or reading from a cookie/local state after login.
+
+---
+
+### What NOT to Add (v3.0)
+
+| Avoid | Why |
+|-------|-----|
+| Traefik labels in docker-compose.coolify.yml | Coolify manages Traefik labels via its UI domain assignment. Manually adding labels conflicts with Coolify's automation. Only needed for "Raw Compose Deployment" mode (do not use). |
+| Coolify `Service Stack` resource type | Service stacks are for stateful Coolify-managed services (databases, Redis). Use Docker Compose build pack for our custom application stack. |
+| `NEXT_PUBLIC_API_URL` baked into the Docker image at build time | Next.js `NEXT_PUBLIC_*` vars are embedded at build time, not runtime. The existing Dockerfile does not pass this variable at build — it's set as a runtime env var, which is correct for standalone output (`server.js` reads process.env at runtime for non-NEXT_PUBLIC_ vars). NEXT_PUBLIC_ vars ARE embedded at build — see note below. |
+| Separate Coolify resources for each of the 4 Docker images | Four resources = four networks = no internal DNS between services. One Docker Compose resource keeps all services on one network. |
+| Docker Swarm mode | Portfolio project, single server. Swarm adds complexity with zero benefit. |
+| Multiple Coolify webhook secrets per service | One webhook per Docker Compose resource. One secret in GitHub Actions. Simpler. |
+
+**NEXT_PUBLIC_ caveat (MEDIUM confidence):** `NEXT_PUBLIC_API_URL` is embedded at build time by Next.js. If the production URL isn't known at build time, use a runtime substitution pattern (window.__ENV__ or API route returning config). However, since `ghcr.io` images are built before the domain is configured in Coolify, `NEXT_PUBLIC_API_URL` defaults to `http://localhost:3003` unless passed as a build arg. Check `apps/devcollab-web/next.config.*` and the Dockerfile build args — if `NEXT_PUBLIC_API_URL` is not a build arg, the current code uses the default `http://localhost:3003` in production (bug). The current `dashboard/page.tsx` uses:
+
+```typescript
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+```
+
+This will be `http://localhost:3003` in production unless `NEXT_PUBLIC_API_URL` is passed as a `--build-arg` during Docker image build. **This is a known gap.** The fix is to add `NEXT_PUBLIC_API_URL` as a build arg in GitHub Actions, or switch to a runtime config approach.
+
+---
+
+### v3.0 Confidence Assessment
+
+| Area | Confidence | Basis |
+|------|------------|-------|
+| Coolify Docker Compose deployment pattern | HIGH | Verified against Coolify official docs (Docker Compose build pack, environment variables, networking) |
+| GHCR authentication via `docker login` | HIGH | Coolify official docs — "Coolify automatically detects credentials" |
+| Health check behavior with Traefik | HIGH | Coolify health check docs — Traefik routing blocked on unhealthy containers |
+| Env var substitution in compose file | HIGH | Coolify docs confirm `${VAR}` syntax creates UI-editable fields |
+| Prisma import fix | HIGH | Prisma official GitHub discussions and documentation |
+| Next.js middleware cookie auth | HIGH | Next.js 15 official docs (verified 2026-02-16) |
+| standalone output public/ copy | HIGH | Next.js official output docs — confirmed `public/` not auto-copied |
+| `NEXT_PUBLIC_API_URL` build-time embedding | MEDIUM | Known Next.js behavior, but exact impact on this project's Dockerfile needs verification |
+| `devcollab-migrate` one-shot pattern | MEDIUM | Coolify supports `service_completed_successfully` condition, but migration command override needs verification against actual image structure |
+
+---
+
+### v3.0 Sources
+
+**HIGH Confidence — Official Documentation:**
+- [Coolify Docker Compose Build Pack](https://coolify.io/docs/applications/build-packs/docker-compose) — Networking, env vars, service communication
+- [Coolify Environment Variables](https://coolify.io/docs/knowledge-base/environment-variables) — `${VAR}` syntax, built-in variables, secrets
+- [Coolify Health Checks](https://coolify.io/docs/knowledge-base/health-checks) — Traefik integration, Dockerfile vs UI priority
+- [Coolify Docker Registry](https://coolify.io/docs/knowledge-base/docker/registry) — `docker login` authentication, credential detection
+- [Coolify GitHub Actions](https://coolify.io/docs/applications/ci-cd/github/actions) — Webhook-triggered redeployment pattern
+- [Next.js Output Docs](https://nextjs.org/docs/pages/api-reference/config/next-config-js/output) — standalone output, public/ copy requirement
+- [Next.js Middleware Docs](https://nextjs.org/docs/app/building-your-application/routing/middleware) — cookie access, redirect pattern, matcher config
+- [Prisma GitHub Discussion #17832](https://github.com/prisma/prisma/discussions/17832) — `@prisma/client/runtime/library` deprecation, `Prisma.` namespace as fix
+
+**MEDIUM Confidence — Verified Community Sources:**
+- [Coolify Docker Compose Networking Discussion #5059](https://github.com/coollabsio/coolify/discussions/5059) — Cross-stack networking limitations confirmed
+- [Coolify "Connect to Predefined Network" Issue #5597](https://github.com/coollabsio/coolify/issues/5597) — Known issue with cross-stack networking, single compose preferred
+- [Environment Variables and Build Args for Docker Compose in Coolify](https://cryszon.github.io/posts/environment-variables-and-build-args-for-docker-compose-in-coolify/) — Practical env var patterns
+
+---
+
+*v3.0 Coolify deployment + DevCollab UI tech debt research completed 2026-02-19.*
+*Existing TeamFlow, DevCollab, and Matrix Portfolio sections above are preserved unchanged.*
