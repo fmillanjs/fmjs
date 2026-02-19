@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 22 — Token Foundation COMPLETE
-Plan: 03 of 03 complete
+Plan: 04 of 04 complete
 Status: Phase complete — ready for Phase 23
-Last activity: 2026-02-18 — 22-03 (CSS Visual Effects) executed: cursor-blink FX-02 + card-glow-hover UX-01 shipped, Playwright snapshots updated (13/13 pass)
+Last activity: 2026-02-18 — 22-04 (Gap Closure: activate .matrix-theme CSS) executed: THEME-01 dark-first portfolio rendering fully active, REQUIREMENTS.md traceability updated
 
-Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 22 complete (3/3 plans), Phase 23 next
+Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 22 complete (4/4 plans), Phase 23 next
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -28,13 +28,15 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v2.0 requirements | 41/41 |
 | v2.5 requirements | 6/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01 complete) |
 | Total shipped | 85/91 |
+| Phase 22 P04 | 1 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
 ### Decisions
 
 - **22-01:** Matrix tokens in :root (not @theme) — raw CSS vars consumed as var(--matrix-green), not Tailwind utility tokens
-- **22-01:** matrix-theme first class on portfolio layout div — no CSS rules attached in Phase 22 (dormant selector hook)
+- **22-01:** matrix-theme first class on portfolio layout div — CSS rules attached in 22-04 (was dormant hook until gap closure)
+- **22-04:** .matrix-theme CSS activated with raw hex literals (#0a0a0a background, #e8e8e8 color) — avoids var(--background) which resolves to light values outside .dark context
 - **22-01:** THEME-04 layered: CSS global rule (Phase 22), RAF check (Phase 23), MotionConfig (Phase 24)
 - **22-02:** Use motion (NOT framer-motion) — import path is motion/react in all downstream phases
 - **22-02:** Lenis installed but not initialized — activation deferred to Phase 26 (ANIM-06) with "use client" wrapper
@@ -42,6 +44,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - **22-03:** card-glow-hover class on Link wrapper (not Card) — hover area matches clickable region, no Card component coupling
 - **22-03:** No new reduced-motion CSS needed — Plan 01 block covers cursor-blink::after via animation-duration: 0.01ms
 - **22-03:** Removed hover:shadow-xl transition-shadow from inline cards and transition-shadow hover:shadow-lg from ProjectCard — card-glow-hover replaces both
+- [Phase 22]: 22-04: .matrix-theme uses raw hex literals (#0a0a0a bg, #e8e8e8 fg) — var(--background) resolves to light values outside .dark context
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -73,6 +76,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 22-03-PLAN.md — CSS Visual Effects (FX-02 cursor-blink + UX-01 card-glow-hover + Playwright snapshots updated)
+Stopped at: Completed 22-04-PLAN.md — Gap Closure: .matrix-theme CSS activated (THEME-01 dark-first rendering fully active)
 Resume file: None
 Next action: Begin Phase 23 (Canvas + RAF) — dot grid background + reduced-motion RAF check
