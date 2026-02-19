@@ -81,6 +81,11 @@
   --border: var(--slate-6);
   --input: var(--slate-6);
   --ring: var(--blue-8);
+
+  /* Matrix green token system — Phase 22 */
+  --matrix-green: #00FF41;
+  --matrix-green-dim: #00CC33;
+  --matrix-green-ghost: #00FF4120;
 }
 
 /* Dark mode semantic token overrides */
@@ -135,4 +140,16 @@
 
 .animate-slide-in-up {
   animation: slide-in-up 0.3s ease-out;
+}
+
+/* THEME-04: Stop all animations when OS Reduce Motion is active */
+/* Phase 22 portion — covers CSS animations/transitions globally */
+/* Canvas RAF check (Phase 23) and MotionConfig (Phase 24) handle JS animation layers */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
