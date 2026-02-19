@@ -163,4 +163,4 @@ Plans:
 | 22. Token Foundation | 4/4 | Complete    | 2026-02-19 | 2026-02-18 |
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | 3/3 | Complete    | 2026-02-19 | — |
-| 25. Personality Effects | v2.5 | 0/? | Not started | — |
+| 25. Personality Effects | 1/4 | In Progress|  | — |

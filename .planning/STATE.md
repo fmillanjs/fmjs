@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — COMPLETE (3/3 plans done)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 25: Personality Effects — IN PROGRESS (1/4 plans done)
 
 ## Current Position
 
-Phase: 24 — Scroll Animations + Entrance — COMPLETE
-Plan: 24-03 of 24-03 — ALL TASKS DONE
-Status: Phase 24 fully complete — all 5 success criteria human-verified (SC1 heading fade+slide-up, SC2 visible card stagger, SC3 reduced motion instant display, SC4 zero hydration warnings, SC5 once-per-visit navigation replay)
-Last activity: 2026-02-19 — 24-03 (human verified all 5 SC; ANIM-01 fully satisfied; phase complete)
+Phase: 25 — Personality Effects — IN PROGRESS
+Plan: 25-01 of 25-04 — COMPLETE
+Status: Phase 25 plan 01 (FX-01 text scramble) complete — useTextScramble hook + ScrambleHero component integrated into HeroSection
+Last activity: 2026-02-19 — 25-01 (FX-01 text scramble: hand-rolled RAF hook + ScrambleHero component, commits 911d21c + a3609ab)
 
-Progress: [███████████████████░] 70% — v2.5 Phase 24 COMPLETE; Phase 25 (FX-01 text scramble + FX-04 spotlight) is next
+Progress: [███████████████████░] 73% — v2.5 Phase 25 IN PROGRESS; 25-01 (FX-01) done, 25-02 through 25-04 remaining
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,8 +26,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 9/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-01, ANIM-02, ANIM-03 complete) |
-| Total shipped | 88/91 |
+| v2.5 requirements | 10/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-01, FX-02, UX-01, ANIM-01, ANIM-02, ANIM-03 complete) |
+| Total shipped | 89/91 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
@@ -37,6 +37,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 24 P02 | 3 | 3 tasks | 6 files |
 | Phase 24-scroll-animations-entrance P03 | 5 | 1 tasks | 3 files |
 | Phase 24 P03 | 15 | 2 tasks | 2 files |
+| Phase 25-personality-effects P01 | a3609ab | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,10 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 24]: All portfolio page files remain Server Components — AnimateIn/StaggerContainer 'use client' boundary stays inside those components
 - [Phase 24-03]: emulateMedia({ reducedMotion: 'reduce' }) before page.goto() in visual regression tests — captures final state, not mid-animation state, for deterministic baselines
 - [Phase 24]: emulateMedia({ reducedMotion: 'reduce' }) before page.goto() in visual regression tests — captures final state, not mid-animation state, for deterministic baselines
+- [Phase 25-01]: Hand-rolled RAF hook (not use-scramble package) — avoids React 19 peer dep uncertainty; ~50 lines, zero risk
+- [Phase 25-01]: Non-breaking space (\\u00A0) fallback in ScrambleHero prevents layout collapse when display is empty string on first frame
+- [Phase 25-01]: aria-label={text} on scramble span — screen readers announce real name, not noise characters
+- [Phase 25-01]: ScrambleHero not wrapped in next/dynamic — already inside 'use client' HeroSection loaded via dynamic(ssr:false)
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -98,6 +103,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 24 COMPLETE — all 3 plans executed, all 5 success criteria human-verified
+Stopped at: Completed 25-01-PLAN.md — FX-01 text scramble implemented and committed
 Resume file: None
-Next action: Phase 25 (FX-01 text scramble + FX-04 spotlight cursor)
+Next action: Phase 25 plan 02 (FX-03 Evervault card hover effect)
