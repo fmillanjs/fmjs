@@ -6,10 +6,10 @@
       "startServerReadyTimeout": 30000,
       "url": [
         "http://localhost:3000/",
-        "http://localhost:3000/about",
         "http://localhost:3000/projects",
         "http://localhost:3000/projects/teamflow",
-        "http://localhost:3000/login"
+        "http://localhost:3000/projects/devcollab",
+        "http://localhost:3000/contact"
       ],
       "numberOfRuns": 3
     },
