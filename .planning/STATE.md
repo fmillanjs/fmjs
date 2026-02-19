@@ -70,6 +70,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 22-01-PLAN.md — Token Foundation Plan 01 (tokens + reduced-motion + matrix-theme class)
+Stopped at: Completed 22-02-PLAN.md — Animation Libraries (motion, gsap, @gsap/react, lenis workspace-scoped to apps/web)
 Resume file: None
-Next action: Execute 22-02 (npm package installs) and 22-03 (pure CSS effects) to complete Phase 22
+Next action: Execute 22-03 (pure CSS effects: blinking cursor FX-02 + card hover glow UX-01) to complete Phase 22

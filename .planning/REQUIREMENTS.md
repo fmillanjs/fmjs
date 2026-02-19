@@ -11,7 +11,7 @@ Matrix-inspired visual overhaul of the portfolio website. Dark-first, Matrix gre
 
 - [x] **THEME-01**: Portfolio site renders in dark-first mode by default via `.matrix-theme` CSS class scoped to `(portfolio)` route group — TeamFlow/DevCollab dashboard routes visually unchanged
 - [x] **THEME-02**: Matrix green token system (`--matrix-green: #00FF41`, `--matrix-green-dim`, `--matrix-green-ghost`) added as additive CSS tokens without modifying existing Radix Colors cascade
-- [ ] **THEME-03**: Animation packages (`motion` v12, `gsap`, `@gsap/react`, `lenis`) installed workspace-scoped to `apps/web` — not global, no TeamFlow/DevCollab bundle contamination
+- [x] **THEME-03**: Animation packages (`motion` v12, `gsap`, `@gsap/react`, `lenis`) installed workspace-scoped to `apps/web` — not global, no TeamFlow/DevCollab bundle contamination
 - [x] **THEME-04**: All animations and canvas RAF loop stop completely when OS Reduce Motion is active (`prefers-reduced-motion: reduce`)
 
 ### Animations
@@ -69,7 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | THEME-01 | Phase 22 | Complete (22-01) |
 | THEME-02 | Phase 22 | Complete (22-01) |
-| THEME-03 | Phase 22 | Pending |
+| THEME-03 | Phase 22 | Complete |
 | THEME-04 | Phase 22 | Complete (22-01, CSS layer) |
 | FX-02 | Phase 22 | Pending |
 | UX-01 | Phase 22 | Pending |
