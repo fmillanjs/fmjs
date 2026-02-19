@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
+import { ScrambleHero } from '@/components/portfolio/scramble-hero';
 
 const MatrixRainCanvas = dynamic(
   () => import('./matrix-rain-canvas'),
@@ -15,7 +16,7 @@ export function HeroSection() {
       <MatrixRainCanvas />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-          <span className="block mb-2">Fernando Millan</span>
+          <ScrambleHero text="Fernando Millan" className="block mb-2" />
           <span className="block text-primary">
             Full-Stack Engineer Building Production-Ready SaaS
           </span>
