@@ -11,14 +11,14 @@ Requirements for the v3.0 Deployment & Tech Debt Closure milestone. Each maps to
 
 - [ ] **DEPLOY-01**: DevCollab web and API are accessible at HTTPS custom domains with valid TLS certificates
 - [ ] **DEPLOY-02**: TeamFlow web and API are accessible at HTTPS custom domains with valid TLS certificates
-- [ ] **DEPLOY-03**: `NEXT_PUBLIC_API_URL` is baked into devcollab-web Docker image at build time via GitHub Actions `--build-arg`
-- [ ] **DEPLOY-04**: NestJS CORS is configured with production domain so browser API calls succeed in production
+- [x] **DEPLOY-03**: `NEXT_PUBLIC_API_URL` is baked into devcollab-web Docker image at build time via GitHub Actions `--build-arg`
+- [x] **DEPLOY-04**: NestJS CORS is configured with production domain so browser API calls succeed in production
 - [x] **DEPLOY-05**: GitHub Actions CI/CD auto-deploys to Coolify on push to main (separate webhooks for TeamFlow and DevCollab stacks)
 - [x] **DEPLOY-06**: Coolify server can pull private GHCR images (docker login configured as root on VPS)
 
 ### Fixes
 
-- [ ] **FIX-01**: Prisma import in `reactions.service.ts` uses the correct devcollab client path (not TeamFlow's `@prisma/client`)
+- [x] **FIX-01**: Prisma import in `reactions.service.ts` uses the correct devcollab client path (not TeamFlow's `@prisma/client`)
 - [ ] **FIX-02**: Real resume PDF is served at `/resume.pdf` on the portfolio site
 
 ### DevCollab UI
@@ -66,11 +66,11 @@ Which phases cover which requirements. Confirmed during roadmap creation.
 |-------------|-------|--------|
 | DEPLOY-01 | Phase 27 | Pending |
 | DEPLOY-02 | Phase 27 | Pending |
-| DEPLOY-03 | Phase 27 | Pending |
-| DEPLOY-04 | Phase 27 | Pending |
+| DEPLOY-03 | Phase 27 | Complete |
+| DEPLOY-04 | Phase 27 | Complete |
 | DEPLOY-05 | Phase 27 | Complete |
 | DEPLOY-06 | Phase 27 | Complete |
-| FIX-01 | Phase 27 | Pending |
+| FIX-01 | Phase 27 | Complete |
 | FIX-02 | Phase 28 | Pending |
 | UI-01 | Phase 28 | Pending |
 | UI-02 | Phase 28 | Pending |

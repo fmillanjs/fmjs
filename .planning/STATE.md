@@ -40,6 +40,9 @@ Progress: [████████████████░░] 90% (26/28 ph
 
 ### Decisions (recent — full log in PROJECT.md)
 
+- **27-01:** Multi-Prisma monorepo: import PrismaClientKnownRequestError from `.prisma/{client-name}/runtime/library` not `@prisma/client/runtime/library` — instanceof fails cross-client
+- **27-01:** SameSite=None requires Secure=true — gate both on isProduction in auth cookie set and clear methods
+- **27-01:** NEXT_PUBLIC_* vars baked at next build time via Docker ARG/ENV before RUN turbo build
 - **v3.0:** NEXT_PUBLIC_API_URL must be --build-arg in GitHub Actions (not Coolify runtime env) — client-side JS bundle baked at build time
 - **v3.0:** GHCR auth must be done as root on VPS (sudo su - then docker login ghcr.io) — Coolify reads creds from /root/.docker/config.json
 - **v3.0:** CORS must use exact HTTPS origin with no trailing slash — wildcard origin + credentials: true is rejected by every browser
@@ -70,7 +73,7 @@ None.
 ### Blockers/Concerns
 
 - Coolify devcollab webhook format may differ from teamflow webhook — treat as copy-and-adapt from existing `.github/workflows/deploy.yml`
-- SameSite cookie attributes not verified line-by-line in devcollab-api auth.service.ts — check on first production login
+- SameSite cookie: fixed in 27-01 (SameSite=None; Secure in production) — verify in Chrome DevTools on first production login
 
 ## Session Continuity
 
