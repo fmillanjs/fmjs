@@ -8,6 +8,18 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
+## Current Milestone: v2.5 Matrix Portfolio Overhaul
+
+**Goal:** Transform the portfolio website into a dark, Matrix-inspired experience with scroll animations, mouse-reactive effects, and green glow aesthetics — making it memorable while conveying senior engineering craft.
+
+**Target features:**
+- Dark-first theme across full portfolio site (Matrix green `#00FF41` family on dark backgrounds)
+- Hero section restructured with dramatic terminal/code-rain concept
+- Scroll-triggered reveal animations throughout all pages
+- Mouse-reactive effects (parallax, magnetic buttons, cursor glow)
+- Card micro-interactions (glow on hover, lift effects)
+- Shifting gradient / aurora backgrounds with green glow accent system
+
 ## Requirements
 
 ### Validated
@@ -48,13 +60,22 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 
 ### Active
 
-**v3.0 Requirements (Deployment):**
+**v2.5 Requirements (Portfolio Redesign — Matrix Aesthetic):**
+- [ ] Dark-first theme across full portfolio site (Matrix green on dark, replacing current light theme)
+- [ ] Hero section restructured with dramatic terminal/code-rain first impression
+- [ ] Scroll-triggered reveal animations on all major sections
+- [ ] Mouse-reactive effects (parallax layers, magnetic buttons, cursor glow)
+- [ ] Card hover micro-interactions (glow, lift, green border reveal)
+- [ ] Shifting gradient / aurora backgrounds with Matrix green glow
+- [ ] Green accent system integrated with existing Radix/Shadcn component library
+
+**v3.0 Requirements (Future — Deployment):**
 - [ ] DevCollab deployed to Coolify (custom domain, HTTPS, env vars locked)
 - [ ] TeamFlow deployed to Coolify (custom domain, HTTPS, env vars locked)
 - [ ] NEXT_PUBLIC_API_URL set correctly in Coolify deployment for devcollab-web
 - [ ] Real resume PDF at /resume.pdf
 
-**v3.0 Requirements (Tech Debt Closure):**
+**v3.0 Requirements (Future — Tech Debt Closure):**
 - [ ] Invite link UI: Admin can generate invite links through the browser (currently API-only)
 - [ ] Member management UI: Admin can view/promote/demote workspace members via UI (currently API-only)
 - [ ] Dashboard auth guard: /dashboard page redirects unauthenticated users to /login (currently shows empty state)
@@ -121,4 +142,4 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 | Coolify deployment deferred to v3.0 | DevCollab feature-complete locally; Coolify per-service webhook behavior for second app needs hands-on iteration | — Pending v3.0 |
 
 ---
-*Last updated: 2026-02-18 after v2.0 milestone — DevCollab shipped*
+*Last updated: 2026-02-18 after v2.5 milestone started — Matrix Portfolio Overhaul*
