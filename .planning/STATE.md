@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — IN PROGRESS (1/3 plans done, ANIM-01 primitives complete)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — IN PROGRESS (2/3 plans done, animations wired into all 5 portfolio routes)
 
 ## Current Position
 
 Phase: 24 — Scroll Animations + Entrance
-Plan: 24-01 of 24-03 complete
-Status: 24-01 done (MotionProvider + AnimateIn + StaggerContainer primitives, ANIM-01 requirement completed)
-Last activity: 2026-02-19 — 24-01 (animation primitive components created; MotionProvider wired into layout; reduced-motion gates on all three components)
+Plan: 24-02 of 24-03 complete
+Status: 24-02 done (AnimateIn + StaggerContainer applied to all 5 portfolio routes; headings fade+slide-up, project cards stagger in)
+Last activity: 2026-02-19 — 24-02 (animated homepage, projects, teamflow, devcollab, contact pages; CaseStudySection h2 animated via shared component)
 
-Progress: [████████████████░░░░] 57% — v2.5 Phase 24 IN PROGRESS (1/3 plans), animation primitives complete
+Progress: [█████████████████░░░] 62% — v2.5 Phase 24 IN PROGRESS (2/3 plans), all route animations active
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -34,6 +34,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 23-canvas-matrix-rain P03 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P04 | 0e592f2 | 3 tasks | 1 file |
 | Phase 24-scroll-animations-entrance P01 | a0cc624 | 3 tasks | 4 files |
+| Phase 24 P02 | 3 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 24-01]: MotionProvider wraps only <main> in layout.tsx — not nav, footer, or CommandPalette
 - [Phase 24-01]: itemVariants typed as Variants with 'easeOut' as const — motion/react strict Easing type requires literal narrowing (string rejected)
 - [Phase 24-01]: StaggerItem uses variants prop only (no initial/whileInView) — inherits animation state from StaggerContainer parent via motion variant propagation
+- [Phase 24]: Modified CaseStudySection at shared component level — h2 AnimateIn covers all case study routes without touching individual page files
+- [Phase 24]: All portfolio page files remain Server Components — AnimateIn/StaggerContainer 'use client' boundary stays inside those components
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -91,6 +94,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 24-01-PLAN.md — MotionProvider + AnimateIn + StaggerContainer primitives created; ANIM-01 complete
+Stopped at: Completed 24-02-PLAN.md — AnimateIn applied to all 5 portfolio routes; StaggerContainer on home + projects card grids; ANIM-01 fully wired into pages
 Resume file: None
-Next action: Phase 24 Plan 02 — Apply AnimateIn to portfolio pages (hero, about, contact)
+Next action: Phase 24 Plan 03 — remaining scroll animation tasks
