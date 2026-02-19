@@ -17,6 +17,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY --from=pruner /app/out/full/ .
 COPY --from=installer /app/node_modules ./node_modules
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx turbo build --filter=devcollab-web
 
