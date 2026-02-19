@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 25: Personality Effects — COMPLETE (4/4 plans done)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 26: Navigation Redesign — 1/2 plans done
 
 ## Current Position
 
-Phase: 25 — Personality Effects — COMPLETE
-Plan: 25-04 of 25-04 — COMPLETE
-Status: Phase 25 complete — all four plans done: FX-01 scramble, FX-02 research, FX-03 Evervault card, FX-04 dot-grid spotlight, quality gate verified
-Last activity: 2026-02-19 — 25-04 (quality gate: lhci 0.99-1.00 on all 5 URLs, human approved SC-1 through SC-5)
+Phase: 26 — Navigation Redesign (Awwwards-style horizontal nav with Matrix personality)
+Plan: 26-01 of 26-02 — COMPLETE
+Status: 26-01 complete — UX-04 hover underline + Motion layoutId active indicator + Awwwards typography implemented in nav.tsx
+Last activity: 2026-02-19 — 26-01 (nav.tsx redesign: CSS scaleX hover underline, Motion layoutId nav-active-underline, mobile left-border accent, 0 TS errors)
 
-Progress: [████████████████████] 82% — v2.5 Phase 25 COMPLETE; all 12 v2.5 requirements confirmed done (FX-01, FX-03, FX-04 human-verified)
+Progress: [████████████████████] 85% — Phase 26 in progress (1/2 plans done); UX-04 requirement complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -41,6 +41,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 25-personality-effects P02 | a956a1c | 2 tasks | 2 files |
 | Phase 25-personality-effects P03 | 908899e | 2 tasks | 3 files |
 | Phase 25-personality-effects P04 | 190f5db | 2 tasks | 0 files |
+| Phase 26-navigation-redesign P01 | 1f8afe9 | 2 tasks | 1 file |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 25-03]: Initial --cursor-x: -9999px positions spotlight off-screen before first mousemove event
 - [Phase 25-04]: Quality gate plan pattern — final plan in phase runs lhci autorun (automated) + human-verify checkpoint; both must pass before phase is marked complete
 - [Phase 25-04]: Phase 25 human verification approved on first attempt — SC-1 through SC-5 all confirmed without rework
+- [Phase 26-01]: No LayoutGroup wrapper needed — only one nav in the DOM, layoutId resolves within same tree without explicit group scope
+- [Phase 26-01]: globals.css prefers-reduced-motion rule (Phase 22) automatically kills CSS hover transition — no new CSS needed for UX-04
+- [Phase 26-01]: Mobile nav active state uses left-border accent (border-l-2) not bottom underline — appropriate for vertical list layout
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -119,6 +123,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 25-04-PLAN.md — Phase 25 quality gate passed, all SC human-verified
+Stopped at: Completed 26-01-PLAN.md — UX-04 nav redesign: hover underline + layoutId active indicator + Awwwards typography
 Resume file: None
-Next action: Phase 26 (deployment) or as per ROADMAP
+Next action: 26-02 (next plan in Phase 26)

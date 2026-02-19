@@ -165,13 +165,13 @@ Plans:
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | 3/3 | Complete    | 2026-02-19 | — |
 | 25. Personality Effects | 4/4 | Complete    | 2026-02-19 | — |
-| 26. Navigation Redesign | v2.5 | 0/2 | In progress | — |
+| 26. Navigation Redesign | 1/2 | In Progress|  | — |
 
 ### Phase 26: Navigation Redesign — Awwwards-style horizontal nav with Matrix personality
 
 **Goal:** Elevate the portfolio nav to Awwwards quality — sliding Matrix-green underline on hover, animated active-page indicator, refined typography and spacing — all accessible, reduced-motion safe, and visually cohesive with v2.5 Matrix aesthetic
 **Depends on:** Phase 25
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 26-01-PLAN.md — UX-04 nav redesign: hover underline + Motion layoutId active indicator + Awwwards typography in nav.tsx

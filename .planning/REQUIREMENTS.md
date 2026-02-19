@@ -45,7 +45,7 @@ Deferred to v3.0 or later. Acknowledged but not in current roadmap.
 
 - **UX-02**: Magnetic buttons that pull toward cursor on hover (GSAP quickTo)
 - **UX-03**: Stat/metric counters count up when scrolled into view (motion useInView)
-- **UX-04**: Nav link sliding green underline animation on hover (CSS)
+- **UX-04**: Nav link sliding green underline animation on hover (CSS) — COMPLETE (Phase 26-01)
 
 ## Out of Scope
 
