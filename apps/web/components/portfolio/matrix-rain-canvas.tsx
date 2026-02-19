@@ -32,6 +32,9 @@ export default function MatrixRainCanvas() {
     // Capture ctx as a definite non-null reference for use inside draw
     const context: CanvasRenderingContext2D = ctx
 
+    const isDark = document.documentElement.classList.contains('dark')
+    const trailFill = isDark ? 'rgba(10, 10, 10, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+
     let lastTime = 0
     let rafId: number
 
@@ -43,7 +46,7 @@ export default function MatrixRainCanvas() {
 
       lastTime = timestamp
 
-      context.fillStyle = 'rgba(10, 10, 10, 0.05)'
+      context.fillStyle = trailFill
       context.fillRect(0, 0, w, h)
 
       context.fillStyle = '#00FF41'
