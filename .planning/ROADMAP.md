@@ -88,7 +88,12 @@ Full archive: `.planning/milestones/v2.5-ROADMAP.md`
   3. A browser console network tab on the DevCollab frontend shows API calls going to `https://devcollab-api.fernandomillan.dev` (not `localhost:3003`) — confirming NEXT_PUBLIC_API_URL was baked correctly at build time
   4. Logging into DevCollab in a browser sets a working auth cookie and subsequent API requests succeed — confirming CORS is configured with the exact HTTPS origin
   5. Pushing a commit to `main` triggers both the TeamFlow and DevCollab Coolify stacks to pull updated GHCR images and redeploy automatically within a few minutes
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Fix Prisma import, cookie SameSite, and Dockerfile build-arg (FIX-01, DEPLOY-03, DEPLOY-04)
+- [ ] 27-02-PLAN.md — GHA workflow update + coolify-compose.yml creation (DEPLOY-05, DEPLOY-06)
+- [ ] 27-03-PLAN.md — Manual VPS GHCR auth, GitHub secrets, Coolify stack setup (DEPLOY-01, DEPLOY-02, DEPLOY-06)
 
 ### Phase 28: DevCollab UI Debt Closure
 **Goal**: All previously API-only DevCollab admin features have working browser UI, the portfolio serves a real resume PDF, and unauthenticated visitors are correctly redirected
