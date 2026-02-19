@@ -17,7 +17,7 @@ export default function PortfolioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="matrix-theme min-h-screen flex flex-col">
       <PortfolioNav />
       <main className="flex-1">{children}</main>
       <PortfolioFooter />
