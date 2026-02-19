@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 26: Navigation Redesign — 1/2 plans done
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 26: Navigation Redesign — COMPLETE (2/2 plans done)
 
 ## Current Position
 
-Phase: 26 — Navigation Redesign (Awwwards-style horizontal nav with Matrix personality)
-Plan: 26-01 of 26-02 — COMPLETE
-Status: 26-01 complete — UX-04 hover underline + Motion layoutId active indicator + Awwwards typography implemented in nav.tsx
-Last activity: 2026-02-19 — 26-01 (nav.tsx redesign: CSS scaleX hover underline, Motion layoutId nav-active-underline, mobile left-border accent, 0 TS errors)
+Phase: 26 — Navigation Redesign (Awwwards-style horizontal nav with Matrix personality) — COMPLETE
+Plan: 26-02 of 26-02 — COMPLETE
+Status: Phase 26 complete — UX-04 hover underline + Motion layoutId active indicator + Awwwards typography + quality gate (lhci 1.0, Playwright 10/10, human SC-1 to SC-5 approved)
+Last activity: 2026-02-19 — 26-02 (Playwright 10/10, lhci 1.0 all 5 URLs, human verification SC-1-SC-5 approved)
 
-Progress: [████████████████████] 85% — Phase 26 in progress (1/2 plans done); UX-04 requirement complete
+Progress: [████████████████████] 100% — Phase 26 COMPLETE (2/2 plans done); UX-04 delivered end-to-end
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,8 +26,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 12/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-01, FX-02, FX-03, FX-04, UX-01, ANIM-01, ANIM-02, ANIM-03 complete) |
-| Total shipped | 91/91 |
+| v2.5 requirements | 13/13 (THEME-01, THEME-02, THEME-03, THEME-04, FX-01, FX-02, FX-03, FX-04, UX-01, ANIM-01, ANIM-02, ANIM-03, UX-04 complete) |
+| Total shipped | 92/92 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
@@ -42,6 +42,7 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | Phase 25-personality-effects P03 | 908899e | 2 tasks | 3 files |
 | Phase 25-personality-effects P04 | 190f5db | 2 tasks | 0 files |
 | Phase 26-navigation-redesign P01 | 1f8afe9 | 2 tasks | 1 file |
+| Phase 26-navigation-redesign P02 | c6183af | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,9 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 26-01]: No LayoutGroup wrapper needed — only one nav in the DOM, layoutId resolves within same tree without explicit group scope
 - [Phase 26-01]: globals.css prefers-reduced-motion rule (Phase 22) automatically kills CSS hover transition — no new CSS needed for UX-04
 - [Phase 26-01]: Mobile nav active state uses left-border accent (border-l-2) not bottom underline — appropriate for vertical list layout
+- [Phase 26-02]: Playwright strict mode requires .first() on selectors that match multiple elements — ambiguous getByRole selectors must be narrowed
+- [Phase 26-02]: lhci startServerCommand must use 'node .next/standalone/apps/web/server.js' — 'next start' returns 500 on output:standalone builds
+- [Phase 26-02]: Phase 26 human verification approved on first attempt — SC-1 through SC-5 all confirmed without rework
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -123,6 +127,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 26-01-PLAN.md — UX-04 nav redesign: hover underline + layoutId active indicator + Awwwards typography
+Stopped at: Completed 26-02-PLAN.md — Phase 26 quality gate: lhci 1.0, Playwright 10/10, human SC-1-SC-5 approved
 Resume file: None
-Next action: 26-02 (next plan in Phase 26)
+Next action: Phase 27 (to be planned)
