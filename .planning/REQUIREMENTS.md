@@ -1,51 +1,50 @@
-# Requirements: Fernando Millan Portfolio — v2.5 Matrix Aesthetic
+# Requirements: Fernando Millan Portfolio & DevCollab
 
-**Defined:** 2026-02-18
+**Defined:** 2026-02-19
 **Core Value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## v2.5 Requirements
+## v3.0 Requirements
 
-Matrix-inspired visual overhaul of the portfolio website. Dark-first, Matrix green accents, subtle animations. Goal: recruiter feels "this person is a serious engineer" — memorable but not costume-y.
+Requirements for the v3.0 Deployment & Tech Debt Closure milestone. Each maps to roadmap phases.
 
-### Theme & Foundation
+### Deployment
 
-- [x] **THEME-01**: Portfolio site renders in dark-first mode by default via `.matrix-theme` CSS class scoped to `(portfolio)` route group — TeamFlow/DevCollab dashboard routes visually unchanged
-- [x] **THEME-02**: Matrix green token system (`--matrix-green: #00FF41`, `--matrix-green-dim`, `--matrix-green-ghost`) added as additive CSS tokens without modifying existing Radix Colors cascade
-- [x] **THEME-03**: Animation packages (`motion` v12, `gsap`, `@gsap/react`, `lenis`) installed workspace-scoped to `apps/web` — not global, no TeamFlow/DevCollab bundle contamination
-- [x] **THEME-04**: All animations and canvas RAF loop stop completely when OS Reduce Motion is active (`prefers-reduced-motion: reduce`)
+- [ ] **DEPLOY-01**: DevCollab web and API are accessible at HTTPS custom domains with valid TLS certificates
+- [ ] **DEPLOY-02**: TeamFlow web and API are accessible at HTTPS custom domains with valid TLS certificates
+- [ ] **DEPLOY-03**: `NEXT_PUBLIC_API_URL` is baked into devcollab-web Docker image at build time via GitHub Actions `--build-arg`
+- [ ] **DEPLOY-04**: NestJS CORS is configured with production domain so browser API calls succeed in production
+- [ ] **DEPLOY-05**: GitHub Actions CI/CD auto-deploys to Coolify on push to main (separate webhooks for TeamFlow and DevCollab stacks)
+- [ ] **DEPLOY-06**: Coolify server can pull private GHCR images (docker login configured as root on VPS)
 
-### Animations
+### Fixes
 
-- [x] **ANIM-01**: Section headings and project cards animate in (fade + slide-up) when scrolled into view across all portfolio pages
-- [x] **ANIM-02**: Hero section shows Matrix digital rain on a canvas element behind content (opacity 0.04–0.07, 30fps cap, `aria-hidden`, SSR-safe via `next/dynamic ssr:false`)
-- [x] **ANIM-03**: Lighthouse CI performance score remains ≥ 90 on all five portfolio URLs after canvas is added
+- [ ] **FIX-01**: Prisma import in `reactions.service.ts` uses the correct devcollab client path (not TeamFlow's `@prisma/client`)
+- [ ] **FIX-02**: Real resume PDF is served at `/resume.pdf` on the portfolio site
 
-### Visual Effects
+### DevCollab UI
 
-- [x] **FX-01**: Hero name text scrambles from noise characters to readable text on page load — fires exactly once, never loops
-- [x] **FX-02**: Blinking terminal cursor (`_`) appears after the hero tagline via pure CSS `::after` animation
-- [x] **FX-03**: Project cards reveal an Evervault-style noise decryption effect on hover (uses installed `motion` v12, no new dependency)
-- [x] **FX-04**: Portfolio pages show a dark dot grid background with a green spotlight that follows the mouse cursor — built as a paired unit
-
-### Micro-Interactions
-
-- [x] **UX-01**: Project cards display a Matrix green border glow on hover via CSS `box-shadow`
+- [ ] **UI-01**: Unauthenticated users visiting `/dashboard` are redirected server-side to `/login`
+- [ ] **UI-02**: Workspace members page at `/w/[slug]/members` shows a list of all workspace members with their roles
+- [ ] **UI-03**: Admin can change a member's role (promote/demote) via an inline role selector on the members page
+- [ ] **UI-04**: Admin can remove a member from the workspace via a Remove button on the members page
+- [ ] **UI-05**: Admin can generate an invite link via a button on the members page and see the full shareable URL
+- [ ] **UI-06**: Workspace navigation includes a Members link so the members page is discoverable without URL-guessing
 
 ## Future Requirements
 
-Deferred to v3.0 or later. Acknowledged but not in current roadmap.
+Deferred to future milestone. Tracked but not in current roadmap.
 
-### Animations (deferred)
+### DevCollab Enhancements
 
-- **ANIM-04**: Hero heading and tagline stagger in on load (entrance animations with `motion` v12 staggerChildren)
-- **ANIM-05**: GSAP ScrollTrigger parallax on hero section
-- **ANIM-06**: Lenis smooth scroll enabled globally on portfolio routes
+- **NOTIF-01**: Copy-to-clipboard button on invite link URL
+- **NOTIF-02**: Invite link expiry timestamp displayed next to URL
+- **UI-07**: Real-time member list updates (WebSocket — requires devcollab-api WebSocket channel)
+- **UI-08**: Multi-use invite links (requires API + schema changes)
+- **UI-09**: Email invite delivery (requires Resend/SendGrid integration)
 
-### Interactions (deferred)
+### Performance
 
-- **UX-02**: Magnetic buttons that pull toward cursor on hover (GSAP quickTo)
-- **UX-03**: Stat/metric counters count up when scrolled into view (motion useInView)
-- **UX-04**: Nav link sliding green underline animation on hover (CSS) — COMPLETE (Phase 26-01)
+- **PERF-01**: Server-side fetches use Docker internal hostname (`DEVCOLLAB_API_INTERNAL_URL`) to skip Traefik round-trip
 
 ## Out of Scope
 
@@ -53,13 +52,11 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Full-screen Matrix rain at readable opacity | Content becomes unreadable; vestibular accessibility violation; hiring managers see noise not portfolio work |
-| Looping typewriter cycling role titles | Overused since 2019; hiring managers explicitly flagged as junior red flag |
-| Loading screen or splash animation | Mandatory wait causes tab closes from recruiters reviewing 50+ portfolios/day |
-| p5.js or three.js for rain effect | 9MB / 600KB — destroys Lighthouse score |
-| Purple in any design element | User requirement, all milestones |
-| Page transition AnimatePresence | Known Next.js App Router conflict (vercel/next.js #49279) — per-section entrance animations are the reliable substitute |
-| 3D card tilt | Competes with Evervault card scramble; choose one card interaction not both |
+| Shadcn UI in devcollab-web | No Shadcn/Tailwind/Radix in devcollab-web — separate redesign milestone; admin-only flows not recruiter-visible |
+| Email invite delivery | SMTP + deliverability overhead not worth it for portfolio demo |
+| Multi-use invite links | Requires API + schema changes; single-use is sufficient for demo |
+| Real-time member list | WebSocket channel adds complexity; polling sufficient for admin-only view |
+| Phase 3 server-fetch optimization | Skip unless page load performance measurably slow after Phase 2 |
 
 ## Traceability
 
@@ -67,24 +64,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | Phase 22 | Complete (22-01 + 22-04) |
-| THEME-02 | Phase 22 | Complete (22-01) |
-| THEME-03 | Phase 22 | Complete |
-| THEME-04 | Phase 22 | Complete (22-01, CSS layer) |
-| FX-02 | Phase 22 | Complete |
-| UX-01 | Phase 22 | Complete |
-| ANIM-02 | Phase 23 | Complete |
-| ANIM-03 | Phase 23 | Complete |
-| ANIM-01 | Phase 24 | Complete |
-| FX-01 | Phase 25 | Complete |
-| FX-03 | Phase 25 | Complete |
-| FX-04 | Phase 25 | Complete |
+| DEPLOY-01 | Phase 27 | Pending |
+| DEPLOY-02 | Phase 27 | Pending |
+| DEPLOY-03 | Phase 27 | Pending |
+| DEPLOY-04 | Phase 27 | Pending |
+| DEPLOY-05 | Phase 27 | Pending |
+| DEPLOY-06 | Phase 27 | Pending |
+| FIX-01 | Phase 27 | Pending |
+| FIX-02 | Phase 28 | Pending |
+| UI-01 | Phase 28 | Pending |
+| UI-02 | Phase 28 | Pending |
+| UI-03 | Phase 28 | Pending |
+| UI-04 | Phase 28 | Pending |
+| UI-05 | Phase 28 | Pending |
+| UI-06 | Phase 28 | Pending |
 
 **Coverage:**
-- v2.5 requirements: 12 total
-- Mapped to phases: 12 (100%)
-- Unmapped: 0
+- v3.0 requirements: 14 total
+- Mapped to phases: 14
+- Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-02-18*
-*Last updated: 2026-02-19 — ANIM-03 verified: lhci autorun passed on all five portfolio URLs (23-04); Phase 23 complete*
+*Requirements defined: 2026-02-19*
+*Last updated: 2026-02-19 after initial definition*
