@@ -61,6 +61,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 - [x] **Phase 23: Canvas Matrix Rain** — Hero digital rain canvas, isolated Lighthouse validation
 - [x] **Phase 24: Scroll Animations + Entrance** — Motion provider, scroll-reveal animations across all portfolio pages (completed 2026-02-19)
 - [x] **Phase 25: Personality Effects** — Text scramble, Evervault card hover, dot grid + spotlight cursor (completed 2026-02-19)
+- [ ] **Phase 26: Navigation Redesign** — Awwwards-style sliding Matrix-green underline, animated active indicator, refined typography
 
 ## Phase Details
 
@@ -164,12 +165,14 @@ Plans:
 | 23. Canvas Matrix Rain | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 24. Scroll Animations + Entrance | 3/3 | Complete    | 2026-02-19 | — |
 | 25. Personality Effects | 4/4 | Complete    | 2026-02-19 | — |
+| 26. Navigation Redesign | v2.5 | 0/2 | In progress | — |
 
 ### Phase 26: Navigation Redesign — Awwwards-style horizontal nav with Matrix personality
 
-**Goal:** [To be planned]
+**Goal:** Elevate the portfolio nav to Awwwards quality — sliding Matrix-green underline on hover, animated active-page indicator, refined typography and spacing — all accessible, reduced-motion safe, and visually cohesive with v2.5 Matrix aesthetic
 **Depends on:** Phase 25
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 26 to break down)
+- [ ] 26-01-PLAN.md — UX-04 nav redesign: hover underline + Motion layoutId active indicator + Awwwards typography in nav.tsx
+- [ ] 26-02-PLAN.md — Quality gate: Playwright E2E + lhci autorun + human verification checkpoint
