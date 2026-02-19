@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { HeroSection } from '@/components/portfolio/hero-section';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { AnimateIn } from '@/components/portfolio/animate-in';
+import { StaggerContainer, StaggerItem } from '@/components/portfolio/stagger-container';
 
 export const metadata: Metadata = {
   title: 'Fernando Millan - Full-Stack Engineer',
@@ -15,18 +17,21 @@ export default function HomePage() {
       {/* Featured Project Section */}
       <section className="py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Featured Projects
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Two production-ready SaaS applications showcasing full-stack expertise
-            </p>
-          </div>
+          <AnimateIn>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Featured Projects
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Two production-ready SaaS applications showcasing full-stack expertise
+              </p>
+            </div>
+          </AnimateIn>
 
           {/* Project Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {/* TeamFlow Card */}
+            <StaggerItem>
             <Link
               href="/projects/teamflow"
               className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
@@ -70,8 +75,10 @@ export default function HomePage() {
                 Read full case study →
               </div>
             </Link>
+            </StaggerItem>
 
             {/* DevCollab Card */}
+            <StaggerItem>
             <Link
               href="/projects/devcollab"
               className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
@@ -114,13 +121,15 @@ export default function HomePage() {
                 Read full case study →
               </div>
             </Link>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* Stats Section */}
       <section className="py-16 md:py-24 bg-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimateIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
@@ -147,6 +156,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          </AnimateIn>
         </div>
       </section>
     </>
