@@ -8,6 +8,20 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
+## Current Milestone: v3.0 Deployment & Tech Debt Closure
+
+**Goal:** Deploy both SaaS apps to production on Coolify and close all known tech debt gaps from previous milestones.
+
+**Target features:**
+- DevCollab deployed to Coolify (custom domain, HTTPS, env vars locked)
+- TeamFlow deployed to Coolify (custom domain, HTTPS, env vars locked)
+- NEXT_PUBLIC_API_URL set correctly in Coolify for devcollab-web
+- Real resume PDF at /resume.pdf
+- Invite link UI (Admin generates links in browser)
+- Member management UI (view/promote/demote workspace members)
+- Dashboard auth guard (/dashboard redirects unauthenticated users)
+- Prisma import isolation fix (reactions.service.ts)
+
 ## Requirements
 
 ### Validated
@@ -155,4 +169,4 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 | Coolify deployment deferred to v3.0 | DevCollab feature-complete locally; Coolify per-service webhook behavior for second app needs hands-on iteration | — Pending v3.0 |
 
 ---
-*Last updated: 2026-02-19 after v2.5 milestone — Matrix Portfolio Overhaul shipped*
+*Last updated: 2026-02-19 after v2.5 milestone — Milestone v3.0 started*
