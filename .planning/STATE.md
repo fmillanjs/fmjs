@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 23: Canvas + RAF — COMPLETE (4/4 plans done, ANIM-02 + ANIM-03 satisfied, Phase 24 unblocked)
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 24: Scroll Animations + Entrance — IN PROGRESS (1/3 plans done, ANIM-01 primitives complete)
 
 ## Current Position
 
-Phase: 24 — Scroll Animations + Entrance (Next)
-Plan: 23-04 of 23-04 complete — Phase 23 COMPLETE
-Status: Phase 23 complete — 23-01 done (ANIM-02), 23-02 done (@lhci/cli), 23-03 done (snapshots + a11y), 23-04 done (lhci autorun PASSED, SC5 verified by code review, ANIM-03 hard gate cleared)
-Last activity: 2026-02-19 — 23-04 (lhci autorun passed on all five portfolio URLs; WSL2 required Playwright Chromium; SC5 heap verified via cancelAnimationFrame code review; Phase 24 unblocked)
+Phase: 24 — Scroll Animations + Entrance
+Plan: 24-01 of 24-03 complete
+Status: 24-01 done (MotionProvider + AnimateIn + StaggerContainer primitives, ANIM-01 requirement completed)
+Last activity: 2026-02-19 — 24-01 (animation primitive components created; MotionProvider wired into layout; reduced-motion gates on all three components)
 
-Progress: [████████████████░░░░] 55% — v2.5 Phase 23 COMPLETE (4/4 plans), Phase 24 next (Scroll Animations + Entrance)
+Progress: [████████████████░░░░] 57% — v2.5 Phase 24 IN PROGRESS (1/3 plans), animation primitives complete
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,13 +26,14 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 8/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-02, ANIM-03 complete — ANIM-03 hard gate cleared 2026-02-19) |
-| Total shipped | 87/91 |
+| v2.5 requirements | 9/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01, ANIM-01, ANIM-02, ANIM-03 complete) |
+| Total shipped | 88/91 |
 | Phase 22 P04 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P01 | 2 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P02 | 1 | 2 tasks | 3 files |
 | Phase 23-canvas-matrix-rain P03 | 1 | 2 tasks | 2 files |
 | Phase 23-canvas-matrix-rain P04 | 0e592f2 | 3 tasks | 1 file |
+| Phase 24-scroll-animations-entrance P01 | a0cc624 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -56,6 +57,9 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - [Phase 23-03]: Pre-existing axe violations (button-name on theme toggle, color-contrast on nav links) accepted as out-of-scope — canvas aria-hidden passes cleanly; use --grep flag to limit Playwright snapshot regeneration to targeted test names only
 - [Phase 23-04]: WSL2 lhci requires Playwright Chromium at /home/doctor/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome with --no-sandbox --disable-dev-shm-usage — system Chrome not available in WSL2
 - [Phase 23-04]: SC5 heap check accepted via code review when Chrome DevTools is inaccessible — cancelAnimationFrame(rafId) in useEffect cleanup return is the correct pattern; code review is sufficient evidence
+- [Phase 24-01]: MotionProvider wraps only <main> in layout.tsx — not nav, footer, or CommandPalette
+- [Phase 24-01]: itemVariants typed as Variants with 'easeOut' as const — motion/react strict Easing type requires literal narrowing (string rejected)
+- [Phase 24-01]: StaggerItem uses variants prop only (no initial/whileInView) — inherits animation state from StaggerContainer parent via motion variant propagation
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -87,6 +91,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 23-04-PLAN.md — lhci autorun passed on all five portfolio URLs (ANIM-03 hard gate cleared); SC5 heap verified via code review; Phase 23 COMPLETE
+Stopped at: Completed 24-01-PLAN.md — MotionProvider + AnimateIn + StaggerContainer primitives created; ANIM-01 complete
 Resume file: None
-Next action: Phase 24 — Scroll Animations + Entrance (ANIM-01) — requires research + planning first
+Next action: Phase 24 Plan 02 — Apply AnimateIn to portfolio pages (hero, about, contact)

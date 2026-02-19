@@ -16,7 +16,7 @@ Matrix-inspired visual overhaul of the portfolio website. Dark-first, Matrix gre
 
 ### Animations
 
-- [ ] **ANIM-01**: Section headings and project cards animate in (fade + slide-up) when scrolled into view across all portfolio pages
+- [x] **ANIM-01**: Section headings and project cards animate in (fade + slide-up) when scrolled into view across all portfolio pages
 - [x] **ANIM-02**: Hero section shows Matrix digital rain on a canvas element behind content (opacity 0.04–0.07, 30fps cap, `aria-hidden`, SSR-safe via `next/dynamic ssr:false`)
 - [x] **ANIM-03**: Lighthouse CI performance score remains ≥ 90 on all five portfolio URLs after canvas is added
 
@@ -75,7 +75,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-01 | Phase 22 | Complete |
 | ANIM-02 | Phase 23 | Complete |
 | ANIM-03 | Phase 23 | Complete |
-| ANIM-01 | Phase 24 | Pending |
+| ANIM-01 | Phase 24 | Complete |
 | FX-01 | Phase 25 | Pending |
 | FX-03 | Phase 25 | Pending |
 | FX-04 | Phase 25 | Pending |
