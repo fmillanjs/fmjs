@@ -96,6 +96,15 @@
   --primary-foreground: var(--slate-1);
 }
 
+/* THEME-01: Dark-first theming for portfolio routes */
+/* .matrix-theme is on the wrapper div in apps/web/app/(portfolio)/layout.tsx */
+/* Scoped to portfolio routes only — dashboard routes (TeamFlow/DevCollab) are unaffected */
+/* Does not touch <html>, .dark, or the Radix Colors cascade */
+.matrix-theme {
+  background-color: #0a0a0a;
+  color: #e8e8e8;
+}
+
 /* Expose semantic tokens as Tailwind CSS utilities via @theme inline */
 /* The 'inline' keyword is REQUIRED for Tailwind v4 — do not use @theme without inline */
 /* CSS variables here define bg-background, text-foreground, border-border, etc. */
