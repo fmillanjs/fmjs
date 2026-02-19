@@ -7,8 +7,8 @@ test.describe('Portfolio Navigation', () => {
   test('home page loads with hero section', async ({ page }) => {
     await page.goto('/')
 
-    // Expect hero content to be visible
-    await expect(page.getByRole('heading', { name: /Fernando Millan|Full-Stack|Software Engineer/i })).toBeVisible()
+    // Expect hero content to be visible — use first() to avoid strict mode with multiple matching headings
+    await expect(page.getByRole('heading', { name: /Fernando Millan|Full-Stack|Software Engineer/i }).first()).toBeVisible()
   })
 
   test('about page loads with bio', async ({ page }) => {
@@ -30,11 +30,11 @@ test.describe('Portfolio Navigation', () => {
   test('case study page loads with all sections', async ({ page }) => {
     await page.goto('/projects/teamflow')
 
-    // Expect key section headings
+    // Expect key section headings — use role:heading to avoid strict mode with body text
     await expect(page.getByRole('heading', { name: /TeamFlow/i })).toBeVisible()
-    await expect(page.getByText(/Problem|Challenge/i)).toBeVisible()
-    await expect(page.getByText(/Solution/i)).toBeVisible()
-    await expect(page.getByText(/Architecture/i)).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Problem|Challenge/i }).first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Solution/i }).first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Architecture/i }).first()).toBeVisible()
   })
 
   test('resume page loads with download link', async ({ page }) => {
@@ -77,14 +77,15 @@ test.describe('Portfolio Navigation', () => {
 
     // Click Home/Logo to go back
     await page.getByRole('link', { name: /home|Fernando Millan/i }).first().click()
-    await expect(page).toHaveURL(/^\/$/)
+    // toHaveURL with string resolves relative to baseURL; avoids regex-against-full-URL mismatch
+    await expect(page).toHaveURL('/')
   })
 
   test('404 page shows for invalid routes', async ({ page }) => {
     await page.goto('/nonexistent-page-12345')
 
-    // Expect 404 content
-    await expect(page.getByText(/404|not found|page.*not.*exist/i)).toBeVisible()
+    // Expect 404 content — use heading role to avoid strict mode with multiple matching elements
+    await expect(page.getByRole('heading', { name: /404|not found/i }).first()).toBeVisible()
   })
 
   test('mobile navigation works', async ({ page }) => {
@@ -99,9 +100,9 @@ test.describe('Portfolio Navigation', () => {
     if (await menuButton.count() > 0) {
       await menuButton.click()
 
-      // Verify navigation links are visible after opening menu
-      await expect(page.getByRole('link', { name: /about/i })).toBeVisible()
-      await expect(page.getByRole('link', { name: /projects/i })).toBeVisible()
+      // Verify navigation links are visible after opening menu — use first() to avoid strict mode
+      await expect(page.getByRole('link', { name: /about/i }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: /projects/i }).first()).toBeVisible()
     } else {
       // If no hamburger menu, navigation might always be visible or use a different pattern
       // Verify at least one navigation link is visible
