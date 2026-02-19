@@ -1,258 +1,235 @@
 # Project Research Summary
 
-**Project:** DevCollab v2.0 — Developer Collaboration Platform
-**Domain:** GitHub/Discord hybrid — workspace-based code sharing, markdown posts, threaded discussions, real-time notifications
-**Researched:** 2026-02-17
+**Project:** Matrix-Aesthetic Portfolio Redesign
+**Domain:** Animation integration into existing Next.js 15 App Router portfolio
+**Researched:** 2026-02-18
 **Confidence:** HIGH
 
 ## Executive Summary
 
-DevCollab is a portfolio second app being added to an existing Next.js 15 + NestJS 11 + Turborepo monorepo. The platform is a GitHub Gist / Discord hybrid: workspace-organized code snippet sharing with syntax highlighting, markdown posts, threaded discussions, @mention notifications, file uploads, and full-text search. Experts build platforms of this type with strict separation between apps at the database and auth layer while reusing shared infrastructure (Redis, TypeScript configs, Zod schemas). The recommended approach is two new Turborepo apps (`apps/devcollab-web` on port 3002 and `apps/devcollab-api` on port 3003) backed by a separate Postgres instance, a separate Prisma package (`packages/devcollab-database`), and a completely separate JWT auth system — all connected to the existing shared Redis container and deployed alongside TeamFlow on Coolify.
+This milestone adds a Matrix-inspired dark aesthetic and animation layer to an existing Next.js 15 portfolio site that shares a Turborepo monorepo with two production SaaS apps (TeamFlow and DevCollab). The portfolio already uses Shadcn/Radix/Tailwind v4 with a well-structured CSS token system. The redesign is strictly scoped to the `(portfolio)` route group — nothing in the dashboard, auth, or API surfaces should be touched.
 
-The stack is well-established. Tiptap v3 handles the rich text editor with `immediatelyRender: false` required to prevent SSR crashes in Next.js App Router. Shiki v3 handles server-side syntax highlighting (zero client JS, VS Code quality). AWS SDK v3 handles file storage against MinIO in dev and Cloudflare R2 in production using a single code path (only the endpoint env var changes). Full-text search uses Postgres tsvector. This last point resolves a conflict between research files: STACK.md recommended Meilisearch for its typo tolerance and instant results, while FEATURES.md and ARCHITECTURE.md independently concluded Postgres tsvector is the correct choice at portfolio scale. The decisive factors are that tsvector handles thousands of records with sub-100ms queries via a GIN index, adding Meilisearch requires an extra Docker service and write-time index sync with no recruiter-visible benefit, and Prisma's `fullTextSearchPostgres` preview feature is still not GA for Postgres — making raw SQL necessary regardless of search backend. Meilisearch remains documented as a v2+ upgrade path.
+The recommended approach is additive and layered: start with CSS token changes that have zero regression risk, introduce canvas as an isolated unit, then layer in the `motion` v12 animation system, and finally apply the `.matrix-theme` class that activates the full visual overhaul. This sequence means every stage is independently verifiable against the existing Lighthouse CI gate (performance >= 0.9 on five portfolio URLs). Four packages cover all animation needs: `motion` v12, `gsap`, `@gsap/react`, and `lenis`. The old `framer-motion` package must not be installed — the correct package name is `motion` and the correct import path is `motion/react`. This single distinction is the most important technical fact in the entire research.
 
-The four critical risks are: (1) Tiptap SSR hydration crash if `immediatelyRender: false` is omitted — the editor renders blank in production while appearing to work in dev; (2) Prisma GIN index migration drift that silently drops and recreates the tsvector index on every `prisma migrate dev` run; (3) the existing CASL guard's allow-by-default behavior when `@CheckAbility` is missing on a new endpoint — any new controller without the decorator is accessible to all authenticated users; and (4) Coolify secret leakage in deployment logs for env vars that are not manually locked in the Coolify UI. All four have known preventions that must be applied at specific phases.
-
----
+The primary risks are technical: a canvas component that crashes with `window is not defined` during SSR, a `requestAnimationFrame` loop that is never canceled causing memory leaks on navigation, the Lighthouse performance gate dropping below 90 due to canvas CPU usage, and using the wrong Framer Motion import path with React 19. All four risks have deterministic prevention strategies. The design risk — Matrix aesthetic reading as "Halloween costume" rather than "serious engineer" — is addressed by a strict calibration rule: one background effect per section, animations fire once not in loops, rain opacity between 0.04 and 0.07. Three anti-features must be explicitly avoided: full-screen rain at readable opacity, looping typewriter cycling role titles, and any loading screen that gates content.
 
 ## Key Findings
 
 ### Recommended Stack
 
-DevCollab reuses the full TeamFlow stack (Next.js 15, NestJS 11, Prisma, PostgreSQL, Socket.IO, CASL, Zod, Vitest, Playwright, shadcn/ui, Tailwind v4) and adds four new library groups, scoped exclusively to the new `apps/devcollab-web` and `apps/devcollab-api`. Nothing installs into the existing TeamFlow apps.
+The existing stack (Next.js 15.1, React 19, Tailwind v4.1.18, Radix UI, Shadcn UI, next-themes) is preserved entirely. Four new packages are installed in `apps/web` only, scoped to the workspace to prevent bundle contamination of TeamFlow and DevCollab.
 
-**Core additions (new for DevCollab only):**
-- **Tiptap v3** (`@tiptap/react ^3.19.0`, `@tiptap/pm`, `@tiptap/starter-kit`): Rich text editor for posts and discussion comments. Version 3.19+ is React 19 compatible. Must use `immediatelyRender: false` and `'use client'` on every component containing `useEditor`. Do not use `@tiptap-pro` extensions — `tippyjs-react` has React 19 incompatibility. All Tiptap packages must stay on matching versions.
-- **Shiki v3** (`shiki ^3.22.0`, `react-markdown ^10.1.0`, `rehype-pretty-code ^0.14.x`): Server-side syntax highlighting via `codeToHtml()` in React Server Components. Ships zero JavaScript to the client. Use `github-dark` / `github-light` theme pair. Do not use `react-syntax-highlighter` — ships 400KB+ to the client with no RSC support.
-- **AWS SDK v3** (`@aws-sdk/client-s3 ^3.991.0`, `@aws-sdk/s3-request-presigner`, `@aws-sdk/lib-storage`, `multer-s3 ^3.0.1`): S3-compatible client for both MinIO (dev) and Cloudflare R2 (production). `forcePathStyle: true` required for MinIO. Use presigned PUT URLs — browser uploads directly to storage, bypassing NestJS API. `multer-s3` must be v3.x (AWS SDK v3 compatible).
-- **Postgres tsvector** (no additional library): Full-text search via PostgreSQL triggers that maintain a `tsvector` column on `Post` and `Snippet`. GIN index applied via raw migration SQL. All search queries use parameterized `$queryRaw`. Meilisearch is deferred.
+**Core technologies (new additions only):**
 
-**Resolved search conflict — Meilisearch vs Postgres tsvector:**
-STACK.md recommended Meilisearch. FEATURES.md and ARCHITECTURE.md independently recommended Postgres tsvector. The recommendation is tsvector because: portfolio data volume (thousands of records) is well within tsvector performance range with a GIN index; Meilisearch adds a Docker service, index sync on every write, and a NestJS module with no recruiter-visible benefit; and Prisma's native FTS preview feature requires raw SQL regardless. Meilisearch is noted as a valid growth-stage upgrade.
+- `motion` v12.4.0+: declarative React animations (scroll reveals, hover states, entrance animations) — the renamed React 19-compatible rewrite of Framer Motion; import from `motion/react` not `framer-motion`; React 19 test suite added to CI in v12.29.0; v12.34.0 latest as of Feb 2026
+- `gsap` v3.14.2+: timeline animations, ScrollTrigger parallax, SplitText text reveals, magnetic button `quickTo()` — 100% free since Webflow acquisition including all plugins; framework-agnostic, bypasses React diffing for high-frequency mouse events where `motion` springs lag
+- `@gsap/react` v2.1.1+: `useGSAP()` hook providing SSR-safe lifecycle management and auto-cleanup of all ScrollTrigger instances on component unmount; required companion for GSAP in React
+- `lenis` v1.2.3+: smooth scroll (renamed from deprecated `@studio-freight/lenis`); import from `lenis/react`; tested with Next.js 15 + React 19; integrates with GSAP ScrollTrigger via `lenis.on('scroll', ScrollTrigger.update)`
 
-**File storage confirmed — MinIO dev, Cloudflare R2 production:**
-Both STACK.md and ARCHITECTURE.md agree on this pattern. Same AWS SDK v3 code, only endpoint env var changes. R2 has zero egress fees vs S3's per-GB download cost. MinIO is S3-compatible and purpose-built for local dev parity.
+No library is needed for the Matrix rain canvas — native Canvas 2D API in a `'use client'` component covers the effect in under 100 lines. `p5.js` (9MB) and `three.js` (600KB) are explicitly excluded as they destroy Lighthouse scores.
+
+**Critical install command:**
+```bash
+npm install motion gsap @gsap/react lenis --workspace=apps/web
+```
+
+That is the complete installation. Four packages. Nothing else.
 
 ### Expected Features
 
-**Must have (P1 — launch blockers):**
-- Own auth system (JWT + bcrypt in NestJS, no NextAuth) — shows Fernando can build auth from scratch with different requirements than TeamFlow
-- Workspace creation + invite-based membership with time-limited single-use tokens (72h expiry)
-- RBAC: Admin / Contributor / Viewer enforced at NestJS guard level, not frontend — last-admin protection required
-- Code snippet posts: language selector, Shiki highlighting, copy button (absence noticed by all recruiters)
-- Markdown posts: write/preview split-pane (GitHub PR editor model), Shiki code fences, publish/draft flow
-- Threaded discussions: 1-level nesting max (top-level comment + reply to comment; no reply-to-reply)
-- Activity feed: reverse-chronological, 20 per page with cursor pagination, 30s client poll
-- In-app mention notifications: bell icon with unread badge, mark-as-read, 60s client poll
-- Workspace-scoped full-text search: Postgres tsvector, posts + snippets, grouped results with match highlighting
-- File uploads: presigned PUT to Cloudflare R2, images + PDF, 10MB limit, progress bar, magic-byte MIME validation
-- Seed data: demo workspace with realistic content (fixed `faker.seed()` number for determinism)
+**Must have (table stakes — absence makes the portfolio feel dated):**
+- Scroll-reveal animations on section entrance (fade + slide-up) — absence reads as "forgot animations exist" to 2026 reviewers
+- Dark background enforcement scoped to `(portfolio)` route group — forces `.dark` and `.matrix-theme` on portfolio layout only; does not affect dashboard
+- Green accent CSS variable system (`--matrix-green: #00FF41`, `--matrix-green-dim`, `--matrix-green-ghost`) — required by every subsequent glow effect; must exist before any component references it
+- Card hover state with border glow replacing `hover:shadow-xl` — green box-shadow; pure CSS
+- Accessible reduced-motion fallback — WCAG 2.1 SC 2.3.3; `MotionConfig reducedMotion="user"` handles all Framer Motion globally; canvas explicitly checks `window.matchMedia('prefers-reduced-motion: reduce')` and skips the RAF loop entirely
 
-**Should have (P2 — polish after P1 works end-to-end):**
-- Reactions on posts/comments (thumbs up, heart, +1, laugh — count only)
-- Snippet embed/share URL (`/w/:slug/snippets/:id`) — GitHub Gist-style shareable link
-- `Cmd+K` search modal with grouped results
-- Language auto-detection fallback (default to `plaintext` for MVP)
+**Should have (differentiators that create the "serious engineer" impression):**
+- Text scramble/decode reveal on hero name — fires ONCE on mount, never loops; use `use-scramble` hook (~3KB, React-native) unless GSAP ScrambleTextPlugin is preferred
+- Evervault-style card: title decrypts from noise to words on hover — Aceternity UI pattern, uses already-installed `motion`, no new dependency
+- Animated terminal cursor blink after tagline — pure CSS `::after { content: '_'; animation: blink 1s step-end infinite; }`, zero JS
+- Grid dot background + spotlight cursor reveal — CSS dot pattern + JS `mousemove`; these always pair as one feature unit; do not build one without the other
+- Staggered card entrance (`staggerChildren: 0.1`) and staggered word reveal on tagline — 10 lines of code after `motion` is installed
+- Stat counter count-up on scroll-into-view — `useInView` + counter; no new dependencies
+- Green text-shadow glow on hero h1 — CSS only; subtle phosphor effect
+- Subtle scanline overlay on hero — CSS `repeating-linear-gradient` at opacity 0.03; subliminal CRT texture, invisible unless looked for
 
-**Defer to v2+ (do not build, mention in case study):**
-- Content version history + diff view — HIGH complexity, HIGH engineering signal, genuinely impressive if built
-- Email notification delivery — requires SMTP, deliverability, unsubscribe flows
-- Real-time activity feed via WebSocket — 30s polling is appropriate for a content platform
-- Workspace public/private discovery toggle — security boundary complexity
-- WYSIWYG TipTap collaboration with CRDT — developers prefer split-pane markdown
+**Defer (Phase 3 / post-validation):**
+- Matrix rain canvas — highest reward, highest Lighthouse risk; add only after grid dot + spotlight validates the aesthetic direction and Lighthouse baseline is confirmed
+- Animated CSS mesh gradient background — alternative to rain; pick one or the other, never both
+- Tech stack horizontal CSS marquee — purely decorative; CSS only, no JS
+- 3D card tilt on hover — competes with Evervault card scramble; choose one card interaction, not both
 
-**Feature dependency order (gates):**
-Auth → Workspace/Membership → RBAC → Content (snippets/posts) → Threads/Activity → Search/Notifications → Files → Polish/Seed/Deploy
+**Anti-features (never build — grounded in hiring manager research):**
+- Full-screen Matrix rain at readable opacity — content becomes unreadable; vestibular accessibility violation; hiring managers see noise not portfolio work
+- Looping typewriter cycling role titles — overused since 2019; every junior portfolio does this; hiring managers explicitly flagged this as a red flag
+- Loading screen or splash animation — mandatory wait before content causes tab closes from queue-pressured recruiters reviewing 50+ portfolios per day
 
 ### Architecture Approach
 
-DevCollab is architecturally isolated from TeamFlow at database, auth, and Prisma client layers while sharing the Docker network, Redis instance, TypeScript configs, and `@repo/shared` type package (extended with DevCollab sub-exports to avoid namespace collisions). Two new Turborepo apps are added. A new `packages/devcollab-database` Prisma package is created with its own `schema.prisma`, its own custom `output` path in the generator block (to avoid overwriting TeamFlow's `@prisma/client`), and its own migration history. A new `devcollab-postgres` container on port 5435 is added to `docker-compose.dev.yml`.
+The architecture follows a single principle: push `"use client"` as far down the component tree as possible so RSC pages continue to deliver server-rendered content to the browser (fast LCP, good SEO). Animation is layered on as thin client wrappers that receive RSC content as `children`. The `.matrix-theme` CSS class on the `(portfolio)/layout.tsx` wrapper div overrides the existing semantic tokens (scoped to portfolio routes only) without touching the Radix Colors cascade structure used by the rest of the app.
+
+The canvas component requires a dedicated client wrapper component for `next/dynamic` with `ssr: false` — a Next.js 15 regression blocks calling `dynamic(..., { ssr: false })` directly from a Server Component. This wrapper pattern is required, not optional.
 
 **Major components:**
-1. `apps/devcollab-web` (port 3002) — Next.js 15 frontend, custom JWT auth (no NextAuth), shadcn/ui, Tiptap editor client components, Shiki RSC rendering, typed fetch wrapper to devcollab-api
-2. `apps/devcollab-api` (port 3003) — NestJS 11 backend, all business logic, deny-by-default CASL RBAC guard, Socket.IO gateway on shared Redis, 10 feature modules
-3. `packages/devcollab-database` — Separate Prisma package; own `schema.prisma` with `Unsupported("tsvector")` columns; custom generated client output; GIN indexes via raw migration SQL; `devcollab-postgres` DB
-4. `devcollab-postgres` (port 5435) — New Docker container, completely isolated from TeamFlow's Postgres
-5. `devcollab-minio` (ports 9000/9001) — New Docker container for dev-only S3-compatible storage; production uses Cloudflare R2
 
-**Key patterns:**
-- Global `JwtAuthGuard` + deny-by-default `RbacGuard` at `AppModule` level — every route protected by default; missing `@CheckAbility` throws `ForbiddenException`
-- Single dedicated `migrate` Docker service runs `prisma migrate deploy`; both API containers `depends_on: [migrate]` — prevents migration race condition
-- Prisma `$queryRaw` for all tsvector search queries — `findMany` does not route through the GIN index
-- Presigned URL flow for files — browser uploads directly to MinIO/R2, API stores only the S3 key
-- All DevCollab modules import `@repo/devcollab-database`, never `@repo/database`
-- Internal package dependencies use `"*"` not `"workspace:*"` — npm workspaces syntax required for Turborepo dependency edge detection
-- DevCollab apps on ports 3002/3003 (Architecture doc shows 3002/3003; STACK.md shows 3001/4001 — use 3002/3003 to avoid conflict with existing TeamFlow API on 3001)
+1. `MotionProvider` (client, new) — `LazyMotion` + `MotionConfig reducedMotion="user"` placed in `(portfolio)/layout.tsx`; must be ancestor of all `m.*` components; reduces initial JS from 34KB (full Framer Motion) to ~4.6KB via async feature loading
+2. `MatrixRainCanvas` (client + `dynamic ssr:false`, new) — Canvas 2D API, RAF loop capped at 30fps, `aria-hidden="true"`, animation frame ID stored in `useRef` (not `useState`), `cancelAnimationFrame` in `useEffect` cleanup return
+3. `AnimatedHeroSection` (client wrapper, new) — wraps RSC `HeroSection` as `children`; contains canvas dynamic import; applies `m.div` entrance animation; keeps hero text server-rendered for LCP and SEO
+4. `.matrix-theme` CSS class (in `globals.css`, additive) — scoped override of semantic tokens activating green color scale; `--background` becomes `#000d03`, `--primary` becomes `#00FF41`; never modifies Radix Colors layer
+
+**CSS token migration strategy — additive only:**
+
+The existing `globals.css` uses a 3-layer pattern: (1) Radix Colors imports, (2) `:root` semantic tokens, (3) `@theme inline` Tailwind utilities. The Matrix tokens extend this with a new `:root` block (`--matrix-1` through `--matrix-12` scale), new `@theme inline` entries (`bg-matrix-bg`, `text-matrix-accent`), and a `.matrix-theme` selector that overrides `--background`, `--primary`, `--card` etc. to Matrix values. No existing Layer 1, 2, or 3 entries are modified. All existing components continue working unchanged.
+
+**Client/server boundary map:**
+```
+(portfolio)/layout.tsx (RSC)
+  └── MotionProvider (CLIENT) — LazyMotion context
+      ├── PortfolioNav (CLIENT, existing — uses usePathname)
+      ├── main > {children}
+      │     └── (portfolio)/page.tsx (RSC)
+      │           └── AnimatedHeroSection (CLIENT, new)
+      │                 ├── HeroSection (RSC, unchanged — passed as children)
+      │                 └── MatrixRainCanvas (CLIENT, dynamic ssr:false)
+      └── PortfolioFooter (RSC — no interaction needed)
+```
 
 ### Critical Pitfalls
 
-1. **Tiptap SSR hydration crash** — `useEditor` without `immediatelyRender: false` causes React hydration mismatch; editor renders blank in production (SSR is more aggressive than `next dev` with Turbopack). Prevention: `immediatelyRender: false` + `'use client'` on every Tiptap component file. Validate with `next build && next start` before merging any editor feature. Playwright e2e tests may pass while Lighthouse sees blank content.
+1. **Canvas crashes with `window is not defined` (CRITICAL)** — All canvas and browser API access must live inside `useEffect`, never at module level. Use a dedicated `'use client'` wrapper component for `dynamic(..., { ssr: false })` — Next.js 15 has a confirmed regression that blocks this pattern when called directly from a Server Component. Verify with `next build && next start` before writing any animation logic.
 
-2. **Prisma GIN index migration drift** — Prisma's diff logic does not compare raw operator classes in GIN index definitions correctly. Every `prisma migrate dev` run generates a migration dropping and recreating the GIN index even when nothing changed. Prevention: trigger-based pattern — `Unsupported("tsvector")` nullable column + PostgreSQL `BEFORE INSERT OR UPDATE` trigger + GIN index created manually in migration SQL (`CREATE INDEX IF NOT EXISTS ... USING GIN`). Validation ritual: run `prisma migrate dev` three consecutive times; runs 2 and 3 must generate zero migration files.
+2. **RAF loop not canceled — memory leak on every navigation (CRITICAL)** — Store the animation frame ID in `useRef` (not `useState`). Return `() => cancelAnimationFrame(rafRef.current)` from `useEffect`. React Strict Mode double-mounts reveal any leak immediately in development. After 10+ navigations, Chrome Memory tab should show a stable heap.
 
-3. **CASL guard allows access when decorator is missing** — The existing `apps/api` `RbacGuard` (line 24) reads `if (!requirement) { return true; }`. Any new DevCollab controller added without `@CheckAbility` silently grants access to all authenticated users. Prevention: DevCollab's own `RbacGuard` throws `ForbiddenException` when no decorator is present. This guard must be written before any feature controllers exist. Add a unit test enumerating all controller methods asserting each has `@CheckAbility` or `@Public`.
+3. **Canvas degrades Lighthouse performance below 90 gate (CRITICAL)** — Delay canvas start by 100ms with `setTimeout` so the LCP text element can paint first. Cap frame rate at 30fps via timestamp delta check. Set `aria-hidden="true"` and position canvas with `position: absolute; z-index: -1`. Run `lhci autorun` (not browser DevTools Lighthouse) after adding canvas — CI uses 3-run averaging which local single runs cannot replicate.
 
-4. **Coolify secret leakage in deployment logs** — Confirmed open Coolify bugs (#7019, #7235): all env var values appear in plain text in deployment logs unless manually locked. With both apps on the same server, a recruiter with view access sees DB credentials and JWT secrets for both apps. Prevention: immediately lock every sensitive variable (DB credentials, S3 secrets, JWT secrets) via Coolify's lock icon. Verify by triggering a deployment and confirming logs show `<REDACTED>` before sharing any public demo link.
+4. **Wrong Framer Motion package for React 19 (CRITICAL)** — Install `motion`, not `framer-motion`. Import from `motion/react`, not `framer-motion`. The old package breaks all animations in React Strict Mode dev — they appear frozen at initial state, working only in production builds. This gives false confidence during development.
 
-5. **Prisma migration race condition** — If both `devcollab-api` and any other container run `prisma migrate deploy` on startup against the same database, they race on the `_prisma_migrations` lock table. Prevention: single dedicated `migrate` service in docker-compose that runs `prisma migrate deploy` then exits; app containers use `depends_on: [migrate]`.
+5. **Missing `prefers-reduced-motion` (CRITICAL)** — Add global CSS rule to `globals.css`. Set `reducedMotion="user"` on `MotionConfig`. Canvas checks `window.matchMedia('(prefers-reduced-motion: reduce)').matches` and skips the RAF loop entirely — not just slows it. Test by toggling OS Reduce Motion setting; the portfolio must be completely static.
 
----
+6. **GSAP ScrollTrigger instances leak on App Router navigation (HIGH)** — Always use `useGSAP(() => { ... }, { scope: containerRef })` from `@gsap/react`, never plain `useEffect` for GSAP. `useGSAP` auto-kills all triggers on unmount. Test by navigating between pages 3+ times and verifying animations play exactly once per visit.
+
+7. **Scroll animations cause CLS, dropping Lighthouse score (HIGH)** — Animate only `transform` and `opacity`. Never animate `height`, `width`, `margin`, or `padding`. Pre-allocate space using `opacity: 0`, never `display: none`. Measure CLS in Chrome DevTools Performance tab before and after each animation type is added.
 
 ## Implications for Roadmap
 
-Based on dependency analysis across all four research files, the recommended structure is 8 phases. Auth and infrastructure must come first because every other feature requires them. Content creation comes before discussions and search because both require content to exist. Deployment comes last because it requires stable images and seed data from all prior phases.
+Build order is driven by three constraints: (1) the CSS token system must exist before components reference it, (2) canvas performance must be validated in isolation before animation layers are added on top, and (3) the full visual overhaul should happen after animation stability is confirmed so regression types are separable.
 
-### Phase 1: Monorepo Scaffold + Infrastructure
-**Rationale:** Creates the foundation all other phases build on. Turbo build order, Docker network, and migration runner must be validated before any business logic is written. The deny-by-default CASL guard must be established before any controllers exist — impossible to retrofit safely later.
-**Delivers:** Running `devcollab-web` (login placeholder) and `devcollab-api` (health endpoint on port 3003) in Docker; `packages/devcollab-database` with initial migration applied; Turbo `--dry-run` shows correct dependency order; `devcollab-postgres` and `devcollab-minio` containers healthy; single `migrate` service pattern in place.
-**Addresses:** Separate Postgres DB, shared Redis, Docker compose integration, Turborepo multi-app setup.
-**Avoids:** Pitfall 5 (Turbo cache stale — verify with `--dry-run` before any feature work), Pitfall 6 (migration race — dedicated migrate service), Pitfall 11 (Turbo build order — `"*"` not `"workspace:*"` in package.json deps).
-**Research flag:** Standard Turborepo + Docker patterns. No deeper research needed. Verify port assignments (3002/3003) don't conflict with existing services.
+### Phase 1: Token Foundation
+**Rationale:** All subsequent phases reference Matrix CSS tokens. This is purely additive CSS — nothing references it yet, so regression risk is zero. Do this first to unblock everything else and prevent hardcoded hex values from spreading.
+**Delivers:** `bg-matrix-bg`, `text-matrix-accent`, `border-matrix-border`, and all `--matrix-*` Tailwind utilities available. `--matrix-green: #00FF41` usable in any component via CSS variable.
+**Addresses:** Green accent CSS variable system (table stakes), establishes the token foundation dark background depends on.
+**Avoids:** Anti-Pattern 4 (hardcoded hex values bypassing token system — prohibited by existing `DESIGN-SYSTEM.md` governance rule).
+**Gate:** All existing Playwright visual regression snapshots pass unchanged — Matrix tokens are defined but not applied yet.
+**Research flag:** No additional research needed. Token architecture is fully specified with exact CSS in ARCHITECTURE.md.
 
-### Phase 2: Auth System (DevCollab-Specific JWT)
-**Rationale:** Auth is the hard dependency gate for every authenticated feature. Deliberately separate from TeamFlow's NextAuth — raw NestJS passport-jwt + bcrypt — demonstrating Fernando can build auth from scratch with different requirements. The deny-by-default RBAC guard is finalized here with unit tests before any feature routes exist.
-**Delivers:** `POST /auth/signup`, `POST /auth/login`, `POST /auth/refresh`, httpOnly cookie token storage in devcollab-web, user profile endpoint, `DEVCOLLAB_JWT_SECRET` isolated from TeamFlow, deny-by-default `RbacGuard` with unit test coverage.
-**Addresses:** Own auth system (P1), RBAC guard infrastructure.
-**Avoids:** Pitfall 4 (CASL guard bypass — deny-by-default guard installed and tested before any feature routes).
-**Research flag:** Standard NestJS passport-jwt patterns. No deeper research needed.
+### Phase 2: Canvas Matrix Rain (Isolated Validation)
+**Rationale:** Canvas is the highest-risk component for the Lighthouse gate. Building it in isolation before Framer Motion means performance issues are attributable to canvas alone. This phase validates the most technically risky element before anything else depends on it.
+**Delivers:** `MatrixRainCanvas` client component, dedicated `'use client'` wrapper for `dynamic ssr:false`, `AnimatedHeroSection` (canvas + positioning wrapper only, no Framer Motion yet), home page hero has rain effect behind content.
+**Uses:** Native Canvas 2D API, `next/dynamic`, no animation library needed.
+**Avoids:** Pitfall 1 (window undefined), Pitfall 2 (RAF memory leak), Pitfall 3 (LCP regression). Set `NEXT_PUBLIC_DISABLE_MATRIX_RAIN=true` in `.env.test` for stable Playwright snapshots.
+**Gate:** `lhci autorun` performance >= 0.9 on all five portfolio URLs before proceeding to Phase 3. This gate is non-negotiable.
+**Research flag:** No additional research needed. Canvas implementation code is provided verbatim in STACK.md and ARCHITECTURE.md.
 
-### Phase 3: Workspaces + Membership + RBAC
-**Rationale:** Workspace and membership are the second dependency gate — no content can be scoped without them. RBAC roles must be enforced and tested before content creation to prevent privilege escalation.
-**Delivers:** Workspace CRUD, slug-based routing, invite token flow (generate/accept/expire/single-use), `WorkspaceMember` model with Admin/Contributor/Viewer, RBAC enforcement on all workspace endpoints, workspace member list UI, last-admin protection (cannot remove or demote last admin).
-**Addresses:** Workspace creation, invite-based membership, RBAC (all P1 features).
-**Avoids:** Pitfall 4 (validate Viewer-role user receives 403 on Contributor-only actions, not 200).
-**Research flag:** Standard CASL + NestJS patterns. Can mirror existing TeamFlow `apps/api` RBAC structure directly.
+### Phase 3: Motion Provider + Entrance Animations
+**Rationale:** Requires the canvas baseline from Phase 2. `MotionProvider` (LazyMotion + MotionConfig) must be in place before any `m.*` components mount. Motion is installed here as a workspace-scoped dependency.
+**Delivers:** `motion` v12 installed (`--workspace=apps/web`), `MotionProvider` in `(portfolio)/layout.tsx`, hero text fade-in via `m.div`, scroll-triggered entrance animations on all section and project card elements, `reducedMotion="user"` active globally.
+**Uses:** `motion` v12, import from `motion/react`, `LazyMotion` + `domAnimation` features (~4.6KB initial vs 34KB full bundle).
+**Avoids:** Pitfall 4 (wrong package), Pitfall 5 (reduced motion — `reducedMotion="user"` on MotionConfig), Pitfall 8 (CLS — only `transform` + `opacity` animated, never layout properties), Pitfall 11 (monorepo isolation — scoped install only).
+**Gate:** Zero hydration warnings in browser console after first client-side load. Strict Mode dev shows animations playing correctly (not frozen at initial state).
+**Research flag:** No additional research needed. LazyMotion + `m.*` pattern is fully documented with exact code in ARCHITECTURE.md.
 
-### Phase 4: Content Creation — Snippets + Markdown Posts
-**Rationale:** Core value proposition. Tiptap editor is introduced here — highest-risk technical area. Shiki RSC rendering is also introduced. Both must be validated against production SSR before shipping.
-**Delivers:** Snippet CRUD (title, language selector, code body, Shiki-highlighted display, copy button), Markdown post CRUD (write/preview split-pane, Shiki code fences, publish/draft flow with `updated_at`), activity events emitted for content creation.
-**Addresses:** Code snippets, Markdown posts, copy button, activity feed event data (all P1).
-**Avoids:** Pitfall 1 (Tiptap SSR — validate `immediatelyRender: false` with `next build && next start` before merging any Tiptap component), Pitfall 2 (StarterKit extension conflicts — zero "Duplicate extension names" warnings in console is an acceptance criterion).
-**Research flag:** Tiptap v3 + Next.js 15 App Router SSR integration is the highest-risk technical area. Recommend a 1-day spike — create an isolated `EditorContent` component with `immediatelyRender: false`, build and start production Next.js, confirm no hydration errors before full feature implementation. Also resolve the Tiptap content storage format decision (Tiptap JSON vs sanitized HTML) before writing schema migrations.
+### Phase 4: Matrix Dark Theme Applied to Portfolio Routes
+**Rationale:** The full visual overhaul is a separate phase from animation stability so that when visual regression snapshots break, they break for a single known reason. Depends on token foundation (Phase 1) and stable animation baseline (Phases 2-3).
+**Delivers:** `.matrix-theme` class on `(portfolio)/layout.tsx` wrapper div, activating green token values across all portfolio routes. `PortfolioNav` updated with Matrix terminal styling (monospace active link, green glow). `defaultTheme="dark"` set in ThemeProvider for dark-first default.
+**Avoids:** Pitfall 7 (dark theme breaking Radix token resolution — the only ThemeProvider change is `defaultTheme="dark"`; the CSS token cascade structure is never touched). Scope isolation — `.matrix-theme` on portfolio layout div only, not global; TeamFlow and DevCollab dashboard routes visually unchanged.
+**Gate:** All portfolio Playwright snapshots updated to new baselines. TeamFlow/DevCollab dashboard visual regression snapshots unchanged. Run `playwright test --update-snapshots` after confirming the new appearance is correct.
+**Research flag:** No additional research needed. The single correct change is clearly scoped and documented in PITFALLS.md.
 
-### Phase 5: Threaded Discussions
-**Rationale:** Discussions require snippets and posts to exist as attachment points. The N+1 query pitfall must be addressed from day one with the flat-model pattern — retrofitting is painful once the naive recursive include is shipped.
-**Delivers:** Thread per snippet/post, top-level comments, 1-level replies (no reply-to-reply), author display, edit (with "edited" timestamp), delete with "[deleted]" content preservation, Admin moderation (hard delete), optimistic UI with rollback on failure.
-**Addresses:** Threaded discussions (P1).
-**Avoids:** Pitfall 8 (N+1 recursive queries — flat model with in-memory tree assembly; Prisma query count per thread fetch must be under 5 as an acceptance criterion), Pitfall 12 (optimistic update reordering — sort by `createdAt` including temp entries with `id: 'temp-${Date.now()}'`).
-**Research flag:** Flat threaded comment model with Prisma is well-documented. No additional research needed.
+### Phase 5: Typography and Micro-Interactions
+**Rationale:** Cosmetic polish that creates the "serious engineer" impression. Each item is independently deferrable. Add after Phases 1-4 are verified stable and the Lighthouse gate still passes.
+**Delivers:** Text scramble reveal on hero name (`use-scramble` — fires ONCE on mount, never loops), Evervault card hover effect (uses already-installed `motion`, no new dep), staggered word reveal on tagline, stat count-up animation via `useInView`, CSS-only terminal cursor blink, scanline overlay, green text-shadow glow on headings, nav link underline micro-interaction.
+**Avoids:** All anti-features — scramble fires once and resolves, never loops. One animation motif per component. One background effect per section.
+**Research flag:** `use-scramble` React 19 peer dependency compatibility needs verification before install. If incompatible, GSAP ScrambleTextPlugin is the zero-cost fallback since `gsap` is already installed in Phase 3.
 
-### Phase 6: Full-Text Search
-**Rationale:** Search requires content to exist and be indexed. The tsvector trigger is applied as a standalone migration after content tables are stable. Isolated as its own phase because GIN index migration drift is a discrete risk requiring its own validation ritual before any other work continues.
-**Delivers:** `Unsupported("tsvector")` columns on `Post` and `Snippet`, PostgreSQL trigger maintaining vectors on insert/update, GIN index in raw migration SQL, `SearchService` with parameterized `$queryRaw`, workspace-scoped search API, search UI with grouped results (Posts / Snippets) and `ts_headline()` match highlighting, `Cmd+K` shortcut (P2 — can be in this phase or next).
-**Addresses:** Basic full-text search (P1), search UX polish (P2).
-**Avoids:** Pitfall 3 (GIN index migration drift — validation ritual: run `prisma migrate dev` three consecutive times; runs 2 and 3 must generate no migration files; use `plainto_tsquery()` not `to_tsquery()` to handle arbitrary user input safely).
-**Research flag:** tsvector + Prisma trigger pattern is fully specified in ARCHITECTURE.md with complete SQL. No additional research needed. Use `plainto_tsquery()` for safe user input handling.
-
-### Phase 7: Notifications + Activity Feed + File Uploads
-**Rationale:** These three features are grouped because they all depend on content existing and all operate as secondary interaction surfaces. Mentions reference discussion comments. Activity events reference content. File uploads enhance posts. Grouping them avoids partial-feature states where the notification bell exists but has nothing to notify about.
-**Delivers:** Mention detection in Tiptap editor (debounced 300ms `items` callback to member search API), Notification model with `@@unique([recipientId, entityId, type])` preventing duplicates, EventEmitter fan-out for notification creation (async after response), bell icon with unread badge (60s poll), mark-read endpoints, activity feed (30s poll, 20 per page cursor pagination), presigned URL file upload flow (MinIO dev / R2 prod), upload progress bar via XHR `onprogress`, `file-type` magic-byte validation, `@Catch(MulterError)` filter returning 413 (not 500) on size exceeded.
-**Addresses:** Mention notifications, read/unread state, activity feed, file uploads (all P1).
-**Avoids:** Pitfall 7 (MIME spoofing — `file-type` magic bytes + `@Catch(MulterError)` for 413; R2 CORS must explicitly list `content-type`, not wildcard), Pitfall 9 (mention thundering herd and duplicates — EventEmitter fan-out + unique constraint + 300ms debounce + membership validation before creating notifications).
-**Research flag:** Cloudflare R2 CORS configuration for browser direct upload with presigned PUT URLs needs hands-on verification. The R2 wildcard header limitation is confirmed, but the exact CORS configuration that works reliably from a Next.js frontend is not fully documented. Verify with a real browser upload test before shipping.
-
-### Phase 8: Seed Data + Polish + CI/CD + Coolify Deployment
-**Rationale:** Everything must work end-to-end before deploying. Seed data must be deterministic (fixed `faker.seed()`) for a consistent recruiter demo. Coolify secret locking must happen immediately on first deploy — before any public link is shared.
-**Delivers:** Realistic seed data (demo workspace, 3 users with all three roles demonstrated, 5+ snippets in varied languages, 3+ posts with discussions including @mentions, activity feed populated), Reactions P2, Snippet embed URLs P2, `devcollab-web` and `devcollab-api` Dockerfiles, GHCR image builds in `deploy.yml`, Coolify services configured with all credentials locked, deployed and accessible at a public URL, Playwright E2E tests for critical recruiter paths, Portfolio integration (screenshot + live demo link in `apps/web`).
-**Addresses:** Seed data requirement, P2 polish features, production deployment.
-**Avoids:** Pitfall 10 (Coolify secret leakage — lock every credential immediately; verify deployment log shows `<REDACTED>` before sharing demo URL; keep TeamFlow and DevCollab in separate Coolify Projects for log isolation).
-**Research flag:** Deploying a second application alongside an existing one in Coolify using separate GHCR images requires hands-on verification. Webhook trigger behavior for per-service deploys (not both apps simultaneously) is not fully documented. Plan for iteration on the Coolify configuration.
+### Phase 6: Polish Pass (Optional — Post-Validation)
+**Rationale:** Highest complexity, purely decorative features. Validate the aesthetic in Phases 1-5 first. Any single item in this phase can be deferred without degrading the portfolio impression.
+**Delivers:** Tech stack horizontal CSS marquee, terminal-line styling on contact/skills sections, grid dot background + spotlight cursor (must pair these as one unit), GSAP ScrollTrigger parallax on hero if desired.
+**Avoids:** Pitfall 6 (GSAP ScrollTrigger leaks — use `useGSAP` exclusively, never plain `useEffect`), Pitfall 9 (magnetic/parallax broken on mobile — gate all `mousemove`-based effects behind `(any-hover: hover) and (pointer: fine)` media query), Pitfall 10 (custom cursor blocks interactions — `pointer-events: none` required on cursor element; gate behind pointer media query).
+**Research flag:** Real mobile device test required for cursor and spotlight effects. DevTools mobile emulation fires `mousemove` synthetically and will not reveal the touch-device snap bug documented in Pitfall 9.
 
 ### Phase Ordering Rationale
 
-- Auth before content: Every content endpoint requires JWT validation and workspace membership. No workaround.
-- Workspace before RBAC before content: RBAC rules reference workspace membership. Content is scoped to workspaces. Both must exist first.
-- Content before discussions: Discussions use foreign keys to snippets and posts. The models must exist before the relations can reference them.
-- Content before search: The tsvector trigger only fires on insert/update. Existing content must be seeded before search has anything to index.
-- Discussions before notifications: Mention notifications are created when discussion comments are saved. The notification fan-out references comment IDs.
-- All features before seed data: The seed script exercises the full feature surface. Incomplete features produce broken or misleading seed data.
-- Seed data before deployment: The Coolify deployment should serve a demo-ready product with realistic content on first launch.
+- Tokens before components — every animation component references `--matrix-accent` etc.; establishing the token system in Phase 1 prevents hardcoded hex values from spreading through early phases
+- Canvas before Framer Motion — canvas is the highest Lighthouse risk; validating it in isolation means a performance regression is attributable to canvas alone, not animation interaction effects
+- Framer Motion before visual theme — entrance animations on a non-Matrix-themed page are detectable and testable; switching the theme later means the visual change is a single, auditable delta with clear snapshot update intent
+- Visual theme before typography — typography micro-interactions require the dark background to evaluate correctly; the green glow on a white background is meaningless
+- Polish last — Phases 1-4 deliver a complete, shippable portfolio redesign; Phases 5-6 add craft and memorability but are not required for the "serious engineer" impression
 
 ### Research Flags
 
-Phases needing careful validation or additional research during execution:
-
-- **Phase 4 (Tiptap/Content):** Tiptap v3 + Next.js 15 App Router SSR is the highest-risk technical area. Validate SSR behavior with a 1-day spike (isolated component, production build) before committing to full implementation. Also resolve Tiptap content storage format (JSON vs HTML) before schema migrations.
-- **Phase 7 (File Uploads/R2 CORS):** Cloudflare R2 direct browser upload CORS configuration needs a real browser upload test before shipping. The `content-type` explicit header requirement is confirmed but exact working configuration may require iteration.
-- **Phase 8 (Coolify multi-service deployment):** Second-service webhook trigger behavior in Coolify is not fully documented. Plan for hands-on iteration when configuring the deployment pipeline.
+Needs deeper validation before or during the phase:
+- **Phase 5 (`use-scramble`):** Confirm React 19 peer dependency compatibility before install. Check npm page or GitHub issues for any `react@19` compatibility notes. Fallback: GSAP ScrambleTextPlugin (already available since `gsap` is installed in Phase 3, zero additional cost).
+- **Phase 6 (cursor and spotlight effects):** Test on a real mobile device — iOS Safari and Android Chrome — before considering the feature complete. DevTools mobile emulation is unreliable for `mousemove`-based effects. The pointer media query guard must be implemented and verified, not assumed.
 
 Phases with standard patterns (no additional research needed):
-
-- **Phase 1 (Scaffold):** Turborepo multi-app + Docker compose patterns are thoroughly documented and mirror the existing project structure.
-- **Phase 2 (Auth):** NestJS passport-jwt is a solved problem with official documentation and abundant examples.
-- **Phase 3 (Workspace/RBAC):** CASL + NestJS mirrors the existing TeamFlow `apps/api` implementation directly.
-- **Phase 5 (Discussions):** Flat threaded comment model with Prisma is well-documented. N+1 prevention pattern is standard.
-- **Phase 6 (Search):** Complete SQL for tsvector triggers and GIN indexes is provided in ARCHITECTURE.md. Only the validation ritual (run migrate dev 3x) requires discipline, not research.
-
----
+- **Phase 1:** CSS variable addition is fully specified with exact CSS in ARCHITECTURE.md
+- **Phase 2:** Canvas implementation code is provided verbatim in STACK.md and ARCHITECTURE.md
+- **Phase 3:** LazyMotion + `m.*` pattern is fully documented with exact code and import paths
+- **Phase 4:** Single change (`defaultTheme="dark"`) is clearly scoped with explicit warning not to restructure CSS cascade
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All DevCollab library versions verified against npm, GitHub releases, and official docs. React 19 and NestJS 11 compatibility confirmed for all additions. One conflict (Meilisearch vs tsvector) resolved with explicit rationale based on scale analysis and 2-of-3 file agreement. |
-| Features | HIGH | Feature list derived from competitor analysis (GitHub Gist, Slack, Notion, Linear), RBAC permission tables verified against industry standards, anti-features documented with specific cost/benefit rationale. Priority matrix (P1/P2/P3) is opinionated and defensible for a portfolio project. |
-| Architecture | HIGH | All integration points verified via direct codebase inspection of existing `apps/api`, `packages/database`, `docker-compose.dev.yml`, `turbo.json`, and `.github/workflows/deploy.yml`. Separate Postgres and separate Prisma client output pattern verified against official Prisma multi-database documentation. |
-| Pitfalls | HIGH | All 12 pitfalls verified against official documentation, confirmed open GitHub issues (Prisma GIN drift #16275, Coolify secret leak #7019/#7235, Multer 500 #465, Tiptap SSR #5856), or direct codebase analysis (CASL guard line 24). No invented pitfalls. |
+| Stack | HIGH | All four packages verified via official docs, npm registry, and motion.dev changelog. `motion@^12.34.0` React 19 CI suite confirmed in v12.29.0. GSAP 100% free confirmed at gsap.com/pricing. `lenis` v1.2.3 React 19 + Next.js 15 tested confirmed on npm. Package names, import paths, and version requirements are all verified. |
+| Features | HIGH | Feature list grounded in Codrops 2025 award-winning portfolio case studies, hiring manager research (opendoorscareers.com), and Aceternity UI pattern library. Anti-feature list backed by explicit hiring manager feedback and the "serious engineer not costume" calibration principle. |
+| Architecture | HIGH (client/server boundaries, canvas SSR, hydration patterns); MEDIUM (Tailwind v4 token migration contrast ratios) | Client/server boundary patterns verified against official Next.js docs and confirmed GitHub issue #72236. Token migration strategy derived from direct codebase inspection of `apps/web/app/globals.css`. Contrast ratio for `#00FF41` on `#000d03` calculated manually as ~13:1 — needs WebAIM verification before shipping. |
+| Pitfalls | HIGH | 9 of 11 pitfalls verified against official documentation or confirmed GitHub issues (Next.js #72236, motion #2668, vercel/next.js #49279). 2 pitfalls (canvas LCP impact at specific opacity, CLS specifics per animation type) rated MEDIUM because exact score delta is device-simulation-dependent. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Tiptap content storage format:** PITFALLS.md notes that mentions stored as plain `@name` text lose interactivity when rendered without the Tiptap extension. The decision between storing Tiptap JSON (full fidelity, requires Tiptap to read) vs sanitized HTML (portable, loses mention interactivity) affects the `content` column type on `Post` and `ThreadComment` models. Must be resolved in Phase 4 planning before schema migrations are written.
+- **Canvas Lighthouse impact at specific opacity/frame rate:** The exact score delta from adding canvas depends on Lighthouse's simulated device profile (4x CPU slowdown for Moto G4). The 30fps cap + 100ms delay is the documented mitigation, but the actual score delta is unknown until Phase 2 runs `lhci autorun`. Mitigation: run the gate immediately after Phase 2 and adjust parameters if needed before proceeding to Phase 3.
 
-- **R2 CORS exact configuration:** PITFALLS.md confirms R2 does not support wildcard `AllowedHeaders: ["*"]` and requires explicit `content-type` listing. The exact working CORS configuration for browser presigned PUT uploads has community reports of subtle failures. Verify with a real browser upload during Phase 7 before shipping.
+- **`use-scramble` React 19 compatibility:** Not verified in research — STACK.md focused on `motion`, `gsap`, `@gsap/react`, and `lenis`. Verify peer dependencies before Phase 5. GSAP ScrambleTextPlugin is the cost-free fallback since `gsap` is already installed.
 
-- **Coolify per-service webhook trigger:** The existing `deploy.yml` uses a single Coolify webhook for TeamFlow. Adding DevCollab may require a separate webhook URL or a Coolify API call to trigger only the DevCollab services. This is Coolify-instance-specific and cannot be fully resolved from documentation — needs hands-on testing in Phase 8.
+- **WCAG contrast for `#00FF41` on `#000d03`:** Calculated manually as ~13:1 in ARCHITECTURE.md (passes WCAG AAA). Verify with WebAIM Contrast Checker before shipping. Also note: `#00FF41` is near-pure saturated green — deuteranopia/protanopia (~8% of men) may reduce discrimination from yellow/amber. Never use `--matrix-accent` as the sole indicator of meaning; always pair with text, icon, or shape.
 
-- **Port conflict resolution:** STACK.md and ARCHITECTURE.md disagree on DevCollab ports. STACK.md says 3001/4001, ARCHITECTURE.md says 3002/3003. Given that TeamFlow API already runs on 3001, use 3002/3003 (Architecture doc values). Confirm no conflicts in the actual running `docker-compose.dev.yml` before Phase 1 scaffold.
-
----
+- **AnimatePresence for page transitions:** Explicitly deferred due to known Next.js App Router conflict (vercel/next.js #49279 — App Router's client navigation timing cuts off `AnimatePresence` exit phase). Per-section entrance animations triggered by `useInView` are the reliable substitute and are sufficient for the Matrix aesthetic.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Tiptap Next.js Installation Guide](https://tiptap.dev/docs/editor/getting-started/install/nextjs) — `immediatelyRender: false` SSR fix, v3 package list
-- [Tiptap SSR hydration issue #5856](https://github.com/ueberdosis/tiptap/issues/5856) — confirmed bug and fix
-- [Tiptap 3.0 Stable Release](https://tiptap.dev/blog/release-notes/tiptap-3-0-is-stable) — architecture changes, React 19 compatibility
-- [Shiki Next.js Integration](https://shiki.style/packages/next) — v3.22.0 RSC usage patterns
-- [AWS SDK v3 S3 Request Presigner](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-s3-request-presigner/) — presigned URL API
-- [Cloudflare R2 S3 Compatibility](https://developers.cloudflare.com/r2/examples/) — R2 S3 API examples
-- [Cloudflare R2 CORS configuration](https://developers.cloudflare.com/r2/buckets/cors/) — wildcard header restriction confirmed
-- [Meilisearch Docker Guide](https://www.meilisearch.com/docs/guides/docker) — official Docker setup
-- [nestjs-meilisearch v3.0.0 Release](https://github.com/lambrohan/nestjs-meilisearch/releases) — NestJS 11 support, NestJS 10 drop confirmed
-- [Prisma GIN index drop/recreate bug #16275](https://github.com/prisma/prisma/issues/16275) — confirmed open issue
-- [Prisma tsvector not supported #12343](https://github.com/prisma/prisma/issues/12343) — native tsvector not supported confirmed
-- [Prisma Multiple Databases Guide](https://www.prisma.io/docs/guides/multiple-databases) — separate client output pattern
-- [Turborepo prune reference](https://turborepo.dev/docs/reference/prune) — multi-app build patterns
-- [Turborepo env vars docs](https://turborepo.dev/docs/crafting-your-repository/using-environment-variables) — globalEnv and globalDependencies
-- [Turbo cache env var bug #10690](https://github.com/vercel/turborepo/issues/10690) — confirmed caching behavior
-- [NestJS official file upload docs](https://docs.nestjs.com/techniques/file-upload) — Multer integration patterns
-- [Multer size limit 500 bug #465](https://github.com/nestjs/nest/issues/465) — confirmed behavior (returns 500, not 413)
-- [Coolify env variables docs](https://coolify.io/docs/knowledge-base/environment-variables) — locking secrets procedure
-- [Coolify secret leakage #7019](https://github.com/coollabsio/coolify/issues/7019) — confirmed open bug
-- [Coolify secrets in debug logs #7235](https://github.com/coollabsio/coolify/issues/7235) — confirmed behavior
-- [Tiptap Mention extension docs](https://tiptap.dev/docs/editor/extensions/nodes/mention) — items callback pattern
-- [Tiptap Mention debounce discussion #5832](https://github.com/ueberdosis/tiptap/discussions/5832) — debounce solution confirmed
+- [motion.dev/changelog](https://motion.dev/changelog) — v12.34.0 latest (Feb 9, 2026); React 19 CI suite added v12.29.0; `motion/react` import path confirmed for Next.js App Router
+- [gsap.com/resources/React/](https://gsap.com/resources/React/) — `useGSAP` hook pattern; Next.js `"use client"` requirement; cleanup behavior on unmount
+- [gsap.com/pricing/](https://gsap.com/pricing/) — 100% free confirmed including SplitText, MorphSVG, ScrollTrigger since v3.13
+- [npmjs.com/package/lenis](https://www.npmjs.com/package/lenis) — v1.2.3 Next.js 15 + React 19 tested; renamed from deprecated `@studio-freight/lenis`
+- [Next.js: Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) — boundary rules, `"use client"` propagation
+- [Next.js Discussion #72236](https://github.com/vercel/next.js/discussions/72236) — `ssr: false` regression in Next.js 15 confirmed; wrapper client component workaround required
+- [Motion bundle size docs](https://motion.dev/docs/react-reduce-bundle-size) — 34KB full vs ~4.6KB with LazyMotion domAnimation features
+- [Motion accessibility docs](https://motion.dev/docs/react-accessibility) — `reducedMotion="user"` on MotionConfig behavior
+- [App Router + AnimatePresence GitHub Issue #49279](https://github.com/vercel/next.js/issues/49279) — known page transition limitation confirmed
+- [Motion GitHub Issue #2668](https://github.com/motiondivision/motion/issues/2668) — React 19 incompatibility with `framer-motion` package confirmed resolved in `motion` v12
+- Project `apps/web/package.json` — `react@^19.0.0`, `next@^15.1.0`, `tailwindcss@^4.1.18` confirmed from source
+- Project `apps/web/lighthouserc.json` — `categories:performance: error at 0.9` on five portfolio URLs confirmed from source
+- Project `apps/web/app/globals.css` — 3-layer Radix Colors + `@theme inline` pattern confirmed from source
+- [Chrome Lighthouse: Performance Scoring](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring) — CLS 25%, LCP 25% of score; 4x CPU slowdown simulation
+- [CSS-Tricks: requestAnimationFrame with React hooks](https://css-tricks.com/using-requestanimationframe-with-react-hooks/) — `useRef` + `useEffect` + cleanup pattern
+- [Pope Tech Blog: Accessible Animation Dec 2025](https://blog.pope.tech/2025/12/08/design-accessible-animation-and-movement/) — WCAG 2.3.3 requirements
+- [Custom Cursor Accessibility (dbushell.com Oct 2025)](https://dbushell.com/2025/10/27/custom-cursor-accessibility/) — cursor accessibility violations documented
 
 ### Secondary (MEDIUM confidence)
-- [Postgres FTS vs Meilisearch vs Elasticsearch comparison](https://medium.com/@simbatmotsi/postgres-full-text-search-vs-meilisearch-vs-elasticsearch-choosing-a-search-stack-that-scales-fcf17ef40a1b) — Dec 2025 comparison confirming tsvector adequacy at portfolio scale
-- [Prisma fullTextSearchPostgres preview status](https://github.com/prisma/prisma/discussions/26136) — still Preview for Postgres as of 2026
-- [Bulletproof FTS in Prisma without migration drift](https://medium.com/@chauhananubhav16/bulletproof-full-text-search-fts-in-prisma-with-postgresql-tsvector-without-migration-drift-c421f63aaab3) — trigger-based solution pattern
-- [react-markdown v10.1.0 Releases](https://github.com/remarkjs/react-markdown/releases) — React 19 compatibility confirmed in v9.0.2+
-- [Cloudflare R2 NestJS Integration](https://medium.com/@nurulislamrimon/cloudflare-r2-object-storage-functions-for-the-nestjs-in-one-shot-992225952fc8) — NestJS + R2 pattern (2026)
-- [Solving NestJS module resolution in Turborepo](https://medium.com/@cloudiafricaa/solving-nestjs-module-resolution-in-turborepo-the-package-json-fix-6e7ac0d037dc) — `"*"` vs `"workspace:*"` fix
-- [Coding Horror: Web discussions flat by design](https://blog.codinghorror.com/web-discussions-flat-by-design/) — flat comment model rationale
-- [Workspace RBAC patterns: OSO](https://www.osohq.com/learn/rbac-examples) — Admin/Contributor/Viewer permission tables
-
-### Direct Codebase Analysis (HIGH confidence)
-- `apps/api/src/core/rbac/rbac.guard.ts` — allow-by-default behavior at line 24 confirmed
-- `docker-compose.dev.yml` — existing port allocations, network name `teamflow-network`, volume patterns
-- `turbo.json` — existing task definitions, `dependsOn: ["^build"]`, output globs
-- `.github/workflows/deploy.yml` — existing build-and-push pattern for reference
-- `packages/database/` — existing Prisma package structure to mirror for `packages/devcollab-database`
+- [Codrops: Stefan Vitasovic Portfolio Case Study 2025](https://tympanus.net/codrops/2025/03/05/case-study-stefan-vitasovic-portfolio-2025/) — staggered word reveal, award-winning pattern reference
+- [How Recruiters Actually Look at Your Portfolio](https://blog.opendoorscareers.com/p/how-recruiters-and-hiring-managers-actually-look-at-your-portfolio) — anti-feature rationale, looping typewriter as red flag
+- [Aceternity UI Components](https://ui.aceternity.com/components) — Evervault card pattern, Aurora background adaptation
+- [Theming Tailwind v4: Multiple Color Schemes](https://medium.com/@sir.raminyavari/theming-in-tailwind-css-v4-support-multiple-color-schemes-and-dark-mode-ba97aead5c14) — scoped `.matrix-theme` class pattern
+- [Optimizing GSAP in Next.js 15](https://medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15-best-practices-for-initialization-and-cleanup-2ebaba7d0232) — cleanup best practices, `ScrollTrigger.refresh()` timing
+- [Memory Leaks in React & Next.js Jan 2026](https://medium.com/@essaadani.yo/memory-leaks-in-react-next-js-what-nobody-tells-you-91c72b53d84d) — RAF leak ~8KB/cycle benchmarked
+- [Tailwind GitHub Discussion #16517](https://github.com/tailwindlabs/tailwindcss/discussions/16517) — `@custom-variant dark` conflict with `attribute` strategy change confirmed
+- [use-scramble React hook](https://www.use-scramble.dev/) — React-native text scramble, ~3KB, referenced for Phase 5
 
 ---
-
-*Research completed: 2026-02-17*
+*Research completed: 2026-02-18*
 *Ready for roadmap: yes*

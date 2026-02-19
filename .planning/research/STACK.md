@@ -1303,3 +1303,342 @@ npx prisma generate --schema=packages/database/prisma/schema.prisma
 *Stack research for: TeamFlow (Work Management SaaS) + DevCollab (Developer Collaboration Platform)*
 *Researched: 2026-02-14 (TeamFlow core), 2026-02-16 (v1.1 Design System), 2026-02-17 (DevCollab additions)*
 *Overall Confidence: HIGH — All DevCollab library versions verified against npm, GitHub releases, and official docs. React 19 and NestJS 11 compatibility confirmed for all new additions.*
+
+---
+
+## Matrix Portfolio Redesign — Animation Stack
+
+**Focus:** Animation and visual effect libraries for Matrix-aesthetic portfolio redesign.
+**Domain:** Next.js 15 App Router + React 19 + Tailwind v4 CSS-first
+**Researched:** 2026-02-18
+**Confidence:** HIGH (core animation libraries verified via official docs, npm registry, motion.dev changelog)
+
+This section covers ONLY what is needed for new animation/visual features. Existing stack (Next.js 15.1, React 19.0, Tailwind v4.1.18, Radix UI, Shadcn UI, next-themes) is preserved unchanged.
+
+---
+
+### Critical Constraint: React 19 Peer Dependency
+
+The project uses `react@^19.0.0` (confirmed in `apps/web/package.json`). This single constraint eliminates several animation library choices:
+
+- `framer-motion` v11 and below: declares `peerDependencies: { react: "^18" }` — npm will error
+- Any library not updated for React 19: will fail `npm install` or require `--legacy-peer-deps`
+
+The correct package for Framer Motion features is now `motion` v12, which is the renamed, React 19-compatible rewrite. Same API, different package name.
+
+---
+
+### Core Animation Libraries (New Dependencies)
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `motion` | `^12.4.0` | Declarative React animations: scroll reveals, hover states, page transitions, magnetic effects, cursor spring | v12 is the stable React 19-compatible rewrite of Framer Motion. Import via `motion/react`. React 19 test suite added to CI in v12.29.0 (Jan 2026), confirmed stable. Latest: v12.34.0 (Feb 9, 2026). ~85KB, tree-shakeable. No `--legacy-peer-deps` needed. |
+| `gsap` | `^3.14.2` | Timeline-based animations, ScrollTrigger for parallax/scrubbing, SplitText for text reveals, magnetic button smoothing via `quickTo()` | 100% free since Webflow acquisition (v3.13+) — all plugins including SplitText, MorphSVG included. 23KB gzipped core. Framework-agnostic — bypasses React's diffing entirely, which is an advantage for high-frequency mouse events and scroll-linked position updates. v3.14.2 is latest stable (Dec 2025). |
+| `@gsap/react` | `^2.1.1` | `useGSAP()` hook for React/Next.js integration | Provides `useGSAP()` which implements `useIsomorphicLayoutEffect` — SSR safe in Next.js App Router. Auto-cleans all GSAP instances, ScrollTriggers, and Draggables on unmount. Scopes GSAP selectors to component DOM tree via `scope: containerRef`. Required companion for GSAP in React. |
+| `lenis` | `^1.2.3` | Smooth scroll feel (replaces browser default inertia) | Renamed from deprecated `@studio-freight/lenis`. Import via `lenis/react` for `ReactLenis` component. Tested with Next.js 15 + React 19. `autoRaf: true` handles rAF loop internally. Integrates with GSAP ScrollTrigger via `lenis.on('scroll', ScrollTrigger.update)`. |
+
+### No Additional Libraries Needed (Use What's Already There)
+
+| Effect | Approach | Rationale |
+|--------|----------|-----------|
+| Matrix digital rain | Custom `MatrixRain` component — Native Canvas API + `useRef` + `useEffect` | No npm library adds value. 100-line TypeScript component gives full control over color (`#00FF41`), character set (Katakana), density, and trail alpha. p5.js (9MB) and three.js (600KB) are way over-engineered for a 2D canvas effect. |
+| Aurora gradient background | CSS `@keyframes` in Tailwind v4 `@theme` block | Zero JS. GPU composited via `opacity`. Already have `tailwindcss-animate` and `tw-animate-css` installed — use them. |
+| Card hover glow | Tailwind CSS `hover:shadow-[0_0_20px_#00FF41]` + `transition-shadow` | Pure CSS, no library needed. For mouse-tracking spotlight: CSS custom properties (`--mouse-x`, `--mouse-y`) fed to `radial-gradient` on a `::before` pseudo-element. |
+| Cursor glow | Single root-level `"use client"` component tracking `mousemove` | `motion` `useSpring` for cursor lag. Fixed-position `div` with `transform: translate()` (compositor-only). |
+
+---
+
+### Installation (Matrix Portfolio Milestone Only)
+
+```bash
+# Install in apps/web (the portfolio Next.js app)
+npm install motion gsap @gsap/react lenis --workspace=apps/web
+```
+
+That is the complete installation. Four packages. No other animation libraries needed.
+
+---
+
+### Effect-by-Effect Implementation Patterns
+
+**Matrix Digital Rain (canvas):**
+```typescript
+// components/effects/MatrixRain.tsx
+"use client"
+import { useRef, useEffect } from "react"
+
+export function MatrixRain() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")!
+
+    // Katakana + digits — authentic to the film
+    const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789"
+    const fontSize = 14
+    let columns = Math.floor(canvas.width / fontSize)
+    const drops: number[] = Array(columns).fill(1)
+
+    const ro = new ResizeObserver(() => {
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      columns = Math.floor(canvas.width / fontSize)
+      drops.length = columns
+      drops.fill(1)
+    })
+    ro.observe(canvas)
+
+    const draw = () => {
+      // Trail fade — semi-transparent black
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      ctx.font = `${fontSize}px monospace`
+      drops.forEach((y, i) => {
+        const char = chars[Math.floor(Math.random() * chars.length)]
+        // Head character: bright Matrix green
+        ctx.fillStyle = i % 7 === 0 ? "#AAFFAA" : "#00FF41"
+        ctx.fillText(char, i * fontSize, y * fontSize)
+        if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0
+        drops[i]++
+      })
+    }
+
+    const interval = setInterval(draw, 50) // 20fps — enough for rain effect
+    return () => {
+      clearInterval(interval)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="fixed inset-0 -z-10 w-full h-full opacity-20" />
+}
+```
+
+**Scroll-Triggered Reveals (Motion useInView):**
+```typescript
+// components/effects/RevealOnScroll.tsx
+"use client"
+import { motion, useInView } from "motion/react"
+import { useRef } from "react"
+
+export function RevealOnScroll({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-10% 0px" })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+```
+
+**Magnetic Button (GSAP quickTo):**
+```typescript
+// components/effects/MagneticButton.tsx
+"use client"
+import { useRef } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+
+gsap.registerPlugin(useGSAP)
+
+export function MagneticButton({ children }: { children: React.ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const quickX = useRef<ReturnType<typeof gsap.quickTo>>()
+  const quickY = useRef<ReturnType<typeof gsap.quickTo>>()
+
+  useGSAP(() => {
+    quickX.current = gsap.quickTo(containerRef.current, "x", { duration: 0.4, ease: "power3" })
+    quickY.current = gsap.quickTo(containerRef.current, "y", { duration: 0.4, ease: "power3" })
+  }, { scope: containerRef })
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { left, top, width, height } = containerRef.current!.getBoundingClientRect()
+    const x = (e.clientX - left - width / 2) * 0.4
+    const y = (e.clientY - top - height / 2) * 0.4
+    quickX.current?.(x)
+    quickY.current?.(y)
+  }
+
+  const handleMouseLeave = () => {
+    quickX.current?.(0)
+    quickY.current?.(0)
+  }
+
+  return (
+    <div ref={containerRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className="inline-block">
+      {children}
+    </div>
+  )
+}
+```
+
+**GSAP ScrollTrigger Parallax:**
+```typescript
+// Must be "use client" — register plugins at module level, not inside component
+"use client"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useGSAP } from "@gsap/react"
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+// Inside component:
+useGSAP(() => {
+  gsap.to(".parallax-bg", {
+    y: "-30%",
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".parallax-section",
+      start: "top bottom",
+      end: "bottom top",
+      scrub: 1, // smooth scrub, not instant
+    },
+  })
+  // IMPORTANT: call refresh after Next.js route change
+  ScrollTrigger.refresh()
+}, { scope: containerRef })
+```
+
+**Aurora Background (CSS only — no JS):**
+```css
+/* In apps/web/app/globals.css — inside @theme block */
+@theme {
+  --color-matrix: #00FF41;
+  --color-matrix-dim: #00802B;
+  --color-matrix-glow: rgba(0, 255, 65, 0.15);
+
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  @keyframes aurora {
+    0%   { opacity: 0.4; transform: scale(1) rotate(0deg); }
+    50%  { opacity: 0.7; transform: scale(1.05) rotate(2deg); }
+    100% { opacity: 0.4; transform: scale(1) rotate(-2deg); }
+  }
+}
+
+/* Usage in component (Tailwind class): animate-aurora */
+/* Only animate opacity and transform — no layout properties */
+```
+
+**Lenis Smooth Scroll (Root Layout):**
+```typescript
+// app/SmoothScrollProvider.tsx
+"use client"
+import { ReactLenis } from "lenis/react"
+
+export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothTouch: false, autoRaf: true }}>
+      {children}
+    </ReactLenis>
+  )
+}
+
+// app/layout.tsx (Server Component — wraps with client provider)
+import { SmoothScrollProvider } from "./SmoothScrollProvider"
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+---
+
+### Alternatives Considered (Matrix Portfolio)
+
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| `motion` v12 | `framer-motion` v11 | Peer dep declares `react@^18`. Errors with `react@19.0.0`. Same package, wrong version — v12 is the correct answer. |
+| `motion` v12 | `react-spring` | No scroll-linked primitives, no timeline API. Redundant when GSAP covers DOM animation and Motion covers React component animation. |
+| GSAP `ScrollTrigger` | CSS Scroll-Driven Animations API | Firefox 135 (Feb 2026) lacks full support. Interop 2026 targets it but it is not safe for a Lighthouse 90+ gated portfolio today. |
+| GSAP `quickTo()` for magnetic | `motion` spring for magnetic | Motion springs are React state-based. For high-frequency mouse events, GSAP `quickTo()` directly manipulates DOM and is ~3x more responsive. |
+| Native Canvas | `p5.js` | 9MB bundle — destroys Lighthouse score. Canvas API handles Matrix rain in <100 lines. |
+| Native Canvas | `three.js` / WebGL | 600KB+, requires shader knowledge. No benefit over Canvas 2D for a character rain effect. |
+| `lenis` | `@studio-freight/lenis` | Same library — old name, deprecated. Install `lenis` directly. |
+| CSS `@keyframes` for aurora | `anime.js` for aurora | CSS runs on compositor thread. anime.js adds 7KB for zero benefit over CSS custom properties for a gradient opacity animation. |
+| GSAP `SplitText` | `split-type` (npm) | GSAP SplitText is included free in `gsap@^3.13+`. `split-type` is a solid standalone, but adding a 7th library for something bundled is wasteful. |
+
+---
+
+### What NOT to Use (Matrix Portfolio)
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `framer-motion` (any v≤11) | React 19 peer dep conflict. Will fail `npm install` without `--legacy-peer-deps`. Don't use the flag — it masks real compatibility issues. | `motion` v12 — identical API, correct peer dep |
+| `AOS` (Animate on Scroll) | Global CSS class injection conflicts with Tailwind v4 scoped CSS. Not SSR safe. Adds 15KB for what `useInView` from `motion` does in 10 lines. | `motion` `useInView` with `once: true` |
+| `ScrollReveal.js` | Unmaintained for React 19. Assumes DOM access at module load — SSR crash without `dynamic()` guard. | GSAP ScrollTrigger or Motion `useInView` |
+| `anime.js` alongside GSAP | Two animation engines competing for DOM control. Race conditions and unpredictable behavior when both animate the same elements. | GSAP exclusively for DOM animation |
+| `react-parallax` / `react-rellax` | Both unmaintained (last commit 2022-2023). React 19 compatibility unverified. | GSAP ScrollTrigger with `scrub: true` |
+| `p5.js` | 9MB — annihilates Lighthouse Performance score. Lighthouse gate is 90+. | Native Canvas 2D API |
+| `three.js` for Matrix rain | 600KB minimum. WebGL overkill for a 2D character animation. | Native Canvas 2D API |
+| `gsap.to()` in bare `useEffect` | GSAP instances leak on unmount. ScrollTrigger listeners stack across route changes causing memory leaks visible only after 2+ navigations. | Always use `useGSAP(() => { ... }, { scope: ref })` from `@gsap/react` |
+| `will-change: transform` on all elements | Each compositing layer costs ~60MB GPU RAM. Over-promoting degrades mobile performance and can trigger Lighthouse warnings. | Apply only to actively animating elements, remove after |
+| Any shade of purple / violet / indigo | Project constraint. No exceptions. | Matrix green `#00FF41` for glow accents. `#00B4D8` teal for secondary accents if needed. |
+
+---
+
+### SSR / Hydration Compatibility (Matrix Portfolio Effects)
+
+| Effect | SSR Safe? | Correct Strategy |
+|--------|-----------|-----------------|
+| Matrix canvas rain | No | `"use client"` + `useEffect`. Use `dynamic(() => import('./MatrixRain'), { ssr: false })` when importing from RSC parent. |
+| Motion scroll reveals | Partial | Motion components need `"use client"`. Server renders initial state. No hydration mismatch if initial opacity:0 matches server render. |
+| GSAP ScrollTrigger | No | Always inside `useGSAP()` in a `"use client"` component. Server render is static HTML; GSAP enhances on client. |
+| Lenis smooth scroll | No | `ReactLenis` is a client component. Thin `SmoothScrollProvider` wrapper with `"use client"`. |
+| CSS aurora animations | Yes | Pure CSS via `@theme` `@keyframes`. Works in Server Components, RSC, anywhere. Zero JS. |
+| CSS card glow hover | Yes | Pure CSS `hover:shadow-*` via Tailwind. Works everywhere. |
+| JS cursor glow tracking | No | `mousemove` listener — client only. Single root-level `"use client"` component that updates CSS custom properties. |
+| Magnetic buttons (GSAP) | No | `mousemove` + GSAP `quickTo` — client only. `"use client"` wrapper component. |
+
+---
+
+### Version Compatibility (Matrix Portfolio Additions)
+
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `motion@^12.4.0` | `react@^19.0.0` | React 19 test suite in CI since v12.29.0. Stable. No flags needed. |
+| `motion@^12.4.0` | `next@^15.1.0` | Use `motion/react` import. For `next/dynamic` with SSR false, use `motion/react-client`. |
+| `gsap@^3.14.2` | `react@^19.0.0` | Framework-agnostic. No React peer dep declared. Works with any React version. |
+| `@gsap/react@^2.1.1` | `react@^19.0.0` | Hooks package. `useIsomorphicLayoutEffect` pattern is SSR safe. |
+| `lenis@^1.2.3` | `next@^15.1.0` + `react@^19.0.0` | Tested with Next.js 15 + React 19. Import `lenis/react`. |
+| `gsap` + `lenis` | Integration required | `lenis.on('scroll', ScrollTrigger.update)` + `gsap.ticker.lagSmoothing(0)` |
+| `motion` + `gsap` | Can coexist | Motion animates React component state/style props. GSAP animates DOM directly. No collision if not animating the same property on the same element. |
+| `tailwindcss@^4.1.18` | `motion@^12` | No conflict — Motion uses inline styles; Tailwind uses class-based styles. |
+
+---
+
+### Sources (Matrix Portfolio)
+
+| Source | Confidence | What Was Verified |
+|--------|------------|-------------------|
+| [motion.dev/changelog](https://motion.dev/changelog) | HIGH | v12.34.0 latest (Feb 9, 2026); React 19 CI suite added in v12.29.0 |
+| [gsap.com/resources/React/](https://gsap.com/resources/React/) | HIGH | v3.14.1 confirmed current; `useGSAP` hook pattern; Next.js `"use client"` requirement |
+| [gsap.com/pricing/](https://gsap.com/pricing/) | HIGH | 100% free confirmed including SplitText, MorphSVG since v3.13 |
+| [npmjs.com/package/lenis](https://www.npmjs.com/package/lenis) | HIGH | Package renamed from `@studio-freight/lenis`; v1.2.3 Next.js 15 + React 19 tested |
+| Project `apps/web/package.json` | HIGH | `react@^19.0.0`, `next@^15.1.0` confirmed from source |
+| [github.com/motiondivision/motion discussions #3184](https://github.com/motiondivision/motion/discussions/3184) | HIGH | `motion/react` import path confirmed for Next.js App Router |
+| [css-tricks.com/interop-2026](https://css-tricks.com/interop-2026/) | HIGH | Firefox CSS Scroll-Driven Animations gap confirmed, targeted in Interop 2026 |
+| [blog.olivierlarose.com/tutorials/magnetic-button](https://blog.olivierlarose.com/tutorials/magnetic-button) | MEDIUM | GSAP `quickTo()` pattern for magnetic buttons verified against GSAP docs |
+| [medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15](https://medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15-best-practices-for-initialization-and-cleanup-2ebaba7d0232) | MEDIUM | `ScrollTrigger.refresh()` after route change, `useGSAP` cleanup patterns |
+| GSAP GitHub releases | HIGH | v3.14.2 latest confirmed |
+
+---
+
+*Matrix Portfolio animation stack research completed 2026-02-18.*
+*Existing TeamFlow + DevCollab stack sections above are preserved and unchanged.*

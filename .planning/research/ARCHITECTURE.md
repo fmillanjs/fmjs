@@ -1,1130 +1,858 @@
-# Architecture Research: DevCollab Monorepo Integration
+# Architecture Research: Matrix-Aesthetic Portfolio Redesign
 
-**Domain:** Developer Collaboration Platform — Turborepo Monorepo Integration
-**Researched:** 2026-02-17
-**Confidence:** HIGH
+**Domain:** Animation integration into existing Next.js 15 App Router portfolio site
+**Researched:** 2026-02-18
+**Confidence:** HIGH (client/server boundaries, hydration patterns, canvas SSR); MEDIUM (Tailwind v4 token migration, Framer Motion App Router specifics); LOW (canvas Lighthouse impact at specific animation density)
+
+---
 
 ## Standard Architecture
 
 ### System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              Turborepo Monorepo (teamflow)                          │
-│                                                                                     │
-│  ┌─────────────────────────┐    ┌─────────────────────────┐                         │
-│  │      apps/web           │    │   apps/devcollab-web    │                         │
-│  │   Next.js 15 + Auth v5  │    │     Next.js 15          │                         │
-│  │   Portfolio + TeamFlow  │    │    DevCollab frontend   │                         │
-│  │   Port: 3000            │    │    Port: 3002           │                         │
-│  └───────────┬─────────────┘    └──────────┬──────────────┘                         │
-│              │ REST+WS                      │ REST+WS                               │
-│  ┌─────────────────────────┐    ┌─────────────────────────┐                         │
-│  │      apps/api           │    │   apps/devcollab-api    │                         │
-│  │     NestJS 11           │    │      NestJS 11          │                         │
-│  │   TeamFlow API          │    │    DevCollab API        │                         │
-│  │   Port: 3001            │    │    Port: 3003           │                         │
-│  └───────────┬─────────────┘    └──────────┬──────────────┘                         │
-│              │                             │                                        │
-├──────────────┼─────────────────────────────┼────────────────────────────────────────┤
-│              │   Shared Packages           │                                        │
-│  ┌───────────▼─────────────────────────────▼──────────────┐                         │
-│  │  @repo/shared   │  @repo/database  │  @repo/config     │                         │
-│  │  Zod schemas    │  Prisma client   │  tsconfig bases   │                         │
-│  │  Types          │  TeamFlow schema │                   │                         │
-│  └─────────────────────────────────────────────────────────┘                         │
-│                                                                                     │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                              Infrastructure Layer                                   │
-│                                                                                     │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌───────────────────────────┐  │
-│  │  teamflow-postgres   │  │  devcollab-postgres   │  │    teamflow-redis         │  │
-│  │  Port: 5434          │  │  Port: 5435           │  │    Port: 6380             │  │
-│  │  (existing)          │  │  (new)                │  │    (existing, shared)     │  │
-│  └──────────────────────┘  └──────────────────────┘  └───────────────────────────┘  │
-│                                                                                     │
-│  ┌──────────────────────┐                                                           │
-│  │   devcollab-minio    │                                                           │
-│  │   Port: 9000/9001    │                                                           │
-│  │   (new)              │                                                           │
-│  └──────────────────────┘                                                           │
-└─────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│                      apps/web — Next.js 15 App Router              │
+├────────────────────────────────────────────────────────────────────┤
+│  (portfolio) Route Group — Server Components by default            │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐   │
+│  │ /page.tsx  │  │ /about     │  │ /projects  │  │ /resume    │   │
+│  │ (RSC)      │  │ /page.tsx  │  │ /page.tsx  │  │ /page.tsx  │   │
+│  │            │  │ (RSC)      │  │ (RSC)      │  │ (RSC)      │   │
+│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘   │
+│        │               │               │               │           │
+│        └───────────────┴───────────────┴───────────────┘           │
+│                                │                                    │
+│                   ┌────────────▼───────────────┐                   │
+│                   │ (portfolio)/layout.tsx (RSC)│                   │
+│                   │  + MotionProvider (client)  │                   │
+│                   │  + .matrix-theme class      │                   │
+│                   │  PortfolioNav (client)      │                   │
+│                   │  PortfolioFooter (RSC)      │                   │
+│                   │  CommandPalette (client)    │                   │
+│                   └────────────┬───────────────┘                   │
+│                                │                                    │
+├────────────────────────────────┼───────────────────────────────────┤
+│               CLIENT BOUNDARY (all animations live here)           │
+├────────────────────────────────┼───────────────────────────────────┤
+│                                │                                    │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │          New Animation Client Components ("use client")    │    │
+│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │    │
+│  │  │  MatrixRainCanvas   │  │  AnimatedHeroSection        │  │    │
+│  │  │  canvas + rAF loop  │  │  Framer Motion m.div        │  │    │
+│  │  │  dynamic(ssr:false) │  │  wraps RSC hero children    │  │    │
+│  │  └─────────────────────┘  └─────────────────────────────┘  │    │
+│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │    │
+│  │  │  GlitchText         │  │  MotionProvider             │  │    │
+│  │  │  CSS @keyframes     │  │  LazyMotion + MotionConfig  │  │    │
+│  │  │  + useReducedMotion │  │  reducedMotion="user"       │  │    │
+│  │  └─────────────────────┘  └─────────────────────────────┘  │    │
+│  └────────────────────────────────────────────────────────────┘    │
+│                                                                     │
+├────────────────────────────────────────────────────────────────────┤
+│          CSS Token Layer (globals.css + @theme inline)             │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Layer 1: Radix Colors imports (existing, unchanged)         │  │
+│  │  Layer 2: :root semantic tokens (existing + .matrix-theme)   │  │
+│  │  Layer 3: @theme inline Tailwind utilities (additive)        │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Component Responsibilities
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| `apps/devcollab-web` | DevCollab frontend — workspaces, snippets, posts, file UI, notifications | Next.js 15 App Router, Shadcn UI, custom JWT auth (NOT NextAuth) |
-| `apps/devcollab-api` | DevCollab backend — all business logic, file uploads, search, WS | NestJS 11, CASL RBAC, Socket.IO + Redis adapter |
-| `apps/web` | Portfolio + TeamFlow (unchanged) | Existing Next.js 15 + NextAuth v5 |
-| `apps/api` | TeamFlow API (unchanged) | Existing NestJS 11 |
-| `@repo/shared` | Zod validators and TypeScript types shared across apps | Extended with DevCollab types in separate sub-exports |
-| `@repo/database` | TeamFlow Prisma client (existing, TeamFlow only) | Prisma v5, PostgreSQL, TeamFlow schema |
-| `packages/devcollab-database` | DevCollab Prisma client (new) | Prisma v5, separate PostgreSQL DB |
-| `@repo/config` | tsconfig bases for Next.js and NestJS (existing, reused) | TypeScript config inheritance |
+| Component | Type | Responsibility | New or Modified |
+|-----------|------|----------------|-----------------|
+| `(portfolio)/layout.tsx` | RSC | Shell: nav + footer + command palette. Add MotionProvider + matrix-theme class. | Modified |
+| `(portfolio)/page.tsx` | RSC | Home page markup. Imports `AnimatedHeroSection` wrapping existing hero. | Modified |
+| `PortfolioNav` | Client (existing) | Already client (uses `usePathname`). Matrix terminal-style active-link CSS. | Modified (CSS only) |
+| `HeroSection` | RSC (existing) | Stays RSC. Content passes as `children` to `AnimatedHeroSection`. | Unchanged |
+| `MatrixRainCanvas` | **Client (new)** | Canvas element + `requestAnimationFrame` loop. Uses `dynamic(ssr:false)`. | New |
+| `AnimatedHeroSection` | **Client (new)** | Wraps RSC hero children with Framer Motion entrance animation. | New |
+| `GlitchText` | **Client (new)** | CSS `@keyframes` glitch effect on headings. Respects `useReducedMotion`. | New |
+| `MotionProvider` | **Client (new)** | `LazyMotion` + `MotionConfig reducedMotion="user"`. In portfolio layout. | New |
+| `ThemeProvider` | Client (existing) | `next-themes` wrapper. Already in `app/layout.tsx`. | Unchanged |
+| `globals.css` | CSS | Add Matrix color tokens; add `.matrix-theme` block; keep all existing tokens. | Modified (additive) |
 
 ---
 
-## Decision Records
+## Question 1: Client/Server Boundary Decisions
 
-### Decision 1: Separate Postgres Database (NOT shared DB or separate schema)
+### The Core Rule
 
-**Recommendation: Separate PostgreSQL instance for DevCollab.**
+Next.js 15 App Router renders all components as React Server Components (RSC) by default. Animations require DOM access and browser APIs unavailable server-side. The boundary is created with `"use client"`.
 
-DevCollab has its own auth (separate user accounts, separate JWT secret). A shared Postgres database creates an operational coupling that contradicts this separation. Using a single DB with PostgreSQL schemas (`search_path`) would require both Prisma clients to share migration history and the same DATABASE_URL base, creating confusion for a portfolio project where the goal is to demonstrate clean separation of concerns.
+**Decision principle:** Push the `"use client"` boundary as far down the tree as possible. Server components can import and render client components. Client components cannot render server components as children except via the `children` prop pattern.
 
-**Rationale:**
-- DevCollab users are not TeamFlow users — no foreign key linkage needed
-- Migration drift is impossible when schemas live in completely separate DBs
-- Demonstrates production-quality isolation (recruiters evaluate architecture decisions)
-- Container port 5435 (host) → 5432 (container) is trivial to add to docker-compose
+### Boundary Map for the Portfolio
 
-**Rejected alternatives:**
-- Shared DB + Postgres schemas: Prisma multi-schema support works, but both apps would share `DATABASE_URL` with `?schema=` parameter, creating confusion and requiring careful orchestration of migrations
-- Shared DB + prefixed tables: Defeats the purpose of Prisma's type safety, leaks TeamFlow table names into DevCollab client
-
-### Decision 2: Separate Prisma Package (packages/devcollab-database)
-
-**Recommendation: Create `packages/devcollab-database` alongside existing `packages/database`.**
-
-The existing `packages/database` exports a Prisma client bound to TeamFlow's schema. DevCollab needs its own generated client from its own schema. Trying to merge both schemas into one Prisma file would require a single `DATABASE_URL` pointing at a shared server (contradicting Decision 1), or using Prisma's multi-schema feature which adds complexity without benefit given the databases are truly separate.
-
-**Pattern (mirrors existing packages/database):**
 ```
-packages/devcollab-database/
-├── prisma/
-│   ├── schema.prisma     # DevCollab models
-│   └── seed.ts
-├── src/
-│   ├── client.ts         # PrismaClient singleton
-│   └── index.ts          # exports
-└── package.json          # name: "@repo/devcollab-database"
+app/layout.tsx (RSC)
+  └── ThemeProvider (client, existing) — must be client for next-themes
+      └── (portfolio)/layout.tsx (RSC) — stays RSC
+          └── MotionProvider (client, new) — LazyMotion context
+              ├── PortfolioNav (client, existing — uses usePathname)
+              │     CSS-only Matrix styling added here; no new boundary
+              ├── main > {children} (RSC pages flow through)
+              │     └── (portfolio)/page.tsx (RSC)
+              │           └── AnimatedHeroSection (CLIENT, new)
+              │                 ├── RSC hero content (children — server-rendered)
+              │                 └── MatrixRainCanvas (CLIENT, dynamic ssr:false)
+              └── PortfolioFooter (RSC — no interaction needed)
 ```
 
-`apps/devcollab-api` imports `@repo/devcollab-database` only. `apps/devcollab-web` does NOT import the database package (Next.js fetches from devcollab-api via REST).
+**Key insight:** The existing `HeroSection` is a pure RSC. Rather than converting it, wrap it: create `AnimatedHeroSection` as a client component that receives the hero content as `children`. This keeps the hero text markup server-rendered (good for SEO and LCP) while the animation layer hydrates on the client.
 
-### Decision 3: Redis is Shared (reuse teamflow-redis)
+```typescript
+// components/portfolio/animated-hero-section.tsx
+'use client';
+import { m } from 'framer-motion';
 
-**Recommendation: Both TeamFlow API and DevCollab API connect to the same Redis instance.**
+interface AnimatedHeroSectionProps {
+  children: React.ReactNode; // RSC children pass through — valid pattern
+}
 
-Redis is stateless pub/sub — there is no data coupling concern. Both NestJS apps use Socket.IO with the Redis adapter for WebSocket broadcasting. Using separate Redis instances doubles container overhead for zero benefit. Channel namespacing (e.g., `teamflow:*` vs `devcollab:*` key prefixes) is sufficient isolation.
+export function AnimatedHeroSection({ children }: AnimatedHeroSectionProps) {
+  return (
+    <section className="relative overflow-hidden">
+      {/* Canvas behind content — absolutely positioned, decorative */}
+      <MatrixRainCanvasLazy />
+      {/* Animated wrapper — children are the RSC hero content */}
+      <m.div
+        className="relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        {children}
+      </m.div>
+    </section>
+  );
+}
+```
 
-**DevCollab API connects via:** `DEVCOLLAB_REDIS_URL=redis://teamflow-redis:6379` (internal Docker network name).
+```typescript
+// app/(portfolio)/page.tsx — RSC, structure barely changes
+import { HeroSection } from '@/components/portfolio/hero-section';
+import { AnimatedHeroSection } from '@/components/portfolio/animated-hero-section';
 
-### Decision 4: Separate JWT Secret for DevCollab Auth
+export default function HomePage() {
+  return (
+    <>
+      <AnimatedHeroSection>
+        <HeroSection />   {/* RSC passed as children — valid */}
+      </AnimatedHeroSection>
+      {/* rest of page content unchanged */}
+    </>
+  );
+}
+```
 
-**Recommendation: DevCollab uses its own `DEVCOLLAB_JWT_SECRET` env var, completely separate from TeamFlow's `JWT_SECRET`.**
+### Boundary Decision Table
 
-This is already stated as a requirement. The devcollab-api `ConfigModule` validates `DEVCOLLAB_JWT_SECRET`. The devcollab-web frontend stores the token in httpOnly cookie or localStorage (same pattern as TeamFlow). No NextAuth required — DevCollab implements its own email/password auth in NestJS.
+| Component | Boundary Decision | Reason |
+|-----------|------------------|--------|
+| `(portfolio)/layout.tsx` | RSC | No interactive state needed at layout level |
+| `MotionProvider` | Client | `LazyMotion` and React context providers must be client |
+| `AnimatedHeroSection` | Client | Uses `m.div` (Framer Motion) — needs DOM |
+| `MatrixRainCanvas` | Client + `dynamic(ssr:false)` | Canvas API not available server-side |
+| `GlitchText` | Client | Uses `useReducedMotion` hook — needs browser |
+| `HeroSection` | RSC (unchanged) | Static content; passed as children |
+| `ProjectCard` | RSC (unchanged) if no hover animation; Client if `m.div` added | Depends on whether hover animation is CSS-only or Framer Motion |
+| `TechStack` | RSC (unchanged) | CSS hover via Tailwind is RSC-safe |
+| `PortfolioFooter` | RSC (unchanged) | No interaction |
 
 ---
 
-## Recommended Project Structure
+## Question 2: Canvas-Based Matrix Rain in SSR Context
 
-### New files/directories to create (new = marked with +)
+### The Problem
+
+`<canvas>` requires the DOM. During SSR, there is no DOM. Any component that calls `useRef` on a canvas and starts a `requestAnimationFrame` loop will throw during server rendering.
+
+### The Solution: `dynamic` with `ssr: false`
+
+`next/dynamic` with `{ ssr: false }` skips server rendering for the component entirely. Next.js does not attempt to render it in the server HTML. The component mounts on the client after hydration.
+
+```typescript
+// In animated-hero-section.tsx (which is already "use client"):
+import dynamic from 'next/dynamic';
+
+const MatrixRainCanvasLazy = dynamic(
+  () => import('./matrix-rain-canvas').then(m => m.MatrixRainCanvas),
+  {
+    ssr: false,
+    loading: () => null, // No loading state — canvas appears on hydration, no flash
+  }
+);
+```
+
+```typescript
+// components/portfolio/matrix-rain-canvas.tsx
+'use client';
+import { useEffect, useRef } from 'react';
+
+const MATRIX_GREEN = '#00FF41';
+const MATRIX_DARK = 'rgba(0, 13, 3, 0.05)'; // semi-transparent fade per frame
+
+export function MatrixRainCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationIdRef = useRef<number>(0); // useRef NOT useState — no rerender on mutation
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Respect prefers-reduced-motion — skip loop entirely
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const fontSize = 14;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops: number[] = Array(cols).fill(1);
+
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
+
+    // Cap at 30fps to protect Lighthouse performance score
+    let lastTime = 0;
+    const FPS_CAP = 30;
+    const INTERVAL = 1000 / FPS_CAP;
+
+    const animate = (timestamp: number) => {
+      animationIdRef.current = requestAnimationFrame(animate);
+      if (timestamp - lastTime < INTERVAL) return;
+      lastTime = timestamp;
+
+      // Semi-transparent overlay creates fade trail effect
+      ctx.fillStyle = MATRIX_DARK;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = MATRIX_GREEN;
+      ctx.font = `${fontSize}px monospace`;
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = CHARS[Math.floor(Math.random() * CHARS.length)];
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+
+    animationIdRef.current = requestAnimationFrame(animate);
+
+    // Cleanup: prevents memory leaks and stacked loops on navigation
+    return () => {
+      cancelAnimationFrame(animationIdRef.current);
+      window.removeEventListener('resize', resize);
+    };
+  }, []); // Empty deps: run once on mount
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"       // Decorative — screen readers must skip
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-20"
+      // opacity-20 keeps it ambient, not overwhelming
+    />
+  );
+}
+```
+
+### Canvas and Lighthouse Performance Gates
+
+The existing `lighthouserc.json` enforces `categories:performance: error at 0.9` on `/`, `/about`, `/projects`, `/projects/teamflow`, and `/login`.
+
+| Metric | Canvas Impact | Mitigation |
+|--------|--------------|------------|
+| **LCP** | Zero — canvas elements are excluded from LCP candidate set by all browsers | Verify hero heading remains the LCP candidate |
+| **CLS** | Zero — `position: absolute` removes canvas from document flow | No layout shift possible |
+| **INP** | Low risk — 30fps cap, GPU-composited, `pointer-events-none` | Monitor with Lighthouse post-integration |
+| **FCP** | Zero — canvas renders after hydration; FCP is the first text/image paint | Server-rendered hero text is FCP candidate |
+| **TBT** | Low risk — `rAF` loop is async, does not block the main thread | Cap frame rate, avoid heavy per-frame computation |
+
+**Critical:** Add `will-change: contents` or promote canvas to its own GPU layer via `transform: translateZ(0)` CSS to prevent the canvas animation from forcing paint invalidation on parent layers.
+
+---
+
+## Question 3: Framer Motion with App Router — Avoiding Hydration Errors
+
+### Root Cause of Hydration Errors
+
+Hydration errors occur when server HTML differs from what React expects during client-side hydration. Framer Motion's `motion.*` components inject animation state into the DOM immediately at mount, which differs from static server HTML. The fix is to ensure Framer Motion components never run during SSR.
+
+The `"use client"` directive on a component file prevents that component from running on the server. Since `AnimatedHeroSection`, `GlitchText`, and any other animation components have `"use client"`, Framer Motion code inside them is safe from SSR.
+
+### Recommended Integration: `LazyMotion` + `m` Components
+
+Framer Motion's full bundle is ~34KB gzipped. Using `LazyMotion` with the `m` (lightweight) component variant reduces the initial client bundle contribution to ~4.6KB, loading animation features asynchronously. This is the performance-correct and hydration-safe pattern.
+
+```typescript
+// lib/motion-features.ts
+// Async feature loader — loaded by LazyMotion on demand
+const loadFeatures = () =>
+  import('framer-motion').then((mod) => mod.domAnimation);
+
+export default loadFeatures;
+```
+
+```typescript
+// components/providers/motion-provider.tsx
+'use client';
+import { LazyMotion, MotionConfig } from 'framer-motion';
+import loadFeatures from '@/lib/motion-features';
+
+interface MotionProviderProps {
+  children: React.ReactNode;
+}
+
+export function MotionProvider({ children }: MotionProviderProps) {
+  return (
+    <LazyMotion features={loadFeatures} strict>
+      {/* reducedMotion="user" automatically disables transform animations
+          for users with prefers-reduced-motion enabled — global accessibility gate */}
+      <MotionConfig reducedMotion="user">
+        {children}
+      </MotionConfig>
+    </LazyMotion>
+  );
+}
+```
+
+```typescript
+// app/(portfolio)/layout.tsx — add MotionProvider
+// This file is RSC. MotionProvider is a client component used as a wrapper.
+import { MotionProvider } from '@/components/providers/motion-provider';
+import { PortfolioNav } from '@/components/portfolio/nav';
+import { PortfolioFooter } from '@/components/portfolio/footer';
+import { CommandPalette } from '@/components/ui/command-palette';
+
+export default function PortfolioLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <MotionProvider>
+      <div className="matrix-theme min-h-screen flex flex-col">
+        <PortfolioNav />
+        <main className="flex-1">{children}</main>
+        <PortfolioFooter />
+        <CommandPalette />
+      </div>
+    </MotionProvider>
+  );
+}
+```
+
+### Hydration Safety Rules
+
+| Rule | Reason |
+|------|--------|
+| Put `"use client"` in every file that imports from `framer-motion` | Framer Motion accesses DOM APIs unavailable during SSR |
+| Use `m.div`, `m.span` etc. inside `LazyMotion` — never `motion.div` inside it | `motion.*` eagerly loads all features; defeats LazyMotion's bundle splitting |
+| Import `m` from `framer-motion`, not `motion` | `m` is the lightweight variant; `motion` is the full bundle |
+| `LazyMotion` must be an ancestor of all `m.*` usage | React context: features unavailable if `LazyMotion` is not above the component |
+| Do not place `AnimatePresence` in RSC files | Must be client-side; App Router navigation causes known quirks with AnimatePresence |
+| `suppressHydrationWarning` on `<html>` is already present | In `app/layout.tsx` for next-themes; covers theme flashes; no change needed |
+
+### Page Transitions Warning
+
+App Router navigation causes pages to unmount and remount. `AnimatePresence` wrapping `{children}` in a layout is documented to have quirks with App Router (vercel/next.js #49279 — App Router's aggressive client transitions interfere with AnimatePresence exit animations).
+
+**Recommendation:** Do not implement cross-page AnimatePresence transitions in this milestone. Entrance animations on individual sections (hero, project cards scrolling into view) are reliable and sufficient for the Matrix aesthetic. Page transitions can be added later once the known App Router friction is resolved upstream.
+
+---
+
+## Question 4: Tailwind v4 Token Migration for Matrix Dark-First
+
+### Existing Token Architecture (Confirmed from Codebase)
+
+The project uses a 3-layer pattern in `globals.css`:
+
+- **Layer 1:** `@import "@radix-ui/colors/slate.css"` etc. Defines `--slate-1` through `--slate-12`. Dark variants loaded via separate dark CSS imports that automatically update variables when `.dark` is applied to `<html>`.
+- **Layer 2:** `:root` block defines semantic tokens (`--background: var(--slate-1)`, `--primary: var(--blue-11)`, etc.) and a `.dark` block with overrides.
+- **Layer 3:** `@theme inline` block maps semantic tokens to Tailwind utilities (`--color-background: var(--background)` → `bg-background` class).
+
+### Non-Breaking Addition Strategy
+
+**Principle: additive only.** Do not modify any existing Layer 1, 2, or 3 entries. All existing components use `bg-background`, `text-foreground`, `border-border` etc. — these must keep working.
+
+**Add a new parallel section** for Matrix colors, then override the semantic tokens scoped to a `.matrix-theme` class applied to the portfolio layout div.
+
+```css
+/* globals.css additions — append after existing content */
+
+/* ============================================================
+   Matrix color raw scale
+   No Radix dependency — defined directly as hex values
+   Verified contrast: #00FF41 on #000d03 = ~15:1 (passes WCAG AAA)
+   ============================================================ */
+:root {
+  --matrix-1:  #000d03;   /* near-black green — page background */
+  --matrix-2:  #001a07;   /* deep green — surface/card */
+  --matrix-3:  #00290d;   /* panel background */
+  --matrix-4:  #003b13;   /* hover state */
+  --matrix-5:  #005218;   /* border / separator */
+  --matrix-6:  #006e20;   /* muted / disabled */
+  --matrix-7:  #009429;   /* secondary text */
+  --matrix-8:  #00bb33;   /* placeholder */
+  --matrix-9:  #00cc38;   /* UI elements (3:1+ on --matrix-1) */
+  --matrix-10: #00e040;   /* large text / icons */
+  --matrix-11: #00FF41;   /* THE Matrix green — accent/headings ONLY */
+  --matrix-12: #80ff90;   /* near-white green — body text on dark */
+
+  /* Semantic aliases */
+  --matrix-bg:          var(--matrix-1);
+  --matrix-surface:     var(--matrix-2);
+  --matrix-border:      var(--matrix-5);
+  --matrix-text:        var(--matrix-12);
+  --matrix-text-muted:  var(--matrix-9);
+  --matrix-accent:      var(--matrix-11);
+  --matrix-glow:        rgba(0, 255, 65, 0.12);
+}
+
+/* Expose Matrix tokens as Tailwind utilities via @theme inline */
+@theme inline {
+  --color-matrix-1:           var(--matrix-1);
+  --color-matrix-2:           var(--matrix-2);
+  --color-matrix-3:           var(--matrix-3);
+  --color-matrix-4:           var(--matrix-4);
+  --color-matrix-5:           var(--matrix-5);
+  --color-matrix-6:           var(--matrix-6);
+  --color-matrix-7:           var(--matrix-7);
+  --color-matrix-8:           var(--matrix-8);
+  --color-matrix-9:           var(--matrix-9);
+  --color-matrix-10:          var(--matrix-10);
+  --color-matrix-11:          var(--matrix-11);
+  --color-matrix-12:          var(--matrix-12);
+  --color-matrix-bg:          var(--matrix-bg);
+  --color-matrix-surface:     var(--matrix-surface);
+  --color-matrix-border:      var(--matrix-border);
+  --color-matrix-text:        var(--matrix-text);
+  --color-matrix-text-muted:  var(--matrix-text-muted);
+  --color-matrix-accent:      var(--matrix-accent);
+  --color-matrix-glow:        var(--matrix-glow);
+}
+
+/* Portfolio-specific semantic token overrides
+   Scoped to .matrix-theme — applied ONLY on (portfolio)/layout.tsx
+   Does NOT affect TeamFlow dashboard, auth pages, or any other route group */
+.matrix-theme {
+  --background:         var(--matrix-bg);
+  --foreground:         var(--matrix-text);
+  --card:               var(--matrix-surface);
+  --card-foreground:    var(--matrix-text);
+  --popover:            var(--matrix-surface);
+  --popover-foreground: var(--matrix-text);
+  --primary:            var(--matrix-11);        /* #00FF41 */
+  --primary-foreground: var(--matrix-1);         /* dark text on bright green */
+  --secondary:          var(--matrix-3);
+  --secondary-foreground: var(--matrix-10);
+  --muted:              var(--matrix-3);
+  --muted-foreground:   var(--matrix-text-muted);
+  --accent:             var(--matrix-4);
+  --accent-foreground:  var(--matrix-10);
+  --border:             var(--matrix-border);
+  --input:              var(--matrix-border);
+  --ring:               var(--matrix-9);
+}
+
+/* Matrix dark mode — even darker terminal feel
+   When both .dark and .matrix-theme are active */
+.dark.matrix-theme,
+.dark .matrix-theme {
+  /* Dark mode with Matrix is the default experience.
+     The :root Matrix values above already assume dark.
+     This block handles edge cases if light mode is somehow toggled
+     on the portfolio. Keep Matrix bg even in "light" mode for brand
+     consistency — the portfolio is dark-first by design. */
+  --background: var(--matrix-1);
+  --foreground: var(--matrix-12);
+}
+```
+
+### WCAG Accessibility for Matrix Colors
+
+`#00FF41` (Matrix accent) on `#000d03` (Matrix background):
+- WCAG relative luminance of `#00FF41` = 0.6028 (green channel dominates)
+- WCAG relative luminance of `#000d03` ≈ 0.00007
+- Contrast ratio ≈ (0.6028 + 0.05) / (0.00007 + 0.05) ≈ 13.1:1 — passes WCAG AAA (7:1 threshold)
+
+**Confidence: MEDIUM** — calculated manually; verify with WebAIM Contrast Checker before shipping. The project has `@axe-core/playwright` in devDependencies and a `categories:accessibility: warn at 1.0` Lighthouse gate that will surface any failures.
+
+**Color blindness note:** `#00FF41` is near-pure saturated green. Deuteranopia/protanopia (~8% of men) reduces discrimination of green from yellow/amber. Never use `--matrix-accent` as the sole indicator of meaning — always pair with text, icons, or shape. The existing Radix Colors system handled this via their perceptually-uniform scale; the Matrix palette does not — require manual review for interactive elements.
+
+---
+
+## Question 5: Suggested Build Order
+
+Build order is driven by:
+1. **Dependency order:** Token system must exist before components use it
+2. **Regression risk:** Never break Lighthouse gates; build in additive layers
+3. **Independent verifiability:** Each phase is testable in isolation
+
+### Phase A: Token Foundation (Zero Visual Change)
+
+**What:** Add Matrix color tokens to `globals.css` and `.matrix-theme` class. No components modified yet.
+**Why first:** All subsequent phases depend on having the tokens available. Zero regression risk — purely additive CSS that is not referenced by anything yet.
+**Deliverable:** `bg-matrix-bg`, `text-matrix-accent`, `border-matrix-border` Tailwind utilities available.
+**Test:** All existing visual regression snapshots pass unchanged (Matrix tokens unused).
 
 ```
-fernandomillan/                              # Root (existing)
-├── apps/
-│   ├── web/                                # Existing — no changes
-│   ├── api/                                # Existing — no changes
-│   ├── devcollab-web/                      # + NEW Next.js 15 app
-│   │   ├── app/
-│   │   │   ├── (auth)/
-│   │   │   │   ├── login/page.tsx
-│   │   │   │   └── signup/page.tsx
-│   │   │   ├── (dashboard)/
-│   │   │   │   ├── layout.tsx
-│   │   │   │   ├── workspaces/
-│   │   │   │   │   ├── page.tsx
-│   │   │   │   │   └── [slug]/
-│   │   │   │   │       ├── page.tsx
-│   │   │   │   │       ├── snippets/
-│   │   │   │   │       ├── posts/
-│   │   │   │   │       └── files/
-│   │   │   │   ├── notifications/page.tsx
-│   │   │   │   └── search/page.tsx
-│   │   │   ├── layout.tsx
-│   │   │   └── globals.css
-│   │   ├── components/
-│   │   │   ├── ui/                         # Shadcn components (own copy)
-│   │   │   ├── workspace/
-│   │   │   ├── content/
-│   │   │   ├── notifications/
-│   │   │   └── search/
-│   │   ├── lib/
-│   │   │   ├── auth.ts                     # Custom JWT client-side helpers
-│   │   │   ├── api-client.ts               # Typed fetch wrapper
-│   │   │   └── utils.ts
-│   │   ├── hooks/
-│   │   ├── package.json                    # name: "devcollab-web"
-│   │   ├── next.config.ts
-│   │   ├── tsconfig.json
-│   │   └── Dockerfile
-│   └── devcollab-api/                      # + NEW NestJS 11 app
-│       ├── src/
-│       │   ├── main.ts                     # Port 3003
-│       │   ├── app.module.ts
-│       │   ├── core/
-│       │   │   ├── config/
-│       │   │   │   └── env.validation.ts   # DEVCOLLAB_ prefixed vars
-│       │   │   ├── database/
-│       │   │   │   ├── prisma.service.ts   # Uses @repo/devcollab-database
-│       │   │   │   └── database.module.ts
-│       │   │   ├── auth/                   # JWT strategy, guards
-│       │   │   ├── rbac/                   # CASL ability factory
-│       │   │   └── storage/               # MinIO/S3 service
-│       │   └── modules/
-│       │       ├── auth/                   # Signup, login, refresh
-│       │       ├── workspace/              # Workspace CRUD, membership
-│       │       ├── content/                # Snippets + Posts
-│       │       ├── files/                  # File upload/download
-│       │       ├── threads/                # Threaded discussions
-│       │       ├── search/                 # tsvector full-text search
-│       │       ├── notifications/          # Mention notifications
-│       │       ├── activity/               # Activity feed
-│       │       └── events/                 # WebSocket gateway
-│       ├── package.json                    # name: "devcollab-api"
-│       ├── tsconfig.json
-│       ├── tsconfig.build.json
-│       ├── nest-cli.json
-│       └── Dockerfile
-├── packages/
-│   ├── shared/                             # Existing — extend with DevCollab exports
-│   │   └── src/
-│   │       ├── validators/
-│   │       │   └── devcollab/              # + New DevCollab Zod schemas
-│   │       └── types/
-│   │           └── devcollab/              # + New DevCollab TypeScript types
-│   ├── database/                           # Existing TeamFlow — no changes
-│   ├── devcollab-database/                 # + NEW package
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma              # DevCollab models
-│   │   │   └── seed.ts
-│   │   ├── src/
-│   │   │   ├── client.ts
-│   │   │   └── index.ts
-│   │   └── package.json
-│   └── config/                            # Existing tsconfigs — reused as-is
-├── docker-compose.yml                      # MODIFY: add devcollab services
-├── docker-compose.dev.yml                  # MODIFY: add devcollab to dev container
-├── turbo.json                              # MODIFY: add test task
-└── .github/workflows/deploy.yml           # MODIFY: add devcollab build/push
+Files touched: apps/web/app/globals.css
+Risk: None
+Gate: Existing snapshots unaffected
 ```
+
+### Phase B: Canvas Matrix Rain (Isolated)
+
+**What:** Build `MatrixRainCanvas` client component with `dynamic(ssr:false)`. Add to a `relative`-positioned container on the home page hero only (not all pages yet).
+**Why second:** Fully standalone — no Framer Motion dependency. Test canvas performance before adding more animation layers.
+**Critical gate:** Run Lighthouse CI after this phase. Confirm performance score remains 90+. If score drops, reduce frame rate cap or animation opacity before continuing.
+**Visual regression:** Canvas renders random characters — exclude canvas from E2E screenshot comparison. Add env variable check:
+
+```typescript
+// In MatrixRainCanvas useEffect:
+if (process.env.NEXT_PUBLIC_DISABLE_MATRIX_RAIN === 'true') return;
+```
+
+Set `NEXT_PUBLIC_DISABLE_MATRIX_RAIN=true` in `.env.test` so Playwright snapshots are stable.
+
+```
+Files touched:
+  components/portfolio/matrix-rain-canvas.tsx (new)
+  components/portfolio/animated-hero-section.tsx (new — canvas + position wrapper only)
+  app/(portfolio)/page.tsx (swap HeroSection for AnimatedHeroSection wrapper)
+Risk: Moderate — canvas performance. Lighthouse gates will surface issues.
+Gate: Lighthouse performance 90+ on /
+```
+
+### Phase C: Motion Provider + Entrance Animations
+
+**What:** Add `MotionProvider` (LazyMotion + MotionConfig) to `(portfolio)/layout.tsx`. Add entrance animations to `AnimatedHeroSection` (hero text fade-in). Add scroll-triggered entrance animations to project cards.
+**Why third:** Requires stable canvas baseline from Phase B. `MotionProvider` must be in place before any `m.*` components mount.
+**Hydration check:** After first client-side load, check browser console for hydration warnings. Zero hydration errors is the pass gate.
+
+```
+Files touched:
+  components/providers/motion-provider.tsx (new)
+  lib/motion-features.ts (new)
+  app/(portfolio)/layout.tsx (add MotionProvider)
+  components/portfolio/animated-hero-section.tsx (add m.div entrance)
+  components/portfolio/project-card.tsx (add m.div with scroll trigger)
+Risk: Moderate — hydration errors possible if Framer Motion crosses client/server boundary
+Gate: Zero console hydration errors; Lighthouse 90+
+```
+
+### Phase D: Matrix Dark Theme Applied to Portfolio Routes
+
+**What:** Apply `matrix-theme` class to the wrapping `<div>` in `(portfolio)/layout.tsx`. All portfolio pages will now use Matrix-green token values. Update `PortfolioNav` with Matrix terminal styling (monospace font in nav links, green glow on active link).
+**Why fourth:** Depends on token foundation (Phase A) and animation stability (B, C). Making the visual overhaul after animations are confirmed stable is lower regression risk than doing both simultaneously.
+**Visual regression:** All portfolio route snapshots will fail intentionally — the visual redesign changes the appearance. Update baseline snapshots after confirming the new appearance is correct.
+
+```
+Files touched:
+  app/(portfolio)/layout.tsx (add matrix-theme to wrapper div)
+  components/portfolio/nav.tsx (Matrix terminal styling)
+  app/globals.css (already done in Phase A; no new changes)
+Risk: High for visual regression — expected baseline updates
+Gate: Update all portfolio snapshots in e2e/portfolio/visual-regression.spec.ts-snapshots/
+```
+
+### Phase E: Typography and Micro-Animations
+
+**What:** Add `GlitchText` client component for heading glitch on hover. Add Matrix-green glow `box-shadow` to primary buttons. CSS-only hover transitions on tech stack cards.
+**Why last:** Cosmetic polish. Each piece is independent — any can be deferred without blocking others.
+
+```
+Files touched:
+  components/portfolio/glitch-text.tsx (new)
+  components/portfolio/hero-section.tsx (use GlitchText on h1)
+  components/ui/button.tsx (add Matrix glow variant or override)
+  components/portfolio/tech-stack.tsx (CSS hover classes)
+Risk: Low — CSS only; GlitchText is simple @keyframes
+Gate: No new Lighthouse regressions
+```
+
+---
+
+## Component Boundaries Reference
+
+### New Components to Create
+
+| File | Directive | Why Client |
+|------|-----------|------------|
+| `components/portfolio/matrix-rain-canvas.tsx` | `"use client"` + `dynamic(ssr:false)` | Canvas API, `requestAnimationFrame`, `window.matchMedia` — all browser-only |
+| `components/portfolio/animated-hero-section.tsx` | `"use client"` | Contains `m.div` (Framer Motion) — requires DOM; wraps canvas dynamic import |
+| `components/portfolio/animated-project-card.tsx` | `"use client"` | `m.div` for hover/scroll entrance animations |
+| `components/portfolio/glitch-text.tsx` | `"use client"` | Uses `useReducedMotion` hook from Framer Motion |
+| `components/providers/motion-provider.tsx` | `"use client"` | `LazyMotion`, `MotionConfig` — React context providers |
+| `lib/motion-features.ts` | Module (no directive) | Pure async feature loader for `LazyMotion` — no DOM access |
+
+### Modified Components (Existing)
+
+| File | Type of Change | Risk |
+|------|---------------|------|
+| `app/(portfolio)/layout.tsx` | Add `MotionProvider` wrapper; add `matrix-theme` class to div | LOW — additive |
+| `app/(portfolio)/page.tsx` | Swap `<HeroSection />` for `<AnimatedHeroSection><HeroSection /></AnimatedHeroSection>` | LOW |
+| `components/portfolio/hero-section.tsx` | Add `relative` positioning to outer section for canvas | LOW |
+| `components/portfolio/nav.tsx` | CSS class additions for Matrix glow styling — no logic change | LOW |
+| `app/globals.css` | Append Matrix token block; `.matrix-theme` block | LOW — additive CSS only |
+| `apps/web/package.json` | Add `framer-motion` dependency | LOW |
+
+### Components That Must Stay RSC
+
+| File | Reason |
+|------|--------|
+| `app/(portfolio)/page.tsx` | Must stay RSC — passes server-rendered content as children to client wrappers |
+| `app/(portfolio)/about/page.tsx` | Pure content; no animation logic at page level |
+| `app/(portfolio)/projects/page.tsx` | Lists projects; animated cards handle their own client boundary |
+| `components/portfolio/hero-section.tsx` | Content only; `AnimatedHeroSection` is the animation wrapper |
+| `components/portfolio/footer.tsx` | No interaction; stays RSC |
+| `components/portfolio/tech-stack.tsx` | Static data; CSS hover is RSC-safe |
+| `components/portfolio/case-study-section.tsx` | Static wrapper; no animation needed |
 
 ---
 
 ## Architectural Patterns
 
-### Pattern 1: Isolated NestJS Module Structure
+### Pattern 1: RSC Shell + Client Animation Leaf
 
-**What:** Each DevCollab feature is a NestJS module with its own controller, service, and DTOs. Global guards (`JwtAuthGuard`, `RbacGuard`) applied at `AppModule` level — identical pattern to `apps/api`.
+**What:** RSC page renders content. A thin client wrapper applies animation. Content stays server-rendered.
+**When to use:** Any existing RSC component that needs entrance animations.
+**Trade-offs:** One more file per animated section. Avoids converting RSC pages to client which would re-render all children client-side and degrade LCP.
 
-**When to use:** Every DevCollab feature module.
-
-**Trade-offs:**
-- Consistent with existing TeamFlow API — any developer reading both APIs can transfer knowledge immediately
-- Global guards mean auth is never accidentally bypassed on new routes
-
-**Example:**
 ```typescript
-// apps/devcollab-api/src/app.module.ts
-@Module({
-  imports: [
-    ConfigModule,       // validates DEVCOLLAB_ env vars
-    DatabaseModule,     // provides DevCollabPrismaService
-    RbacModule,         // CASL ability factory for workspace roles
-    AuthModule,         // DevCollab-specific JWT (NOT NextAuth)
-    WorkspaceModule,
-    ContentModule,
-    FilesModule,
-    ThreadsModule,
-    SearchModule,
-    NotificationsModule,
-    ActivityModule,
-    EventsModule,       // WebSocket gateway
-  ],
-  providers: [
-    { provide: APP_GUARD, useClass: JwtAuthGuard },   // global JWT
-    { provide: APP_GUARD, useClass: RbacGuard },      // global RBAC
-  ],
-})
-export class AppModule {}
+// Pattern: RSC page wraps RSC content in client animation shell
+<AnimatedHeroSection>  {/* CLIENT — animation wrapper */}
+  <HeroSection />      {/* RSC — server-rendered content */}
+</AnimatedHeroSection>
 ```
 
-### Pattern 2: Turborepo Pipeline Extension
+### Pattern 2: Dynamic Import for Browser-Only Components
 
-**What:** Add `test` as a cacheable pipeline task. Add `devcollab-web` and `devcollab-api` as workspace members automatically (they are discovered via `apps/*` glob).
+**What:** `next/dynamic` with `ssr: false` for canvas and other browser-only components.
+**When to use:** Canvas, WebGL, `window.*`, `document.*`, third-party browser-only libraries.
+**Trade-offs:** Component is absent from SSR HTML. Use `loading: () => null` to prevent layout shift on hydration. Never use `ssr: false` for content that matters for SEO or LCP.
 
-**When to use:** Monorepo task execution.
-
-**Trade-offs:**
-- Turbo's `--filter` flag scopes builds to specific apps — CI can build only changed apps
-- `outputs` for NestJS dist + Next.js `.next` are already covered by `dist/**` and `.next/**`
-
-**Updated turbo.json:**
-```json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [".env"],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    }
-  }
-}
-```
-
-No package.json `name` fields need changing — Turborepo discovers all `apps/*` and `packages/*` automatically via workspace glob.
-
-### Pattern 3: Prisma Service Encapsulation (Per App)
-
-**What:** Each NestJS app owns its own `PrismaService` that wraps the correct client. `apps/api` uses `@repo/database` (TeamFlow client). `apps/devcollab-api` uses `@repo/devcollab-database` (DevCollab client).
-
-**When to use:** All database access in NestJS apps.
-
-**Trade-offs:**
-- Prevents accidental cross-database queries (compiler will catch import errors)
-- Mirrors the established pattern in `apps/api/src/core/database/prisma.service.ts`
-
-**Example:**
 ```typescript
-// apps/devcollab-api/src/core/database/prisma.service.ts
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { prisma } from '@repo/devcollab-database';
-
-@Injectable()
-export class DevCollabPrismaService implements OnModuleInit, OnModuleDestroy {
-  private client = prisma;
-
-  async onModuleInit() { await this.client.$connect(); }
-  async onModuleDestroy() { await this.client.$disconnect(); }
-
-  get workspace() { return this.client.workspace; }
-  get member() { return this.client.member; }
-  get snippet() { return this.client.snippet; }
-  get post() { return this.client.post; }
-  get file() { return this.client.file; }
-  get thread() { return this.client.thread; }
-  get comment() { return this.client.comment; }
-  get notification() { return this.client.notification; }
-  get activityEvent() { return this.client.activityEvent; }
-  $queryRaw = this.client.$queryRaw.bind(this.client);
-  $executeRaw = this.client.$executeRaw.bind(this.client);
-  $transaction = this.client.$transaction.bind(this.client);
-}
+const MatrixRainCanvasLazy = dynamic(
+  () => import('./matrix-rain-canvas').then(m => m.MatrixRainCanvas),
+  { ssr: false, loading: () => null }
+);
 ```
 
-### Pattern 4: S3-Compatible File Storage via AWS SDK v3
+### Pattern 3: Scoped Theme Override via CSS Class
 
-**What:** Use `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner` with `forcePathStyle: true`. In dev, endpoint points to MinIO container. In production, endpoint points to Cloudflare R2 or AWS S3 — same code, different env vars.
+**What:** A `.matrix-theme` class on the portfolio layout wrapper overrides Layer 2 semantic tokens (CSS variable values) for the portfolio route group only.
+**When to use:** When the visual redesign must not affect other app routes (TeamFlow dashboard, auth pages).
+**Trade-offs:** More CSS specificity to manage. Must document clearly. The `.dark` Radix Colors override still works correctly because both `.dark` and `.matrix-theme` can be active simultaneously.
 
-**When to use:** All file upload and retrieval operations in `FilesModule`.
+```css
+.matrix-theme { /* --background: --matrix-bg; --primary: --matrix-11; etc. */ }
+/* Both active: class="dark matrix-theme" on the layout div — valid */
+```
 
-**Trade-offs:**
-- Single code path for dev and prod (no `if (isDev) use MinIO else use S3`)
-- Presigned URLs mean devcollab-web uploads directly to storage, bypassing devcollab-api bandwidth
-- `@nestjs-s3` wrapper exists but is a thin wrapper — using AWS SDK directly is more reliable and maintainable
+### Pattern 4: Reduced Motion as Animation Gate
 
-**Example:**
+**What:** `MotionConfig reducedMotion="user"` disables Framer Motion transforms globally for the portfolio. Canvas uses `window.matchMedia('(prefers-reduced-motion: reduce)')` for the same check.
+**When to use:** All animations — non-negotiable for Lighthouse accessibility gate.
+**Trade-offs:** None — required for WCAG 2.1 success criterion 2.3.3.
+
 ```typescript
-// apps/devcollab-api/src/core/storage/storage.service.ts
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+// Framer Motion: handled globally in MotionProvider
+<MotionConfig reducedMotion="user">...</MotionConfig>
 
-@Injectable()
-export class StorageService {
-  private s3: S3Client;
-
-  constructor(private config: ConfigService) {
-    this.s3 = new S3Client({
-      region: config.get('STORAGE_REGION'),         // 'us-east-1' for MinIO
-      endpoint: config.get('STORAGE_ENDPOINT'),      // http://devcollab-minio:9000 in dev
-      forcePathStyle: true,                          // Required for MinIO
-      credentials: {
-        accessKeyId: config.get('STORAGE_ACCESS_KEY'),
-        secretAccessKey: config.get('STORAGE_SECRET_KEY'),
-      },
-    });
-  }
-
-  async getPresignedUploadUrl(key: string, contentType: string): Promise<string> {
-    const cmd = new PutObjectCommand({
-      Bucket: this.config.get('STORAGE_BUCKET'),
-      Key: key,
-      ContentType: contentType,
-    });
-    return getSignedUrl(this.s3, cmd, { expiresIn: 300 });
-  }
-}
+// Canvas: manual check in useEffect
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (prefersReduced) return; // Skip rAF loop
 ```
 
-### Pattern 5: Full-Text Search via tsvector + $queryRaw
-
-**What:** PostgreSQL `tsvector` column generated automatically via a trigger. Prisma cannot declare `tsvector` columns natively — use `Unsupported("tsvector")` in schema and manage the trigger via a custom Prisma migration SQL file.
-
-**When to use:** `SearchModule` in devcollab-api.
-
-**Trade-offs:**
-- Native Postgres FTS is faster and simpler than adding Elasticsearch for a portfolio project
-- GIN index on the tsvector column enables sub-millisecond search on thousands of records
-- `$queryRaw` is safe when parameters are passed as Prisma parameterized values (prevents SQL injection)
-- Prisma's `fullTextSearchPostgres` preview feature is less flexible than raw tsvector for multi-table search
-
-**Schema pattern:**
-```prisma
-// packages/devcollab-database/prisma/schema.prisma
-model Snippet {
-  id          String    @id @default(cuid())
-  title       String
-  code        String    @db.Text
-  description String?   @db.Text
-  searchVector Unsupported("tsvector")?
-
-  @@index([searchVector], type: Gin)  // GIN index for FTS performance
-}
-```
-
-**Migration SQL (in custom migration file):**
-```sql
--- Create trigger to auto-update tsvector
-CREATE OR REPLACE FUNCTION update_snippet_search_vector()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW."searchVector" :=
-    setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
-    setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B') ||
-    setweight(to_tsvector('english', COALESCE(NEW.code, '')), 'C');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER snippet_search_vector_update
-BEFORE INSERT OR UPDATE ON "Snippet"
-FOR EACH ROW EXECUTE FUNCTION update_snippet_search_vector();
-```
-
-**Query in SearchService:**
-```typescript
-async search(query: string, workspaceId: string) {
-  return this.prisma.$queryRaw`
-    SELECT id, title, description,
-           ts_rank("searchVector", plainto_tsquery('english', ${query})) AS rank
-    FROM "Snippet"
-    WHERE "workspaceId" = ${workspaceId}
-      AND "searchVector" @@ plainto_tsquery('english', ${query})
-    ORDER BY rank DESC
-    LIMIT 20
-  `;
-}
-```
-
----
-
-## Data Flow
-
-### Request Flow (DevCollab API)
-
-```
-Browser (devcollab-web)
-    ↓ HTTP Request + Bearer JWT
-NestJS JwtAuthGuard (validates DEVCOLLAB_JWT_SECRET)
-    ↓ sets req.user
-NestJS RbacGuard (CASL — checks workspace role)
-    ↓ passes if authorized
-Controller (e.g., WorkspaceController)
-    ↓ validates DTO via nestjs-zod
-Service (e.g., WorkspaceService)
-    ↓ queries
-DevCollabPrismaService → PostgreSQL (devcollab-postgres:5432)
-    ↓ result
-Service → Controller → Response
-```
-
-### WebSocket Event Flow
-
-```
-User action in devcollab-web
-    ↓ Socket.IO client emit (with JWT in handshake auth)
-EventsGateway (WsAuthGuard validates token)
-    ↓ business logic
-Service emits event
-    ↓
-Redis pub/sub (via @socket.io/redis-adapter on teamflow-redis)
-    ↓ broadcast to all devcollab-api instances
-Socket.IO → all connected devcollab-web clients in the workspace room
-```
-
-### File Upload Flow (Presigned URL Pattern)
-
-```
-devcollab-web: POST /files/presign { filename, contentType }
-    ↓
-devcollab-api: FilesController → StorageService
-    ↓ generates presigned URL (valid 5 min)
-Response: { uploadUrl, fileKey }
-    ↓
-devcollab-web: PUT {uploadUrl} (direct browser → MinIO/S3, bypasses API)
-    ↓ upload complete
-devcollab-web: POST /files/confirm { fileKey, workspaceId }
-    ↓
-devcollab-api: creates File record in Postgres
-    ↓
-Response: File record with download URL
-```
-
-### DevCollab Auth Flow
-
-```
-POST /auth/signup { email, password, name }
-    ↓ bcrypt hash password
-    ↓ create User in devcollab-postgres
-    ↓ sign JWT with DEVCOLLAB_JWT_SECRET
-Response: { accessToken, refreshToken }
-
-POST /auth/login { email, password }
-    ↓ verify password via bcrypt
-    ↓ sign JWT with DEVCOLLAB_JWT_SECRET
-Response: { accessToken, refreshToken }
-
-All subsequent requests:
-Authorization: Bearer <accessToken>
-    ↓ JwtAuthGuard validates DEVCOLLAB_JWT_SECRET
-    ↓ req.user = { id, email, role }
-```
-
----
-
-## Docker Compose Integration
-
-### Port Assignments (No Conflicts)
-
-| Service | Container Port | Host Port | Notes |
-|---------|---------------|-----------|-------|
-| `teamflow-web` (apps/web) | 3000 | 3000 | Existing |
-| `teamflow-api` (apps/api) | 4000 | 3001 | Existing (Dockerfile EXPOSE 4000, host 3001) |
-| `devcollab-web` | 3002 | 3002 | New |
-| `devcollab-api` | 3003 | 3003 | New |
-| `teamflow-postgres` | 5432 | 5434 | Existing |
-| `devcollab-postgres` | 5432 | 5435 | New |
-| `teamflow-redis` | 6379 | 6380 | Existing — shared |
-| `devcollab-minio` (API) | 9000 | 9000 | New |
-| `devcollab-minio` (Console) | 9001 | 9001 | New |
-
-### docker-compose.dev.yml additions
-
-The existing dev compose uses a single `dev` service running the entire monorepo via `npm run dev` (Turborepo). This pattern should be extended — Turborepo's `dev` task runs all apps in parallel. Adding devcollab apps to the monorepo means they start automatically when `npm run dev` is run inside the `dev` container.
-
-New infrastructure services to add to `docker-compose.dev.yml`:
-
-```yaml
-# Add these services to the existing docker-compose.dev.yml
-
-devcollab-postgres:
-  image: postgres:16-alpine
-  container_name: devcollab-postgres
-  restart: unless-stopped
-  ports:
-    - '5435:5432'
-  environment:
-    POSTGRES_USER: ${DEVCOLLAB_POSTGRES_USER}
-    POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD}
-    POSTGRES_DB: ${DEVCOLLAB_POSTGRES_DB}
-  volumes:
-    - devcollab-pgdata:/var/lib/postgresql/data
-  networks:
-    - teamflow-network
-  healthcheck:
-    test: ['CMD-SHELL', 'pg_isready -U ${DEVCOLLAB_POSTGRES_USER}']
-    interval: 10s
-    timeout: 5s
-    retries: 5
-
-devcollab-minio:
-  image: minio/minio:latest
-  container_name: devcollab-minio
-  restart: unless-stopped
-  ports:
-    - '9000:9000'
-    - '9001:9001'
-  environment:
-    MINIO_ROOT_USER: ${DEVCOLLAB_MINIO_ACCESS_KEY}
-    MINIO_ROOT_PASSWORD: ${DEVCOLLAB_MINIO_SECRET_KEY}
-  volumes:
-    - devcollab-minio-data:/data
-  networks:
-    - teamflow-network
-  command: server /data --console-address ":9001"
-  healthcheck:
-    test: ['CMD', 'mc', 'ready', 'local']
-    interval: 10s
-    timeout: 5s
-    retries: 5
-```
-
-Also update the `dev` service `depends_on` to include:
-```yaml
-devcollab-postgres:
-  condition: service_healthy
-devcollab-minio:
-  condition: service_healthy
-```
-
-And add volumes:
-```yaml
-volumes:
-  devcollab-pgdata:
-  devcollab-minio-data:
-```
-
-### docker-compose.dev.yml: dev service environment additions
-
-```yaml
-environment:
-  # Existing vars preserved...
-  - DEVCOLLAB_DATABASE_URL=${DEVCOLLAB_DATABASE_URL}
-  - DEVCOLLAB_JWT_SECRET=${DEVCOLLAB_JWT_SECRET}
-  - DEVCOLLAB_JWT_EXPIRES_IN=15m
-  - DEVCOLLAB_STORAGE_ENDPOINT=http://devcollab-minio:9000
-  - DEVCOLLAB_STORAGE_BUCKET=${DEVCOLLAB_STORAGE_BUCKET}
-  - DEVCOLLAB_STORAGE_ACCESS_KEY=${DEVCOLLAB_MINIO_ACCESS_KEY}
-  - DEVCOLLAB_STORAGE_SECRET_KEY=${DEVCOLLAB_MINIO_SECRET_KEY}
-  - DEVCOLLAB_STORAGE_REGION=us-east-1
-  - NEXT_PUBLIC_DEVCOLLAB_API_URL=${NEXT_PUBLIC_DEVCOLLAB_API_URL}
-  - NEXT_PUBLIC_DEVCOLLAB_WS_URL=${NEXT_PUBLIC_DEVCOLLAB_WS_URL}
-```
-
----
-
-## Turborepo Pipeline
-
-### turbo.json modifications
-
-The existing `turbo.json` has `build`, `dev`, and `lint`. Add `test` as a cacheable task:
-
-```json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [".env"],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    }
-  }
-}
-```
-
-DevCollab apps have `package.json` scripts matching:
-- `"dev": "next dev --port 3002"` (devcollab-web)
-- `"dev": "nest start --watch"` (devcollab-api)
-- `"build": "next build"` / `"build": "nest build"`
-- `"test": "vitest run"` (both)
-- `"lint": "next lint"` / `"lint": "echo 'No lint configured yet'"`
-
-Turborepo picks them up automatically since they are in `apps/*`.
-
-### Turborepo filter usage (CI)
-
-Build only DevCollab apps:
-```bash
-turbo build --filter=devcollab-web --filter=devcollab-api
-```
-
-Build all apps:
-```bash
-turbo build
-```
-
-Prune for Docker (uses `name` from package.json):
-```bash
-turbo prune devcollab-api --docker
-turbo prune devcollab-web --docker
-```
-
----
-
-## NestJS DevCollab API Module Structure
-
-```
-src/
-├── main.ts                          # Bootstrap, port 3003
-├── app.module.ts                    # Root module
-├── core/
-│   ├── config/
-│   │   ├── config.module.ts
-│   │   └── env.validation.ts        # DEVCOLLAB_* env var schema
-│   ├── database/
-│   │   ├── database.module.ts
-│   │   └── prisma.service.ts        # Uses @repo/devcollab-database
-│   ├── auth/
-│   │   ├── auth.module.ts           # JwtModule with DEVCOLLAB_JWT_SECRET
-│   │   ├── jwt.strategy.ts          # passport-jwt strategy
-│   │   └── guards/
-│   │       ├── jwt-auth.guard.ts
-│   │       └── ws-auth.guard.ts
-│   ├── rbac/
-│   │   ├── rbac.module.ts
-│   │   ├── ability.factory.ts       # CASL — Admin/Contributor/Viewer
-│   │   ├── rbac.guard.ts
-│   │   └── decorators/
-│   │       └── check-ability.decorator.ts
-│   └── storage/
-│       ├── storage.module.ts
-│       └── storage.service.ts       # AWS SDK v3, MinIO-compatible
-├── modules/
-│   ├── auth/                        # Signup, login, refresh, profile
-│   │   ├── auth.module.ts
-│   │   ├── auth.controller.ts
-│   │   ├── auth.service.ts
-│   │   └── dto/
-│   ├── workspace/                   # Workspace CRUD + membership
-│   │   ├── workspace.module.ts
-│   │   ├── workspace.controller.ts
-│   │   ├── workspace.service.ts
-│   │   ├── members.controller.ts
-│   │   ├── members.service.ts
-│   │   └── dto/
-│   ├── content/                     # Snippets + Markdown posts (unified)
-│   │   ├── content.module.ts
-│   │   ├── snippets.controller.ts
-│   │   ├── snippets.service.ts
-│   │   ├── posts.controller.ts
-│   │   ├── posts.service.ts
-│   │   └── dto/
-│   ├── files/                       # Presigned upload, confirm, list, delete
-│   │   ├── files.module.ts
-│   │   ├── files.controller.ts
-│   │   ├── files.service.ts
-│   │   └── dto/
-│   ├── threads/                     # Threaded discussions on content
-│   │   ├── threads.module.ts
-│   │   ├── threads.controller.ts
-│   │   ├── threads.service.ts
-│   │   └── dto/
-│   ├── search/                      # Cross-content tsvector FTS
-│   │   ├── search.module.ts
-│   │   ├── search.controller.ts
-│   │   └── search.service.ts
-│   ├── notifications/               # Mention notifications (REST + WS push)
-│   │   ├── notifications.module.ts
-│   │   ├── notifications.controller.ts
-│   │   └── notifications.service.ts
-│   ├── activity/                    # Activity feed (workspace-scoped)
-│   │   ├── activity.module.ts
-│   │   ├── activity.controller.ts
-│   │   └── activity.service.ts
-│   └── events/                      # Socket.IO gateway
-│       ├── events.module.ts
-│       └── events.gateway.ts
-├── common/
-│   ├── filters/
-│   │   └── http-exception.filter.ts
-│   └── pipes/
-│       └── zod-validation.pipe.ts
-└── health/
-    ├── health.module.ts
-    └── health.controller.ts
-```
-
----
-
-## DevCollab Prisma Schema Outline
-
-```prisma
-// packages/devcollab-database/prisma/schema.prisma
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/devcollab-client"  // separate generated client
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DEVCOLLAB_DATABASE_URL")
-}
-
-enum WorkspaceRole {
-  ADMIN
-  CONTRIBUTOR
-  VIEWER
-}
-
-enum ContentType {
-  SNIPPET
-  POST
-}
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  password      String    // bcrypt
-  avatarUrl     String?
-  createdAt     DateTime  @default(now())
-
-  workspaceMemberships WorkspaceMember[]
-  snippets             Snippet[]
-  posts                Post[]
-  threadComments       ThreadComment[]
-  notifications        Notification[] @relation("NotificationRecipient")
-  sentNotifications    Notification[] @relation("NotificationSender")
-  activityEvents       ActivityEvent[]
-}
-
-model Workspace {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?  @db.Text
-  createdAt   DateTime @default(now())
-
-  members     WorkspaceMember[]
-  snippets    Snippet[]
-  posts       Post[]
-  files       File[]
-  threads     Thread[]
-  activity    ActivityEvent[]
-}
-
-model WorkspaceMember {
-  id          String        @id @default(cuid())
-  userId      String
-  workspaceId String
-  role        WorkspaceRole @default(VIEWER)
-  joinedAt    DateTime      @default(now())
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, workspaceId])
-}
-
-model Snippet {
-  id           String     @id @default(cuid())
-  title        String
-  language     String     @default("text")
-  code         String     @db.Text
-  description  String?    @db.Text
-  workspaceId  String
-  authorId     String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  searchVector Unsupported("tsvector")?
-
-  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  author    User            @relation(fields: [authorId], references: [id])
-  thread    Thread?
-
-  @@index([workspaceId])
-  @@index([searchVector], type: Gin)
-}
-
-model Post {
-  id           String     @id @default(cuid())
-  title        String
-  content      String     @db.Text  // Markdown
-  workspaceId  String
-  authorId     String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  searchVector Unsupported("tsvector")?
-
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  author    User      @relation(fields: [authorId], references: [id])
-  thread    Thread?
-
-  @@index([workspaceId])
-  @@index([searchVector], type: Gin)
-}
-
-model File {
-  id           String   @id @default(cuid())
-  name         String
-  key          String   @unique  // S3/MinIO object key
-  contentType  String
-  size         Int
-  workspaceId  String
-  uploadedById String
-  createdAt    DateTime @default(now())
-
-  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-
-  @@index([workspaceId])
-}
-
-model Thread {
-  id          String        @id @default(cuid())
-  contentType ContentType   // SNIPPET or POST
-  snippetId   String?       @unique
-  postId      String?       @unique
-  createdAt   DateTime      @default(now())
-
-  snippet  Snippet?       @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  post     Post?          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  comments ThreadComment[]
-}
-
-model ThreadComment {
-  id        String   @id @default(cuid())
-  content   String   @db.Text  // Markdown with @mention support
-  threadId  String
-  authorId  String
-  parentId  String?  // for nested replies (1 level)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  thread  Thread        @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  author  User          @relation(fields: [authorId], references: [id])
-  parent  ThreadComment? @relation("CommentReplies", fields: [parentId], references: [id])
-  replies ThreadComment[] @relation("CommentReplies")
-
-  @@index([threadId])
-  @@index([authorId])
-}
-
-model Notification {
-  id          String   @id @default(cuid())
-  type        String   // MENTION, COMMENT_REPLY, WORKSPACE_INVITE
-  recipientId String
-  senderId    String
-  entityType  String   // Snippet, Post, Comment
-  entityId    String
-  read        Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  recipient User @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  sender    User @relation("NotificationSender", fields: [senderId], references: [id])
-
-  @@index([recipientId, read])
-}
-
-model ActivityEvent {
-  id          String   @id @default(cuid())
-  workspaceId String
-  actorId     String
-  action      String   // SNIPPET_CREATED, POST_UPDATED, FILE_UPLOADED, MEMBER_JOINED, etc.
-  entityType  String
-  entityId    String
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  actor     User      @relation(fields: [actorId], references: [id])
-
-  @@index([workspaceId, createdAt])
-}
-```
-
----
-
-## Shared Packages: What DevCollab Reuses vs. What Is New
-
-### Reuse from existing packages (no modifications needed)
-
-| Package | What DevCollab reuses | How |
-|---------|----------------------|-----|
-| `@repo/config` | `packages/config/tsconfig/nextjs.json` and `nestjs.json` | devcollab-web and devcollab-api `tsconfig.json` extend these |
-| `packages/config/tsconfig/base.json` | TypeScript base configuration | Inherited via chain |
-
-### Extend existing packages (add without breaking)
-
-| Package | What to add | Location |
-|---------|------------|----------|
-| `@repo/shared` | DevCollab Zod validators (`workspace.schema.ts`, `snippet.schema.ts`, etc.) | `packages/shared/src/validators/devcollab/` |
-| `@repo/shared` | DevCollab TypeScript types (`workspace.ts`, `content.ts`, `notifications.ts`) | `packages/shared/src/types/devcollab/` |
-| `@repo/shared` | DevCollab WebSocket event types | `packages/shared/src/types/devcollab/events.ts` |
-
-Add a new export path in `packages/shared/package.json`:
-```json
-{
-  "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types/index.ts",
-    "./validators": "./src/validators/index.ts",
-    "./devcollab/types": "./src/types/devcollab/index.ts",
-    "./devcollab/validators": "./src/validators/devcollab/index.ts"
-  }
-}
-```
-
-This avoids merging DevCollab types into the main TeamFlow type exports, preventing namespace collisions.
-
-### Do NOT reuse (DevCollab must have its own)
-
-| Concern | Why not shared |
-|---------|---------------|
-| `@repo/database` (Prisma client) | Bound to TeamFlow schema — DevCollab has different models |
-| `NEXTAUTH_SECRET` / `JWT_SECRET` | DevCollab auth is completely separate |
-| `apps/api` modules | Separate domain, separate DB |
-| `apps/web` auth providers | DevCollab uses custom JWT, not NextAuth |
-
----
-
-## CI/CD: GitHub Actions Extension
-
-### Additions to `.github/workflows/deploy.yml`
-
-The existing workflow has `test`, `lighthouse`, `build-and-push`, and `deploy` jobs. Add:
-
-1. **In `test` job:** Add Prisma generate for DevCollab schema, run devcollab-api tests, start devcollab-api and devcollab-postgres in docker-compose, run devcollab E2E tests.
-
-2. **In `build-and-push` job:** Add two new steps to build and push devcollab images:
-```yaml
-- name: Build and push devcollab-web image
-  uses: docker/build-push-action@v5
-  with:
-    context: .
-    file: apps/devcollab-web/Dockerfile
-    push: true
-    tags: |
-      ghcr.io/${{ github.repository }}/devcollab-web:latest
-      ghcr.io/${{ github.repository }}/devcollab-web:${{ github.sha }}
-    cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcollab-web:latest
-    cache-to: type=inline
-
-- name: Build and push devcollab-api image
-  uses: docker/build-push-action@v5
-  with:
-    context: .
-    file: apps/devcollab-api/Dockerfile
-    push: true
-    tags: |
-      ghcr.io/${{ github.repository }}/devcollab-api:latest
-      ghcr.io/${{ github.repository }}/devcollab-api:${{ github.sha }}
-    cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcollab-api:latest
-    cache-to: type=inline
-```
-
-3. **In `deploy` job:** The existing Coolify webhook triggers deployment. In Coolify, configure two additional services pointing to the new GHCR images. No workflow changes needed beyond adding a second (optional) webhook call for devcollab services if Coolify requires separate triggers.
-
----
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| **Portfolio (< 100 users)** | Single container each, shared Redis, separate Postgres instances. Current setup is sufficient. |
-| **Growth (100–10k users)** | Add read replicas for devcollab-postgres. Redis is already a separate service so scaling is independent. MinIO can be replaced with Cloudflare R2 at this stage. |
-| **Large (10k+ users)** | Horizontal scaling of devcollab-api (NestJS is stateless with Redis adapter for WS). Consider separating search to a dedicated service (Meilisearch or Typesense). |
-
-### Scaling Priorities
-
-1. **First bottleneck:** DevCollab Postgres under read-heavy search queries — add GIN indexes (already in schema above), add connection pooling via PgBouncer.
-2. **Second bottleneck:** File storage bandwidth — switch from MinIO to Cloudflare R2 with presigned URL pattern already in place.
+### Pattern 5: `useRef` for Animation Frame IDs (Not `useState`)
+
+**What:** Store `requestAnimationFrame` IDs in `useRef`, never `useState`.
+**When to use:** Every canvas animation loop.
+**Trade-offs:** None — this is the correct pattern. `useState` causes re-renders on set; re-rendering during a `rAF` loop is incorrect behavior that causes double-loop bugs and stale closures.
 
 ---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Merging DevCollab Into TeamFlow's Prisma Schema
+### Anti-Pattern 1: Converting RSC Pages to Client for Animation
 
-**What people do:** Add DevCollab models directly to `packages/database/prisma/schema.prisma`.
+**What people do:** Add `"use client"` to `app/(portfolio)/page.tsx` to use Framer Motion there directly.
+**Why it's wrong:** Converts the entire page subtree to client-side rendering. Next.js loses RSC benefits (server data fetching, smaller bundle, no JS for static content). LCP typically degrades because the hero text is now client-rendered instead of arriving in the initial HTML.
+**Do this instead:** Keep pages RSC. Create thin client wrapper components. Pass RSC content as `children` through the client boundary.
 
-**Why it's wrong:**
-- TeamFlow and DevCollab have separate user tables — merging forces a single User model with conflicting fields
-- Single migration history means DevCollab schema changes can break TeamFlow migrations
-- Impossible to demonstrate clean "separate app" architecture for portfolio purposes
+### Anti-Pattern 2: Mixing `motion.*` with `LazyMotion`
 
-**Do this instead:** `packages/devcollab-database/` with its own schema, migrations, and Prisma client.
+**What people do:** Import and use `motion.div` inside a component that lives inside `<LazyMotion>`.
+**Why it's wrong:** `motion.div` eagerly loads all features regardless of `LazyMotion`, defeating the bundle split. The bundle grows back to ~34KB.
+**Do this instead:** Inside any component rendered inside `<LazyMotion>`, always import and use `m.div`, `m.span`, etc. from `framer-motion`.
 
-### Anti-Pattern 2: Single Prisma Output Directory for Both Clients
+### Anti-Pattern 3: Canvas Without `cancelAnimationFrame` Cleanup
 
-**What people do:** Have two Prisma schemas but both generate to `node_modules/@prisma/client`, causing one to overwrite the other.
+**What people do:** Start a `rAF` loop in `useEffect` without returning a cleanup function.
+**Why it's wrong:** When the user navigates away, React unmounts the component but the loop continues in the background. Each navigation stacks another loop. After five navigations, five loops run simultaneously — memory leak and CPU spike.
+**Do this instead:** Always store `rAF` ID in `useRef`. Return a cleanup function from `useEffect` that calls `cancelAnimationFrame(animationIdRef.current)`.
 
-**Why it's wrong:** The second `prisma generate` invocation silently overwrites the first generated client. Importing from `@prisma/client` returns only the last-generated schema's types.
+### Anti-Pattern 4: Inline Matrix Hex Values Bypassing Token System
 
-**Do this instead:** Use `output` in the `generator` block of `devcollab-database` schema to generate to a custom path (e.g., `../node_modules/.prisma/devcollab-client`), then export from `packages/devcollab-database/src/index.ts`. TeamFlow's `@repo/database` continues to use the default output.
+**What people do:** Write `className="text-[#00FF41]"` during fast iteration to get the Matrix green applied quickly.
+**Why it's wrong:** Bypasses `--matrix-accent`. If the shade changes, must update every file. The existing `DESIGN-SYSTEM.md` governance rule explicitly prohibits hardcoded color values; the Matrix redesign must follow the same rule.
+**Do this instead:** Use `text-matrix-accent` (the Tailwind utility registered via `@theme inline`).
 
-### Anti-Pattern 3: Sharing NextAuth Between Apps
+### Anti-Pattern 5: Decorative Canvas Without `aria-hidden`
 
-**What people do:** Configure devcollab-web to use the same NextAuth instance as apps/web.
+**What people do:** Leave the Matrix rain canvas accessible to screen readers.
+**Why it's wrong:** Screen readers announce `<canvas>` elements. Without `aria-hidden="true"`, the screen reader will announce "canvas" — confusing and meaningless for the user. The Lighthouse accessibility gate will surface this as a violation.
+**Do this instead:** Always set `aria-hidden="true"` on decorative canvas elements.
 
-**Why it's wrong:** NextAuth sessions are scoped to the app that created them. DevCollab has different user accounts. Sharing NextAuth creates user confusion and session collisions.
+### Anti-Pattern 6: Framer Motion `AnimatePresence` for Page Transitions in App Router
 
-**Do this instead:** DevCollab implements its own JWT auth flow in `apps/devcollab-api/src/modules/auth/`. The frontend stores the token in an httpOnly cookie (`__devcollab_token`) or secure localStorage, completely independent of NextAuth.
-
-### Anti-Pattern 4: Running Dev Container Commands for Turbo
-
-**What people do:** Run `npm run dev` directly on the host instead of inside the existing Docker dev container.
-
-**Why it's wrong:** The existing `docker-compose.dev.yml` runs the entire monorepo inside a `node:20-slim` container that already connects to the teamflow-network. Running outside Docker means the devcollab-api cannot reach `devcollab-postgres` or `teamflow-redis` by their container names.
-
-**Do this instead:** All dev commands run via `docker exec teamflow-dev npm run dev` or by adding commands to the existing dev container's startup script. New infrastructure services (devcollab-postgres, devcollab-minio) are added to `docker-compose.dev.yml` and the existing dev container's `depends_on` list.
+**What people do:** Wrap `{children}` in `(portfolio)/layout.tsx` with `AnimatePresence` for page exit transitions.
+**Why it's wrong:** App Router's client-side navigation timing conflicts with `AnimatePresence` exit phase (documented in vercel/next.js #49279). The exit animation is cut short or skipped because the route has already unmounted by the time the animation completes.
+**Do this instead:** Use per-section entrance animations (triggered by `IntersectionObserver` / Framer Motion `whileInView`) which are reliable and compose well with the Matrix aesthetic.
 
 ---
 
-## Integration Points Summary
+## Data Flow
 
-### New Components to Create
+### Animation Rendering Flow
 
-| Component | Type | Notes |
-|-----------|------|-------|
-| `apps/devcollab-web` | Next.js 15 app | Port 3002 |
-| `apps/devcollab-api` | NestJS 11 app | Port 3003 |
-| `packages/devcollab-database` | Prisma package | Separate DB, separate client |
+```
+Server
+  └── Renders HTML for HeroSection text, project cards, about content
+  └── MatrixRainCanvas is NOT in server HTML (ssr:false)
+  └── Sends initial HTML to browser
 
-### Files to Modify (Existing)
+Browser
+  └── Displays server HTML immediately (fast FCP + LCP from server-rendered text)
+  └── Hydrates: React claims the server HTML
+  └── LazyMotion features load asynchronously (~4.6KB)
+  └── MatrixRainCanvas mounts (dynamic import resolves)
+      └── canvas starts rAF loop (30fps max)
+  └── AnimatedHeroSection: m.div animates from opacity:0 → opacity:1 (0.6s)
+  └── Project cards: entrance animation fires as user scrolls
+```
 
-| File | Change |
-|------|--------|
-| `docker-compose.dev.yml` | Add devcollab-postgres, devcollab-minio; extend dev service env vars and depends_on |
-| `docker-compose.yml` (base) | Add devcollab-postgres, devcollab-minio volumes and services |
-| `turbo.json` | Add `test` task with `dependsOn: ["^build"]` |
-| `.github/workflows/deploy.yml` | Add devcollab image build steps, prisma generate for devcollab schema |
-| `packages/shared/package.json` | Add `devcollab/types` and `devcollab/validators` export paths |
-| `packages/shared/src/` | Add `types/devcollab/` and `validators/devcollab/` subdirectories |
-| `.env.example` | Add DEVCOLLAB_* vars |
+### Theme Resolution Flow
 
-### Build Order for Phases
+```
+Browser visits / (portfolio route)
+  └── next-themes reads localStorage or system preference
+  └── Applies class="dark" (or "light") to <html>
+  └── Radix Colors dark imports activate under .dark
+  └── (portfolio)/layout.tsx wrapper has class="matrix-theme"
+  └── .matrix-theme overrides --background, --primary etc. with Matrix values
+  └── All portfolio components see Matrix-themed tokens via existing utilities:
+       bg-background → #000d03 (Matrix black-green)
+       text-primary  → #00FF41 (Matrix green)
+       border-border → #005218 (Matrix dark border)
+```
 
-1. **Monorepo scaffolding** — Create app directory structures, package.json files with correct `name` fields, tsconfig.json files extending `@repo/config`, docker-compose additions. Verify Turborepo discovers new apps via `turbo ls`.
-2. **Database layer** — Create `packages/devcollab-database` with schema.prisma, run first migration, seed. Verify Prisma generates without overwriting TeamFlow client.
-3. **DevCollab API core** — Auth module (signup/login/JWT), ConfigModule, PrismaService, health endpoint. Verify `/api/health` responds on port 3003.
-4. **DevCollab API features** — Workspace, Content (snippets/posts), Files, Threads — in dependency order.
-5. **DevCollab API search + notifications** — tsvector trigger migration, SearchModule, NotificationsModule, ActivityModule, EventsGateway.
-6. **DevCollab web** — All frontend screens consuming devcollab-api.
-7. **Portfolio integration** — Update `apps/web` to feature DevCollab (screenshots, link to live demo).
-8. **CI/CD** — Add devcollab image build steps to deploy.yml, add Coolify service configs.
+---
+
+## Integration Points
+
+### External Dependency Addition
+
+| Dependency | Action | Notes |
+|------------|--------|-------|
+| `framer-motion` | `npm install framer-motion --workspace=apps/web` | Not currently installed in apps/web. New addition. |
+
+Verify framer-motion version after install. As of research date (2026-02-18), the package is published under `motion` (new name) at motion.dev, but `framer-motion` npm name still works and resolves to the same package.
+
+### Internal Boundaries
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| RSC pages → client animation wrappers | `children` prop | RSC content server-rendered; client wrapper animates without re-rendering content |
+| `MotionProvider` → all `m.*` components | React context (`LazyMotion`) | MotionProvider must be ancestor of all `m.*` usage; placed in portfolio layout |
+| `ThemeProvider` ↔ `.matrix-theme` CSS | No coupling — CSS specificity | Both coexist: `<html class="dark">` + `<div class="matrix-theme">` is valid |
+| `MatrixRainCanvas` ↔ page layout | `position: absolute` inside `relative` container | Canvas is decorative overlay; does not participate in document flow |
+| Lighthouse CI ↔ animation performance | `lighthouserc.json` gates | Canvas must not degrade score; Playwright tests must disable canvas via env var |
+
+### Files Requiring Snapshot Updates (Phase D)
+
+When `.matrix-theme` activates, these snapshot baselines will fail intentionally and need regeneration:
+
+```
+e2e/portfolio/visual-regression.spec.ts-snapshots/
+  homepage-dark-chromium-linux.png   — WILL CHANGE
+  homepage-light-chromium-linux.png  — WILL CHANGE
+  about-dark-chromium-linux.png      — WILL CHANGE
+  about-light-chromium-linux.png     — WILL CHANGE
+  projects-dark-chromium-linux.png   — WILL CHANGE
+  projects-light-chromium-linux.png  — WILL CHANGE
+  resume-dark-chromium-linux.png     — WILL CHANGE
+  resume-light-chromium-linux.png    — WILL CHANGE
+  contact-dark-chromium-linux.png    — WILL CHANGE
+  contact-light-chromium-linux.png   — WILL CHANGE
+  teamflow-case-study-dark-chromium-linux.png   — WILL CHANGE
+  teamflow-case-study-light-chromium-linux.png  — WILL CHANGE
+```
+
+Run `playwright test --update-snapshots` after Phase D to update baselines.
+
+---
+
+## Scaling Considerations
+
+This is a portfolio site. Scaling concerns are performance budget concerns:
+
+| Concern | Threshold | Approach |
+|---------|-----------|----------|
+| Canvas CPU | 30fps cap | Already in the implementation; monitor with Chrome DevTools Performance |
+| Framer Motion bundle | 34KB full → 4.6KB with LazyMotion | Always use `LazyMotion` + `m.*` pattern; never `motion.*` inside LazyMotion |
+| CSS custom properties | No practical limit | Additive token strategy adds ~40 new properties — negligible |
+| Visual regression suite | 12 snapshots to update | Phase D snapshot update is expected and necessary; not a risk |
 
 ---
 
 ## Sources
 
-- [Prisma Multi-Schema Documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/multi-schema) — MEDIUM confidence (official docs, verified)
-- [Prisma Multiple Databases Guide](https://www.prisma.io/docs/guides/multiple-databases) — HIGH confidence (official docs)
-- [Turborepo prune reference](https://turborepo.dev/docs/reference/prune) — HIGH confidence (official docs, verified)
-- [Turborepo running tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks) — HIGH confidence (official docs)
-- [Prisma + NestJS Guide](https://www.prisma.io/docs/guides/nestjs) — HIGH confidence (official docs)
-- [Postgres tsvector with Prisma (wanago.io)](https://wanago.io/2022/11/14/api-nestjs-text-search-tsvector-sql/) — MEDIUM confidence (verified with Prisma issue tracker)
-- [Bulletproof FTS with tsvector + Prisma](https://medium.com/@chauhananubhav16/bulletproof-full-text-search-fts-in-prisma-with-postgresql-tsvector-without-migration-drift-c421f63aaab3) — MEDIUM confidence (community, verified against Prisma docs)
-- Existing codebase analysis: `apps/api`, `packages/database`, `docker-compose.dev.yml`, `turbo.json`, `.github/workflows/deploy.yml` — HIGH confidence (direct code inspection)
+**HIGH Confidence — Official Documentation:**
+- [Next.js: Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) — Boundary rules, `"use client"` propagation
+- [Next.js: Hydration Error Docs](https://nextjs.org/docs/messages/react-hydration-error) — Official hydration mismatch guidance
+- [Motion (Framer): Reduce Bundle Size](https://motion.dev/docs/react-reduce-bundle-size) — `LazyMotion` + `m.*` pattern; 4.6KB vs 34KB
+- [Motion (Framer): LazyMotion API](https://motion.dev/docs/react-lazy-motion) — Feature loading, strict mode
+- [Motion (Framer): Accessibility](https://motion.dev/docs/react-accessibility) — `reducedMotion="user"` on MotionConfig
+- [Tailwind CSS v4 Theme Variables](https://tailwindcss.com/docs/theme) — `@theme inline` directive
+- [Tailwind CSS v4 Dark Mode](https://tailwindcss.com/docs/dark-mode) — Class-based dark mode
+- [Chrome Lighthouse: Non-Composited Animations](https://developer.chrome.com/docs/lighthouse/performance/non-composited-animations) — CLS and compositing
+- [CSS Tricks: requestAnimationFrame with React Hooks](https://css-tricks.com/using-requestanimationframe-with-react-hooks/) — Correct `useRef` + `useEffect` + cleanup pattern
+
+**MEDIUM Confidence — Verified Community Sources:**
+- [Framer Motion Compatibility in Next.js: use client pattern](https://medium.com/@dolce-emmy/resolving-framer-motion-compatibility-in-next-js-14-the-use-client-workaround-1ec82e5a0c75) — Confirmed still valid in v15
+- [Optimizing GSAP in Next.js 15](https://medium.com/@thomasaugot/optimizing-gsap-animations-in-next-js-15-best-practices-for-initialization-and-cleanup-2ebaba7d0232) — Cleanup patterns; same patterns apply to rAF
+- [Next.js 15 Hydration Errors 2026](https://medium.com/@blogs-world/next-js-hydration-errors-in-2026-the-real-causes-fixes-and-prevention-checklist-4a8304d53702) — Current hydration guidance
+- [App Router + AnimatePresence GitHub Issue #49279](https://github.com/vercel/next.js/issues/49279) — Known limitation with page transitions
+- [Theming Tailwind v4: Multiple Color Schemes](https://medium.com/@sir.raminyavari/theming-in-tailwind-css-v4-support-multiple-color-schemes-and-dark-mode-ba97aead5c14) — Scoped theme class pattern
+- [GSAP vs Motion bundle comparison](https://motion.dev/docs/gsap-vs-motion) — Bundle size data; Framer Motion chosen for React-native API
+
+**Codebase Analysis (HIGH Confidence — direct inspection):**
+- `apps/web/app/globals.css` — Existing 3-layer Radix Colors + @theme inline pattern confirmed. Addition strategy derived from existing structure.
+- `apps/web/app/layout.tsx` — `suppressHydrationWarning` on `<html>` confirmed. ThemeProvider client wrapper pattern confirmed.
+- `apps/web/app/(portfolio)/layout.tsx` — RSC confirmed; safe to add MotionProvider wrapper and matrix-theme class.
+- `apps/web/components/portfolio/hero-section.tsx` — RSC confirmed (no `"use client"`); safe to use as children.
+- `apps/web/components/portfolio/nav.tsx` — Already `"use client"` (uses `usePathname`); safe to add CSS Matrix styling.
+- `apps/web/components/ui/theme-toggle.tsx` — `useState(false)` + `useEffect setMounted` pattern confirmed as the hydration-safe model for client components reading browser state.
+- `apps/web/lighthouserc.json` — `categories:performance: error at 0.9` confirmed. Affects `/`, `/about`, `/projects`, `/projects/teamflow`, `/login`.
+- `apps/web/package.json` — `framer-motion` not present; must be installed. `tailwindcss: ^4.1.18` confirmed.
 
 ---
-*Architecture research for: DevCollab Monorepo Integration (v2.0)*
-*Researched: 2026-02-17*
-*Confidence: HIGH — All integration points verified via direct codebase inspection + official documentation*
+
+*Architecture research for: Matrix-aesthetic portfolio redesign on Next.js 15 App Router*
+*Researched: 2026-02-18*
+*Scope: apps/web — Fernando Millan portfolio routes `(portfolio)/**`*
+*Existing DevCollab monorepo architecture: see archived v2.0 research (ARCHITECTURE.md prior state)*
