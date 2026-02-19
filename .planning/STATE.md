@@ -102,6 +102,10 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - **Phase 25 (FX-01):** Verify `use-scramble` React 19 peer dependency compatibility before install. Fallback: GSAP ScrambleTextPlugin (gsap already installed in Phase 22, zero additional cost)
 - **Phase 25 (FX-04):** Test spotlight effect on real mobile device (iOS Safari + Android Chrome) — DevTools mobile emulation is unreliable for `mousemove`-based effects
 
+### Roadmap Evolution
+
+- Phase 26 added: Navigation Redesign — Awwwards-style horizontal nav with Matrix personality
+
 ### Pending Todos
 
 None.
