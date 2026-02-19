@@ -6,16 +6,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 22: Token Foundation
+**Current focus:** v2.5 Matrix Portfolio Overhaul — Phase 22: Token Foundation COMPLETE — next: Phase 23 (Canvas + RAF)
 
 ## Current Position
 
-Phase: 22 — Token Foundation
-Plan: 02 of 03 complete
-Status: In progress
-Last activity: 2026-02-19 — 22-02 (Animation Libraries) executed: motion@12.34.2, gsap@3.14.2, @gsap/react@2.1.2, lenis@1.3.17 installed workspace-scoped to apps/web
+Phase: 22 — Token Foundation COMPLETE
+Plan: 03 of 03 complete
+Status: Phase complete — ready for Phase 23
+Last activity: 2026-02-18 — 22-03 (CSS Visual Effects) executed: cursor-blink FX-02 + card-glow-hover UX-01 shipped, Playwright snapshots updated (13/13 pass)
 
-Progress: [████░░░░░░░░░░░░░░░░] 18% — v2.5 Phase 22 Plan 02/03 complete
+Progress: [█████░░░░░░░░░░░░░░░] 22% — v2.5 Phase 22 complete (3/3 plans), Phase 23 next
 
 Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) | v1.0 COMPLETE
 
@@ -26,8 +26,8 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 | v1.0 requirements | 22/22 |
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
-| v2.5 requirements | 4/12 (THEME-01, THEME-02, THEME-03, THEME-04 complete) |
-| Total shipped | 83/91 |
+| v2.5 requirements | 6/12 (THEME-01, THEME-02, THEME-03, THEME-04, FX-02, UX-01 complete) |
+| Total shipped | 85/91 |
 
 ## Accumulated Context
 
@@ -39,6 +39,9 @@ Previous milestones: v2.0 COMPLETE (41/41 requirements) | v1.1 COMPLETE (16/16) 
 - **22-02:** Use motion (NOT framer-motion) — import path is motion/react in all downstream phases
 - **22-02:** Lenis installed but not initialized — activation deferred to Phase 26 (ANIM-06) with "use client" wrapper
 - **22-02:** Animation packages as runtime dependencies (not devDependencies) — used in client components at runtime
+- **22-03:** card-glow-hover class on Link wrapper (not Card) — hover area matches clickable region, no Card component coupling
+- **22-03:** No new reduced-motion CSS needed — Plan 01 block covers cursor-blink::after via animation-duration: 0.01ms
+- **22-03:** Removed hover:shadow-xl transition-shadow from inline cards and transition-shadow hover:shadow-lg from ProjectCard — card-glow-hover replaces both
 
 ### v2.5 Critical Constraints (carry into every plan)
 
@@ -69,7 +72,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 22-02-PLAN.md — Animation Libraries (motion, gsap, @gsap/react, lenis workspace-scoped to apps/web)
+Last session: 2026-02-18
+Stopped at: Completed 22-03-PLAN.md — CSS Visual Effects (FX-02 cursor-blink + UX-01 card-glow-hover + Playwright snapshots updated)
 Resume file: None
-Next action: Execute 22-03 (pure CSS effects: blinking cursor FX-02 + card hover glow UX-01) to complete Phase 22
+Next action: Begin Phase 23 (Canvas + RAF) — dot grid background + reduced-motion RAF check

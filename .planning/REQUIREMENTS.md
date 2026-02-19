@@ -23,13 +23,13 @@ Matrix-inspired visual overhaul of the portfolio website. Dark-first, Matrix gre
 ### Visual Effects
 
 - [ ] **FX-01**: Hero name text scrambles from noise characters to readable text on page load — fires exactly once, never loops
-- [ ] **FX-02**: Blinking terminal cursor (`_`) appears after the hero tagline via pure CSS `::after` animation
+- [x] **FX-02**: Blinking terminal cursor (`_`) appears after the hero tagline via pure CSS `::after` animation
 - [ ] **FX-03**: Project cards reveal an Evervault-style noise decryption effect on hover (uses installed `motion` v12, no new dependency)
 - [ ] **FX-04**: Portfolio pages show a dark dot grid background with a green spotlight that follows the mouse cursor — built as a paired unit
 
 ### Micro-Interactions
 
-- [ ] **UX-01**: Project cards display a Matrix green border glow on hover via CSS `box-shadow`
+- [x] **UX-01**: Project cards display a Matrix green border glow on hover via CSS `box-shadow`
 
 ## Future Requirements
 
@@ -71,8 +71,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | THEME-02 | Phase 22 | Complete (22-01) |
 | THEME-03 | Phase 22 | Complete |
 | THEME-04 | Phase 22 | Complete (22-01, CSS layer) |
-| FX-02 | Phase 22 | Pending |
-| UX-01 | Phase 22 | Pending |
+| FX-02 | Phase 22 | Complete |
+| UX-01 | Phase 22 | Complete |
 | ANIM-02 | Phase 23 | Pending |
 | ANIM-03 | Phase 23 | Pending |
 | ANIM-01 | Phase 24 | Pending |

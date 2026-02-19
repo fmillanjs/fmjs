@@ -57,7 +57,7 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 
 ### v2.5 Matrix Portfolio Overhaul
 
-- [ ] **Phase 22: Token Foundation** — CSS token system, animation packages, pure-CSS effects, reduced-motion foundation
+- [x] **Phase 22: Token Foundation** — CSS token system, animation packages, pure-CSS effects, reduced-motion foundation
 - [ ] **Phase 23: Canvas Matrix Rain** — Hero digital rain canvas, isolated Lighthouse validation
 - [ ] **Phase 24: Scroll Animations + Entrance** — Motion provider, scroll-reveal animations across all portfolio pages
 - [ ] **Phase 25: Personality Effects** — Text scramble, Evervault card hover, dot grid + spotlight cursor
@@ -78,8 +78,8 @@ Full archive: `.planning/milestones/v2.0-ROADMAP.md`
 
 Plans:
 - [x] 22-01-PLAN.md — CSS tokens + reduced-motion rule + dormant `.matrix-theme` class on portfolio layout (complete 2026-02-19)
-- [ ] 22-02-PLAN.md — Install motion, gsap, @gsap/react, lenis workspace-scoped to apps/web
-- [ ] 22-03-PLAN.md — FX-02 blinking cursor + UX-01 card glow + Playwright snapshot update
+- [x] 22-02-PLAN.md — Install motion, gsap, @gsap/react, lenis workspace-scoped to apps/web (complete 2026-02-19)
+- [x] 22-03-PLAN.md — FX-02 blinking cursor + UX-01 card glow + Playwright snapshot update (complete 2026-02-18)
 
 ### Phase 23: Canvas Matrix Rain
 **Goal**: The hero section has a functioning Matrix digital rain canvas that passes the Lighthouse CI performance gate on all five portfolio URLs — proving canvas does not degrade site performance before any animation library is layered on top
@@ -143,7 +143,7 @@ Plans:
 | 19. Notifications + Activity Feed | v2.0 | 4/4 | Complete | 2026-02-18 |
 | 20. Full-Text Search | v2.0 | 3/3 | Complete | 2026-02-18 |
 | 21. Seed Data + Portfolio Integration | v2.0 | 3/3 | Complete | 2026-02-18 |
-| 22. Token Foundation | 2/3 | In Progress|  | — |
+| 22. Token Foundation | v2.5 | 3/3 | Complete | 2026-02-18 |
 | 23. Canvas Matrix Rain | v2.5 | 0/? | Not started | — |
 | 24. Scroll Animations + Entrance | v2.5 | 0/? | Not started | — |
 | 25. Personality Effects | v2.5 | 0/? | Not started | — |
