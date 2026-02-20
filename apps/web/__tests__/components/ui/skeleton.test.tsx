@@ -31,11 +31,6 @@ describe('Skeleton Component', () => {
     const { container } = render(<Skeleton />);
     const skeletonElement = container.firstChild as HTMLElement;
 
-    // Should have either light or dark mode background
-    const hasBackgroundClass =
-      skeletonElement.className.includes('bg-gray-200') ||
-      skeletonElement.className.includes('dark:bg-gray-700');
-
-    expect(hasBackgroundClass).toBe(true);
+    expect(skeletonElement.className).toContain('bg-muted');
   });
 });
