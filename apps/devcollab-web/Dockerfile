@@ -35,7 +35,7 @@ RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/.next/static ./apps/devcollab-web/.next/static
-COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/public ./apps/devcollab-web/public 2>/dev/null || true
+COPY --from=builder --chown=nextjs:nextjs /app/apps/devcollab-web/public ./apps/devcollab-web/public
 USER nextjs
 EXPOSE 3002
 CMD ["node", "apps/devcollab-web/server.js"]
