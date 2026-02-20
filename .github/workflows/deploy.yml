@@ -106,7 +106,7 @@ jobs:
           JWT_SECRET: test-secret-min-32-chars-required-for-jwt
 
       - name: Run remaining E2E tests (user journey, edge cases, auth flows)
-        run: cd apps/web && npx playwright test --ignore=e2e/portfolio/accessibility.spec.ts --ignore=e2e/auth/form-accessibility.spec.ts --ignore=e2e/dashboard/component-accessibility.spec.ts --ignore=e2e/portfolio/visual-regression.spec.ts --ignore=e2e/dashboard/visual-regression.spec.ts
+        run: cd apps/web && npx playwright test e2e/auth/login.spec.ts e2e/auth/signup.spec.ts e2e/edge-cases/ e2e/portfolio/navigation.spec.ts e2e/user-journey/
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
