@@ -284,6 +284,7 @@ jobs:
         with:
           url: ${{ secrets.COOLIFY_WEBHOOK_URL }}
           method: 'POST'
+          bearerToken: ${{ secrets.COOLIFY_TOKEN }}
 
   deploy-devcollab:
     name: Deploy DevCollab to Coolify
@@ -296,4 +297,5 @@ jobs:
         with:
           url: ${{ secrets.COOLIFY_DEVCOLLAB_WEBHOOK_URL }}
           method: 'POST'
+          bearerToken: ${{ secrets.COOLIFY_TOKEN }}
 
