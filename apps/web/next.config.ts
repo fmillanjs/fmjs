@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
 const bundleAnalyzer = withBundleAnalyzer({
@@ -7,6 +8,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: ['@repo/shared', '@repo/database'],
   webpack: (config, { isServer }) => {
     // Externalize server-only modules for client-side builds
