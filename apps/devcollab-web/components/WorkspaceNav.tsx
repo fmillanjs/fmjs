@@ -40,6 +40,12 @@ export default function WorkspaceNav({ slug }: { slug: string }) {
         >
           Activity
         </a>
+        <a
+          href={`/w/${slug}/members`}
+          style={{ color: '#374151', textDecoration: 'none', fontSize: '14px' }}
+        >
+          Members
+        </a>
         {/* Search trigger — Cmd+K also opens the modal */}
         <span
           style={{
