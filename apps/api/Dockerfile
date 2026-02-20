@@ -41,6 +41,9 @@ COPY --from=pruner /app/packages/config ./packages/config
 # Copy node_modules from installer
 COPY --from=installer /app/node_modules ./node_modules
 
+# Ensure workspace binaries (nest, etc.) are on PATH for build scripts
+ENV PATH="/app/node_modules/.bin:${PATH}"
+
 # Generate Prisma client
 RUN npx prisma generate --schema=packages/database/prisma/schema.prisma
 
