@@ -286,9 +286,13 @@ jobs:
     needs: build-and-push
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Trigger Coolify deployment
+      - name: Trigger TeamFlow API deployment
         run: |
           curl --request GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
+      - name: Trigger TeamFlow Web deployment
+        run: |
+          curl --request GET "${{ secrets.COOLIFY_TEAMFLOW_WEB_WEBHOOK_URL }}" \
             --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
 
   deploy-devcollab:
@@ -297,8 +301,12 @@ jobs:
     needs: build-and-push-devcollab
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Trigger Coolify DevCollab deployment
+      - name: Trigger DevCollab API deployment
         run: |
           curl --request GET "${{ secrets.COOLIFY_DEVCOLLAB_WEBHOOK_URL }}" \
+            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
+      - name: Trigger DevCollab Web deployment
+        run: |
+          curl --request GET "${{ secrets.COOLIFY_DEVCOLLAB_WEB_WEBHOOK_URL }}" \
             --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
 
