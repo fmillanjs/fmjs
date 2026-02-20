@@ -46,7 +46,7 @@ test.describe('Authentication Boundaries', () => {
     await page.getByRole('button', { name: /log in/i }).click();
 
     // Wait for redirect
-    await page.waitForURL('/');
+    await page.waitForURL(/\/teams/);
 
     // Navigate to protected route
     await page.goto('/teams');
@@ -66,7 +66,7 @@ test.describe('Authentication Boundaries', () => {
     await page.getByLabel('Email').fill('demo1@teamflow.dev');
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: /log in/i }).click();
-    await page.waitForURL('/');
+    await page.waitForURL(/\/teams/);
 
     // Navigate to protected route
     await page.goto('/teams');
@@ -90,7 +90,7 @@ test.describe('Authentication Boundaries', () => {
     await page.getByLabel('Email').fill('demo1@teamflow.dev');
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: /log in/i }).click();
-    await page.waitForURL('/');
+    await page.waitForURL(/\/teams/);
 
     // Navigate to dashboard
     await page.goto('/teams');
@@ -173,7 +173,7 @@ test.describe('Authentication Boundaries', () => {
     await page.getByLabel('Email').fill('demo1@teamflow.dev');
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: /log in/i }).click();
-    await page.waitForURL('/');
+    await page.waitForURL(/\/teams/);
 
     // Navigate to protected route
     await page.goto('/teams');

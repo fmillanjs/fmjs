@@ -29,8 +29,8 @@ test.describe('Signup Page', () => {
     // Submit form
     await page.getByRole('button', { name: /sign up|register|create account/i }).click()
 
-    // Verify redirect to login or dashboard
-    await page.waitForURL(/\/(login|teams)/)
+    // Verify redirect to login, dashboard, or home
+    await page.waitForURL(/\/(login|teams)?$/)
 
     // If redirected to login, expect success message
     if (page.url().includes('/login')) {

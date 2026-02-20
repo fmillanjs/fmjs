@@ -8,10 +8,10 @@ test.describe('Login Page', () => {
     await page.goto('/login')
 
     // Expect heading and form to be visible
-    await expect(page.getByRole('heading', { name: /sign in|login/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /sign in|log in|login/i })).toBeVisible()
     await expect(page.getByLabel('Email')).toBeVisible()
     await expect(page.getByLabel('Password')).toBeVisible()
-    await expect(page.getByRole('button', { name: /sign in|login/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /sign in|log in|login/i })).toBeVisible()
   })
 
   test('successful login redirects to dashboard', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('Login Page', () => {
     await page.getByLabel('Password').fill('Password123')
 
     // Submit form
-    await page.getByRole('button', { name: /sign in|login/i }).click()
+    await page.getByRole('button', { name: /sign in|log in|login/i }).click()
 
     // Verify redirect to dashboard
     await page.waitForURL(/\/teams/)
@@ -39,7 +39,7 @@ test.describe('Login Page', () => {
     await page.getByLabel('Password').fill('WrongPassword')
 
     // Submit form
-    await page.getByRole('button', { name: /sign in|login/i }).click()
+    await page.getByRole('button', { name: /sign in|log in|login/i }).click()
 
     // Expect error message to be visible
     await expect(page.getByText(/invalid|incorrect|failed|wrong/i)).toBeVisible()
@@ -49,7 +49,7 @@ test.describe('Login Page', () => {
     await page.goto('/login')
 
     // Submit form without filling
-    await page.getByRole('button', { name: /sign in|login/i }).click()
+    await page.getByRole('button', { name: /sign in|log in|login/i }).click()
 
     // Expect field errors to be visible
     const emailError = page.getByText(/email.*required|required.*email/i)
