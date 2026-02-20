@@ -29,7 +29,7 @@ RUN npm ci
 # Stage 3: Builder - build the application
 FROM node:20-alpine AS builder
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy full source from pruner
@@ -54,7 +54,7 @@ RUN npx turbo build --filter=api
 # Stage 4: Runner - production runtime
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Set to production

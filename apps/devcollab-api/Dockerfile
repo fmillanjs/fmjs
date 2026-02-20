@@ -13,7 +13,7 @@ COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 RUN npm ci
 
 FROM node:20-alpine AS builder
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY --from=pruner /app/out/full/ .
 # packages/config has no package.json so turbo prune omits it — copy manually
@@ -29,7 +29,7 @@ RUN npx prisma generate --schema=packages/devcollab-database/prisma/schema.prism
 RUN npx turbo build --filter=devcollab-api
 
 FROM node:20-alpine AS runner
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat openssl curl
 WORKDIR /app
 ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nestjs && \
