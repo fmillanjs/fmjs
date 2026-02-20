@@ -66,10 +66,13 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
 
+      - name: Build API
+        run: cd apps/api && npm run build
+
       - name: Start API server
         run: |
           cd apps/api
-          npm run start:prod &
+          npm run start &
           echo $! > api.pid
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
