@@ -24,11 +24,11 @@ Requirements for the v3.0 Deployment & Tech Debt Closure milestone. Each maps to
 ### DevCollab UI
 
 - [ ] **UI-01**: Unauthenticated users visiting `/dashboard` are redirected server-side to `/login`
-- [ ] **UI-02**: Workspace members page at `/w/[slug]/members` shows a list of all workspace members with their roles
-- [ ] **UI-03**: Admin can change a member's role (promote/demote) via an inline role selector on the members page
-- [ ] **UI-04**: Admin can remove a member from the workspace via a Remove button on the members page
-- [ ] **UI-05**: Admin can generate an invite link via a button on the members page and see the full shareable URL
-- [ ] **UI-06**: Workspace navigation includes a Members link so the members page is discoverable without URL-guessing
+- [x] **UI-02**: Workspace members page at `/w/[slug]/members` shows a list of all workspace members with their roles
+- [x] **UI-03**: Admin can change a member's role (promote/demote) via an inline role selector on the members page
+- [x] **UI-04**: Admin can remove a member from the workspace via a Remove button on the members page
+- [x] **UI-05**: Admin can generate an invite link via a button on the members page and see the full shareable URL
+- [x] **UI-06**: Workspace navigation includes a Members link so the members page is discoverable without URL-guessing
 
 ## Future Requirements
 
@@ -73,11 +73,11 @@ Which phases cover which requirements. Confirmed during roadmap creation.
 | FIX-01 | Phase 27 | Complete |
 | FIX-02 | Phase 28 | Pending |
 | UI-01 | Phase 28 | Pending |
-| UI-02 | Phase 28 | Pending |
-| UI-03 | Phase 28 | Pending |
-| UI-04 | Phase 28 | Pending |
-| UI-05 | Phase 28 | Pending |
-| UI-06 | Phase 28 | Pending |
+| UI-02 | Phase 28 | Complete |
+| UI-03 | Phase 28 | Complete |
+| UI-04 | Phase 28 | Complete |
+| UI-05 | Phase 28 | Complete |
+| UI-06 | Phase 28 | Complete |
 
 **Coverage:**
 - v3.0 requirements: 14 total

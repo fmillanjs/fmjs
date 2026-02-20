@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.0 — Phase 27: Infrastructure Foundation + Prisma Fix
+**Current focus:** v3.0 — Phase 28: DevCollab UI Debt Closure
 
 ## Current Position
 
-Phase: 27 of 28 (Infrastructure Foundation + Prisma Fix)
-Plan: 3 of 3 complete (CI/CD fully green, all 4 services healthy in Coolify)
-Status: Phase complete — fernandomillan.me live
-Last activity: 2026-02-20 — Phase 27 complete: full CI/CD pipeline green, all 4 GHCR images building and deploying, fernandomillan.me accessible
+Phase: 28 of 28 (DevCollab UI Debt Closure)
+Plan: 2 of 4 complete (Members nav link, members page, MembersTable with role/remove/invite)
+Status: In progress — Plan 02 complete
+Last activity: 2026-02-20 — Phase 28 Plan 02 complete: members management UI with role change, removal, and invite link modal
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13)
 
-Progress: [████████████████░░] 90% (26/28 phases complete, Phase 27 in progress)
+Progress: [█████████████████░] 93% (27/28 phases complete, Phase 28 in progress)
 
 ## Performance Metrics
 
@@ -26,8 +26,8 @@ Progress: [████████████████░░] 90% (26/28 ph
 | v1.1 requirements | 16/16 |
 | v2.0 requirements | 41/41 |
 | v2.5 requirements | 13/13 |
-| v3.0 requirements | 3/14 |
-| Total shipped | 95/92 |
+| v3.0 requirements | 8/14 |
+| Total shipped | 100/92 |
 
 ## Plan Execution Metrics
 
@@ -35,6 +35,8 @@ Progress: [████████████████░░] 90% (26/28 ph
 |-------|------|----------|-------|-------|
 | 27 | 01 | 2min | 3 | 3 |
 | 27 | 02 | 1min | 2 | 2 |
+| 28 | 01 | — | 1 | 1 |
+| 28 | 02 | 2min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -49,6 +51,9 @@ Progress: [████████████████░░] 90% (26/28 ph
 - **v3.0:** devcollab-migrate must have restart: 'no' — prisma migrate deploy exits 0, without this Coolify loops the container infinitely
 - **v3.0:** devcollab-web uses plain inline styles only — NO Shadcn, NO Tailwind, NO Radix installed in apps/devcollab-web
 - **v3.0:** dashboard/page.tsx auth guard converts to server component using cookies() + redirect() — exact pattern in w/[slug]/layout.tsx
+- **28-02:** window.location.origin used for invite join URL (not API_URL) — API_URL is backend host, join URL must use web app origin
+- **28-02:** Remove button guarded by !isCurrentUser && member.role !== 'Admin' — prevents Admin removal through UI
+- **28-02:** Role selector disabled for current user's own row — admin cannot change own role via UI
 
 ### Architectural Constraints for Phase 27
 
@@ -78,6 +83,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Phase 27 complete. fernandomillan.me live and healthy.
+Stopped at: Completed 28-02-PLAN.md — members management UI (WorkspaceNav Members link, server page, MembersTable client component)
 Resume file: None
-Next action: Phase 28 — DevCollab remaining features (invite UI, member management, dashboard auth guard, resume PDF)
+Next action: Phase 28 Plan 03 — join page for invite link token consumption
