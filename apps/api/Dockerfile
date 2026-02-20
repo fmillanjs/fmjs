@@ -38,11 +38,12 @@ COPY --from=pruner /app/out/full/ .
 # packages/config has no package.json so turbo prune omits it — copy manually
 COPY --from=pruner /app/packages/config ./packages/config
 
-# Copy node_modules from installer
+# Copy node_modules from installer (root + workspace-specific)
+# @nestjs/cli is NOT hoisted to root due to peer dep conflict — copy workspace node_modules too
 COPY --from=installer /app/node_modules ./node_modules
+COPY --from=installer /app/apps/api/node_modules ./apps/api/node_modules
 
-# Ensure workspace binaries (nest, etc.) are on PATH for build scripts
-ENV PATH="/app/node_modules/.bin:${PATH}"
+ENV PATH="/app/apps/api/node_modules/.bin:/app/node_modules/.bin:${PATH}"
 
 # Generate Prisma client
 RUN npx prisma generate --schema=packages/database/prisma/schema.prisma
