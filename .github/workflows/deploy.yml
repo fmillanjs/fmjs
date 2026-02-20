@@ -158,6 +158,15 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate --schema=packages/database/prisma/schema.prisma
 
+      - name: Start Docker services
+        run: docker compose up -d postgres redis
+
+      - name: Wait for PostgreSQL
+        run: timeout 60 bash -c 'until docker exec teamflow-postgres pg_isready -U postgres; do sleep 1; done'
+
+      - name: Wait for Redis
+        run: timeout 60 bash -c 'until docker exec teamflow-redis redis-cli ping; do sleep 1; done'
+
       - name: Build Next.js app
         run: cd apps/web && npm run build
         env:
@@ -165,6 +174,11 @@ jobs:
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:3001
+          REDIS_URL: redis://localhost:6380
+
+      - name: Stop Docker services
+        if: always()
+        run: docker compose down postgres redis
 
       - name: Install Lighthouse CI
         run: npm install -g @lhci/cli@0.15.x
