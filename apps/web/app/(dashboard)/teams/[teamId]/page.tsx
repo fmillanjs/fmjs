@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import { serverApi } from '@/lib/api';
 import { auth } from '@/lib/auth';
 import Link from 'next/link';
@@ -47,16 +46,6 @@ interface Team {
   members: TeamMember[];
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ teamId: string }> }): Promise<Metadata> {
-  const { teamId } = await params;
-  try {
-    const team = await serverApi.get<{ name: string }>(`/api/teams/${teamId}`);
-    return { title: `${team.name} | TeamFlow` };
-  } catch {
-    return { title: 'Team | TeamFlow' };
-  }
-}
-
 export default async function TeamPage({ params }: { params: Promise<{ teamId: string }> }) {
   const session = await auth();
   const { teamId } = await params;
@@ -79,18 +68,21 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
   if (error || !team) {
     return (
-      <Card className="p-8 text-center">
-        <CardContent className="pt-6">
-          <AlertTriangle className="mx-auto h-12 w-12 text-[var(--red-9)]" />
-          <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
-          <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
-          <div className="mt-6">
-            <Button asChild>
-              <Link href="/teams">Back to Teams</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <>
+        <title>Team | TeamFlow</title>
+        <Card className="p-8 text-center">
+          <CardContent className="pt-6">
+            <AlertTriangle className="mx-auto h-12 w-12 text-[var(--red-9)]" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">Error Loading Team</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{error || 'Team not found'}</p>
+            <div className="mt-6">
+              <Button asChild>
+                <Link href="/teams">Back to Teams</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </>
     );
   }
 
@@ -103,6 +95,7 @@ export default async function TeamPage({ params }: { params: Promise<{ teamId: s
 
   return (
     <div className="space-y-6">
+      <title>{team.name} | TeamFlow</title>
       {/* Breadcrumb */}
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-4">
