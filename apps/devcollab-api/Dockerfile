@@ -18,6 +18,8 @@ WORKDIR /app
 COPY --from=pruner /app/out/full/ .
 # packages/config has no package.json so turbo prune omits it — copy manually
 COPY --from=pruner /app/packages/config ./packages/config
+# devcollab-database not listed as dep so turbo prune omits it — copy manually
+COPY --from=pruner /app/packages/devcollab-database ./packages/devcollab-database
 # Copy node_modules from installer (root + workspace-specific)
 # @nestjs/cli is NOT hoisted to root due to peer dep conflict — copy workspace node_modules too
 COPY --from=installer /app/node_modules ./node_modules
