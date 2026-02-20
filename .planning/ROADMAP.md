@@ -107,7 +107,12 @@ Plans:
   5. An Admin user can click "Generate Invite Link" and see a complete shareable URL they can copy and send to someone to join the workspace
   6. The workspace navigation sidebar contains a "Members" link that navigates to the members page — the page is reachable without manually typing the URL
   7. Downloading `https://fernandomillan.dev/resume.pdf` (or equivalent portfolio domain) delivers a real PDF file, not a 404
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 28-01-PLAN.md — Dashboard auth guard + portfolio fixes (FIX-02, UI-01)
+- [ ] 28-02-PLAN.md — WorkspaceNav Members link + members page + MembersTable (UI-02, UI-03, UI-04, UI-05, UI-06)
+- [ ] 28-03-PLAN.md — Phase 28 browser verification checkpoint (FIX-02, UI-01, UI-02, UI-03, UI-04, UI-05, UI-06)
 
 ## Progress
 
@@ -140,5 +145,5 @@ Plans:
 | 24. Scroll Animations + Entrance | v2.5 | 3/3 | Complete | 2026-02-19 |
 | 25. Personality Effects | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 26. Navigation Redesign | v2.5 | 2/2 | Complete | 2026-02-19 |
-| 27. Infrastructure Foundation + Prisma Fix | 2/3 | In Progress|  | - |
-| 28. DevCollab UI Debt Closure | v3.0 | 0/TBD | Not started | - |
+| 27. Infrastructure Foundation + Prisma Fix | v3.0 | 2/3 | In Progress | - |
+| 28. DevCollab UI Debt Closure | v3.0 | 0/3 | Not started | - |
