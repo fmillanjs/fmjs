@@ -46,7 +46,7 @@ jobs:
         run: cd apps/web && npx next lint
 
       - name: Start Docker services
-        run: docker compose up -d
+        run: docker compose up -d postgres redis
 
       - name: Wait for PostgreSQL
         run: |
@@ -127,7 +127,7 @@ jobs:
           if [ -f apps/api/api.pid ]; then
             kill $(cat apps/api/api.pid) || true
           fi
-          docker compose down
+          docker compose down postgres redis
 
   lighthouse:
     name: Lighthouse CI
