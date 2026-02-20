@@ -94,6 +94,7 @@ jobs:
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:3001
+          JWT_SECRET: test-secret-min-32-chars-required-for-jwt
 
       - name: Run visual regression tests (light and dark modes)
         run: cd apps/web && npx playwright test e2e/portfolio/visual-regression.spec.ts e2e/dashboard/visual-regression.spec.ts
@@ -102,6 +103,7 @@ jobs:
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:3001
+          JWT_SECRET: test-secret-min-32-chars-required-for-jwt
 
       - name: Run remaining E2E tests (user journey, edge cases, auth flows)
         run: cd apps/web && npx playwright test --ignore=e2e/portfolio/accessibility.spec.ts --ignore=e2e/auth/form-accessibility.spec.ts --ignore=e2e/dashboard/component-accessibility.spec.ts --ignore=e2e/portfolio/visual-regression.spec.ts --ignore=e2e/dashboard/visual-regression.spec.ts
@@ -109,6 +111,8 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          JWT_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXT_PUBLIC_API_URL: http://localhost:3001
 
       - name: Upload E2E test results
