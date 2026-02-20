@@ -35,6 +35,9 @@ WORKDIR /app
 # Copy full source from pruner
 COPY --from=pruner /app/out/full/ .
 
+# packages/config has no package.json so turbo prune omits it — copy manually
+COPY --from=pruner /app/packages/config ./packages/config
+
 # Copy node_modules from installer
 COPY --from=installer /app/node_modules ./node_modules
 
