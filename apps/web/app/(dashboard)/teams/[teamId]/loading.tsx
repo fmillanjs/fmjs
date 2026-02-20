@@ -3,6 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function TeamLoading() {
   return (
     <div>
+      <title>Team | TeamFlow</title>
       {/* Team header skeleton */}
       <div className="bg-card rounded-lg border border-border p-6 mb-6">
         <Skeleton className="h-8 w-64 mb-2" />
