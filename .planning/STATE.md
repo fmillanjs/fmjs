@@ -35,7 +35,7 @@ Progress: [█████████████████░] 93% (27/28 ph
 |-------|------|----------|-------|-------|
 | 27 | 01 | 2min | 3 | 3 |
 | 27 | 02 | 1min | 2 | 2 |
-| 28 | 01 | — | 1 | 1 |
+| 28 | 01 | 3min | 2 | 9 |
 | 28 | 02 | 2min | 2 | 3 |
 
 ## Accumulated Context
@@ -51,6 +51,8 @@ Progress: [█████████████████░] 93% (27/28 ph
 - **v3.0:** devcollab-migrate must have restart: 'no' — prisma migrate deploy exits 0, without this Coolify loops the container infinitely
 - **v3.0:** devcollab-web uses plain inline styles only — NO Shadcn, NO Tailwind, NO Radix installed in apps/devcollab-web
 - **v3.0:** dashboard/page.tsx auth guard converts to server component using cookies() + redirect() — exact pattern in w/[slug]/layout.tsx
+- **28-01:** dashboard/page.tsx server component — router.refresh() in CreateWorkspaceForm re-triggers server fetch without callback prop
+- **28-01:** portfolio footer: LinkedIn replaced with CodeSignal; GitHub updated to fmillanjs
 - **28-02:** window.location.origin used for invite join URL (not API_URL) — API_URL is backend host, join URL must use web app origin
 - **28-02:** Remove button guarded by !isCurrentUser && member.role !== 'Admin' — prevents Admin removal through UI
 - **28-02:** Role selector disabled for current user's own row — admin cannot change own role via UI

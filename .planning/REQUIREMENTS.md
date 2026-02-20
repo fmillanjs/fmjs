@@ -19,11 +19,11 @@ Requirements for the v3.0 Deployment & Tech Debt Closure milestone. Each maps to
 ### Fixes
 
 - [x] **FIX-01**: Prisma import in `reactions.service.ts` uses the correct devcollab client path (not TeamFlow's `@prisma/client`)
-- [ ] **FIX-02**: Real resume PDF is served at `/resume.pdf` on the portfolio site
+- [x] **FIX-02**: Real resume PDF is served at `/resume.pdf` on the portfolio site
 
 ### DevCollab UI
 
-- [ ] **UI-01**: Unauthenticated users visiting `/dashboard` are redirected server-side to `/login`
+- [x] **UI-01**: Unauthenticated users visiting `/dashboard` are redirected server-side to `/login`
 - [x] **UI-02**: Workspace members page at `/w/[slug]/members` shows a list of all workspace members with their roles
 - [x] **UI-03**: Admin can change a member's role (promote/demote) via an inline role selector on the members page
 - [x] **UI-04**: Admin can remove a member from the workspace via a Remove button on the members page
@@ -71,8 +71,8 @@ Which phases cover which requirements. Confirmed during roadmap creation.
 | DEPLOY-05 | Phase 27 | Complete |
 | DEPLOY-06 | Phase 27 | Complete |
 | FIX-01 | Phase 27 | Complete |
-| FIX-02 | Phase 28 | Pending |
-| UI-01 | Phase 28 | Pending |
+| FIX-02 | Phase 28 | Complete |
+| UI-01 | Phase 28 | Complete |
 | UI-02 | Phase 28 | Complete |
 | UI-03 | Phase 28 | Complete |
 | UI-04 | Phase 28 | Complete |
