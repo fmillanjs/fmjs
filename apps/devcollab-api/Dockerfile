@@ -27,8 +27,8 @@ COPY --from=installer /app/apps/devcollab-api/node_modules ./apps/devcollab-api/
 
 ENV PATH="/app/apps/devcollab-api/node_modules/.bin:/app/node_modules/.bin:${PATH}"
 
-RUN prisma generate --schema=packages/devcollab-database/prisma/schema.prisma
-RUN turbo build --filter=devcollab-api
+RUN npx prisma@5 generate --schema=packages/devcollab-database/prisma/schema.prisma
+RUN npx turbo build --filter=devcollab-api
 
 FROM node:20-alpine AS runner
 RUN apk add --no-cache libc6-compat openssl curl
