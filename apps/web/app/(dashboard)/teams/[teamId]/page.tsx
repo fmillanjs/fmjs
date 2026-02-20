@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { serverApi } from '@/lib/api';
 import { auth } from '@/lib/auth';
 import Link from 'next/link';
@@ -44,6 +45,16 @@ interface Team {
   slug: string;
   createdAt: string;
   members: TeamMember[];
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ teamId: string }> }): Promise<Metadata> {
+  const { teamId } = await params;
+  try {
+    const team = await serverApi.get<{ name: string }>(`/api/teams/${teamId}`);
+    return { title: `${team.name} | TeamFlow` };
+  } catch {
+    return { title: 'Team | TeamFlow' };
+  }
 }
 
 export default async function TeamPage({ params }: { params: Promise<{ teamId: string }> }) {
