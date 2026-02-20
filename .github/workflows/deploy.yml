@@ -57,7 +57,7 @@ jobs:
           timeout 60 bash -c 'until docker exec teamflow-redis redis-cli ping; do sleep 1; done'
 
       - name: Run database migrations
-        run: cd packages/database && npx prisma migrate deploy
+        run: cd packages/database && npx prisma db push
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
 
