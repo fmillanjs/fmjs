@@ -294,11 +294,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Trigger Coolify deployment
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ secrets.COOLIFY_WEBHOOK_URL }}
-          method: 'POST'
-          bearerToken: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          curl --request GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
 
   deploy-devcollab:
     name: Deploy DevCollab to Coolify
@@ -307,9 +305,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Trigger Coolify DevCollab deployment
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ secrets.COOLIFY_DEVCOLLAB_WEBHOOK_URL }}
-          method: 'POST'
-          bearerToken: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          curl --request GET "${{ secrets.COOLIFY_DEVCOLLAB_WEBHOOK_URL }}" \
+            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
 
