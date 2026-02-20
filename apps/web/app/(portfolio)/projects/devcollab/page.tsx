@@ -64,7 +64,7 @@ export default function DevCollabCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fernandomillan/devcollab"
+              href="https://github.com/fmillanjs/devcollab"
               target="_blank"
               rel="noopener noreferrer"
             >

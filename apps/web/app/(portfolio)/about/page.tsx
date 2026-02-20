@@ -29,22 +29,21 @@ export default function AboutPage() {
           </h2>
           <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
             <p>
-              I&apos;m a senior full-stack engineer specializing in building production-ready
-              SaaS applications with modern JavaScript/TypeScript stacks. My expertise
-              spans the entire development lifecycle, from architecture design and database
-              modeling to real-time features and deployment automation.
+              I&apos;m a senior full-stack engineer who shipped two production SaaS applications
+              &mdash; TeamFlow (work management with real-time collaboration) and DevCollab
+              (developer workspace platform) &mdash; from zero to deployed on a self-hosted VPS
+              with Traefik, Docker, GHCR CI/CD, and PostgreSQL in under a week.
             </p>
             <p>
-              My approach focuses on clean architecture, type safety, and developer experience.
-              I believe great software emerges from the intersection of thoughtful design,
-              rigorous testing, and continuous iteration. Every line of code I write is
-              production-grade, maintainable, and built to scale.
+              My stack is Next.js 15, NestJS, TypeScript, PostgreSQL, and Redis. I use CASL
+              for fine-grained RBAC, Prisma for type-safe database access, and Turborepo for
+              monorepo orchestration. Both applications are live with HTTPS at custom domains
+              &mdash; you can register, create workspaces, and explore the features right now.
             </p>
             <p>
-              With deep experience in Next.js, NestJS, PostgreSQL, and modern DevOps tooling,
-              I build systems that recruiters and users can interact with immediately.
-              I&apos;m currently seeking opportunities to apply my skills in a senior engineering
-              role where I can contribute to complex technical challenges and mentor growing teams.
+              I&apos;m actively seeking a senior full-stack engineering role where I can apply
+              these skills to production systems with real users. I value clean architecture,
+              type safety, and shipping working software over perfect plans.
             </p>
           </div>
         </section>

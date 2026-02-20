@@ -37,10 +37,11 @@ export default function ResumePage() {
             Summary
           </h2>
           <p className="text-muted-foreground">
-            Full-stack engineer with expertise in building production-ready SaaS applications.
-            Specializing in modern web technologies including React, Next.js, Node.js, and
-            TypeScript. Proven experience in architecting scalable systems with real-time
-            collaboration, role-based access control, and modern DevOps practices.
+            Senior full-stack engineer who shipped two production SaaS applications (TeamFlow
+            and DevCollab) from architecture to live deployment. Expert in Next.js 15, NestJS,
+            TypeScript, PostgreSQL, Redis, and Docker. Proven track record of implementing
+            real-time WebSocket systems, RBAC with CASL, CI/CD pipelines with GitHub Actions
+            and GHCR, and self-hosted deployment on VPS with Traefik.
           </p>
         </section>
 
@@ -120,49 +121,29 @@ export default function ResumePage() {
               </div>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                 <li>
-                  Designed and built TeamFlow, a production-ready work management SaaS
-                  with real-time collaboration
+                  Architected and deployed TeamFlow (work management SaaS) and DevCollab
+                  (developer collaboration platform) &mdash; both live at HTTPS custom domains
+                  with full CI/CD
                 </li>
                 <li>
-                  Implemented WebSocket-based live updates with Redis pub/sub for
-                  horizontal scaling
+                  Implemented real-time collaboration with WebSocket + Redis pub/sub for
+                  horizontal scaling across both applications
                 </li>
                 <li>
-                  Architected role-based access control system using CASL with
-                  three-tier permissions
+                  Designed CASL RBAC with Admin/Contributor/Viewer roles, PATCH/DELETE
+                  protected by server-side authorization guards
                 </li>
                 <li>
-                  Built monorepo structure with Turborepo for shared types and unified
-                  development workflow
+                  Built Turborepo monorepo with shared TypeScript packages, Docker multi-stage
+                  builds, and GitHub Actions CI/CD deploying to self-hosted Coolify on a VPS
                 </li>
                 <li>
-                  Developed optimistic UI patterns with automatic rollback for polished
-                  user experience
+                  Shipped optimistic UI with automatic rollback, full-text search with
+                  pg_trgm, and invite link flows
                 </li>
               </ul>
             </div>
 
-            <div>
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-xl text-foreground">
-                    Software Developer
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Previous Experience (customizable)
-                  </p>
-                </div>
-                <p className="text-muted-foreground">2020 - 2023</p>
-              </div>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>
-                  Built and maintained web applications using modern JavaScript frameworks
-                </li>
-                <li>Collaborated with cross-functional teams to deliver features</li>
-                <li>Implemented responsive designs and ensured cross-browser compatibility</li>
-                <li>Participated in code reviews and contributed to technical documentation</li>
-              </ul>
-            </div>
           </div>
         </section>
 
@@ -178,7 +159,7 @@ export default function ResumePage() {
                   Bachelor of Science in Computer Science
                 </h3>
                 <p className="text-muted-foreground">
-                  University Name (customizable)
+                  Self-taught
                 </p>
               </div>
               <p className="text-muted-foreground">Graduation Year</p>
@@ -223,21 +204,6 @@ export default function ResumePage() {
           </div>
         </section>
 
-        {/* Note about PDF */}
-        <div className="mt-12 p-4 bg-muted border border-border rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            <strong>Note:</strong> This is a customizable placeholder resume. To add your
-            PDF resume, place{' '}
-            <code className="text-sm bg-card px-1.5 py-0.5 rounded">
-              resume.pdf
-            </code>{' '}
-            in the{' '}
-            <code className="text-sm bg-card px-1.5 py-0.5 rounded">
-              apps/web/public/
-            </code>{' '}
-            directory.
-          </p>
-        </div>
       </div>
     </div>
   );

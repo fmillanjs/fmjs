@@ -32,7 +32,7 @@ export function HeroSection() {
             <Link href="/about">Learn More</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <a href="https://github.com/fernandomillan" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/fmillanjs" target="_blank" rel="noopener noreferrer">
               View GitHub
             </a>
           </Button>

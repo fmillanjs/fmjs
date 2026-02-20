@@ -62,7 +62,7 @@ export default function TeamFlowCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fernandomillan/teamflow"
+              href="https://github.com/fmillanjs/teamflow"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Linkedin } from 'lucide-react';
+import { Github, ExternalLink } from 'lucide-react';
 
 export function PortfolioFooter() {
   const currentYear = new Date().getFullYear();
@@ -66,7 +66,7 @@ export function PortfolioFooter() {
             </h4>
             <div className="flex space-x-4">
               <a
-                href="https://github.com/fernandomillan"
+                href="https://github.com/fmillanjs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -75,13 +75,13 @@ export function PortfolioFooter() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://www.linkedin.com/in/fernandomillan"
+                href="https://codesignal.com/learn/profile/cmiqnphkm008cjs0444t3ea1t"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="LinkedIn"
+                aria-label="CodeSignal"
               >
-                <Linkedin className="w-5 h-5" />
+                <ExternalLink className="w-5 h-5" />
               </a>
             </div>
           </div>
