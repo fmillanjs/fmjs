@@ -48,7 +48,7 @@ completed: 2026-02-21
 - **Duration:** ~5 min
 - **Started:** 2026-02-21T03:51:44Z
 - **Completed:** 2026-02-21T03:56:00Z
-- **Tasks:** 1 auto + 1 checkpoint (human-verify pending)
+- **Tasks:** 2 (1 auto + 1 checkpoint human-verify, approved)
 - **Files modified:** 1
 
 ## Accomplishments
@@ -62,9 +62,9 @@ completed: 2026-02-21
 Each task was committed atomically:
 
 1. **Task 1: Add Lenis stop/start to CommandPalette** - `2ad11f6` (feat)
-2. **Task 2: Human verify all four SCROLL requirements** - checkpoint pending human verification
+2. **Task 2: Human verify all four SCROLL requirements** - human-approved (all 5 SCROLL behaviors confirmed working in browser)
 
-**Plan metadata:** (docs commit pending after human verify)
+**Plan metadata:** `c3587c0` (docs: complete CommandPalette scroll lock plan)
 
 ## Files Created/Modified
 - `apps/web/components/ui/command-palette.tsx` - Added useLenis import, const lenis = useLenis(), and scroll-lock useEffect
@@ -87,9 +87,21 @@ None - plan executed exactly as written.
 None - no external service configuration required.
 
 ## Next Phase Readiness
-- SCROLL-04 implementation complete; awaiting human verification in browser (Task 2 checkpoint)
-- After human approves: all 4 SCROLL requirements confirmed working (SCROLL-01 smooth scroll, SCROLL-02 route reset, SCROLL-03 reduced-motion bypass from 29-01; SCROLL-04 CommandPalette lock from this plan)
-- 29-03 can proceed once human verify passes
+- All 5 SCROLL behaviors confirmed working in browser by human verification (2026-02-21):
+  - SCROLL-01: smooth inertia scroll on portfolio pages
+  - SCROLL-02: route-change scroll reset to top
+  - SCROLL-03: reduced-motion bypass (native scroll)
+  - SCROLL-04: CommandPalette scroll lock on open/unlock on close
+  - Dashboard isolation: no Lenis on dashboard, no console errors
+- 29-03 (final Lenis phase plan) is ready to execute
+
+## Self-Check: PASSED
+
+- FOUND: apps/web/components/ui/command-palette.tsx
+- FOUND: .planning/phases/29-lenis-foundation/29-02-SUMMARY.md
+- FOUND: commit 2ad11f6 (Task 1 — CommandPalette Lenis scroll lock)
+- FOUND: commit c3587c0 (Plan metadata docs commit)
+- Human checkpoint Task 2 approved — all 5 SCROLL behaviors verified in browser
 
 ---
 *Phase: 29-lenis-foundation*

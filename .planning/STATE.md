@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 29 of 33 (Lenis Foundation)
-Plan: 2 of 3 in current phase
-Status: In progress (awaiting human verify checkpoint for 29-02)
-Last activity: 2026-02-21 — Completed 29-02 Task 1 (CommandPalette Lenis scroll lock); checkpoint pending human verification
+Plan: 3 of 3 in current phase
+Status: In progress (29-02 complete — ready for 29-03)
+Last activity: 2026-02-21 — Completed 29-02 (CommandPalette scroll lock human-verified; all 5 SCROLL behaviors confirmed working)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
-Progress: [████████████████░░░░] 82% (28/33 phases complete, Phase 29 in progress — 2/3 plans done)
+Progress: [████████████████░░░░] 82% (28/33 phases complete, Phase 29 in progress — 2/3 plans complete, 1 remaining)
 
 ## Performance Metrics
 
@@ -66,6 +66,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: 29-02 Task 1 complete (2ad11f6) — awaiting checkpoint:human-verify (Task 2) for SCROLL behaviors in browser
+Stopped at: Completed 29-02-PLAN.md — CommandPalette Lenis scroll lock, all 5 SCROLL behaviors human-verified
 Resume file: None
-Next action: Human verify all 5 SCROLL behaviors at http://localhost:3000 (start dev server: npm run dev --workspace=apps/web), then execute 29-03
+Next action: Execute 29-03 (final Lenis foundation plan)
