@@ -3,6 +3,7 @@ import { TechStack } from '@/components/portfolio/tech-stack';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ParallaxDivider } from '@/components/portfolio/parallax-divider';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -48,6 +49,8 @@ export default function AboutPage() {
           </div>
         </section>
 
+        <ParallaxDivider />
+
         {/* Tech Stack Section */}
         <section className="mb-16">
           <h2 className="text-2xl font-bold text-foreground mb-6">
@@ -55,6 +58,8 @@ export default function AboutPage() {
           </h2>
           <TechStack />
         </section>
+
+        <ParallaxDivider />
 
         {/* What I Value Section */}
         <section className="mb-16">

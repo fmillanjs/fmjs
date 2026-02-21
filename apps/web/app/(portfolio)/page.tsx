@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AnimateIn } from '@/components/portfolio/animate-in';
 import { StaggerContainer, StaggerItem } from '@/components/portfolio/stagger-container';
 import { EvervaultCard } from '@/components/portfolio/evervault-card';
+import { ParallaxDivider } from '@/components/portfolio/parallax-divider';
 
 export const metadata: Metadata = {
   title: 'Fernando Millan - Full-Stack Engineer',
@@ -14,6 +15,8 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+
+      <ParallaxDivider />
 
       {/* Featured Project Section */}
       <section className="py-16 md:py-24 bg-background">
@@ -130,6 +133,8 @@ export default function HomePage() {
           </StaggerContainer>
         </div>
       </section>
+
+      <ParallaxDivider />
 
       {/* Stats Section */}
       <section className="py-16 md:py-24 bg-muted">
