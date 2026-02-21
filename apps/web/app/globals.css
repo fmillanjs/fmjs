@@ -122,6 +122,53 @@ html:not(.dark) .matrix-theme {
   color: var(--foreground);
 }
 
+/* FOOTER-04: CRT scanline texture — applied via class on <footer> element */
+/* pointer-events: none prevents scanline overlay from blocking link clicks */
+/* z-index: 0 ensures ::before sits behind z-index: 1 content children */
+.footer-crt-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--matrix-scan-line) 2px,
+    var(--matrix-scan-line) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Lift all direct footer children above the scanline overlay */
+.footer-crt-scanlines > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* FOOTER-05: Single-fire text glitch animation — transform-only, Safari-safe */
+/* Intentionally placed here (not in .matrix-theme) so the class can be added */
+/* dynamically by GlitchSignature's IntersectionObserver from outside .matrix-theme scope */
+@keyframes footer-glitch {
+  0%   { transform: translate(0) skewX(0deg);    opacity: 1; }
+  10%  { transform: translate(-3px) skewX(-4deg); opacity: 0.9; }
+  20%  { transform: translate(3px) skewX(4deg);   opacity: 1; }
+  30%  { transform: translate(-2px) skewX(0deg);  opacity: 0.85; }
+  40%  { transform: translate(2px) skewX(2deg);   opacity: 1; }
+  50%  { transform: translate(0) skewX(-2deg);    opacity: 0.95; }
+  60%  { transform: translate(-1px) skewX(1deg);  opacity: 1; }
+  70%  { transform: translate(1px) skewX(-1deg);  opacity: 0.9; }
+  80%  { transform: translate(0) skewX(0deg);     opacity: 1; }
+  90%  { transform: translate(-1px) skewX(1deg);  opacity: 0.95; }
+  100% { transform: translate(0) skewX(0deg);     opacity: 1; }
+}
+
+/* Class added by IntersectionObserver once on scroll-into-view — never in markup */
+/* animation-iteration-count: 1 via the '1' in the shorthand below */
+.footer-glitch-once {
+  animation: footer-glitch 0.6s ease-out 1 forwards;
+}
+
 /* Expose semantic tokens as Tailwind CSS utilities via @theme inline */
 /* The 'inline' keyword is REQUIRED for Tailwind v4 — do not use @theme without inline */
 /* CSS variables here define bg-background, text-foreground, border-border, etc. */
