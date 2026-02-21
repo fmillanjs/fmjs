@@ -74,9 +74,26 @@ Both SaaS applications are live at HTTPS custom domains. All milestones complete
 - ✓ Dashboard server-side auth guard: zero content flash redirect to `/login` — v3.0
 - ✓ Prisma import isolation: `reactions.service.ts` uses `.prisma/devcollab-client` runtime — v3.0
 
+## Current Milestone: v3.1 Portfolio Polish & Matrix Cohesion
+
+**Goal:** Apply the Matrix aesthetic consistently across the entire portfolio and ship the remaining deferred animation features for an Awwwards-quality, cohesive final product.
+
+**Target features:**
+- Lenis smooth scroll throughout portfolio
+- GSAP parallax depth effects on scroll
+- Magnetic buttons on CTAs
+- Matrix color harmony: project cards/case studies, skills/about, contact/CTA, typography
+- Footer redesign with Matrix animation effect
+
 ### Active
 
-(No active requirements — all milestones complete. Use `/gsd:new-milestone` to start v4.0.)
+- [ ] Lenis smooth scroll integrated across all portfolio pages
+- [ ] GSAP parallax effects on scroll
+- [ ] Magnetic button component on CTA elements
+- [ ] Matrix color harmony applied to project cards and case study pages
+- [ ] Matrix color harmony applied to skills/about section
+- [ ] Matrix color harmony applied to contact/CTA sections and typography
+- [ ] Footer redesigned with Matrix animation
 
 ### Out of Scope
 
@@ -172,4 +189,4 @@ Both SaaS applications are live at HTTPS custom domains. All milestones complete
 | window.location.origin for invite join URL | API_URL points to backend; join URL must use web app's own origin | ✓ Good — correct URL generated in production |
 
 ---
-*Last updated: 2026-02-20 after v3.0 milestone — all milestones complete, both apps live in production*
+*Last updated: 2026-02-20 after v3.1 milestone started — Portfolio Polish & Matrix Cohesion*

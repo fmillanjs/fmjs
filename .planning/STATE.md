@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.0 — Phase 28: DevCollab UI Debt Closure
+**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion
 
 ## Current Position
 
-Phase: 28 of 28 (DevCollab UI Debt Closure)
-Plan: 3 of 4 complete (Plans 01-03: dashboard auth guard, portfolio fixes, members management, browser verification)
-Status: In progress — Plan 03 complete
-Last activity: 2026-02-20 — Phase 28 Plan 03 complete: all 8 browser verification tests passed (FIX-02, UI-01 through UI-06 confirmed)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-20 — Milestone v3.1 started (Portfolio Polish & Matrix Cohesion)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13)
 
