@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 Phase: 33 of 33 (Footer Redesign + Matrix Animation) — COMPLETE
 Plan: 33-03 COMPLETE — all 3 tasks done, human visual approval confirmed
 Status: Phase 33 COMPLETE — all 7 FOOTER requirements satisfied — v3.1 milestone COMPLETE
-Last activity: 2026-02-21 — Completed 33-03 full plan (axe audit + visual regression lock + human approval)
+Last activity: 2026-02-21 - Completed quick task 1: Fix Devcollab demo URLs, demo box color, and View Source GitHub links
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE | Phase 32 COMPLETE | Phase 33 COMPLETE | v3.1 COMPLETE
 
@@ -107,6 +107,12 @@ None.
 - Lenis `lerp` optimal value (default 0.10 vs 0.08) — subjective feel; needs real device testing across Chrome/Safari/Firefox (deferred — Phase 29 complete, can tune during Phase 30+)
 - CSS `clip-path` glitch animation Safari compatibility — verify during Phase 33 planning; fallback is CSS typewriter reveal via `steps()`
 - Playwright baselines: 18 PNGs at maxDiffPixelRatio 0.02 — Phase 32 and Phase 33 both require deliberate `--update-snapshots` run and diff review before commit
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Fix Devcollab demo URLs, demo box color, and View Source GitHub links | 2026-02-21 | 8670075 | [1-fix-devcollab-demo-urls-demo-box-color-a](./quick/1-fix-devcollab-demo-urls-demo-box-color-a/) |
 
 ## Session Continuity
 
