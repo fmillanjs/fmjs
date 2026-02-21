@@ -4,6 +4,7 @@ import { PortfolioFooter } from '@/components/portfolio/footer';
 import { CommandPalette } from '@/components/ui/command-palette';
 import { MotionProvider } from '@/components/portfolio/motion-provider';
 import { DotGridSpotlight } from '@/components/portfolio/dot-grid-spotlight';
+import { LenisProvider } from '@/components/portfolio/lenis-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -19,12 +20,14 @@ export default function PortfolioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="matrix-theme min-h-screen flex flex-col">
-      <DotGridSpotlight />
-      <PortfolioNav />
-      <MotionProvider><main className="flex-1">{children}</main></MotionProvider>
-      <PortfolioFooter />
-      <CommandPalette />
-    </div>
+    <LenisProvider>
+      <div className="matrix-theme min-h-screen flex flex-col">
+        <DotGridSpotlight />
+        <PortfolioNav />
+        <MotionProvider><main className="flex-1">{children}</main></MotionProvider>
+        <PortfolioFooter />
+        <CommandPalette />
+      </div>
+    </LenisProvider>
   );
 }

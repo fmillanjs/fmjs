@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "lenis/dist/lenis.css";
 
 /* Radix Colors — light scales (scope to :root and .light) */
 @import "@radix-ui/colors/slate.css";
