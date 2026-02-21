@@ -108,12 +108,12 @@ Full archive: `.planning/milestones/v3.0-ROADMAP.md`
   3. User with `prefers-reduced-motion: reduce` set in OS gets native browser scroll — no Lenis instance is initialized, no RAF overhead runs
   4. User opening the CommandPalette (Cmd+K) cannot scroll the background page while the modal is open; background scroll resumes on close
   5. User navigating to the TeamFlow dashboard sees no Lenis interference — TanStack Table virtual scroll and Socket.io behavior are identical to pre-Phase-29
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 29-01: LenisProvider component + GSAP ticker sync + globals.css Lenis CSS import
-- [ ] 29-02: LenisScrollRestorer for route-change scroll-to-top + CommandPalette lenis.stop/start integration
-- [ ] 29-03: Reduced-motion bypass + Lighthouse CI gate verification (all 5 URLs >= 0.90)
+- [ ] 29-01-PLAN.md — LenisProvider component (prefers-reduced-motion gate, LenisScrollReset inner, autoRaf: true) + globals.css Lenis CSS import + portfolio layout wiring
+- [ ] 29-02-PLAN.md — CommandPalette lenis.stop/start integration + human browser verification of all 4 SCROLL requirements
+- [ ] 29-03-PLAN.md — Lighthouse CI gate verification (all 5 portfolio URLs >= 0.90 performance)
 
 ### Phase 30: GSAP ScrollTrigger Parallax
 **Goal**: Users scrolling the portfolio hero and past section separators perceive distinct depth layers — hero text drifting upward slower than the page, decorative lines moving at an independent rate — without any layout shift or Lighthouse regression
