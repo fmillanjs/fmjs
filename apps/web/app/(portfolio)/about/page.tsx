@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ParallaxDivider } from '@/components/portfolio/parallax-divider';
+import { MagneticButton } from '@/components/portfolio/magnetic-button';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -122,9 +123,11 @@ export default function AboutPage() {
           <p className="text-lg text-muted-foreground mb-6">
             I&apos;m currently open to senior full-stack engineering opportunities.
           </p>
-          <Button asChild size="lg">
-            <Link href="/contact">Get In Touch</Link>
-          </Button>
+          <MagneticButton>
+            <Button asChild size="lg">
+              <Link href="/contact">Get In Touch</Link>
+            </Button>
+          </MagneticButton>
         </section>
       </div>
     </div>

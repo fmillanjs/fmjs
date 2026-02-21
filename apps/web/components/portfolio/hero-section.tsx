@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
+import { MagneticButton } from '@/components/portfolio/magnetic-button';
 import { ScrambleHero } from '@/components/portfolio/scramble-hero';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -56,14 +57,18 @@ export function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild size="lg">
-            <Link href="/about">Learn More</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <a href="https://github.com/fmillanjs" target="_blank" rel="noopener noreferrer">
-              View GitHub
-            </a>
-          </Button>
+          <MagneticButton>
+            <Button asChild size="lg">
+              <Link href="/projects">View Projects</Link>
+            </Button>
+          </MagneticButton>
+          <MagneticButton>
+            <Button asChild variant="outline" size="lg">
+              <a href="https://github.com/fmillanjs" target="_blank" rel="noopener noreferrer">
+                View GitHub
+              </a>
+            </Button>
+          </MagneticButton>
         </div>
       </div>
     </section>
