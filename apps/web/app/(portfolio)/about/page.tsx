@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ParallaxDivider } from '@/components/portfolio/parallax-divider';
 import { MagneticButton } from '@/components/portfolio/magnetic-button';
+import { SectionLabel } from '@/components/portfolio/section-label';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -26,6 +27,7 @@ export default function AboutPage() {
 
         {/* Bio Section */}
         <section className="mb-16">
+          <SectionLabel label="About Me" />
           <h2 className="text-2xl font-bold text-foreground mb-6">
             Professional Summary
           </h2>
@@ -54,6 +56,7 @@ export default function AboutPage() {
 
         {/* Tech Stack Section */}
         <section className="mb-16">
+          <SectionLabel label="Skills" />
           <h2 className="text-2xl font-bold text-foreground mb-6">
             Technology Stack
           </h2>
@@ -64,11 +67,12 @@ export default function AboutPage() {
 
         {/* What I Value Section */}
         <section className="mb-16">
+          <SectionLabel label="Core Values" />
           <h2 className="text-2xl font-bold text-foreground mb-6">
             What I Value
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="hover:border-primary/50 transition-colors">
+            <Card className="hover:border-[var(--matrix-green-border)] transition-colors">
               <CardHeader>
                 <CardTitle>Clean Architecture</CardTitle>
               </CardHeader>
@@ -79,7 +83,7 @@ export default function AboutPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary/50 transition-colors">
+            <Card className="hover:border-[var(--matrix-green-border)] transition-colors">
               <CardHeader>
                 <CardTitle>Type Safety</CardTitle>
               </CardHeader>
@@ -90,7 +94,7 @@ export default function AboutPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary/50 transition-colors">
+            <Card className="hover:border-[var(--matrix-green-border)] transition-colors">
               <CardHeader>
                 <CardTitle>Production Readiness</CardTitle>
               </CardHeader>
@@ -101,7 +105,7 @@ export default function AboutPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary/50 transition-colors">
+            <Card className="hover:border-[var(--matrix-green-border)] transition-colors">
               <CardHeader>
                 <CardTitle>Developer Experience</CardTitle>
               </CardHeader>
@@ -116,7 +120,8 @@ export default function AboutPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="text-center bg-gradient-to-br from-primary/10 to-transparent rounded-lg p-8 md:p-12">
+        <section className="text-center bg-gradient-to-br from-[var(--matrix-green-subtle)] to-transparent rounded-lg p-8 md:p-12">
+          <SectionLabel label="Get In Touch" />
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             Interested in working together?
           </h2>

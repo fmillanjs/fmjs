@@ -46,7 +46,7 @@ export function HeroSection() {
       <div ref={textRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
           <ScrambleHero text="Fernando Millan" className="block mb-2" />
-          <span className="block text-primary">
+          <span className="block text-[var(--matrix-green)]">
             Full-Stack Engineer Building Production-Ready SaaS
           </span>
         </h1>
