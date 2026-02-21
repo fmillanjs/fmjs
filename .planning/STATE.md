@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 30 of 33 (GSAP ScrollTrigger) — Phase 29 COMPLETE
-Plan: 1 of N in current phase
-Status: Phase 29 complete — ready for Phase 30
-Last activity: 2026-02-21 — Completed 29-03 (Lighthouse CI gate: all 5 URLs score 1.00 performance with Lenis active)
+Phase: 30 of 33 (GSAP ScrollTrigger) — Phase 30 in progress
+Plan: 2 of N in current phase
+Status: 30-01 complete — LenisGSAPBridge + hero parallax shipped
+Last activity: 2026-02-20 — Completed 30-01 (LenisGSAPBridge autoRaf:false + hero yPercent:-15 scrub:1 parallax)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
-Progress: [█████████████████░░░] 85% (29/33 phases complete, Phase 29 complete)
+Progress: [█████████████████░░░] 85% (29/33 phases complete, Phase 30 in progress)
 
 ## Performance Metrics
 
@@ -31,6 +31,7 @@ Progress: [█████████████████░░░] 85% (29
 |-------|-------|----------|
 | 27 | 3 | ~1.5 min |
 | 28 | 3 | ~2.5 min |
+| 30 | 1 (30-01) | ~2 min |
 
 *Updated after each plan completion*
 
@@ -53,6 +54,9 @@ Progress: [█████████████████░░░] 85% (29
 - **v3.1 arch:** No `pin: true` in any ScrollTrigger — causes CLS spacer that fails Lighthouse CI >= 0.90 gate
 - **v3.1 arch:** MagneticButton uses `motion/react` spring (not `gsap.to()` in mousemove) — prevents TBT spike from per-pixel tween creation
 - **v3.1 arch:** Matrix color tokens scoped to `.matrix-theme {}` — never in `:root @theme inline` (Tailwind bleed to dashboard)
+- **30-01:** `LenisGSAPBridge` uses named `tickerFn` variable (not inline arrow) — same reference required for `gsap.ticker.remove()` to work correctly
+- **30-01:** `gsap.ticker.lagSmoothing(0)` — prevents GSAP jump-catch-up when tab regains focus after being backgrounded
+- **30-01:** `overflow-hidden` on hero section (not textRef div) — MatrixRainCanvas is `absolute inset-0` so canvas stays clipped correctly without breaking background effect
 
 ### Pending Todos
 
@@ -66,7 +70,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 29-03-PLAN.md — Lighthouse CI gate, all 5 URLs score 1.00 performance, Phase 29 complete
+Last session: 2026-02-20
+Stopped at: Completed 30-01-PLAN.md — LenisGSAPBridge (autoRaf:false) + hero parallax (yPercent:-15, scrub:1)
 Resume file: None
-Next action: Execute Phase 30 (GSAP ScrollTrigger)
+Next action: Execute next Phase 30 plan
