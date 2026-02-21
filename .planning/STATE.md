@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 31 of 33 (Magnetic Buttons) — Phase 31 IN PROGRESS
-Plan: 31-02 (next — CTA wrapping)
-Status: 31-01 complete — MagneticButton spring-physics component created (MAGN-01, MAGN-02, MAGN-03 foundation)
-Last activity: 2026-02-21 — Completed 31-01 (MagneticButton 'use client' component with useSpring + touch guard + reduced-motion early-return)
+Phase: 31 of 33 (Magnetic Buttons) — Phase 31 IN PROGRESS (awaiting Task 3 human-verify checkpoint)
+Plan: 31-02 (Tasks 1-2 complete, Task 3 checkpoint pending)
+Status: 31-02 Tasks 1-2 complete — MagneticButton wired onto all 3 CTAs, LHCI gate passed (>= 0.90 performance, CLS = 0)
+Last activity: 2026-02-21 — Completed 31-02 Tasks 1-2 (CTA wrapping + Lighthouse CI gate)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
@@ -35,6 +35,7 @@ Progress: [█████████████████░░░] 88% (30
 
 *Updated after each plan completion*
 | Phase 31-magnetic-buttons P01 | 1 | 1 tasks | 1 files |
+| Phase 31-magnetic-buttons P02 | 9 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Progress: [█████████████████░░░] 88% (30
 - **31-01:** `motion.div` wrapper used (not `motion.button`) — CSS transform on button breaks focus ring alignment for keyboard navigation (RESEARCH.md Pitfall 3)
 - **31-01:** `getBoundingClientRect()` cached in `handleMouseEnter` only — prevents per-pixel forced reflows in mousemove that cause TBT spike (RESEARCH.md Pitfall 5)
 - **31-01:** `prefersReducedMotion` null (SSR) treated as falsy — motion render on SSR is hydration-safe; only `true` triggers plain div wrapper
+- **31-02:** `chromePath` in `lighthouserc.json` must be in `ci.collect` block (not `ci.collect.settings`) — LHCI uses `collect.chromePath` for its Chrome launcher; `settings.chromePath` is Lighthouse audit setting (different code path)
+- **31-02:** Hero CTA renamed "Learn More" -> "View Projects" (href /about -> /projects) — primary hero CTA leads to projects showcase per MAGN-01 spec
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 31-01-PLAN.md — MagneticButton 'use client' component with spring-physics (useSpring stiffness:150 damping:30 mass:0.2), touch guard, reduced-motion early-return, rect caching on mouseenter.
+Stopped at: 31-02-PLAN.md Task 3 checkpoint (human-verify) — Tasks 1-2 complete, awaiting visual verification of spring-physics feel, reduced-motion guard, touch guard, focus rings, and link destinations.
 Resume file: None
-Next action: Execute Phase 31 Plan 02 (CTA wrapping — hero CTAs + contact CTA)
+Next action: Human approves Task 3 (checkpoint:human-verify) for 31-02 — start dev server, verify spring feel on all 3 CTAs, type "approved"
