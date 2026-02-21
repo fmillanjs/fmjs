@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 32 in progress)
+**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 33 in progress)
 
 ## Current Position
 
-Phase: 32 of 33 (Matrix Color Harmony) — COMPLETE
-Plan: 32-04 COMPLETE (all tasks done: baselines updated, gap fix applied, human visual approval confirmed)
-Status: Phase 32 COMPLETE — 32-01 done, 32-02 done, 32-03 done, 32-04 done; all COLOR-01 through COLOR-08 requirements satisfied
-Last activity: 2026-02-21 — Completed 32-04 (human approved all 8 route checks; gap fix a86bed4 applied --primary override + ThemeToggle removal)
+Phase: 33 of 33 (Footer Redesign + Matrix Animation) — IN PROGRESS
+Plan: 33-01 COMPLETE (terminal static shell: #0a0a0a footer, CRT scanlines CSS, > github/linkedin/email links, > EOF tagline)
+Status: Phase 33 in progress — 33-01 done (FOOTER-01 through FOOTER-04 satisfied); 33-02 next (GlitchSignature island)
+Last activity: 2026-02-21 — Completed 33-01 (footer terminal redesign + CRT scanline CSS + glitch keyframes)
 
-Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE
+Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE | Phase 32 COMPLETE
 
-Progress: [███████████████████░] 97% (32/33 phases complete, Phase 33 next)
+Progress: [████████████████████] 99% (33/33 phases started, 33-01 complete)
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [███████████████████░] 97% (32
 | Phase 32-matrix-color-harmony P03 | 2 | 2 tasks | 4 files |
 | Phase 32-matrix-color-harmony P04 | 8 | 1 tasks | 10 files |
 | Phase 32-matrix-color-harmony P04 | 25 | 2 tasks | 13 files |
+| Phase 33-footer-redesign-matrix-animation P01 | 253 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Progress: [███████████████████░] 97% (32
 - **32-04:** Dashboard team-detail baselines committed from CI (auth required) — visual.config.ts uses empty storageState; running --update-snapshots locally overwrites them with unauthenticated captures; must restore from git to preserve CI baselines
 - **32-04:** `--primary: var(--matrix-green)` inside `.matrix-theme {}` — overrides Radix default for Button/Badge harmony in portfolio; dashboard routes (no .matrix-theme) are completely unaffected
 - **32-04:** ThemeToggle removed from portfolio nav, layout.tsx locked to defaultTheme="dark" — portfolio is intentionally dark-only Matrix aesthetic; toggle was vestigial
+- **33-01:** `footer-crt-scanlines` CSS class in global scope (not `.matrix-theme {}`) — guarantees cascade from `<footer>` child of `.matrix-theme`; `--matrix-scan-line` token inherits from parent scope
+- **33-01:** `@keyframes footer-glitch` placed outside `.matrix-theme` — Plan 33-02 IntersectionObserver can add `.footer-glitch-once` from any scope without specificity issues
+- **33-01:** `background: '#0a0a0a'` applied as inline style on `<footer>` — prevents Tailwind `@theme inline` bleed to `bg-background` utility token
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Phase 32 COMPLETE — 32-04 done, all COLOR-01 through COLOR-08 satisfied, human visual approval confirmed
+Stopped at: Completed 33-footer-redesign-matrix-animation-01-PLAN.md — FOOTER-01 through FOOTER-04 satisfied, terminal footer shell + CRT scanlines done
 Resume file: None
-Next action: Execute Phase 33 (Footer Redesign + Matrix Animation)
+Next action: Execute 33-02 (GlitchSignature client island)

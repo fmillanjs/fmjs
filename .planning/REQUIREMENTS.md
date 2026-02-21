@@ -40,10 +40,10 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Footer Redesign (FOOTER)
 
-- [ ] **FOOTER-01**: Footer has `#0a0a0a` background with a `--matrix-green-border` top border, replacing the current `bg-muted` styling
-- [ ] **FOOTER-02**: Social links render as terminal-prompt style (`> github`, `> linkedin`, `> email`) in monospace Matrix green
-- [ ] **FOOTER-03**: Footer includes a `> EOF` tagline as a narrative close
-- [ ] **FOOTER-04**: Footer has a CRT scanline texture via CSS `::before` pseudo-element (zero JS, no animation library)
+- [x] **FOOTER-01**: Footer has `#0a0a0a` background with a `--matrix-green-border` top border, replacing the current `bg-muted` styling
+- [x] **FOOTER-02**: Social links render as terminal-prompt style (`> github`, `> linkedin`, `> email`) in monospace Matrix green
+- [x] **FOOTER-03**: Footer includes a `> EOF` tagline as a narrative close
+- [x] **FOOTER-04**: Footer has a CRT scanline texture via CSS `::before` pseudo-element (zero JS, no animation library)
 - [ ] **FOOTER-05**: "Fernando Millan" name or footer signature has a single-fire CSS glitch animation when scrolled into view (IntersectionObserver, fires once, `animation-iteration-count: 1`)
 - [ ] **FOOTER-06**: All footer links are keyboard-accessible with visible focus rings
 - [ ] **FOOTER-07**: Playwright visual regression baselines updated for footer changes on all portfolio routes; all 18 snapshots pass
@@ -97,10 +97,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 | COLOR-06 | Phase 32 | Complete |
 | COLOR-07 | Phase 32 | Complete |
 | COLOR-08 | Phase 32 | Complete |
-| FOOTER-01 | Phase 33 | Pending |
-| FOOTER-02 | Phase 33 | Pending |
-| FOOTER-03 | Phase 33 | Pending |
-| FOOTER-04 | Phase 33 | Pending |
+| FOOTER-01 | Phase 33 | Complete |
+| FOOTER-02 | Phase 33 | Complete |
+| FOOTER-03 | Phase 33 | Complete |
+| FOOTER-04 | Phase 33 | Complete |
 | FOOTER-05 | Phase 33 | Pending |
 | FOOTER-06 | Phase 33 | Pending |
 | FOOTER-07 | Phase 33 | Pending |
