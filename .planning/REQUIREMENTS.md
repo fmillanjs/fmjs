@@ -23,9 +23,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Magnetic Buttons (MAGN)
 
-- [ ] **MAGN-01**: User hovering the hero CTAs ("View Projects", "View GitHub") sees the button attract toward the cursor with spring physics (motion/react useSpring)
-- [ ] **MAGN-02**: User hovering the contact CTA ("Get In Touch") sees the same magnetic spring-physics attraction
-- [ ] **MAGN-03**: User on a touch device or with reduced-motion preference sees a plain button with no magnetic effect (any-hover guard + useReducedMotion)
+- [x] **MAGN-01**: User hovering the hero CTAs ("View Projects", "View GitHub") sees the button attract toward the cursor with spring physics (motion/react useSpring)
+- [x] **MAGN-02**: User hovering the contact CTA ("Get In Touch") sees the same magnetic spring-physics attraction
+- [x] **MAGN-03**: User on a touch device or with reduced-motion preference sees a plain button with no magnetic effect (any-hover guard + useReducedMotion)
 
 ### Matrix Color Harmony (COLOR)
 
@@ -86,9 +86,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PRLLX-01 | Phase 30 | Complete |
 | PRLLX-02 | Phase 30 | Complete |
 | PRLLX-03 | Phase 30 | Complete |
-| MAGN-01 | Phase 31 | Pending |
-| MAGN-02 | Phase 31 | Pending |
-| MAGN-03 | Phase 31 | Pending |
+| MAGN-01 | Phase 31 | Complete |
+| MAGN-02 | Phase 31 | Complete |
+| MAGN-03 | Phase 31 | Complete |
 | COLOR-01 | Phase 32 | Pending |
 | COLOR-02 | Phase 32 | Pending |
 | COLOR-03 | Phase 32 | Pending |

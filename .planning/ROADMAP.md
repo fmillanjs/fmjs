@@ -220,6 +220,6 @@ Plans:
 | 28. DevCollab UI Debt Closure | v3.0 | 3/3 | Complete | 2026-02-20 |
 | 29. Lenis Foundation | 3/3 | Complete    | 2026-02-21 | - |
 | 30. GSAP ScrollTrigger Parallax | v3.1 | Complete    | 2026-02-21 | 2026-02-21 |
-| 31. Magnetic Buttons | v3.1 | 0/2 | Not started | - |
+| 31. Magnetic Buttons | 1/2 | In Progress|  | - |
 | 32. Matrix Color Harmony | v3.1 | 0/4 | Not started | - |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 0/3 | Not started | - |

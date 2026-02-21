@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 31 of 33 (Magnetic Buttons) — Phase 30 COMPLETE
-Plan: Next plan in Phase 31
-Status: 30-02 complete — ParallaxDivider scaleX + Lighthouse CI gate; Phase 30 COMPLETE (PRLLX-01, PRLLX-02, PRLLX-03 all verified)
-Last activity: 2026-02-21 — Completed 30-02 (ParallaxDivider scaleX 0.92→1.04 + LHCI 1.00 + human visual verify approved)
+Phase: 31 of 33 (Magnetic Buttons) — Phase 31 IN PROGRESS
+Plan: 31-02 (next — CTA wrapping)
+Status: 31-01 complete — MagneticButton spring-physics component created (MAGN-01, MAGN-02, MAGN-03 foundation)
+Last activity: 2026-02-21 — Completed 31-01 (MagneticButton 'use client' component with useSpring + touch guard + reduced-motion early-return)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
@@ -34,6 +34,7 @@ Progress: [█████████████████░░░] 88% (30
 | 30 | 1 (30-01) | ~2 min |
 
 *Updated after each plan completion*
+| Phase 31-magnetic-buttons P01 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,9 @@ Progress: [█████████████████░░░] 88% (30
 - **30-02:** `bg-primary/30` for divider line — Matrix green at 30% opacity within `.matrix-theme`; avoids blue Radix bleed, consistent with portfolio color tokens
 - **30-02:** `scrub: 1` on scaleX — defers entirely to RAF, blends with Lenis inertia, prevents TBT spike on main thread
 - **30-02:** `projects/page.tsx` and `contact/page.tsx` skipped for ParallaxDivider inserts — single-section layouts where forcing a divider would be visually incorrect
+- **31-01:** `motion.div` wrapper used (not `motion.button`) — CSS transform on button breaks focus ring alignment for keyboard navigation (RESEARCH.md Pitfall 3)
+- **31-01:** `getBoundingClientRect()` cached in `handleMouseEnter` only — prevents per-pixel forced reflows in mousemove that cause TBT spike (RESEARCH.md Pitfall 5)
+- **31-01:** `prefersReducedMotion` null (SSR) treated as falsy — motion render on SSR is hydration-safe; only `true` triggers plain div wrapper
 
 ### Pending Todos
 
@@ -75,6 +79,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 30-02-PLAN.md — ParallaxDivider scaleX 0.92→1.04 + LHCI gate (1.00 performance, CLS=0) + human visual verify all 8 checks passed. Phase 30 COMPLETE.
+Stopped at: Completed 31-01-PLAN.md — MagneticButton 'use client' component with spring-physics (useSpring stiffness:150 damping:30 mass:0.2), touch guard, reduced-motion early-return, rect caching on mouseenter.
 Resume file: None
-Next action: Execute Phase 31 (Magnetic Buttons)
+Next action: Execute Phase 31 Plan 02 (CTA wrapping — hero CTAs + contact CTA)
