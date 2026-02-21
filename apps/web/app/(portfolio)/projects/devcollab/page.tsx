@@ -5,7 +5,7 @@ import { AnimateIn } from '@/components/portfolio/animate-in';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
 
-const DEVCOLLAB_URL = process.env.NEXT_PUBLIC_DEVCOLLAB_URL || 'http://localhost:3002';
+const DEVCOLLAB_URL = process.env.NEXT_PUBLIC_DEVCOLLAB_URL || 'https://devcollab.fernandomillan.me';
 
 export const metadata: Metadata = {
   title: 'DevCollab - Case Study',
