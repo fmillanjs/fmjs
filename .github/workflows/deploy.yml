@@ -181,6 +181,7 @@ jobs:
         run: docker compose down postgres redis
 
       - name: Install Chrome
+        id: setup-chrome
         uses: browser-actions/setup-chrome@latest
 
       - name: Install Lighthouse CI
@@ -192,6 +193,7 @@ jobs:
           NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:3001
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
 
 
   build-and-push:
