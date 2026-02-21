@@ -23,7 +23,7 @@ export default function GlitchSignature() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0]?.isIntersecting) {
           // Add glitch CSS class — triggers @keyframes footer-glitch (defined in globals.css)
           // animation-iteration-count: 1 fires exactly once then holds final state (forwards)
           el.classList.add('footer-glitch-once')

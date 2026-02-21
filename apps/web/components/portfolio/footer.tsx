@@ -1,4 +1,12 @@
+'use client'
+
 import Link from 'next/link';
+import dynamic from 'next/dynamic'
+
+const GlitchSignature = dynamic(
+  () => import('./glitch-signature'),
+  { ssr: false }
+)
 
 export function PortfolioFooter() {
   const currentYear = new Date().getFullYear();
@@ -15,10 +23,7 @@ export function PortfolioFooter() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Column 1: Name and Tagline */}
           <div>
-            {/* GlitchSignature island wired in Plan 33-02 */}
-            <span className="text-lg font-bold font-mono text-foreground">
-              Fernando Millan
-            </span>
+            <GlitchSignature />
             <p className="text-sm text-muted-foreground mt-2">
               Full-Stack Engineer building production-ready SaaS applications
             </p>
