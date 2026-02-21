@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Download } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { SectionLabel } from '@/components/portfolio/section-label';
 
 export const metadata: Metadata = {
   title: 'Resume',
@@ -33,6 +34,7 @@ export default function ResumePage() {
       <div className="prose prose-lg dark:prose-invert max-w-none">
         {/* Summary */}
         <section className="mb-12">
+          <SectionLabel label="Summary" />
           <h2 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2">
             Summary
           </h2>
@@ -47,6 +49,7 @@ export default function ResumePage() {
 
         {/* Technical Skills */}
         <section className="mb-12">
+          <SectionLabel label="Technical Skills" />
           <h2 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2">
             Technical Skills
           </h2>
@@ -103,6 +106,7 @@ export default function ResumePage() {
 
         {/* Experience */}
         <section className="mb-12">
+          <SectionLabel label="Experience" />
           <h2 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2">
             Experience
           </h2>
@@ -149,6 +153,7 @@ export default function ResumePage() {
 
         {/* Education */}
         <section className="mb-12">
+          <SectionLabel label="Education" />
           <h2 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2">
             Education
           </h2>
@@ -173,6 +178,7 @@ export default function ResumePage() {
 
         {/* Projects */}
         <section className="mb-12">
+          <SectionLabel label="Projects" />
           <h2 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2">
             Projects
           </h2>
@@ -188,7 +194,7 @@ export default function ResumePage() {
               </div>
               <Link
                 href="/projects/teamflow"
-                className="text-primary hover:underline"
+                className="text-[var(--matrix-green)] hover:underline"
               >
                 View Case Study →
               </Link>

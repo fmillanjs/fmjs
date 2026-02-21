@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ContactForm } from '@/components/portfolio/contact-form';
 import { AnimateIn } from '@/components/portfolio/animate-in';
+import { SectionLabel } from '@/components/portfolio/section-label';
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -22,16 +23,18 @@ export default function ContactPage() {
 
         <div className="mt-12 grid gap-12 lg:grid-cols-2">
           <div>
+            <SectionLabel label="Send a Message" />
             <h2 className="mb-6 text-xl font-semibold">Send a Message</h2>
             <ContactForm />
           </div>
 
           <div>
+            <SectionLabel label="Contact Information" />
             <h2 className="mb-6 text-xl font-semibold">Contact Information</h2>
             <div className="space-y-6">
               <div>
                 <h3 className="mb-2 font-medium text-foreground">Email</h3>
-                <a href="mailto:hello@fernandomillan.dev" className="text-primary hover:underline">
+                <a href="mailto:hello@fernandomillan.dev" className="text-[var(--matrix-green)] hover:underline">
                   hello@fernandomillan.dev
                 </a>
               </div>
