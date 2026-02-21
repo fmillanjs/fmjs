@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Command } from 'cmdk';
+import { useLenis } from 'lenis/react';
 import {
   Home,
   User,
@@ -39,6 +40,17 @@ export function CommandPalette() {
     setOpen(false);
     callback();
   };
+
+  const lenis = useLenis();
+
+  // SCROLL-04: lock background scroll when palette is open
+  useEffect(() => {
+    if (open) {
+      lenis?.stop();
+    } else {
+      lenis?.start();
+    }
+  }, [open, lenis]);
 
   const cycleTheme = () => {
     if (theme === 'light') {
