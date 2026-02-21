@@ -1,651 +1,667 @@
 # Architecture Research
 
-**Domain:** Coolify multi-service deployment + DevCollab UI gaps (full-stack monorepo)
-**Researched:** 2026-02-19
-**Confidence:** HIGH (Coolify networking, Next.js auth pattern, existing API endpoints); MEDIUM (Coolify GHCR pull auth, env var baking tradeoffs)
+**Domain:** Animation integration — Lenis smooth scroll + GSAP ScrollTrigger + magnetic buttons + Matrix color system into existing Next.js 15 App Router portfolio
+**Researched:** 2026-02-20
+**Confidence:** HIGH (lenis/react API verified against GitHub monorepo; GSAP patterns verified against official docs; motion/react magnetic approach verified; existing codebase read directly)
 
 ---
 
-## Standard Architecture
+## Existing Architecture Baseline
 
-### System Overview
+Before describing what changes, the current state must be understood explicitly.
+
+### Current Provider/Component Tree (Portfolio Routes)
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                        INTERNET / DNS                             │
-│  devcollab.fernandomillan.dev  ─────┐                            │
-│  devcollab-api.fernandomillan.dev ──┤                            │
-└─────────────────────────────────────┼────────────────────────────┘
-                                      │
-┌─────────────────────────────────────▼────────────────────────────┐
-│                 COOLIFY SERVER (Traefik Reverse Proxy)            │
-│  Let's Encrypt SSL termination, Host()-based routing              │
-│  Labels configured automatically by Coolify UI domain settings   │
-└──────────────────────────────────────────────────────────────────┘
-                                      │
-┌─────────────────────────────────────▼────────────────────────────┐
-│         DOCKER COMPOSE STACK (single Coolify resource)           │
-│  Coolify-managed bridge network — services communicate by name   │
-│                                                                   │
-│  ┌────────────────┐    ┌──────────────────┐                      │
-│  │  devcollab-web │    │  devcollab-api   │                      │
-│  │  Next.js 15    │───▶│  NestJS 11       │                      │
-│  │  port 3002     │    │  port 3003       │                      │
-│  │  standalone    │    │  CASL + JWT      │                      │
-│  └────────────────┘    └────────┬─────────┘                      │
-│                                 │                                 │
-│               ┌─────────────────▼──────────────┐                 │
-│               │       devcollab-postgres        │                 │
-│               │       postgres:16-alpine        │                 │
-│               │       port 5432 (internal only) │                 │
-│               └────────────────────────────────┘                 │
-│                                                                   │
-│  devcollab-migrate (one-shot: runs prisma migrate deploy, exits) │
-└──────────────────────────────────────────────────────────────────┘
-
-NOTE: teamflow-web, teamflow-api, teamflow-postgres, and Redis live
-in a SEPARATE Coolify stack on the same server. No cross-stack
-communication is needed — each product is fully isolated.
+app/layout.tsx  [Server Component]
+  └── <html> + <body>
+        └── ThemeProvider (next-themes, class-based dark mode)
+              └── (portfolio)/layout.tsx  [Server Component]
+                    └── <div class="matrix-theme min-h-screen flex flex-col">
+                          ├── <DotGridSpotlight />        [Client -- mousemove listener]
+                          ├── <PortfolioNav />            [Client -- motion/react, usePathname]
+                          ├── <MotionProvider>            [Client -- MotionConfig reducedMotion="user"]
+                          │     └── <main>{children}</main>
+                          └── <PortfolioFooter />         [Server Component currently]
+                          └── <CommandPalette />          [Client]
 ```
 
-### Component Responsibilities
-
-| Component | Responsibility | Implementation |
-|-----------|----------------|----------------|
-| Traefik (Coolify-managed) | SSL termination, domain routing via Host() labels | Set domain in Coolify UI; labels auto-generated |
-| devcollab-web | UI pages, SSR data fetching, httpOnly cookie auth gate | Next.js 15, standalone output, port 3002 |
-| devcollab-api | Business logic, CASL RBAC, JWT via httpOnly cookie, Prisma ORM | NestJS 11, port 3003 |
-| devcollab-postgres | Persistent storage for devcollab domain | postgres:16-alpine, internal port 5432 |
-| devcollab-migrate | One-shot Prisma migration runner | Exits cleanly; API depends on `service_completed_successfully` |
-| GitHub Actions CI | Test, build Docker images, push to GHCR, trigger Coolify webhook | `.github/workflows/deploy.yml` |
-
----
-
-## New Files vs Modified Files
-
-### Coolify Deployment
-
-**New files to create:**
-
-| File | Purpose |
-|------|---------|
-| `coolify-compose.yml` | Production Docker Compose used by Coolify. Contains devcollab-web, devcollab-api, devcollab-postgres, devcollab-migrate. References GHCR images (not build: blocks). No `networks:` keys — Coolify manages networking. |
-
-**Existing files to modify:**
-
-| File | What changes | Why |
-|------|--------------|-----|
-| `apps/devcollab-web/Dockerfile` | Add `ARG NEXT_PUBLIC_API_URL` and `ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL` before the builder RUN stage | NEXT_PUBLIC vars are baked into the JS bundle at build time; must arrive via `--build-arg` in CI — cannot be set at runtime |
-| `.github/workflows/deploy.yml` | Add `build-args: NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev` to the devcollab-web Docker build step; add separate Coolify webhook trigger job for the devcollab stack (`COOLIFY_DEVCOLLAB_WEBHOOK` secret) | CI currently only triggers the teamflow Coolify webhook in the `deploy` job; devcollab needs its own trigger |
-| `apps/devcollab-api/src/main.ts` | Change the `enableCors` origin from fallback `http://localhost:3002` to read `process.env.DEVCOLLAB_WEB_URL` with the production domain as the expected value | CORS will block browser fetches in production if origin does not match |
-
-**No changes needed:**
-
-| File | Reason |
-|------|--------|
-| `apps/devcollab-web/next.config.ts` | Already has `output: 'standalone'` — correct |
-| `apps/devcollab-api/Dockerfile` | Correct; runs `prisma generate` during build, exposes port 3003 |
-| `packages/devcollab-database/Dockerfile.migrate` | Correct; runs `prisma migrate deploy` and exits |
-| `packages/devcollab-database/Dockerfile.seed` | Seed is for local dev only; production Coolify stack should NOT include the seed container (real data would be wiped) |
-
----
-
-### DevCollab Invite UI
-
-**New files to create:**
-
-| File | Purpose |
-|------|---------|
-| `apps/devcollab-web/app/w/[slug]/members/page.tsx` | Server component. Reads `devcollab_token` cookie, fetches `GET /workspaces/:slug/members`, passes data to `MemberTable`. Auth gate is already handled by parent `w/[slug]/layout.tsx`. |
-| `apps/devcollab-web/app/w/[slug]/members/invite/page.tsx` | Server component. Renders `InvitePanel`. API Admin enforcement is done by CASL guard — non-admins see the page but the API returns 403 on generate. |
-| `apps/devcollab-web/components/members/MemberTable.tsx` | Client component. Renders a table (inline styles or Shadcn Table if installed) with Name, Email, Role Badge per member. Admin users see a role dropdown (PATCH) and Remove button (DELETE) per row. Calls API with `credentials: 'include'`. |
-| `apps/devcollab-web/components/members/InvitePanel.tsx` | Client component. "Generate Invite Link" button calls `POST /workspaces/:slug/invite-links`. Displays the returned token URL as a copyable string (e.g., `https://devcollab.fernandomillan.dev/join?token=<uuid>`). Shows 403 message if user is not Admin. |
-
-**Existing files to modify:**
-
-| File | What changes | Why |
-|------|--------------|-----|
-| `apps/devcollab-web/components/WorkspaceNav.tsx` | Add a "Members" `<a>` link: `href="/w/${slug}/members"` | The nav has Overview, Posts, Snippets, Activity links but no Members entry — the page is unreachable without a link |
-
----
-
-### Dashboard Auth Guard
-
-**Existing files to modify:**
-
-| File | What changes | Why |
-|------|--------------|-----|
-| `apps/devcollab-web/app/dashboard/page.tsx` | Convert from `'use client'` to a server component. Read `devcollab_token` via `cookies()`, call `redirect('/login')` if absent. Move the `fetch('/workspaces')` call to server-side using the cookie header. Pass data as props to a child client component for the create-workspace form. | The current client component has no auth gate — any unauthenticated user can load the dashboard page. The form interactions still need client state, so extract a `WorkspaceList` client component for that part. |
-
----
-
-## Recommended Project Structure (new additions only)
+### Current CSS Token System
 
 ```
-apps/devcollab-web/
-├── app/
-│   └── w/[slug]/
-│       └── members/
-│           ├── page.tsx              # Server component: member list
-│           └── invite/
-│               └── page.tsx          # Server component: invite panel
+:root {
+  --matrix-green: #00FF41;         (Tailwind: no utility, consumed as var())
+  --matrix-green-dim: #00CC33;     (Tailwind: no utility, consumed as var())
+  --matrix-green-ghost: #00FF4120; (Tailwind: no utility, consumed as var())
+}
+
+.matrix-theme { background-color: #0a0a0a; color: #e8e8e8; }
+html:not(.dark) .matrix-theme { reverts to --background / --foreground }
+```
+
+Matrix tokens live in `:root`, NOT in `@theme inline`, meaning no `bg-matrix-green` Tailwind utility exists. Direct `var(--matrix-green)` inline usage throughout codebase.
+
+### Current Animation Library Split
+
+| Concern | Library | Files |
+|---------|---------|-------|
+| Scroll-reveal (fade+slide) | motion/react `whileInView` | `animate-in.tsx`, `stagger-container.tsx` |
+| Nav active indicator | motion/react `layoutId` | `nav.tsx` |
+| Noise decryption hover | motion/react `useMotionValue` | `evervault-card.tsx` |
+| Text scramble | Hand-rolled RAF hook | `use-text-scramble.ts`, `scramble-hero.tsx` |
+| Matrix rain canvas | Raw Canvas 2D API, `requestAnimationFrame` | `matrix-rain-canvas.tsx` (dynamic, ssr:false) |
+| Dot-grid spotlight | CSS custom props + `mousemove` listener | `dot-grid-spotlight.tsx` |
+| Reduced motion gate | Three-layer: CSS rule + RAF check + `MotionConfig` | `globals.css`, `matrix-rain-canvas.tsx`, `motion-provider.tsx` |
+
+**GSAP is installed** (`gsap@3.14.2`, `@gsap/react@2.1.2`, `lenis@1.3.17`) but currently unused — no GSAP or Lenis code exists in the codebase yet.
+
+---
+
+## Standard Architecture — Target State
+
+### System Overview — Provider Tree After Integration
+
+```
+app/layout.tsx  [Server Component -- unchanged]
+  └── <html> + <body>
+        └── ThemeProvider
+              └── (portfolio)/layout.tsx  [Server Component -- MODIFIED]
+                    └── <div class="matrix-theme min-h-screen flex flex-col">
+                          ├── <DotGridSpotlight />        [unchanged]
+                          ├── <PortfolioNav />            [unchanged]
+                          ├── <LenisProvider>             [NEW -- wraps main + footer]
+                          │     ├── <LenisScrollRestorer /> [NEW -- route change scroll-to-top]
+                          │     ├── <MotionProvider>      [MOVED inside LenisProvider]
+                          │     │     └── <main>{children}</main>
+                          │     └── <PortfolioFooter />   [MODIFIED -- Matrix animation added]
+                          └── <CommandPalette />          [unchanged, outside scroll ctx]
+```
+
+**Why LenisProvider wraps `<main>` AND `<PortfolioFooter>`:** Both are in the scroll flow. Lenis must manage the entire scrollable content, not just main.
+
+**Why CommandPalette stays outside:** It renders in a portal/fixed overlay and does not participate in document scroll.
+
+---
+
+## Component Responsibilities
+
+| Component | New or Modified | Responsibility | SSR |
+|-----------|----------------|----------------|-----|
+| `LenisProvider` | NEW | Creates ReactLenis root instance; wires GSAP ticker when GSAP is co-used | Client only |
+| `LenisScrollRestorer` | NEW | Watches `usePathname()`, calls `lenis.scrollTo(0, { immediate: true })` on route change | Client only |
+| `MagneticButton` | NEW | Wrapper that pulls child element toward cursor via motion spring; `any-hover` guarded | Client only |
+| `PortfolioFooter` | MODIFIED | Add Matrix animation child (dynamic ssr:false); apply Matrix color styling | Server stays Server |
+| `FooterMatrixEffect` | NEW | The actual animated element inside the footer; isolated client animation island | Client only |
+| `globals.css` | MODIFIED | Add Tailwind utilities for Matrix tokens; add new CSS tokens for surface/glow variants | N/A |
+| `(portfolio)/layout.tsx` | MODIFIED | Wrap with LenisProvider; reorder providers | Server Component |
+
+---
+
+## Recommended Project Structure (Delta -- New Files Only)
+
+```
+apps/web/
+├── providers/
+│   └── lenis-provider.tsx              # NEW: ReactLenis root + GSAP ticker wiring
+│
 ├── components/
-│   └── members/
-│       ├── MemberTable.tsx           # Client component: role management table
-│       └── InvitePanel.tsx           # Client component: generate invite URL
-
-coolify-compose.yml                   # Root of monorepo — Coolify production stack
+│   └── portfolio/
+│       ├── lenis-scroll-restorer.tsx   # NEW: Route-change scroll-to-top
+│       ├── magnetic-button.tsx         # NEW: Cursor-pull wrapper component
+│       ├── footer-matrix-effect.tsx    # NEW: Animated Matrix element for footer
+│       ├── footer.tsx                  # MODIFIED: dynamic import + Matrix styling
+│       └── animate-in.tsx              # unchanged (motion/react whileInView)
+│
+└── app/
+    └── globals.css                     # MODIFIED: Matrix Tailwind utilities added
 ```
 
 ---
 
 ## Architectural Patterns
 
-### Pattern 1: Server Component Auth Gate (extend to dashboard)
+### Pattern 1: ReactLenis Root Provider + GSAP Ticker Integration
 
-**What:** Server components read the `devcollab_token` httpOnly cookie using Next.js `cookies()` and call `redirect('/login')` before any rendering occurs.
+**What:** A single `LenisProvider` client component placed in the portfolio layout creates one Lenis instance for the entire portfolio, wires it into GSAP's ticker (replacing autoRaf), and disables GSAP lag smoothing. ScrollTrigger then calls `ScrollTrigger.update` on each Lenis scroll event.
 
-**When to use:** Any page route that requires authentication. The `w/[slug]/layout.tsx` already implements this correctly for all workspace sub-routes. The `/dashboard` route currently bypasses this because it is `'use client'`.
+**When to use:** Any time both Lenis and GSAP ScrollTrigger are used together. Ticker unification prevents drift between the two animation loops.
 
-**Trade-offs:** Server-side redirect means zero flash of unauthenticated content. The Next.js layer does not validate the JWT cryptographically — it only checks presence. The API validates the JWT on every data fetch, which is the correct separation of concerns.
+**Trade-offs:** One global Lenis instance is simpler to reason about than per-page instances. The GSAP ticker drives Lenis rather than `requestAnimationFrame`, so GSAP and scroll are always in sync. If only Lenis is needed (no GSAP), `autoRaf: true` is simpler and this wiring is unnecessary.
 
-**Example — applying to dashboard:**
-```typescript
-// apps/devcollab-web/app/dashboard/page.tsx
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+**Example:**
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+```tsx
+// providers/lenis-provider.tsx
+'use client'
 
-async function getWorkspaces(token: string) {
-  const res = await fetch(`${API_URL}/workspaces`, {
-    headers: { Cookie: `devcollab_token=${token}` },
-    cache: 'no-store',
-  });
-  if (!res.ok) return [];
-  return res.json();
-}
+import { useEffect, useRef } from 'react'
+import { ReactLenis } from 'lenis/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import type { ReactNode } from 'react'
 
-export default async function DashboardPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('devcollab_token')?.value;
-  if (!token) redirect('/login');
+gsap.registerPlugin(ScrollTrigger)
 
-  const workspaces = await getWorkspaces(token);
-  // render server-side with data; extract client components for form interactions
-}
-```
+export function LenisProvider({ children }: { children: ReactNode }) {
+  const lenisRef = useRef<{ lenis?: { raf: (time: number) => void } }>(null)
 
----
+  useEffect(() => {
+    // Wire Lenis into GSAP ticker -- replaces autoRaf
+    function update(time: number) {
+      lenisRef.current?.lenis?.raf(time * 1000)
+    }
+    gsap.ticker.add(update)
+    gsap.ticker.lagSmoothing(0)  // critical: prevents jank on tab-switch return
 
-### Pattern 2: Server Fetch → Client Interaction (existing pattern — extend to members)
-
-**What:** The page (server component) fetches initial data by forwarding the cookie to the API. It passes that data as props to a client component that handles user interactions (buttons, dropdowns, form submits) via direct `fetch` with `credentials: 'include'`.
-
-**When to use:** All devcollab-web pages already follow this pattern (e.g., `snippets/page.tsx` fetches list server-side, interactive elements are client components). Apply for members and invite pages.
-
-**Trade-offs:** Initial load is fast and does not require client JavaScript for the first paint. Mutations are handled by client-side fetch calls to the API, consistent with every other page in the app. No server actions required.
-
-**Example — members page:**
-```typescript
-// apps/devcollab-web/app/w/[slug]/members/page.tsx
-import { cookies } from 'next/headers';
-import MemberTable from '../../../../components/members/MemberTable';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
-
-async function getMembers(slug: string, token: string) {
-  const res = await fetch(`${API_URL}/workspaces/${slug}/members`, {
-    headers: { Cookie: `devcollab_token=${token}` },
-    cache: 'no-store',
-  });
-  if (!res.ok) return [];
-  return res.json();
-}
-
-export default async function MembersPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const cookieStore = await cookies();
-  const token = cookieStore.get('devcollab_token')?.value ?? '';
-  const members = await getMembers(slug, token);
+    return () => gsap.ticker.remove(update)
+  }, [])
 
   return (
-    <div>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>
-        Members
-      </h1>
-      <a href={`/w/${slug}/members/invite`} style={{ display: 'inline-block', marginBottom: '1.5rem' }}>
-        Generate Invite Link
-      </a>
-      <MemberTable slug={slug} initialMembers={members} />
-    </div>
-  );
+    <ReactLenis
+      root
+      ref={lenisRef}
+      options={{ autoRaf: false, lerp: 0.1, duration: 1.2 }}
+    >
+      {children}
+    </ReactLenis>
+  )
 }
 ```
 
+**Source:** Verified against [darkroomengineering/lenis monorepo packages/react README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md). The `autoRaf: false` + `gsap.ticker.add()` pattern is the official documented integration. **HIGH confidence.**
+
 ---
 
-### Pattern 3: Coolify Single Docker Compose Stack
+### Pattern 2: Route-Change Scroll Restoration
 
-**What:** All devcollab services are defined in one `coolify-compose.yml` and deployed as a single Coolify resource. Services communicate by Docker service name as hostname. Coolify manages the network automatically.
+**What:** A zero-render child component that watches `usePathname()` and calls `lenis.scrollTo(0, { immediate: true })` whenever the route changes. Placed inside LenisProvider so it has access to the Lenis instance via `useLenis`.
 
-**When to use:** Services that are always deployed together and need to talk to each other directly.
+**When to use:** Required for all Lenis + Next.js App Router setups. App Router soft navigation does not reset scroll position when Lenis intercepts native scroll. Without this, navigating between portfolio pages resumes at the previous scroll position.
 
-**Critical rules:**
-- Do NOT define `networks:` keys in the compose file used by Coolify. Coolify manages its own network per stack; manual network definitions cause Gateway Timeout errors.
-- Set `restart: 'no'` on `devcollab-migrate`. Migration is a one-shot job. `restart: unless-stopped` on a job container causes infinite restart loops.
-- Do NOT include the seed container in the production Coolify compose file. Seeds overwrite data.
+**Trade-offs:** `immediate: true` skips the smooth animation so the page snaps to top, which is the expected browser navigation behavior. Animated scroll-to-top on navigation is disorienting.
 
-**Example — coolify-compose.yml skeleton:**
-```yaml
-# coolify-compose.yml (root of monorepo)
-# Used ONLY by Coolify in production.
-# Local dev uses docker-compose.yml.
-version: '3.8'
+**Example:**
 
-services:
-  devcollab-postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: devcollab
-      POSTGRES_PASSWORD: ${DEVCOLLAB_POSTGRES_PASSWORD}
-      POSTGRES_DB: devcollab
-    volumes:
-      - devcollab-pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U devcollab']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+```tsx
+// components/portfolio/lenis-scroll-restorer.tsx
+'use client'
 
-  devcollab-migrate:
-    image: ghcr.io/OWNER/devcollab-api:latest  # reuse API image which has prisma
-    restart: 'no'                               # CRITICAL: job container, not a service
-    depends_on:
-      devcollab-postgres:
-        condition: service_healthy
-    environment:
-      DEVCOLLAB_DATABASE_URL: postgresql://devcollab:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/devcollab
-    command: ["node_modules/.bin/prisma", "migrate", "deploy", "--schema=./packages/devcollab-database/prisma/schema.prisma"]
+import { useEffect } from 'react'
+import { useLenis } from 'lenis/react'
+import { usePathname } from 'next/navigation'
 
-  devcollab-api:
-    image: ghcr.io/OWNER/devcollab-api:latest
-    restart: unless-stopped
-    depends_on:
-      devcollab-migrate:
-        condition: service_completed_successfully
-    environment:
-      NODE_ENV: production
-      PORT: 3003
-      DEVCOLLAB_DATABASE_URL: postgresql://devcollab:${DEVCOLLAB_POSTGRES_PASSWORD}@devcollab-postgres:5432/devcollab
-      DEVCOLLAB_JWT_SECRET: ${DEVCOLLAB_JWT_SECRET}
-      DEVCOLLAB_WEB_URL: ${DEVCOLLAB_WEB_URL}   # set in Coolify UI to https://devcollab.fernandomillan.dev
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3003/health']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+export function LenisScrollRestorer() {
+  const lenis = useLenis()
+  const pathname = usePathname()
 
-  devcollab-web:
-    image: ghcr.io/OWNER/devcollab-web:latest
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      # NEXT_PUBLIC_API_URL is baked into the image at build time via --build-arg
-      # Runtime env vars here are for server-side only env vars if any are added later
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3002']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  useEffect(() => {
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+    }
+  }, [pathname, lenis])
 
-volumes:
-  devcollab-pgdata:
-# NO networks: block — Coolify manages networking automatically
+  return null
+}
 ```
+
+**Known issue confirmed:** GitHub issue [darkroomengineering/lenis #319](https://github.com/darkroomengineering/lenis/issues/319) — "ReactLenis begins halfway down the page on navigation in NextJS 14 with app router." The `immediate: true` flag is the critical detail. **HIGH confidence.**
+
+---
+
+### Pattern 3: GSAP ScrollTrigger Parallax via useGSAP Hook
+
+**What:** Per-component parallax via `useGSAP()` from `@gsap/react`. ScrollTrigger is registered once globally in the LenisProvider. Each component that needs scroll-driven animation uses `useGSAP` with a scoped container ref.
+
+**When to use:** Decorative parallax on section backgrounds, floating elements, case study image depth effects.
+
+**Trade-offs:** `useGSAP` handles cleanup automatically via `gsap.context()` -- all ScrollTriggers created inside the callback are killed on component unmount. This prevents the memory leak that occurs with raw `useEffect` + `ScrollTrigger.create`. React 18+ Strict Mode double-invocation is handled correctly because `useGSAP` reverts on first cleanup before re-running.
+
+**Lighthouse CI constraint:** Only animate `transform` and `opacity`. Never animate `width`, `height`, `top`, `left`, `margin`, or `padding`. Layout properties cause reflow at 60fps and will fail the CLS check and degrade the Lighthouse performance score below 0.90.
+
+**Example:**
+
+```tsx
+'use client'
+
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+
+// Register once at module level -- idempotent, safe to call multiple times
+gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+export function ParallaxSection({ children }: { children: React.ReactNode }) {
+  const container = useRef<HTMLDivElement>(null)
+  const inner = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    gsap.to(inner.current, {
+      yPercent: -15,           // transform only -- no layout recalculation
+      ease: 'none',
+      scrollTrigger: {
+        trigger: container.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1,              // scrub:1 = 1s lag, feels natural vs scrub:true (immediate)
+      },
+    })
+  }, { scope: container })
+
+  return (
+    <div ref={container} className="overflow-hidden">
+      <div ref={inner}>{children}</div>
+    </div>
+  )
+}
+```
+
+**Source:** [GSAP React documentation — useGSAP hook](https://gsap.com/resources/React/). **HIGH confidence.**
+
+---
+
+### Pattern 4: Magnetic Button via motion/react Spring
+
+**What:** A `MagneticButton` wrapper component that uses `useState` with a `motion.div` `animate` prop from `motion/react` to animate `x` and `y` of a wrapper div when the cursor enters the element's bounding box. Resets to zero on mouse leave. Spring physics handle the elastic snap.
+
+**Why motion/react over GSAP `quickTo` for this:** The project already uses `motion/react` for nav, scroll-reveal, and hover effects. Using GSAP's `quickTo` would require explicit `useEffect` cleanup with `removeEventListener` and `cloneElement` ref-threading. The `motion/react` spring approach is declarative, auto-cleaning, and consistent with the existing pattern in `evervault-card.tsx`.
+
+**SSR safety:** The component is `'use client'`, uses only React synthetic events (no `addEventListener`), and reads `getBoundingClientRect` only on mouse event (not at render time). No `window` access during server rendering.
+
+**Touch guard:** Must check `useReducedMotion()` and render children directly when true. The component should also not activate on touch-primary devices since `mousemove` does not fire on touch. A `window.matchMedia('(any-hover: hover)')` check inside `useEffect` is appropriate, but the simpler approach is: if `onMouseMove` never fires, the position stays at `{ x: 0, y: 0 }` and no animation occurs -- functionally safe without an explicit guard, but the reduced-motion guard is mandatory.
+
+**Example:**
+
+```tsx
+// components/portfolio/magnetic-button.tsx
+'use client'
+
+import { useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
+import type { ReactNode } from 'react'
+
+interface MagneticButtonProps {
+  children: ReactNode
+  strength?: number   // 0.3 = subtle, 0.5 = strong
+}
+
+export function MagneticButton({ children, strength = 0.4 }: MagneticButtonProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const prefersReducedMotion = useReducedMotion()
+
+  // Reduced motion: pass through with no wrapper overhead
+  if (prefersReducedMotion) return <>{children}</>
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return
+    const { height, width, left, top } = ref.current.getBoundingClientRect()
+    setPosition({
+      x: (e.clientX - (left + width / 2)) * strength,
+      y: (e.clientY - (top + height / 2)) * strength,
+    })
+  }
+
+  const handleMouseLeave = () => setPosition({ x: 0, y: 0 })
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={position}
+      transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
+      style={{ display: 'inline-flex' }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+```
+
+**Usage pattern:**
+
+```tsx
+// In hero-section.tsx, contact page, etc.
+import { MagneticButton } from '@/components/portfolio/magnetic-button'
+
+<MagneticButton>
+  <Button asChild size="lg">
+    <Link href="/about">Learn More</Link>
+  </Button>
+</MagneticButton>
+```
+
+**Source:** [Olivier Larose magnetic button tutorial](https://blog.olivierlarose.com/tutorials/magnetic-button) — direct code verification. **MEDIUM confidence (tutorial source, but motion/react spring API is HIGH confidence against official docs).**
+
+---
+
+### Pattern 5: Matrix CSS Token Extension (Tailwind Utilities)
+
+**What:** Add Matrix-specific color tokens to `@theme inline` in `globals.css` so Tailwind utilities like `bg-matrix-green`, `text-matrix-green`, `border-matrix-border` are available alongside the existing raw `var(--matrix-green)` usage.
+
+**Current state:** `--matrix-green`, `--matrix-green-dim`, `--matrix-green-ghost` exist in `:root` but are NOT in `@theme inline`. Consuming code uses `text-[var(--matrix-green)]` inline bracket syntax.
+
+**Why add to `@theme inline`:** Color harmony work across project cards, case study pages, typography, and the footer will benefit from composable Tailwind utilities that enable `hover:text-matrix-green`, `dark:border-matrix-border`, and responsive variants without repeated bracket syntax.
+
+**Impact on existing code:** Adding to `@theme inline` is purely additive. All existing `var(--matrix-green)` references and `text-[var(--matrix-green)]` bracket usages continue to work unchanged.
+
+**New tokens to add:**
+
+```css
+/* In globals.css :root block (new additions) */
+:root {
+  /* ... existing matrix tokens unchanged ... */
+  --matrix-surface: #0d1117;         /* deep dark card background */
+  --matrix-border: #1a2a1a;          /* dark green-tinted border */
+  --matrix-glow: rgba(0,255,65,0.15); /* ambient glow color */
+}
+
+/* In globals.css @theme inline block (new additions) */
+@theme inline {
+  /* ... existing semantic tokens unchanged ... */
+
+  /* Matrix green system -- exposed as Tailwind utilities */
+  --color-matrix-green: var(--matrix-green);
+  --color-matrix-green-dim: var(--matrix-green-dim);
+  --color-matrix-green-ghost: var(--matrix-green-ghost);
+
+  /* Matrix surface tokens -- new for v3.1 color harmony work */
+  --color-matrix-surface: var(--matrix-surface);
+  --color-matrix-border: var(--matrix-border);
+}
+```
+
+**Resulting Tailwind utilities:** `text-matrix-green`, `bg-matrix-green`, `border-matrix-green`, `text-matrix-green-dim`, `bg-matrix-surface`, `border-matrix-border`. The `--matrix-glow` raw var is consumed as `shadow-[var(--matrix-glow)]` (arbitrary value) because Tailwind shadow tokens require more complex setup.
+
+---
+
+### Pattern 6: Footer Matrix Animation -- Isolated Dynamic Island
+
+**What:** The footer is currently a Server Component. The Matrix animation element should be isolated to a child `FooterMatrixEffect` client component rendered with `next/dynamic(ssr: false)` inside the footer, following the identical pattern as `MatrixRainCanvas`.
+
+**Why dynamic(ssr: false) for the effect, not the whole footer:** The footer's static content (links, copyright, name) remains server-rendered for fast initial HTML. Only the animated element requires client-side hydration. The footer is below the fold on all portfolio pages -- its dynamic island loads after LCP without affecting the score.
+
+**Provider tree position:**
+
+```
+PortfolioFooter (Server Component -- keeps 'use server' behavior)
+  ├── Static content (name, links, copyright) -- server HTML
+  └── FooterMatrixEffect (dynamic, ssr: false) -- client animation island
+```
+
+**Structural pattern:**
+
+```tsx
+// In footer.tsx (Server Component stays Server)
+import dynamic from 'next/dynamic'
+
+const FooterMatrixEffect = dynamic(
+  () => import('./footer-matrix-effect'),
+  { ssr: false }
+)
+
+export function PortfolioFooter() {
+  return (
+    <footer className="border-t border-matrix-border bg-[#0a0a0a] relative overflow-hidden">
+      <FooterMatrixEffect />  {/* loads after LCP, does not block */}
+      <div className="relative z-10 ...">
+        {/* static content -- server-rendered */}
+      </div>
+    </footer>
+  )
+}
+```
+
+**Source:** Direct pattern from existing `matrix-rain-canvas.tsx` + `hero-section.tsx` in this codebase. **HIGH confidence.**
 
 ---
 
 ## Data Flow
 
-### Coolify Deployment Flow (CI to Production)
+### Lenis + GSAP ScrollTrigger Synchronized Loop
 
 ```
-git push → main
-    │
-    ▼
-GitHub Actions: test job (existing)
-    │
-    ▼
-build-and-push-devcollab job:
-  docker build \
-    --build-arg NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev \
-    -f apps/devcollab-web/Dockerfile .
-  docker push ghcr.io/OWNER/devcollab-web:latest
-  docker push ghcr.io/OWNER/devcollab-api:latest
-    │
-    ▼
-deploy-devcollab job:
-  curl -X GET $COOLIFY_DEVCOLLAB_WEBHOOK \
-    -H "Authorization: Bearer $COOLIFY_TOKEN"
-    │
-    ▼
-Coolify server:
-  docker pull ghcr.io/OWNER/devcollab-web:latest
-  docker pull ghcr.io/OWNER/devcollab-api:latest
-  docker compose up -d (recreates changed containers)
-  devcollab-migrate runs → exits 0
-  devcollab-api starts
-  devcollab-web starts
+Browser scroll event (wheel/touch/keyboard)
+    |
+    v
+Lenis intercepts (native scroll suppressed via preventDefault pattern)
+    |
+    v
+GSAP ticker.add() callback fires each frame (~60fps)
+    |
+    v
+lenisRef.current.lenis.raf(time * 1000)
+    |
+    v
+Lenis calculates velocity + lerped position
+    |
+    v
+Lenis emits 'scroll' event
+    |
+    v
+ScrollTrigger.update() recalculates trigger positions
+    |
+    v
+GSAP tweens execute (yPercent, opacity, etc.)
+    |
+    v
+CSS transform applied on compositor thread (no layout reflow)
 ```
 
-### Coolify Service Startup Dependency Chain
+### MagneticButton State Flow
 
 ```
-devcollab-postgres
-  └── healthcheck: pg_isready passes
-      │
-      ▼
-  devcollab-migrate
-    └── condition: service_healthy (postgres)
-    └── runs prisma migrate deploy
-    └── exits 0
-        │
-        ▼
-    devcollab-api
-      └── condition: service_completed_successfully (migrate)
-      └── starts NestJS on :3003
-          │
-          (no hard depends_on but API must be up before web requests flow)
-          │
-          ▼
-      devcollab-web
-        └── starts Next.js standalone on :3002
+User cursor enters MagneticButton bounding box
+    |
+    v
+onMouseMove -> getBoundingClientRect() -> compute delta from center
+    |
+    v
+setPosition({ x, y }) -- React state update
+    |
+    v
+motion.div animate={position} -> spring physics (stiffness 150, damping 15)
+    |
+    v
+motion/react writes CSS transform directly (no re-render per frame after initial)
+    |
+    v
+User cursor leaves -> setPosition({ x: 0, y: 0 }) -> spring returns to origin
 ```
 
-### Browser Authentication Flow
+### Route Change Scroll Flow
 
 ```
-Browser visits /login (no cookie)
-    │
-    ▼
-LoginPage (client component)
-  POST https://devcollab-api.fernandomillan.dev/auth/login
-  { credentials: 'include' }
-    │
-    ▼
-devcollab-api
-  validates credentials
-  Set-Cookie: devcollab_token=<jwt>; HttpOnly; Secure; SameSite=None
-    │
-    ▼
-Browser stores cookie (httpOnly — not accessible to JS)
-Browser navigates to /dashboard
-    │
-    ▼
-Next.js server component DashboardPage
-  cookies().get('devcollab_token')
-  if missing → redirect('/login')          ← NEW: currently missing
-  if present → fetch /workspaces with Cookie header
-    │
-    ▼
-devcollab-api validates JWT from cookie → returns workspaces
-    │
-    ▼
-Server renders DashboardPage with data → sends HTML to browser
-```
-
-### Invite Link Flow (new feature)
-
-```
-Admin navigates to /w/:slug/members/invite
-    │
-    ▼
-InvitePage (server component) renders InvitePanel (client component)
-    │
-    ▼
-Admin clicks "Generate Invite Link"
-InvitePanel → POST /workspaces/:slug/invite-links { credentials: 'include' }
-    │
-    ▼
-devcollab-api
-  CaslAuthGuard: checks Admin role via WorkspaceAbilityFactory
-  Non-admin → 403 Forbidden
-  Admin → workspaces.service.generateInviteLink(slug)
-  creates InviteLink { token: uuid, expiresAt: now+72h }
-  returns { token, expiresAt }
-    │
-    ▼
-InvitePanel displays:
-  "Share this link:"
-  https://devcollab.fernandomillan.dev/join?token=<uuid>
-  [Copy button]
-    │
-    ▼
-Admin sends link to new user
-New user opens /join?token=<uuid>
-  (must be logged in — POST /workspaces/join requires auth cookie)
-  POST /workspaces/join { token } { credentials: 'include' }
-    │
-    ▼
-devcollab-api
-  validates token → marks usedAt → creates WorkspaceMember { role: Contributor }
-  redirect to /dashboard
-```
-
-### Member Management Flow (new feature)
-
-```
-Admin navigates to /w/:slug/members
-    │
-    ▼
-MembersPage (server component)
-  GET /workspaces/:slug/members (with Cookie header)
-  returns Member[] with { id, role, user: { id, name, email } }
-    │
-    ▼
-MemberTable (client component) renders:
-  Name | Email | Role (Badge) | Actions
-    │
-    ├─ Admin: role dropdown → PATCH /workspaces/:slug/members/:userId/role { role }
-    │   API: 400 if demoting last Admin (service-level guard)
-    │   API: 403 if requester is not Admin (CASL guard)
-    │
-    └─ Admin: Remove button → DELETE /workspaces/:slug/members/:userId
-        API: 400 if removing last Admin (service-level guard)
-        API: 403 if requester is not Admin (CASL guard)
+User clicks Next.js <Link>
+    |
+    v
+Next.js App Router soft navigation (no full reload)
+    |
+    v
+usePathname() value changes in LenisScrollRestorer
+    |
+    v
+useEffect fires -> lenis.scrollTo(0, { immediate: true })
+    |
+    v
+Page snaps to top (no eased animation -- matches native browser behavior)
+    |
+    v
+New page content renders -- ScrollTrigger recalculates positions on next scroll
 ```
 
 ---
 
-## Coolify Deployment: Step-by-Step Integration Points
+## Integration Points -- New vs Modified Explicit
 
-### Pre-Deployment: GHCR Auth on Coolify Server
+### New Files
 
-```bash
-# SSH into the Coolify server as the user Coolify is configured to use
-ssh user@coolify-server
+| File | What It Does | Why It's New |
+|------|-------------|--------------|
+| `providers/lenis-provider.tsx` | ReactLenis root provider + GSAP ticker wiring + ScrollTrigger registration | No Lenis or GSAP code exists in codebase yet |
+| `components/portfolio/lenis-scroll-restorer.tsx` | Route-change scroll-to-top via useLenis | Required for App Router navigation correctness |
+| `components/portfolio/magnetic-button.tsx` | Cursor-attraction wrapper via motion/react spring | New UX component (was deferred in v2.5) |
+| `components/portfolio/footer-matrix-effect.tsx` | Animated Matrix element inside footer | Isolated client animation island |
 
-# Authenticate Docker with GHCR using a GitHub Personal Access Token
-# Scope required: read:packages
-docker login ghcr.io -u <github-username> -p <ghcr-pat-with-read-packages>
+### Modified Files
 
-# Coolify auto-detects ~/.docker/config.json and uses credentials for all pulls
-```
+| File | What Changes | Risk Level |
+|------|-------------|------------|
+| `app/(portfolio)/layout.tsx` | Add `<LenisProvider>` wrapping `<main>` + `<PortfolioFooter>`; move `<MotionProvider>` inside | LOW -- additive wrapper, no logic changes |
+| `app/globals.css` | Add Matrix tokens to `@theme inline`; add new surface/border vars to `:root` | LOW -- purely additive, no existing tokens touched |
+| `components/portfolio/footer.tsx` | Add `FooterMatrixEffect` dynamic import; apply Matrix color classes | MEDIUM -- visual change triggers Playwright snapshot updates |
+| `components/portfolio/hero-section.tsx` | Wrap CTA buttons with `<MagneticButton>` | LOW -- additive wrapper around existing Button elements |
+| `app/(portfolio)/page.tsx` | Optionally wrap section CTAs with `<MagneticButton>` | LOW |
+| `app/(portfolio)/contact/page.tsx` | Optionally wrap submit button with `<MagneticButton>` | LOW |
 
-Note: This is a one-time server setup step. Without it, Coolify cannot pull private GHCR images and the deployment will fail with a pull access denied error.
+### Files That Do NOT Change
 
-### Coolify Resource Setup Order
-
-```
-1. Create Project in Coolify UI: "fernandomillan"
-   └── Add Environment: "production"
-
-2. Deploy devcollab stack:
-   └── New Resource → Docker Compose
-   └── Paste contents of coolify-compose.yml
-   └── Set domains in Coolify UI:
-       devcollab-web  → https://devcollab.fernandomillan.dev  → port 3002
-       devcollab-api  → https://devcollab-api.fernandomillan.dev  → port 3003
-   └── Set secret environment variables in Coolify UI:
-       DEVCOLLAB_POSTGRES_PASSWORD = <strong-password>
-       DEVCOLLAB_JWT_SECRET        = <min-32-char-secret>
-       DEVCOLLAB_WEB_URL           = https://devcollab.fernandomillan.dev
-
-3. Get Deploy Webhook URL:
-   └── Resource Settings → Webhooks → copy URL
-   └── Add as GitHub repo secret: COOLIFY_DEVCOLLAB_WEBHOOK
-   └── Also confirm COOLIFY_TOKEN exists (shared across all webhooks)
-
-4. Deploy teamflow stack separately (if not already deployed):
-   └── Same process; separate Coolify resource
-   └── No shared networking with devcollab stack
-```
-
-### Traefik Domain Routing
-
-Coolify automatically generates the correct Traefik labels when a domain is entered in the resource UI. Do NOT add Traefik labels manually to `coolify-compose.yml`. Coolify's label injection is the only supported method; manual labels conflict and cause routing failures.
+| File | Reason |
+|------|--------|
+| `app/layout.tsx` | LenisProvider is portfolio-scoped; must not touch root layout |
+| `(dashboard)/layout.tsx` | Dashboard scroll must remain native; Lenis must not affect it |
+| `components/portfolio/animate-in.tsx` | Existing scroll-reveal stays as motion/react whileInView |
+| `components/portfolio/stagger-container.tsx` | No changes -- already correct |
+| `components/portfolio/motion-provider.tsx` | No changes -- MotionConfig is just repositioned in layout tree |
+| `next.config.ts` | No changes needed |
 
 ---
 
-## NEXT_PUBLIC_API_URL: The Build-Time Baking Problem
+## Build Order
 
-This is the most important architectural constraint for the devcollab-web deployment.
+The ordering is dictated by dependencies: Lenis must be running before GSAP ScrollTrigger can be wired to it, and Matrix color tokens must be extended before color harmony work touches components.
 
-**The problem:** `NEXT_PUBLIC_*` environment variables are inlined into JavaScript bundles at `next build` time. The value is a string literal in the compiled output. Setting a different value at container runtime has no effect on client-side code.
+```
+Phase 1: Lenis Foundation (DEPENDENCY for all scroll animation)
+  New:     providers/lenis-provider.tsx
+  New:     components/portfolio/lenis-scroll-restorer.tsx
+  Modify:  app/(portfolio)/layout.tsx -- add LenisProvider
+  Verify:  smooth scroll works on all 5 portfolio URLs
+  Gate:    Lighthouse CI >= 0.90, no visual regressions
 
-**The constraint in this codebase:** Both server components and client components use `process.env.NEXT_PUBLIC_API_URL`. Server components at runtime can read env vars normally, but client components use the baked literal.
+Phase 2: GSAP ScrollTrigger Parallax (DEPENDS ON Phase 1)
+  Register ScrollTrigger in lenis-provider.tsx
+  Wire lenis.on('scroll', ScrollTrigger.update) inside LenisProvider
+  Apply useGSAP() parallax to: hero section, case study images, about section
+  Gate:    Lighthouse CI >= 0.90, CLS = 0 (transform-only rule verified)
 
-**Strategy A (recommended — bake the public URL):**
-- At CI build time: `--build-arg NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev`
-- In `apps/devcollab-web/Dockerfile`: add `ARG NEXT_PUBLIC_API_URL` and `ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL`
-- Result: browser fetches go to `https://devcollab-api.fernandomillan.dev` (Traefik routes to devcollab-api:3003)
-- Result: server fetches also go to `https://devcollab-api.fernandomillan.dev` (extra network hop through Traefik, but works correctly)
+Phase 3: Magnetic Buttons (INDEPENDENT of Phases 1-2 but benefits from Lenis being stable)
+  New:     components/portfolio/magnetic-button.tsx
+  Modify:  hero-section.tsx, contact/page.tsx -- wrap CTAs
+  Gate:    Touch devices unaffected, reduced-motion bypasses wrapper entirely
 
-**Strategy B (do not use — bake internal URL):**
-- Baking `http://devcollab-api:3003` (Docker internal hostname) works for server components
-- Fails catastrophically for browser clients — Docker hostnames are not resolvable from user browsers
-- All client components (`LoginPage`, `DashboardPage`, `JoinPage`, inline fetch calls) break in production
+Phase 4: Matrix Color Harmony (INDEPENDENT -- lowest risk)
+  Modify:  app/globals.css -- add @theme inline utilities + :root tokens
+  Apply:   project cards, case study pages, skills/about, typography, contact
+  Gate:    Playwright snapshots update and pass, no purple introduced
 
-Strategy A is the correct choice. The minor overhead of server components routing through Traefik is acceptable for a portfolio project.
+Phase 5: Footer Redesign + Matrix Animation (SELF-CONTAINED -- highest visual risk)
+  New:     components/portfolio/footer-matrix-effect.tsx
+  Modify:  components/portfolio/footer.tsx -- dynamic import + Matrix styling
+  Gate:    Lighthouse CI >= 0.90 (footer is below fold -- should not affect LCP)
+           Playwright baseline snapshots updated
+```
 
----
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| GHCR | `docker login ghcr.io` on Coolify server SSH | One-time setup; Coolify uses `~/.docker/config.json` automatically |
-| Let's Encrypt / Traefik | Set domain in Coolify UI | Coolify handles certificate provisioning and renewal; no manual config |
-| GitHub Actions → Coolify | `curl GET $COOLIFY_WEBHOOK -H "Authorization: Bearer $COOLIFY_TOKEN"` | One webhook URL per Coolify resource; teamflow and devcollab need separate webhooks |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| devcollab-web (server) → devcollab-api | `fetch(${API_URL}/...)` forwarding Cookie header | `API_URL` baked as `https://devcollab-api.fernandomillan.dev`; server hits Traefik which routes back to devcollab-api container |
-| devcollab-web (browser) → devcollab-api | `fetch(${API_URL}/...)` with `credentials: 'include'` | Same baked URL; browser reaches it via DNS → Traefik → devcollab-api |
-| devcollab-api → devcollab-postgres | Prisma connection string: `postgresql://devcollab:${PWD}@devcollab-postgres:5432/devcollab` | Docker internal DNS; service name `devcollab-postgres` is the hostname |
-| devcollab-migrate → devcollab-postgres | Same connection string | One-shot; dependency via `service_completed_successfully` |
-| devcollab-api CORS | `DEVCOLLAB_WEB_URL` env var in `app.enableCors({ origin })` | Must be `https://devcollab.fernandomillan.dev` in production; currently only reads this env var with localhost:3002 as fallback |
-| devcollab-api ↔ teamflow-api | No communication | Fully isolated; separate stacks, separate databases, separate domains |
+**Why this order:**
+- Phase 1 first because GSAP ScrollTrigger requires the Lenis-driven ticker to already be running
+- Phase 2 directly after Phase 1 while Lenis wiring is fresh
+- Phase 3 is independent but sequential prevents debugging two moving parts simultaneously
+- Phase 4 is the safest phase and most additive -- can move earlier if needed
+- Phase 5 is last because footer has the highest Playwright snapshot surface area and is fully self-contained
 
 ---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Baking the Internal Docker Hostname into NEXT_PUBLIC_API_URL
+### Anti-Pattern 1: autoRaf: true with GSAP ScrollTrigger
 
-**What people do:** Set `NEXT_PUBLIC_API_URL=http://devcollab-api:3003` at build time so server components can use the fast internal path.
+**What people do:** Use `ReactLenis` with default `autoRaf: true` and also initialize ScrollTrigger separately.
 
-**Why it's wrong:** Browser JavaScript cannot resolve `devcollab-api` — that hostname only exists inside Docker. Every client-side fetch in every client component (`LoginPage`, `DashboardPage`, `JoinPage`) fails with a network error in production.
+**Why it's wrong:** Two separate RAF loops (Lenis's own RAF and GSAP's ticker) run at different times in the frame. ScrollTrigger reads scroll position between Lenis updates, causing stutter on fast scrolls. The symptoms appear as scroll-triggered animations jumping or lagging slightly behind the smooth scroll position.
 
-**Do this instead:** Bake `NEXT_PUBLIC_API_URL=https://devcollab-api.fernandomillan.dev`. Both browser and server can reach it. The extra Traefik hop from server components is negligible.
-
----
-
-### Anti-Pattern 2: Defining `networks:` in the Coolify Compose File
-
-**What people do:** Copy the local `docker-compose.yml` network configuration (`devcollab-network:`, `driver: bridge`) into the file used by Coolify.
-
-**Why it's wrong:** Coolify assigns each compose stack its own isolated network automatically. Adding explicit network definitions conflicts with Coolify's internal management and causes Gateway Timeout errors. This is explicitly documented in Coolify's Docker Compose knowledge base.
-
-**Do this instead:** Remove all `networks:` keys from `coolify-compose.yml`. Services in the same stack communicate by service name without any network configuration.
+**Do this instead:** Set `autoRaf: false` on ReactLenis, wire Lenis into `gsap.ticker.add()`, and set `gsap.ticker.lagSmoothing(0)`. This is the pattern documented in the official lenis/react README.
 
 ---
 
-### Anti-Pattern 3: `restart: unless-stopped` on the Migration Container
+### Anti-Pattern 2: Animating Layout Properties with ScrollTrigger
 
-**What people do:** Treat `devcollab-migrate` the same as the other services and set `restart: unless-stopped`.
+**What people do:** Animate `top`, `left`, `marginTop`, `height`, or `width` with `scrub` to create parallax.
 
-**Why it's wrong:** `prisma migrate deploy` exits with code 0 after completing. A restart policy of `unless-stopped` causes Coolify to restart the exited container repeatedly — creating noise, log spam, and a potential race condition where migrations run against the API's live database.
+**Why it's wrong:** Layout properties trigger browser reflow on every scroll frame. At 60fps with scrub enabled, this generates 60 reflows per second. Lighthouse will flag this as a CLS violation if any element shifts layout. The Lighthouse CI gate of >= 0.90 will fail.
 
-**Do this instead:** Set `restart: 'no'` on `devcollab-migrate`. Use `depends_on: condition: service_completed_successfully` on `devcollab-api` so it waits for clean migration exit.
-
----
-
-### Anti-Pattern 4: Leaving /dashboard Without a Server-Side Auth Gate
-
-**What people do:** Leave `apps/devcollab-web/app/dashboard/page.tsx` as `'use client'` and trust the API's 401 response to prevent data access.
-
-**Why it's wrong:** An unauthenticated user successfully loads the dashboard page — they see the workspace creation form and page chrome. The 401 just means the workspace list is empty. This is confusing UX and means the route is publicly crawlable/indexable.
-
-**Do this instead:** Convert to a server component, read `devcollab_token` with `cookies()`, redirect immediately if absent. The pattern is already established in `w/[slug]/layout.tsx` — apply the same approach.
+**Do this instead:** Only animate `transform: translateY(...)` via GSAP's `yPercent` or `y`, and `opacity`. These are compositor-thread properties that never trigger layout. The `overflow-hidden` on the container prevents the transformed element from affecting surrounding layout.
 
 ---
 
-### Anti-Pattern 5: Including the Seed Container in the Production Coolify Stack
+### Anti-Pattern 3: Placing LenisProvider in Root Layout
 
-**What people do:** Copy the full local `docker-compose.yml` (which includes `devcollab-seed`) into `coolify-compose.yml`.
+**What people do:** Add LenisProvider to `app/layout.tsx` so it wraps all routes including the dashboard.
 
-**Why it's wrong:** The seed script truncates tables and inserts demo data. Running seed in production resets all real user data. On every deployment, all workspaces, posts, snippets, and users created by real visitors would be deleted.
+**Why it's wrong:** The TeamFlow dashboard uses a complex layout with sidebar scroll areas, virtual scroll in TanStack Table, and Socket.io real-time updates. Lenis intercepts all native scroll globally. This breaks dashboard scroll behavior in non-obvious ways and is difficult to debug.
 
-**Do this instead:** `coolify-compose.yml` must only include: `devcollab-postgres`, `devcollab-migrate`, `devcollab-api`, `devcollab-web`. Never include `devcollab-seed` or `devcollab-minio` (MinIO is local dev only).
+**Do this instead:** Place LenisProvider exclusively inside `(portfolio)/layout.tsx` inside the `.matrix-theme` div. Dashboard routes in `(dashboard)/layout.tsx` are completely unaffected by portfolio animation providers.
 
 ---
 
-## Scaling Considerations
+### Anti-Pattern 4: Converting PortfolioFooter to a Full Client Component
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| Current (portfolio demo) | Single Coolify compose stack; single postgres instance; no Redis; single Next.js process |
-| 100–1k active users | Add PgBouncer for connection pooling; Redis for session revocation if needed |
-| 10k+ users | Split services to separate Coolify resources for independent scaling; add Postgres read replicas; Next.js horizontal scale (stateless by design — cookie auth works) |
+**What people do:** Add `'use client'` directly to `footer.tsx` to add animations.
 
-### Scaling Priorities
+**Why it's wrong:** The footer's static content (links, name, copyright) would be excluded from the server-rendered HTML. This delays the footer's initial render until client-side hydration, increasing Time to Interactive. It also violates the established pattern in this codebase.
 
-1. **First bottleneck:** Postgres connections — NestJS/Prisma opens a connection pool per process; under concurrent load the database becomes the bottleneck before the API does. Add PgBouncer before horizontal scaling.
-2. **Second bottleneck:** Next.js standalone is a single Node.js process. Horizontal scaling is straightforward because JWT cookie auth is stateless — any instance can validate any request.
+**Do this instead:** Keep `footer.tsx` as a Server Component. Use `next/dynamic(ssr: false)` to load only the animated effect child (`FooterMatrixEffect`) as a client component. This is identical to how `MatrixRainCanvas` is handled in `hero-section.tsx`.
+
+---
+
+### Anti-Pattern 5: Applying MagneticButton to Navigation or Mobile-Primary Elements
+
+**What people do:** Wrap nav links or all buttons globally with MagneticButton.
+
+**Why it's wrong:** Mouse events do not fire on touch devices. The motion.div wrapper adds DOM nodes and JS bundle cost to mobile users who get no benefit. Navigation elements also have tight tap targets on mobile that the magnetic offset could interfere with.
+
+**Do this instead:** Apply `MagneticButton` only to desktop-visible CTAs (hero buttons, contact button). Check `useReducedMotion()` and return children directly when true. The component should only be used on elements where the magnetic effect is visible to a hover-capable device.
+
+---
+
+## Scaling Considerations (Lighthouse CI Budget Focus)
+
+This is a portfolio site. The relevant "scaling" concern is the Lighthouse CI performance gate.
+
+| Concern | Current Budget | Integration Impact | Mitigation |
+|---------|---------------|-------------------|------------|
+| Lighthouse Performance | >= 0.90 on 5 URLs | Lenis adds ~10KB gzipped | Package already installed -- zero new bundle delta |
+| Lighthouse Performance | >= 0.90 | GSAP + ScrollTrigger ~20KB | Package already installed -- zero new bundle delta |
+| CLS | Must not regress | GSAP parallax on layout props | Transform-only rule -- `yPercent`/`y`/`opacity` only |
+| LCP | Must not regress | Footer animation below fold | `dynamic(ssr: false)` defers load until after hydration |
+| Playwright snapshots | 18 PNG baselines exist | Footer + color changes will diff | Update baselines deliberately per phase; do not auto-approve all diffs |
+| Reduced motion | Three-layer gate active | All new animations must respect it | `useReducedMotion()` in every new animated component |
+| Touch / mobile | `any-hover` pattern established | MagneticButton on touch | `useReducedMotion()` guard + mousemove never fires on touch |
+
+---
+
+## SSR / Hydration Constraints Summary
+
+All animation code in this integration runs client-side only. The constraints are:
+
+1. **`'use client'` required on:** LenisProvider, LenisScrollRestorer, MagneticButton, FooterMatrixEffect
+2. **`next/dynamic(ssr: false)` required on:** FooterMatrixEffect -- same reason as MatrixRainCanvas: canvas or animation that cannot meaningfully render server-side
+3. **`useReducedMotion()` must guard all new animated components:** MagneticButton (already shown), FooterMatrixEffect (needs RAF check matching MatrixRainCanvas pattern), any useGSAP parallax component
+4. **No `window` access at render time:** LenisProvider's Lenis initialization happens inside `useEffect` -- already safe. MagneticButton only reads `getBoundingClientRect` on mouse events -- already safe.
+5. **`ReactLenis root` prop:** When `root={true}`, Lenis attaches to the `<html>` element and makes the instance globally accessible via `useLenis()`. LenisScrollRestorer uses `useLenis()` and must be a descendant of LenisProvider -- this is guaranteed by the layout tree position.
 
 ---
 
 ## Sources
 
-**HIGH Confidence — Official / Direct Inspection:**
-- [Coolify Docker Compose Networking Docs](https://coolify.io/docs/knowledge-base/docker/compose) — network-per-stack isolation, service name DNS, no `networks:` rule
-- [Coolify Environment Variables](https://coolify.io/docs/knowledge-base/environment-variables) — variable injection behavior, all-containers sharing
-- [Coolify GitHub Actions Integration](https://coolify.io/docs/applications/ci-cd/github/actions) — webhook mechanism, COOLIFY_WEBHOOK + COOLIFY_TOKEN pattern
-- [Coolify Docker Registry Authentication](https://coolify.io/docs/knowledge-base/docker/registry) — `docker login` on server SSH, Coolify auto-detects config.json
-- [Coolify Concepts (Projects/Environments/Resources)](https://coolify.io/docs/get-started/concepts) — resource model, Traefik domain routing
-- [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication) — server-side redirect pattern, `cookies()` API
-- [Next.js cookies() API Reference](https://nextjs.org/docs/app/api-reference/functions/cookies) — Next.js 15 async cookies()
-- [Next.js NEXT_PUBLIC build-time env discussion](https://github.com/vercel/next.js/discussions/17641) — confirmed NEXT_PUBLIC vars are baked at build time
-- Codebase direct inspection: `apps/devcollab-web/`, `apps/devcollab-api/src/`, `docker-compose.yml`, `.github/workflows/deploy.yml`, `packages/devcollab-database/`
-
-**MEDIUM Confidence — Community / Verified:**
-- [Coolify Cross-Stack Communication Discussion](https://github.com/coollabsio/coolify/discussions/5059) — confirmed cross-stack requires "Connect to Predefined Network"; internal DNS breaks
-- [Coolify Env Var Sharing Security Issue #7655](https://github.com/coollabsio/coolify/issues/7655) — confirmed all env vars shared across all containers in a compose stack
-- [Coolify Next.js deployment guide (external)](https://www.nico.fyi/blog/deploy-next-js-prisma-postgres-using-coolify) — build-arg pattern for NEXT_PUBLIC vars in Coolify confirmed
+- [darkroomengineering/lenis GitHub monorepo -- packages/react README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md) — ReactLenis API, `root` prop, `autoRaf: false`, `useLenis` hook, GSAP ticker pattern (HIGH confidence)
+- [darkroomengineering/lenis issue #319](https://github.com/darkroomengineering/lenis/issues/319) — Scroll restoration on navigation -- confirmed pattern (HIGH confidence)
+- [GSAP React documentation -- useGSAP hook](https://gsap.com/resources/React/) — useGSAP cleanup, ScrollTrigger setup/teardown, Strict Mode handling (HIGH confidence)
+- [GSAP ScrollTrigger + Lenis GSAP forum](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — synchronized ticker pattern (MEDIUM confidence)
+- [Olivier Larose -- Magnetic Button tutorial](https://blog.olivierlarose.com/tutorials/magnetic-button) — GSAP vs Framer Motion magnetic comparison, code patterns (MEDIUM confidence)
+- Existing codebase direct inspection: `apps/web/app/(portfolio)/layout.tsx`, `apps/web/app/globals.css`, `apps/web/components/portfolio/matrix-rain-canvas.tsx`, `apps/web/components/portfolio/evervault-card.tsx`, `apps/web/components/portfolio/dot-grid-spotlight.tsx`, `apps/web/package.json` (HIGH confidence)
 
 ---
 
-*Architecture research for: Coolify multi-service deployment + DevCollab UI gaps*
-*Researched: 2026-02-19*
-*Scope: coolify-compose.yml (new), apps/devcollab-web/ members pages (new), dashboard auth guard (fix)*
+*Architecture research for: v3.1 Portfolio Polish & Matrix Cohesion -- Lenis, GSAP ScrollTrigger, magnetic buttons, Matrix color system integration*
+*Researched: 2026-02-20*
