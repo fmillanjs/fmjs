@@ -103,6 +103,15 @@ None - no external service configuration required. All API endpoints used (`/wor
 - Plan 03 (join page for invite links) and Plan 04 (resume PDF) remain in Phase 28
 - Invite link token construction uses `window.location.origin/join?token=` — Plan 03 must handle the `/join` route
 
+## Self-Check: PASSED
+
+- FOUND: apps/devcollab-web/components/WorkspaceNav.tsx
+- FOUND: apps/devcollab-web/app/w/[slug]/members/page.tsx
+- FOUND: apps/devcollab-web/components/members/MembersTable.tsx
+- FOUND: .planning/phases/28-devcollab-ui-debt-closure/28-02-SUMMARY.md
+- FOUND: d099a4c (Task 1 commit)
+- FOUND: b00c3ed (Task 2 commit)
+
 ---
 *Phase: 28-devcollab-ui-debt-closure*
 *Completed: 2026-02-20*

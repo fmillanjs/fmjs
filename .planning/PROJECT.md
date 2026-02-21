@@ -8,19 +8,9 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current Milestone: v3.0 Deployment & Tech Debt Closure
+## Current State: v3.0 Shipped 2026-02-20
 
-**Goal:** Deploy both SaaS apps to production on Coolify and close all known tech debt gaps from previous milestones.
-
-**Target features:**
-- DevCollab deployed to Coolify (custom domain, HTTPS, env vars locked)
-- TeamFlow deployed to Coolify (custom domain, HTTPS, env vars locked)
-- NEXT_PUBLIC_API_URL set correctly in Coolify for devcollab-web
-- Real resume PDF at /resume.pdf
-- Invite link UI (Admin generates links in browser)
-- Member management UI (view/promote/demote workspace members)
-- Dashboard auth guard (/dashboard redirects unauthenticated users)
-- Prisma import isolation fix (reactions.service.ts)
+Both SaaS applications are live at HTTPS custom domains. All milestones complete. Portfolio is production-ready for recruiter evaluation.
 
 ## Requirements
 
@@ -74,19 +64,19 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 - ✓ Matrix green border glow on project card hover — v2.5 (UX-01)
 - ✓ Awwwards-style nav with Motion layoutId active indicator + sliding hover underline — v2.5 (UX-04)
 
+**v3.0 (Deployment & Tech Debt Closure):**
+- ✓ DevCollab deployed to Coolify at `devcollab.fernandomillan.me` (HTTPS, custom domain) — v3.0
+- ✓ TeamFlow deployed to Coolify at `teamflow.fernandomillan.me` (HTTPS, custom domain) — v3.0
+- ✓ NEXT_PUBLIC_API_URL baked into devcollab-web Docker image at build time via GitHub Actions `--build-arg` — v3.0
+- ✓ Real resume PDF served at `/resume.pdf` on portfolio — v3.0
+- ✓ Admin invite link UI: generate shareable join URLs with modal + Copy + Regenerate — v3.0
+- ✓ Member management UI: view/promote/demote/remove workspace members — v3.0
+- ✓ Dashboard server-side auth guard: zero content flash redirect to `/login` — v3.0
+- ✓ Prisma import isolation: `reactions.service.ts` uses `.prisma/devcollab-client` runtime — v3.0
+
 ### Active
 
-**v3.0 Requirements (Deployment):**
-- [ ] DevCollab deployed to Coolify (custom domain, HTTPS, env vars locked)
-- [ ] TeamFlow deployed to Coolify (custom domain, HTTPS, env vars locked)
-- [ ] NEXT_PUBLIC_API_URL set correctly in Coolify deployment for devcollab-web
-- [ ] Real resume PDF at /resume.pdf
-
-**v3.0 Requirements (Tech Debt Closure):**
-- [ ] Invite link UI: Admin can generate invite links through the browser (currently API-only)
-- [ ] Member management UI: Admin can view/promote/demote workspace members via UI (currently API-only)
-- [ ] Dashboard auth guard: /dashboard page redirects unauthenticated users to /login (currently shows empty state)
-- [ ] Prisma import isolation: reactions.service.ts imports from `.prisma/devcollab-client` (currently uses TeamFlow path)
+(No active requirements — all milestones complete. Use `/gsd:new-milestone` to start v4.0.)
 
 ### Out of Scope
 
@@ -113,15 +103,21 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 
 **Purpose:** Job hunting for senior full-stack developer roles. Need an impressive, interactive demo showcasing production-level thinking and execution.
 
-**Current state:** v2.5 shipped 2026-02-19. Both TeamFlow and DevCollab are feature-complete locally with a Matrix-inspired portfolio presentation. Portfolio: ~15,726 TypeScript/TSX LOC (apps/web). Not yet deployed to production (Coolify deployment is v3.0 scope).
+**Current state:** v3.0 shipped 2026-02-20. Both apps are live in production. Total: ~27,942 TypeScript/TSX LOC across the monorepo.
+
+**Deployed apps:**
+- `https://devcollab.fernandomillan.me` — DevCollab web (Next.js 15, NestJS 11 API, Postgres)
+- `https://devcollab-api.fernandomillan.me` — DevCollab API
+- `https://teamflow.fernandomillan.me` — TeamFlow web (Next.js 15, NestJS 11 API, Postgres, Redis)
+- `https://fernandomillan.me` — Portfolio site
 
 **Tech stack (TeamFlow):** Next.js 15 + NestJS 11 + Prisma + Postgres + NextAuth v5 + Socket.io + Radix UI + Shadcn UI + Tailwind v4 + dnd-kit + TanStack Table + Playwright + Vitest
 
 **Tech stack (DevCollab):** Next.js 15 + NestJS 11 + Prisma + Postgres (separate DB, port 5435) + CASL + Shiki + Tiptap v3 + Vitest
 
-**Tech stack (Portfolio UI):** motion v12, gsap + @gsap/react, lenis (installed, not yet activated for smooth scroll), @lhci/cli
+**Tech stack (Portfolio UI):** motion v12, gsap + @gsap/react, lenis, @lhci/cli
 
-**Deployment status:** Docker infrastructure ready for both apps. CI/CD pipeline builds and pushes all 4 images (teamflow-web, teamflow-api, devcollab-web, devcollab-api) to GHCR on push to main. Coolify deployment not yet configured.
+**CI/CD:** GitHub Actions builds 4 GHCR images (devcollab-web, devcollab-api, devcollab-migrate, teamflow images) and triggers Coolify deploys via GET + Bearer token webhooks on push to main.
 
 **Target audience:** Technical recruiters and hiring managers evaluating code quality, architecture decisions, and production readiness.
 
@@ -166,7 +162,14 @@ Prove senior full-stack engineering skills through deployed, production-ready Sa
 | any-hover: hover CSS guard for spotlight (not pointer: fine) | Correctly enables spotlight on hybrid laptop+touch devices | ✓ Good — no touch artifacts |
 | No LayoutGroup wrapper for nav active indicator | Only one nav in DOM, layoutId resolves within same tree | ✓ Good — simpler, correct |
 | lhci startServerCommand uses node .next/standalone/apps/web/server.js | next start returns 500 on output:standalone builds | ✓ Good — lhci runs correctly on production build |
-| Coolify deployment deferred to v3.0 | DevCollab feature-complete locally; Coolify per-service webhook behavior for second app needs hands-on iteration | — Pending v3.0 |
+| Coolify deployment deferred to v3.0 | DevCollab feature-complete locally; Coolify per-service webhook behavior for second app needs hands-on iteration | ✓ Good — deployed successfully after CI iteration |
+| Coolify deploy API: GET + Bearer token | Coolify webhook uses GET request with Authorization: Bearer, not POST — discovered during CI iteration | ✓ Good — fixed in commit b71f065 |
+| Separate webhook calls per Coolify service | Each service (web, api) in a Coolify stack needs its own webhook trigger | ✓ Good — added in commit c576019 |
+| devcollab-migrate restart: "no" in coolify-compose | prisma migrate deploy exits 0 — without this Coolify infinitely restarts the migrate container | ✓ Good — prevents restart loop in production |
+| VPS GHCR auth must be done as root | Coolify reads Docker credentials from /root/.docker/config.json — must `sudo su -` before docker login | ✓ Good — documented in 27-03-SUMMARY |
+| Domain TLD is .me not .dev | Registrar uses fernandomillan.me — planned .dev never existed | ✓ Good — DNS confirmed for all subdomains |
+| Server-side dashboard auth guard using cookies() + redirect() | Eliminates client-side auth flash; pattern from w/[slug]/layout.tsx | ✓ Good — zero flash confirmed in browser verification |
+| window.location.origin for invite join URL | API_URL points to backend; join URL must use web app's own origin | ✓ Good — correct URL generated in production |
 
 ---
-*Last updated: 2026-02-19 after v2.5 milestone — Milestone v3.0 started*
+*Last updated: 2026-02-20 after v3.0 milestone — all milestones complete, both apps live in production*
