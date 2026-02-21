@@ -6,6 +6,7 @@ import { AnimateIn } from '@/components/portfolio/animate-in';
 import { StaggerContainer, StaggerItem } from '@/components/portfolio/stagger-container';
 import { EvervaultCard } from '@/components/portfolio/evervault-card';
 import { ParallaxDivider } from '@/components/portfolio/parallax-divider';
+import { SectionLabel } from '@/components/portfolio/section-label';
 
 export const metadata: Metadata = {
   title: 'Fernando Millan - Full-Stack Engineer',
@@ -23,6 +24,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimateIn>
             <div className="text-center mb-12">
+              <SectionLabel label="Featured Projects" />
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Featured Projects
               </h2>
@@ -38,7 +40,7 @@ export default function HomePage() {
             <StaggerItem>
             <Link
               href="/projects/teamflow"
-              className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
+              className="card-glow-hover block border-2 border-[var(--matrix-green-border)] rounded-lg p-8 bg-gradient-to-br from-[var(--matrix-green-subtle)] to-transparent"
             >
               <EvervaultCard className="min-h-full">
                 <div className="mb-6">
@@ -76,7 +78,7 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                <div className="text-primary font-medium hover:underline">
+                <div className="text-[var(--matrix-green)] font-medium hover:underline">
                   Read full case study →
                 </div>
               </EvervaultCard>
@@ -87,7 +89,7 @@ export default function HomePage() {
             <StaggerItem>
             <Link
               href="/projects/devcollab"
-              className="card-glow-hover block border-2 border-primary rounded-lg p-8 bg-gradient-to-br from-primary/5 to-transparent"
+              className="card-glow-hover block border-2 border-[var(--matrix-green-border)] rounded-lg p-8 bg-gradient-to-br from-[var(--matrix-green-subtle)] to-transparent"
             >
               <EvervaultCard className="min-h-full">
                 <div className="mb-6">
@@ -124,7 +126,7 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                <div className="text-primary font-medium hover:underline">
+                <div className="text-[var(--matrix-green)] font-medium hover:underline">
                   Read full case study →
                 </div>
               </EvervaultCard>
@@ -142,7 +144,7 @@ export default function HomePage() {
           <AnimateIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+              <div className="text-4xl md:text-5xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
                 30+
               </div>
               <div className="text-lg text-muted-foreground">
@@ -150,7 +152,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+              <div className="text-4xl md:text-5xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
                 Real-Time
               </div>
               <div className="text-lg text-muted-foreground">
@@ -158,7 +160,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+              <div className="text-4xl md:text-5xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
                 Production
               </div>
               <div className="text-lg text-muted-foreground">
