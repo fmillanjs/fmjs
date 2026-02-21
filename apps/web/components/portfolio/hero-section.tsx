@@ -1,9 +1,16 @@
 'use client'
 
 import Link from 'next/link';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { ScrambleHero } from '@/components/portfolio/scramble-hero';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+// Re-registration is idempotent — safe even though lenis-provider.tsx also registers
+gsap.registerPlugin(ScrollTrigger)
 
 const MatrixRainCanvas = dynamic(
   () => import('./matrix-rain-canvas'),
@@ -11,10 +18,31 @@ const MatrixRainCanvas = dynamic(
 )
 
 export function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion || !textRef.current || !sectionRef.current) return
+
+    gsap.to(textRef.current, {
+      yPercent: -15,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1,
+        invalidateOnRefresh: true,
+        // pin: false — never use pin: true (CLS spacer that fails Lighthouse CI >= 0.90 gate)
+      },
+    })
+  }, { scope: sectionRef })
+
   return (
-    <section className="relative bg-gradient-to-b from-background to-muted/30 py-24 md:py-32">
+    <section ref={sectionRef} className="relative overflow-hidden bg-gradient-to-b from-background to-muted/30 py-24 md:py-32">
       <MatrixRainCanvas />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div ref={textRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
           <ScrambleHero text="Fernando Millan" className="block mb-2" />
           <span className="block text-primary">
