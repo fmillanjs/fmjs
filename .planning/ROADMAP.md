@@ -158,13 +158,13 @@ Plans:
   5. User seeing tech-stack badges notices green token borders instead of blue Radix primary; footer link hover states show Matrix green instead of blue
   6. User viewing any portfolio `<h2>` section heading sees a terminal-style label prefix (`> SECTION_NAME`) above it in Matrix green monospace
   7. All 18 Playwright visual regression snapshots pass at maxDiffPixelRatio 0.02 after baseline update; navigating to TeamFlow dashboard shows zero Matrix green bleed
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 32-01: Four new CSS tokens in globals.css + About page color sweep
-- [ ] 32-02: Contact page + case study pages + tech-stack badge color sweep
-- [ ] 32-03: Footer link hover + terminal `> SECTION_NAME` prefixes across all portfolio pages
-- [ ] 32-04: Playwright baseline update (--update-snapshots) + all 18 snapshots green + dashboard isolation check
+- [ ] 32-01-PLAN.md — CSS tokens (COLOR-01) + SectionLabel component + About page color sweep (COLOR-02) + hero subtitle fix
+- [ ] 32-02-PLAN.md — Contact page (COLOR-03) + CaseStudySection SectionLabel + TeamFlow/DevCollab case studies (COLOR-04) + resume SectionLabels (COLOR-07 partial)
+- [ ] 32-03-PLAN.md — Footer hover states (COLOR-06) + tech-stack + parallax-divider + homepage cards/stats/SectionLabel (COLOR-05 + COLOR-07)
+- [ ] 32-04-PLAN.md — Playwright baseline update + all 18 snapshots green + dashboard isolation check + human visual verify (COLOR-08)
 
 ### Phase 33: Footer Redesign + Matrix Animation
 **Goal**: Users reaching the footer experience a terminal-themed close — dark background, scanline texture, terminal-prompt social links, `> EOF` tagline, and a single-fire CSS glitch on the signature name — with all links keyboard-accessible and all 18 visual regression snapshots passing
