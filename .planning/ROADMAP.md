@@ -90,7 +90,7 @@ Full archive: `.planning/milestones/v3.0-ROADMAP.md`
 - No `pin: true` in any GSAP ScrollTrigger (CLS regression)
 - LenisProvider scoped to `(portfolio)/layout.tsx` only — TeamFlow dashboard unaffected
 
-- [ ] **Phase 29: Lenis Foundation** - Inertia smooth scroll wired across all portfolio pages with correct GSAP ticker sync, route-reset, modal lock, and reduced-motion bypass
+- [x] **Phase 29: Lenis Foundation** - Inertia smooth scroll wired across all portfolio pages with correct GSAP ticker sync, route-reset, modal lock, and reduced-motion bypass (completed 2026-02-21)
 - [ ] **Phase 30: GSAP ScrollTrigger Parallax** - Hero text and section separator depth effects driven by scroll position via GSAP ScrollTrigger synced to Lenis ticker
 - [ ] **Phase 31: Magnetic Buttons** - Spring-physics cursor attraction on hero and contact CTAs with touch/reduced-motion guard
 - [ ] **Phase 32: Matrix Color Harmony** - Four new CSS tokens and consistent Matrix green applied across all portfolio sections, eliminating all blue Radix primary mismatches
@@ -218,7 +218,7 @@ Plans:
 | 26. Navigation Redesign | v2.5 | 2/2 | Complete | 2026-02-19 |
 | 27. Infrastructure Foundation + Prisma Fix | v3.0 | 3/3 | Complete | 2026-02-20 |
 | 28. DevCollab UI Debt Closure | v3.0 | 3/3 | Complete | 2026-02-20 |
-| 29. Lenis Foundation | 2/3 | In Progress|  | - |
+| 29. Lenis Foundation | 3/3 | Complete   | 2026-02-21 | - |
 | 30. GSAP ScrollTrigger Parallax | v3.1 | 0/2 | Not started | - |
 | 31. Magnetic Buttons | v3.1 | 0/2 | Not started | - |
 | 32. Matrix Color Harmony | v3.1 | 0/4 | Not started | - |

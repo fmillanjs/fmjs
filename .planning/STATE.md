@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 29: Lenis Foundation)
+**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 30: GSAP ScrollTrigger)
 
 ## Current Position
 
-Phase: 29 of 33 (Lenis Foundation)
-Plan: 3 of 3 in current phase
-Status: In progress (29-02 complete — ready for 29-03)
-Last activity: 2026-02-21 — Completed 29-02 (CommandPalette scroll lock human-verified; all 5 SCROLL behaviors confirmed working)
+Phase: 30 of 33 (GSAP ScrollTrigger) — Phase 29 COMPLETE
+Plan: 1 of N in current phase
+Status: Phase 29 complete — ready for Phase 30
+Last activity: 2026-02-21 — Completed 29-03 (Lighthouse CI gate: all 5 URLs score 1.00 performance with Lenis active)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
-Progress: [████████████████░░░░] 82% (28/33 phases complete, Phase 29 in progress — 2/3 plans complete, 1 remaining)
+Progress: [█████████████████░░░] 85% (29/33 phases complete, Phase 29 complete)
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [████████████████░░░░] 82% (28
 - **29-01:** `lerp: 0.1` shipping value; real-device feel testing may adjust to 0.08-0.12 — documented in provider comment
 - **29-02:** `useLenis()` with optional chaining `lenis?.stop()/start()` in CommandPalette — returns `undefined` outside LenisProvider (dashboard); optional chaining prevents crash
 - **29-02:** `useEffect([open, lenis])` as single source of truth for scroll lock — all close paths (Escape, backdrop, item select) set open=false triggering start()
+- **29-03:** CHROME_PATH=~/.cache/puppeteer/chrome/linux-141.0.7390.122/chrome-linux64/chrome — WSL2 resolves system Chrome to Windows path causing ECONNREFUSED; puppeteer's Linux Chrome binary required for LHCI
 - **v3.1 arch:** No `pin: true` in any ScrollTrigger — causes CLS spacer that fails Lighthouse CI >= 0.90 gate
 - **v3.1 arch:** MagneticButton uses `motion/react` spring (not `gsap.to()` in mousemove) — prevents TBT spike from per-pixel tween creation
 - **v3.1 arch:** Matrix color tokens scoped to `.matrix-theme {}` — never in `:root @theme inline` (Tailwind bleed to dashboard)
@@ -59,13 +60,13 @@ None.
 
 ### Blockers/Concerns
 
-- Lenis `lerp` optimal value (default 0.10 vs 0.08) — subjective feel; needs real device testing across Chrome/Safari/Firefox (deferred — can tune after Phase 29 complete)
+- Lenis `lerp` optimal value (default 0.10 vs 0.08) — subjective feel; needs real device testing across Chrome/Safari/Firefox (deferred — Phase 29 complete, can tune during Phase 30+)
 - CSS `clip-path` glitch animation Safari compatibility — verify during Phase 33 planning; fallback is CSS typewriter reveal via `steps()`
 - Playwright baselines: 18 PNGs at maxDiffPixelRatio 0.02 — Phase 32 and Phase 33 both require deliberate `--update-snapshots` run and diff review before commit
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 29-02-PLAN.md — CommandPalette Lenis scroll lock, all 5 SCROLL behaviors human-verified
+Stopped at: Completed 29-03-PLAN.md — Lighthouse CI gate, all 5 URLs score 1.00 performance, Phase 29 complete
 Resume file: None
-Next action: Execute 29-03 (final Lenis foundation plan)
+Next action: Execute Phase 30 (GSAP ScrollTrigger)
