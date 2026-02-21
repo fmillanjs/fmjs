@@ -124,11 +124,11 @@ Plans:
   2. User scrolling past section dividers sees decorative lines shift at an independent depth from the surrounding content (subtle scale or y transform, no abrupt jump)
   3. Lighthouse CI performance score is >= 0.90 on all five portfolio URLs with parallax active — CLS is 0 (no `pin: true` spacers, transform-only properties only)
   4. User navigating away from a parallaxed page and returning sees the animations fire correctly — no stale ScrollTrigger instances or frozen positions
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 30-01: Shared `lib/gsap.ts` plugin registration + hero text parallax (useGSAP, scope, scrub: 1)
-- [ ] 30-02: Section separator parallax + Lighthouse CI gate verification (CLS = 0, all 5 URLs >= 0.90)
+- [ ] 30-01-PLAN.md — LenisProvider autoRaf: false + LenisGSAPBridge ticker sync + hero text parallax (yPercent: -15, scrub: 1)
+- [ ] 30-02-PLAN.md — ParallaxDivider component (scaleX depth effect) + homepage/page inserts + Lighthouse CI gate (CLS = 0, all 5 URLs >= 0.90)
 
 ### Phase 31: Magnetic Buttons
 **Goal**: Users hovering the hero CTAs and contact CTA experience spring-physics cursor attraction; users on touch devices or with reduced-motion preference see a plain button with no behavior change
