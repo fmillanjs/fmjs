@@ -62,7 +62,7 @@ export default function TeamFlowCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fmillanjs/teamflow"
+              href="https://github.com/fmillanjs/fmjs/tree/teamflow"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -522,7 +522,7 @@ export default function TeamFlowCaseStudy() {
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-accent border border-border rounded-lg">
+        <div className="mt-8 p-6 bg-card border border-[var(--matrix-green-border)] rounded-lg">
           <h3 className="font-semibold mb-2">Try the Demo</h3>
           <p className="mb-4">
             Experience TeamFlow v1.0 firsthand with the pre-seeded demo workspace.

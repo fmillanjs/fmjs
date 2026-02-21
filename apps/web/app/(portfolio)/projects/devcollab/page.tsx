@@ -64,7 +64,7 @@ export default function DevCollabCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fmillanjs/devcollab"
+              href="https://github.com/fmillanjs/fmjs/tree/devcollab"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -386,7 +386,7 @@ export default function DevCollabCaseStudy() {
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-accent border border-border rounded-lg">
+        <div className="mt-8 p-6 bg-card border border-[var(--matrix-green-border)] rounded-lg">
           <h3 className="font-semibold mb-2">Try the Demo</h3>
           <p className="mb-4">
             The demo workspace is pre-seeded with realistic content. Log in with any
