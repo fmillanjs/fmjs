@@ -93,7 +93,7 @@ Full archive: `.planning/milestones/v3.0-ROADMAP.md`
 - [x] **Phase 29: Lenis Foundation** - Inertia smooth scroll wired across all portfolio pages with correct GSAP ticker sync, route-reset, modal lock, and reduced-motion bypass (completed 2026-02-21)
 - [x] **Phase 30: GSAP ScrollTrigger Parallax** - Hero text and section separator depth effects driven by scroll position via GSAP ScrollTrigger synced to Lenis ticker (completed 2026-02-21)
 - [x] **Phase 31: Magnetic Buttons** - Spring-physics cursor attraction on hero and contact CTAs with touch/reduced-motion guard (completed 2026-02-21)
-- [ ] **Phase 32: Matrix Color Harmony** - Four new CSS tokens and consistent Matrix green applied across all portfolio sections, eliminating all blue Radix primary mismatches
+- [x] **Phase 32: Matrix Color Harmony** - Four new CSS tokens and consistent Matrix green applied across all portfolio sections, eliminating all blue Radix primary mismatches (completed 2026-02-21)
 - [ ] **Phase 33: Footer Redesign + Matrix Animation** - Terminal-themed footer with CRT scanlines and single-fire CSS glitch text
 
 ## Phase Details
@@ -221,5 +221,5 @@ Plans:
 | 29. Lenis Foundation | 3/3 | Complete    | 2026-02-21 | - |
 | 30. GSAP ScrollTrigger Parallax | v3.1 | Complete    | 2026-02-21 | 2026-02-21 |
 | 31. Magnetic Buttons | 2/2 | Complete    | 2026-02-21 | - |
-| 32. Matrix Color Harmony | 3/4 | In Progress|  | - |
+| 32. Matrix Color Harmony | 4/4 | Complete   | 2026-02-21 | - |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 0/3 | Not started | - |

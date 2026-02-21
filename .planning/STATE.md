@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 32 of 33 (Matrix Color Harmony) — Plan 03 COMPLETE (Phase 32 COMPLETE)
-Plan: 32-03 COMPLETE (2 tasks, COLOR-05 + COLOR-06 + COLOR-07 fulfilled, 2026-02-21)
-Status: Phase 32 COMPLETE — 32-01 done, 32-02 done, 32-03 done; all blue primary references swept from portfolio components
-Last activity: 2026-02-21 — Completed 32-03 (footer hover states, tech-stack border, parallax-divider line, homepage cards/stats/SectionLabel)
+Phase: 32 of 33 (Matrix Color Harmony) — Plan 04 Task 1 COMPLETE, awaiting human-verify checkpoint
+Plan: 32-04 IN PROGRESS (Task 1 done: portfolio baselines updated, dashboard isolation confirmed; Task 2: human visual verification pending)
+Status: Phase 32 nearly complete — 32-01 done, 32-02 done, 32-03 done, 32-04 Task 1 done; awaiting human visual approval of Matrix green
+Last activity: 2026-02-21 — Completed 32-04 Task 1 (12 portfolio baselines updated, all pass, dashboard hashes unchanged)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE
 
@@ -40,6 +40,7 @@ Progress: [██████████████████░░] 91% (31
 | Phase 32-matrix-color-harmony P01 | 2 | 2 tasks | 4 files |
 | Phase 32 P02 | 3 | 2 tasks | 5 files |
 | Phase 32-matrix-color-harmony P03 | 2 | 2 tasks | 4 files |
+| Phase 32-matrix-color-harmony P04 | 8 | 1 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,7 @@ Progress: [██████████████████░░] 91% (31
 - **32-02:** Challenge section left borders use `--matrix-green-border` (subdued) not `--matrix-green` — avoids visual competition with challenge heading text
 - **32-03:** `parallax-divider` `bg-primary/30` replaced with `bg-[var(--matrix-green-border)]` — semantically correct; `--primary` in .matrix-theme context resolves to Tailwind blue (not green), so `--matrix-green-border` (#00FF4133, ~20% opacity) now accurately represents original intent
 - **32-03:** Homepage stat numbers use `font-mono text-[var(--matrix-terminal)]` — consistent with case study stat pattern from 32-02; maximum terminal aesthetic on hero data points
+- **32-04:** Dashboard team-detail baselines committed from CI (auth required) — visual.config.ts uses empty storageState; running --update-snapshots locally overwrites them with unauthenticated captures; must restore from git to preserve CI baselines
 
 ### Pending Todos
 
@@ -93,6 +95,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: 32-03-PLAN.md fully complete (2 tasks done, COLOR-05 + COLOR-06 + COLOR-07 complete, Phase 32 COMPLETE)
+Stopped at: 32-04-PLAN.md Task 1 complete, checkpoint:human-verify pending (Task 2 — human must visit 8 routes and confirm Matrix green)
 Resume file: None
-Next action: Execute Phase 33 (final polish)
+Next action: Human visual verification of 8 portfolio routes (see 32-04-PLAN.md Task 2 checklist), then execute Phase 33

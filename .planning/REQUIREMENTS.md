@@ -36,7 +36,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 - [x] **COLOR-05**: Tech-stack badge borders and highlight colors use Matrix green tokens instead of blue Radix primary
 - [x] **COLOR-06**: Footer link hover states use Matrix green (replacing current blue hover)
 - [x] **COLOR-07**: All portfolio section headings have a terminal-style label prefix (`> SECTION_NAME`) above each `<h2>` for visual coherence with the terminal theme
-- [ ] **COLOR-08**: Playwright visual regression baselines are updated for all affected routes and all 18 snapshots pass (maxDiffPixelRatio 0.02)
+- [x] **COLOR-08**: Playwright visual regression baselines are updated for all affected routes and all 18 snapshots pass (maxDiffPixelRatio 0.02)
 
 ### Footer Redesign (FOOTER)
 
@@ -96,7 +96,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | COLOR-05 | Phase 32 | Complete |
 | COLOR-06 | Phase 32 | Complete |
 | COLOR-07 | Phase 32 | Complete |
-| COLOR-08 | Phase 32 | Pending |
+| COLOR-08 | Phase 32 | Complete |
 | FOOTER-01 | Phase 33 | Pending |
 | FOOTER-02 | Phase 33 | Pending |
 | FOOTER-03 | Phase 33 | Pending |
