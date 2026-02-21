@@ -24,7 +24,7 @@ export default function TeamFlowCaseStudy() {
       <AnimateIn className="mb-12">
         <Link
           href="/projects"
-          className="inline-flex items-center text-primary underline hover:no-underline mb-6"
+          className="inline-flex items-center text-[var(--matrix-green)] underline hover:no-underline mb-6"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -79,12 +79,12 @@ export default function TeamFlowCaseStudy() {
           TeamFlow is a comprehensive work management platform built to demonstrate
           production-ready full-stack engineering skills. Version 1.0 delivers secure
           authentication, role-based access control, complete task management, and a
-          polished user experience. <strong className="text-primary">Real-time collaboration features are coming in v1.1.</strong>
+          polished user experience. <strong className="text-[var(--matrix-green)]">Real-time collaboration features are coming in v1.1.</strong>
         </p>
 
         <div className="grid md:grid-cols-3 gap-4 mt-6">
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
               v1.0
             </div>
             <div className="text-sm text-muted-foreground">
@@ -92,7 +92,7 @@ export default function TeamFlowCaseStudy() {
             </div>
           </div>
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
               88%
             </div>
             <div className="text-sm text-muted-foreground">
@@ -100,7 +100,7 @@ export default function TeamFlowCaseStudy() {
             </div>
           </div>
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
               8
             </div>
             <div className="text-sm text-muted-foreground">
@@ -122,7 +122,7 @@ export default function TeamFlowCaseStudy() {
             </p>
           </div>
           <div>
-            <p className="font-semibold text-primary mb-2">
+            <p className="font-semibold text-[var(--matrix-green)] mb-2">
               → Coming in v1.1:
             </p>
             <p>
@@ -407,7 +407,7 @@ export default function TeamFlowCaseStudy() {
       {/* Challenges & Solutions */}
       <CaseStudySection title="Challenges & Solutions">
         <div className="space-y-6">
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 1: Next.js 15 + NestJS Authentication Integration
             </h3>
@@ -431,7 +431,7 @@ export default function TeamFlowCaseStudy() {
             </p>
           </div>
 
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 2: Multi-Layer RBAC Enforcement
             </h3>
@@ -453,7 +453,7 @@ export default function TeamFlowCaseStudy() {
             </p>
           </div>
 
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 3: TypeScript Type Safety Across Monorepo
             </h3>
@@ -499,9 +499,9 @@ export default function TeamFlowCaseStudy() {
               <li>✓ Demo workspace with seed data</li>
               <li>✓ Responsive design with dark mode</li>
               <li>✓ Command palette (Ctrl+K)</li>
-              <li className="text-primary">→ Real-time updates (v1.1)</li>
-              <li className="text-primary">→ Live presence indicators (v1.1)</li>
-              <li className="text-primary">→ Optimistic UI with rollback (v1.1)</li>
+              <li className="text-[var(--matrix-green)]">→ Real-time updates (v1.1)</li>
+              <li className="text-[var(--matrix-green)]">→ Live presence indicators (v1.1)</li>
+              <li className="text-[var(--matrix-green)]">→ Optimistic UI with rollback (v1.1)</li>
             </ul>
           </div>
 

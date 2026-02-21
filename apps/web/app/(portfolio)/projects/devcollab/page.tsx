@@ -26,7 +26,7 @@ export default function DevCollabCaseStudy() {
       <AnimateIn className="mb-12">
         <Link
           href="/projects"
-          className="inline-flex items-center text-primary underline hover:no-underline mb-6"
+          className="inline-flex items-center text-[var(--matrix-green)] underline hover:no-underline mb-6"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -87,15 +87,15 @@ export default function DevCollabCaseStudy() {
 
         <div className="grid md:grid-cols-3 gap-4 mt-6">
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">v2.0</div>
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">v2.0</div>
             <div className="text-sm text-muted-foreground">Production Ready</div>
           </div>
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">7</div>
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">7</div>
             <div className="text-sm text-muted-foreground">Feature Phases</div>
           </div>
           <div className="border border-border rounded-lg p-4">
-            <div className="text-3xl font-bold text-primary mb-2">3</div>
+            <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">3</div>
             <div className="text-sm text-muted-foreground">Demo Roles</div>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function DevCollabCaseStudy() {
       {/* Challenges & Solutions */}
       <CaseStudySection title="Challenges & Solutions">
         <div className="space-y-6">
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 1: Prisma Migration Drift with tsvector
             </h3>
@@ -302,7 +302,7 @@ export default function DevCollabCaseStudy() {
             </p>
           </div>
 
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 2: CASL Guard with Workspace-Scoped Routes
             </h3>
@@ -324,7 +324,7 @@ export default function DevCollabCaseStudy() {
             </p>
           </div>
 
-          <div className="border-l-4 border-primary pl-4">
+          <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
               Challenge 3: Next.js Server Components and httpOnly Cookie Forwarding
             </h3>
