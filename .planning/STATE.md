@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 33 of 33 (Footer Redesign + Matrix Animation) — IN PROGRESS
-Plan: 33-01 COMPLETE (terminal static shell: #0a0a0a footer, CRT scanlines CSS, > github/linkedin/email links, > EOF tagline)
-Status: Phase 33 in progress — 33-01 done (FOOTER-01 through FOOTER-04 satisfied); 33-02 next (GlitchSignature island)
-Last activity: 2026-02-21 — Completed 33-01 (footer terminal redesign + CRT scanline CSS + glitch keyframes)
+Phase: 33 of 33 (Footer Redesign + Matrix Animation) — COMPLETE
+Plan: 33-02 COMPLETE (GlitchSignature island: IntersectionObserver single-fire + useReducedMotion + ssr:false wired via next/dynamic)
+Status: Phase 33 COMPLETE — all plans done (FOOTER-01 through FOOTER-05 satisfied)
+Last activity: 2026-02-21 — Completed 33-02 (GlitchSignature client island + footer.tsx next/dynamic wiring)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE | Phase 32 COMPLETE
 
-Progress: [████████████████████] 99% (33/33 phases started, 33-01 complete)
+Progress: [████████████████████] 100% (33/33 phases complete)
 
 ## Performance Metrics
 
@@ -43,6 +43,7 @@ Progress: [████████████████████] 99% (33
 | Phase 32-matrix-color-harmony P04 | 8 | 1 tasks | 10 files |
 | Phase 32-matrix-color-harmony P04 | 25 | 2 tasks | 13 files |
 | Phase 33-footer-redesign-matrix-animation P01 | 253 | 2 tasks | 2 files |
+| Phase 33-footer-redesign-matrix-animation P02 | 177 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Progress: [████████████████████] 99% (33
 - **33-01:** `footer-crt-scanlines` CSS class in global scope (not `.matrix-theme {}`) — guarantees cascade from `<footer>` child of `.matrix-theme`; `--matrix-scan-line` token inherits from parent scope
 - **33-01:** `@keyframes footer-glitch` placed outside `.matrix-theme` — Plan 33-02 IntersectionObserver can add `.footer-glitch-once` from any scope without specificity issues
 - **33-01:** `background: '#0a0a0a'` applied as inline style on `<footer>` — prevents Tailwind `@theme inline` bleed to `bg-background` utility token
+- **33-02:** `footer.tsx` must be `'use client'` — Next.js 15 forbids `next/dynamic ssr:false` in Server Components; consistent with `hero-section.tsx` pattern
+- **33-02:** `entries[0]?.isIntersecting` optional chain — TypeScript strict mode treats array index access as `T | undefined`; runtime identical since IntersectionObserver always fires with entries
 
 ### Pending Todos
 
@@ -102,6 +105,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 33-footer-redesign-matrix-animation-01-PLAN.md — FOOTER-01 through FOOTER-04 satisfied, terminal footer shell + CRT scanlines done
+Stopped at: Completed 33-footer-redesign-matrix-animation-02-PLAN.md — FOOTER-05 satisfied, GlitchSignature island + footer wired. Phase 33 COMPLETE.
 Resume file: None
-Next action: Execute 33-02 (GlitchSignature client island)
+Next action: None — all 33 phases complete
