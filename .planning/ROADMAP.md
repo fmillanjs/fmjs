@@ -74,7 +74,7 @@ Full archive: `.planning/milestones/v2.5-ROADMAP.md`
 **Milestone Goal:** Deploy both SaaS apps to production on Coolify with HTTPS and close all known UI/code gaps so recruiters can interact with live, production-quality applications.
 
 - [ ] **Phase 27: Infrastructure Foundation + Prisma Fix** - Deploy both apps to Coolify with HTTPS, CI/CD webhooks, GHCR pull auth, NEXT_PUBLIC baking, CORS, and Prisma import isolation
-- [ ] **Phase 28: DevCollab UI Debt Closure** - Dashboard auth guard, member management UI, invite link generation, WorkspaceNav Members link, and real resume PDF
+- [x] **Phase 28: DevCollab UI Debt Closure** - Dashboard auth guard, member management UI, invite link generation, WorkspaceNav Members link, and real resume PDF (completed 2026-02-21)
 
 ## Phase Details
 
@@ -146,4 +146,4 @@ Plans:
 | 25. Personality Effects | v2.5 | 4/4 | Complete | 2026-02-19 |
 | 26. Navigation Redesign | v2.5 | 2/2 | Complete | 2026-02-19 |
 | 27. Infrastructure Foundation + Prisma Fix | v3.0 | 2/3 | In Progress | - |
-| 28. DevCollab UI Debt Closure | 2/3 | In Progress|  | - |
+| 28. DevCollab UI Debt Closure | 3/3 | Complete   | 2026-02-21 | - |
