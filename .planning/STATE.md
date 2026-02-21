@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 Phase: 33 of 33 (Footer Redesign + Matrix Animation) — COMPLETE
 Plan: 33-03 COMPLETE — all 3 tasks done, human visual approval confirmed
 Status: Phase 33 COMPLETE — all 7 FOOTER requirements satisfied — v3.1 milestone COMPLETE
-Last activity: 2026-02-21 - Completed quick task 1: Fix Devcollab demo URLs, demo box color, and View Source GitHub links
+Last activity: 2026-02-21 - Completed quick task 2: Fix DevCollab live demo URL fallback from localhost to https://devcollab.fernandomillan.me
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE | Phase 32 COMPLETE | Phase 33 COMPLETE | v3.1 COMPLETE
 
@@ -113,6 +113,7 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Fix Devcollab demo URLs, demo box color, and View Source GitHub links | 2026-02-21 | 8670075 | [1-fix-devcollab-demo-urls-demo-box-color-a](./quick/1-fix-devcollab-demo-urls-demo-box-color-a/) |
+| 2 | Fix DevCollab live demo URL from localhost to https://devcollab.fernandomillan.me | 2026-02-21 | 3d3eabd | [2-the-link-in-projects-dev-collab-is-point](./quick/2-the-link-in-projects-dev-collab-is-point/) |
 
 ## Session Continuity
 
