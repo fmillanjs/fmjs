@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 32 of 33 (Matrix Color Harmony) — Plan 01 COMPLETE
-Plan: 32-01 COMPLETE (2 tasks, COLOR-01 + COLOR-02 fulfilled, 2026-02-21)
-Status: Phase 32 active — 32-01 done (foundation tokens + SectionLabel + about/hero fixes); 32-02 and 32-03 next
-Last activity: 2026-02-21 — Completed 32-01 (CSS tokens, SectionLabel component, about page + hero green fixes)
+Phase: 32 of 33 (Matrix Color Harmony) — Plan 02 COMPLETE
+Plan: 32-02 COMPLETE (2 tasks, COLOR-03 + COLOR-04 + COLOR-07 partial fulfilled, 2026-02-21)
+Status: Phase 32 active — 32-01 done, 32-02 done (contact + case studies + resume Matrix green); 32-03 next
+Last activity: 2026-02-21 — Completed 32-02 (contact page, CaseStudySection, TeamFlow, DevCollab, resume)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE
 
@@ -38,6 +38,7 @@ Progress: [██████████████████░░] 91% (31
 | Phase 31-magnetic-buttons P02 | 9 | 2 tasks | 3 files |
 | Phase 31-magnetic-buttons P02 | 15 | 3 tasks | 2 files |
 | Phase 32-matrix-color-harmony P01 | 2 | 2 tasks | 4 files |
+| Phase 32 P02 | 3 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Progress: [██████████████████░░] 91% (31
 - **31-02:** Hero CTA renamed "Learn More" -> "View Projects" (href /about -> /projects) — primary hero CTA leads to projects showcase per MAGN-01 spec
 - **32-01:** Four new Matrix green tokens inside `.matrix-theme {}` (not `:root`) — dashboard routes never have `.matrix-theme` so tokens are invisible there; prevents Tailwind @theme bleed
 - **32-01:** SectionLabel is pure Server Component with `aria-hidden="true"` — decorative `> LABEL` prefix, h2 below provides accessible heading semantics; no 'use client' needed
+- **32-02:** SectionLabel placed inside CaseStudySection AnimateIn wrapper — terminal prefix and h2 animate in together as a unit; single component change propagates to all 12+ case study section h2s
+- **32-02:** Metric stat numbers use `font-mono` + `--matrix-terminal` (brightest green) — maximum terminal aesthetic on key data points in case study stat grids
+- **32-02:** Challenge section left borders use `--matrix-green-border` (subdued) not `--matrix-green` — avoids visual competition with challenge heading text
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: 32-01-PLAN.md fully complete (2 tasks done, COLOR-01 + COLOR-02 complete)
+Stopped at: 32-02-PLAN.md fully complete (2 tasks done, COLOR-03 + COLOR-04 + COLOR-07 partial complete)
 Resume file: None
-Next action: Execute Phase 32 plans 32-02 and 32-03
+Next action: Execute Phase 32 plan 32-03

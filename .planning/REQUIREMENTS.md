@@ -31,11 +31,11 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 - [x] **COLOR-01**: Four new CSS tokens are defined in `:root` scoped to `.matrix-theme` (`--matrix-green-subtle`, `--matrix-green-border`, `--matrix-scan-line`, `--matrix-terminal`)
 - [x] **COLOR-02**: About page replaces blue `--primary` gradient and value card borders with Matrix green tokens (no blue mismatches visible)
-- [ ] **COLOR-03**: Contact page heading accents and CTA styling use Matrix green instead of blue `--primary`
-- [ ] **COLOR-04**: Case study pages (TeamFlow, DevCollab) display metric numbers in Matrix green monospace, eliminating blue accent colors
+- [x] **COLOR-03**: Contact page heading accents and CTA styling use Matrix green instead of blue `--primary`
+- [x] **COLOR-04**: Case study pages (TeamFlow, DevCollab) display metric numbers in Matrix green monospace, eliminating blue accent colors
 - [ ] **COLOR-05**: Tech-stack badge borders and highlight colors use Matrix green tokens instead of blue Radix primary
 - [ ] **COLOR-06**: Footer link hover states use Matrix green (replacing current blue hover)
-- [ ] **COLOR-07**: All portfolio section headings have a terminal-style label prefix (`> SECTION_NAME`) above each `<h2>` for visual coherence with the terminal theme
+- [x] **COLOR-07**: All portfolio section headings have a terminal-style label prefix (`> SECTION_NAME`) above each `<h2>` for visual coherence with the terminal theme
 - [ ] **COLOR-08**: Playwright visual regression baselines are updated for all affected routes and all 18 snapshots pass (maxDiffPixelRatio 0.02)
 
 ### Footer Redesign (FOOTER)
@@ -91,11 +91,11 @@ Which phases cover which requirements. Populated during roadmap creation.
 | MAGN-03 | Phase 31 | Complete |
 | COLOR-01 | Phase 32 | Complete |
 | COLOR-02 | Phase 32 | Complete |
-| COLOR-03 | Phase 32 | Pending |
-| COLOR-04 | Phase 32 | Pending |
+| COLOR-03 | Phase 32 | Complete |
+| COLOR-04 | Phase 32 | Complete |
 | COLOR-05 | Phase 32 | Pending |
 | COLOR-06 | Phase 32 | Pending |
-| COLOR-07 | Phase 32 | Pending |
+| COLOR-07 | Phase 32 | Complete |
 | COLOR-08 | Phase 32 | Pending |
 | FOOTER-01 | Phase 33 | Pending |
 | FOOTER-02 | Phase 33 | Pending |
