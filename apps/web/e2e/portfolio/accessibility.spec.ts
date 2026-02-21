@@ -12,6 +12,10 @@ test.describe('Portfolio Accessibility - WCAG AA', () => {
     test(`${path} - light mode`, async ({ page }) => {
       await page.goto(path)
       await page.waitForLoadState('networkidle')
+      // Allow time for next-themes to apply dark class (defaultTheme="dark" means .dark
+      // is added on hydration — without this wait, axe may capture pre-hydration state
+      // where dark palette + light text colors cause false contrast violations)
+      await page.waitForTimeout(500)
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
         .analyze()
@@ -29,7 +33,7 @@ test.describe('Portfolio Accessibility - WCAG AA', () => {
       await page.goto(path)
       await page.waitForLoadState('networkidle')
       // Allow time for next-themes to apply dark class from localStorage
-      await page.waitForTimeout(200)
+      await page.waitForTimeout(500)
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
         .analyze()
