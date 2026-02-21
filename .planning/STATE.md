@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 32 of 33 (Matrix Color Harmony) — Plan 04 Task 1 COMPLETE, awaiting human-verify checkpoint
-Plan: 32-04 IN PROGRESS (Task 1 done: portfolio baselines updated, dashboard isolation confirmed; Task 2: human visual verification pending)
-Status: Phase 32 nearly complete — 32-01 done, 32-02 done, 32-03 done, 32-04 Task 1 done; awaiting human visual approval of Matrix green
-Last activity: 2026-02-21 — Completed 32-04 Task 1 (12 portfolio baselines updated, all pass, dashboard hashes unchanged)
+Phase: 32 of 33 (Matrix Color Harmony) — COMPLETE
+Plan: 32-04 COMPLETE (all tasks done: baselines updated, gap fix applied, human visual approval confirmed)
+Status: Phase 32 COMPLETE — 32-01 done, 32-02 done, 32-03 done, 32-04 done; all COLOR-01 through COLOR-08 requirements satisfied
+Last activity: 2026-02-21 — Completed 32-04 (human approved all 8 route checks; gap fix a86bed4 applied --primary override + ThemeToggle removal)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE
 
-Progress: [██████████████████░░] 91% (31/33 phases complete, Phase 32 in progress)
+Progress: [███████████████████░] 97% (32/33 phases complete, Phase 33 next)
 
 ## Performance Metrics
 
@@ -41,6 +41,7 @@ Progress: [██████████████████░░] 91% (31
 | Phase 32 P02 | 3 | 2 tasks | 5 files |
 | Phase 32-matrix-color-harmony P03 | 2 | 2 tasks | 4 files |
 | Phase 32-matrix-color-harmony P04 | 8 | 1 tasks | 10 files |
+| Phase 32-matrix-color-harmony P04 | 25 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Progress: [██████████████████░░] 91% (31
 - **32-03:** `parallax-divider` `bg-primary/30` replaced with `bg-[var(--matrix-green-border)]` — semantically correct; `--primary` in .matrix-theme context resolves to Tailwind blue (not green), so `--matrix-green-border` (#00FF4133, ~20% opacity) now accurately represents original intent
 - **32-03:** Homepage stat numbers use `font-mono text-[var(--matrix-terminal)]` — consistent with case study stat pattern from 32-02; maximum terminal aesthetic on hero data points
 - **32-04:** Dashboard team-detail baselines committed from CI (auth required) — visual.config.ts uses empty storageState; running --update-snapshots locally overwrites them with unauthenticated captures; must restore from git to preserve CI baselines
+- **32-04:** `--primary: var(--matrix-green)` inside `.matrix-theme {}` — overrides Radix default for Button/Badge harmony in portfolio; dashboard routes (no .matrix-theme) are completely unaffected
+- **32-04:** ThemeToggle removed from portfolio nav, layout.tsx locked to defaultTheme="dark" — portfolio is intentionally dark-only Matrix aesthetic; toggle was vestigial
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: 32-04-PLAN.md Task 1 complete, checkpoint:human-verify pending (Task 2 — human must visit 8 routes and confirm Matrix green)
+Stopped at: Phase 32 COMPLETE — 32-04 done, all COLOR-01 through COLOR-08 satisfied, human visual approval confirmed
 Resume file: None
-Next action: Human visual verification of 8 portfolio routes (see 32-04-PLAN.md Task 2 checklist), then execute Phase 33
+Next action: Execute Phase 33 (Footer Redesign + Matrix Animation)
