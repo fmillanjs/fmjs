@@ -29,8 +29,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Matrix Color Harmony (COLOR)
 
-- [ ] **COLOR-01**: Four new CSS tokens are defined in `:root` scoped to `.matrix-theme` (`--matrix-green-subtle`, `--matrix-green-border`, `--matrix-scan-line`, `--matrix-terminal`)
-- [ ] **COLOR-02**: About page replaces blue `--primary` gradient and value card borders with Matrix green tokens (no blue mismatches visible)
+- [x] **COLOR-01**: Four new CSS tokens are defined in `:root` scoped to `.matrix-theme` (`--matrix-green-subtle`, `--matrix-green-border`, `--matrix-scan-line`, `--matrix-terminal`)
+- [x] **COLOR-02**: About page replaces blue `--primary` gradient and value card borders with Matrix green tokens (no blue mismatches visible)
 - [ ] **COLOR-03**: Contact page heading accents and CTA styling use Matrix green instead of blue `--primary`
 - [ ] **COLOR-04**: Case study pages (TeamFlow, DevCollab) display metric numbers in Matrix green monospace, eliminating blue accent colors
 - [ ] **COLOR-05**: Tech-stack badge borders and highlight colors use Matrix green tokens instead of blue Radix primary
@@ -89,8 +89,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | MAGN-01 | Phase 31 | Complete |
 | MAGN-02 | Phase 31 | Complete |
 | MAGN-03 | Phase 31 | Complete |
-| COLOR-01 | Phase 32 | Pending |
-| COLOR-02 | Phase 32 | Pending |
+| COLOR-01 | Phase 32 | Complete |
+| COLOR-02 | Phase 32 | Complete |
 | COLOR-03 | Phase 32 | Pending |
 | COLOR-04 | Phase 32 | Pending |
 | COLOR-05 | Phase 32 | Pending |

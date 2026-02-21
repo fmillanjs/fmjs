@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 32: next)
+**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 32 in progress)
 
 ## Current Position
 
-Phase: 31 of 33 (Magnetic Buttons) — Phase 31 COMPLETE
-Plan: 31-02 COMPLETE (all 3 tasks + human-verify approved 2026-02-21)
-Status: Phase 31 fully complete — MAGN-01, MAGN-02, MAGN-03 fulfilled; MagneticButton on all 3 CTAs, LHCI >= 0.90, visual verification approved
-Last activity: 2026-02-21 — Completed 31-02 Task 3 human-verify (spring feel, guards, focus rings, links all confirmed)
+Phase: 32 of 33 (Matrix Color Harmony) — Plan 01 COMPLETE
+Plan: 32-01 COMPLETE (2 tasks, COLOR-01 + COLOR-02 fulfilled, 2026-02-21)
+Status: Phase 32 active — 32-01 done (foundation tokens + SectionLabel + about/hero fixes); 32-02 and 32-03 next
+Last activity: 2026-02-21 — Completed 32-01 (CSS tokens, SectionLabel component, about page + hero green fixes)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE
 
-Progress: [██████████████████░░] 91% (31/33 phases complete, Phase 32 next)
+Progress: [██████████████████░░] 91% (31/33 phases complete, Phase 32 in progress)
 
 ## Performance Metrics
 
@@ -37,6 +37,7 @@ Progress: [██████████████████░░] 91% (31
 | Phase 31-magnetic-buttons P01 | 1 | 1 tasks | 1 files |
 | Phase 31-magnetic-buttons P02 | 9 | 2 tasks | 3 files |
 | Phase 31-magnetic-buttons P02 | 15 | 3 tasks | 2 files |
+| Phase 32-matrix-color-harmony P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Progress: [██████████████████░░] 91% (31
 - **31-01:** `prefersReducedMotion` null (SSR) treated as falsy — motion render on SSR is hydration-safe; only `true` triggers plain div wrapper
 - **31-02:** `chromePath` in `lighthouserc.json` must be in `ci.collect` block (not `ci.collect.settings`) — LHCI uses `collect.chromePath` for its Chrome launcher; `settings.chromePath` is Lighthouse audit setting (different code path)
 - **31-02:** Hero CTA renamed "Learn More" -> "View Projects" (href /about -> /projects) — primary hero CTA leads to projects showcase per MAGN-01 spec
+- **32-01:** Four new Matrix green tokens inside `.matrix-theme {}` (not `:root`) — dashboard routes never have `.matrix-theme` so tokens are invisible there; prevents Tailwind @theme bleed
+- **32-01:** SectionLabel is pure Server Component with `aria-hidden="true"` — decorative `> LABEL` prefix, h2 below provides accessible heading semantics; no 'use client' needed
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: 31-02-PLAN.md fully complete (all 3 tasks done, human-verify approved)
+Stopped at: 32-01-PLAN.md fully complete (2 tasks done, COLOR-01 + COLOR-02 complete)
 Resume file: None
-Next action: Begin Phase 32 planning/execution
+Next action: Execute Phase 32 plans 32-02 and 32-03
