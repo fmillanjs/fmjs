@@ -104,6 +104,12 @@
 .matrix-theme {
   background-color: #0a0a0a;
   color: #e8e8e8;
+
+  /* Phase 32: Matrix Color Harmony tokens */
+  --matrix-green-subtle: #00FF4108;   /* ~3% opacity — very faint glow bg */
+  --matrix-green-border: #00FF4133;   /* ~20% opacity — border tint */
+  --matrix-scan-line: #00FF410D;      /* ~5% opacity — CRT scan line (Phase 33) */
+  --matrix-terminal: #00FF41;         /* Full bright green — metric numbers, labels */
 }
 
 html:not(.dark) .matrix-theme {
