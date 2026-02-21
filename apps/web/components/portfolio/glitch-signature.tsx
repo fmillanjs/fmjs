@@ -45,7 +45,6 @@ export default function GlitchSignature() {
     <span
       ref={ref}
       className="text-lg font-bold font-mono text-foreground"
-      aria-label="Fernando Millan"
     >
       Fernando Millan
     </span>

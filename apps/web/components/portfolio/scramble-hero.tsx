@@ -13,8 +13,9 @@ export function ScrambleHero({ text, className }: ScrambleHeroProps) {
   const display = useTextScramble(text, !prefersReducedMotion)
 
   return (
-    // aria-label provides the correct name to screen readers even during scramble
-    <span className={className} aria-label={text}>
+    // role="img" + aria-label: valid ARIA pattern for spans with dynamic text content
+    // Screen readers read the stable aria-label value during the scramble animation
+    <span className={className} role="img" aria-label={text}>
       {display || '\u00A0'}
     </span>
   )

@@ -120,6 +120,11 @@
 html:not(.dark) .matrix-theme {
   background-color: var(--background);
   color: var(--foreground);
+  /* Override matrix tokens to dark accessible values in light mode */
+  /* #006B1B dark green on white: 6.0:1 contrast — passes WCAG AA 4.5:1 */
+  --matrix-green: #006B1B;
+  --matrix-green-dim: #005516;
+  --matrix-terminal: #006B1B;
 }
 
 /* FOOTER-04: CRT scanline texture — applied via class on <footer> element */
