@@ -120,11 +120,14 @@
 html:not(.dark) .matrix-theme {
   background-color: var(--background);
   color: var(--foreground);
-  /* Override matrix tokens to dark accessible values in light mode */
-  /* #006B1B dark green on white: 6.0:1 contrast — passes WCAG AA 4.5:1 */
-  --matrix-green: #006B1B;
-  --matrix-green-dim: #005516;
-  --matrix-terminal: #006B1B;
+}
+
+/* Footer always has dark background (#0a0a0a inline style) — keep bright green tokens */
+/* This restores full-brightness matrix tokens on the dark footer in light mode */
+html:not(.dark) .matrix-theme footer {
+  --matrix-green: #00FF41;
+  --matrix-green-dim: #00CC33;
+  --matrix-terminal: #00FF41;
 }
 
 /* FOOTER-04: CRT scanline texture — applied via class on <footer> element */
