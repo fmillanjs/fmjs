@@ -34,9 +34,7 @@ export default function ContactPage() {
             <div className="space-y-6">
               <div>
                 <h3 className="mb-2 font-medium text-foreground">Email</h3>
-                <a href="mailto:hello@fernandomillan.dev" className="text-[var(--matrix-green)] hover:underline">
-                  hello@fernandomillan.dev
-                </a>
+                <p className="text-[var(--matrix-green)]">hello@fernandomillan.me</p>
               </div>
               <div>
                 <h3 className="mb-2 font-medium text-foreground">Location</h3>

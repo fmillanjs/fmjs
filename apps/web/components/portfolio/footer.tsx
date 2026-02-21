@@ -87,26 +87,6 @@ export function PortfolioFooter() {
                   {'>'} github
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://linkedin.com/in/fmillanjs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn profile"
-                  className="font-mono text-sm text-[var(--matrix-terminal)] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
-                >
-                  {'>'} linkedin
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:hello@fernandomillan.dev"
-                  aria-label="Email Fernando"
-                  className="font-mono text-sm text-[var(--matrix-terminal)] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
-                >
-                  {'>'} email
-                </a>
-              </li>
             </ul>
           </div>
         </div>
