@@ -140,11 +140,11 @@ Plans:
   3. User hovering the "Get In Touch" contact CTA sees the same magnetic spring behavior
   4. User on a touch device (phone, tablet) tapping any CTA sees a plain button press — no position shift, no magnetic artifact
   5. User with `prefers-reduced-motion: reduce` active sees a plain button — the MagneticButton component renders a static wrapper with no motion values
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 31-01: MagneticButton component (motion/react useMotionValue + useSpring + useReducedMotion guard)
-- [ ] 31-02: Apply MagneticButton to hero CTAs + contact CTA + Lighthouse TBT verification (< 50ms)
+- [ ] 31-01-PLAN.md — MagneticButton 'use client' component (motion/react useMotionValue + useSpring + useReducedMotion + any-hover guard + getBoundingClientRect caching)
+- [ ] 31-02-PLAN.md — Wire MagneticButton to hero CTAs (rename "Learn More" → "View Projects") + about page "Get In Touch" + Lighthouse CI gate (performance >= 0.90)
 
 ### Phase 32: Matrix Color Harmony
 **Goal**: Every portfolio section uses Matrix green tokens consistently — no blue Radix primary colors remain visible anywhere in the portfolio — and all 18 Playwright visual regression baselines are updated and passing
