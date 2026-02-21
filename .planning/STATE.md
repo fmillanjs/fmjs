@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 33 of 33 (Footer Redesign + Matrix Animation) — COMPLETE
-Plan: 33-02 COMPLETE (GlitchSignature island: IntersectionObserver single-fire + useReducedMotion + ssr:false wired via next/dynamic)
-Status: Phase 33 COMPLETE — all plans done (FOOTER-01 through FOOTER-05 satisfied)
-Last activity: 2026-02-21 — Completed 33-02 (GlitchSignature client island + footer.tsx next/dynamic wiring)
+Phase: 33 of 33 (Footer Redesign + Matrix Animation) — IN PROGRESS
+Plan: 33-03 Tasks 1-2 COMPLETE — awaiting Task 3 checkpoint:human-verify
+Status: Phase 33 — FOOTER-06 + FOOTER-07 satisfied; human visual approval pending (Task 3)
+Last activity: 2026-02-21 — Completed 33-03 Tasks 1-2 (axe WCAG AA audit pass + 12 portfolio baselines updated)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8) | Phase 31 COMPLETE | Phase 32 COMPLETE
 
@@ -44,6 +44,7 @@ Progress: [████████████████████] 100% (3
 | Phase 32-matrix-color-harmony P04 | 25 | 2 tasks | 13 files |
 | Phase 33-footer-redesign-matrix-animation P01 | 253 | 2 tasks | 2 files |
 | Phase 33-footer-redesign-matrix-animation P02 | 177 | 2 tasks | 2 files |
+| Phase 33-footer-redesign-matrix-animation P03 | 28 | 2 tasks (+ checkpoint) | 4 files + 12 PNGs |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Progress: [████████████████████] 100% (3
 - **33-01:** `background: '#0a0a0a'` applied as inline style on `<footer>` — prevents Tailwind `@theme inline` bleed to `bg-background` utility token
 - **33-02:** `footer.tsx` must be `'use client'` — Next.js 15 forbids `next/dynamic ssr:false` in Server Components; consistent with `hero-section.tsx` pattern
 - **33-02:** `entries[0]?.isIntersecting` optional chain — TypeScript strict mode treats array index access as `T | undefined`; runtime identical since IntersectionObserver always fires with entries
+- **33-03:** `ScrambleHero role="img"` — ARIA spec requires role on span for aria-label to be valid; role=img is semantically correct for dynamic text with stable accessible name
+- **33-03:** `html:not(.dark) .matrix-theme footer` — footer always has dark #0a0a0a inline background; footer selector restores bright #00FF41 green tokens that would otherwise be overridden by light-mode rules
+- **33-03:** Dashboard baselines restored from git — visual.config.ts runs all e2e tests; --update-snapshots overwrites dashboard baselines with unauthenticated captures; must git restore (same as 32-04)
 
 ### Pending Todos
 
@@ -105,6 +109,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 33-footer-redesign-matrix-animation-02-PLAN.md — FOOTER-05 satisfied, GlitchSignature island + footer wired. Phase 33 COMPLETE.
+Stopped at: Checkpoint:human-verify at Task 3 of 33-03-PLAN.md — Tasks 1-2 complete, awaiting visual approval of terminal footer
 Resume file: None
-Next action: None — all 33 phases complete
+Next action: Human verifies footer at http://localhost:3000, then types "approved" to complete Phase 33
