@@ -4,6 +4,7 @@
       "startServerCommand": "node .next/standalone/apps/web/server.js",
       "startServerReadyPattern": "Ready",
       "startServerReadyTimeout": 30000,
+      "chromePath": "/home/doctor/.cache/puppeteer/chrome/linux-141.0.7390.122/chrome-linux64/chrome",
       "settings": {
         "chromeFlags": "--no-sandbox --disable-dev-shm-usage"
       },
