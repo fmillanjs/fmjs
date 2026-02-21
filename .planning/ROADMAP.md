@@ -178,12 +178,12 @@ Plans:
   5. User scrolling the "Fernando Millan" footer signature into view for the first time sees a single CSS glitch animation fire exactly once — subsequent scrolls show the static text with no repeat
   6. User tabbing through the footer with a keyboard sees all social links receive a visible focus ring in the correct position
   7. All 18 Playwright visual regression snapshots pass at maxDiffPixelRatio 0.02 after footer baseline update; reduced-motion users see a static footer with all animations disabled
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 33-01: Footer static redesign — background, border, scanlines (CSS ::before), terminal social links, > EOF tagline
-- [ ] 33-02: FooterMatrixEffect dynamic island — single-fire CSS glitch on "Fernando Millan" via IntersectionObserver (next/dynamic ssr:false)
-- [ ] 33-03: Accessibility audit (keyboard focus rings, axe WCAG AA) + Playwright baseline update + all 18 snapshots green
+- [ ] 33-01-PLAN.md — Footer static shell redesign: #0a0a0a background, --matrix-green-border top border, CRT scanlines CSS ::before, terminal social links (> github/linkedin/email), > EOF tagline
+- [ ] 33-02-PLAN.md — GlitchSignature 'use client' island: IntersectionObserver single-fire + next/dynamic ssr:false wired into footer.tsx
+- [ ] 33-03-PLAN.md — Accessibility audit (axe WCAG AA, keyboard focus rings) + Playwright baseline update + all 18 snapshots green + human visual approval
 
 ## Progress
 
