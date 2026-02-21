@@ -41,7 +41,7 @@ export function ParallaxDivider({ className }: ParallaxDividerProps) {
     <div ref={containerRef} className={`py-8 overflow-hidden ${className ?? ''}`}>
       <div
         ref={lineRef}
-        className="h-px bg-primary/30 w-full origin-center"
+        className="h-px bg-[var(--matrix-green-border)] w-full origin-center"
         // transform-origin: center — scaleX expands equally left+right, no horizontal shift
         // scaleX does not affect layout — CLS = 0
       />

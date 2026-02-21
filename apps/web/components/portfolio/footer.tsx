@@ -27,7 +27,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 >
                   Home
                 </Link>
@@ -35,7 +35,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 >
                   About
                 </Link>
@@ -43,7 +43,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/projects"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 >
                   Projects
                 </Link>
@@ -51,7 +51,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 >
                   Contact
                 </Link>
@@ -69,7 +69,7 @@ export function PortfolioFooter() {
                 href="https://github.com/fmillanjs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
@@ -78,7 +78,7 @@ export function PortfolioFooter() {
                 href="https://codesignal.com/learn/profile/cmiqnphkm008cjs0444t3ea1t"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-[var(--matrix-green)] transition-colors"
                 aria-label="CodeSignal"
               >
                 <ExternalLink className="w-5 h-5" />

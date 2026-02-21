@@ -26,7 +26,7 @@ export function TechStack() {
       {technologies.map((tech) => (
         <Card
           key={tech.name}
-          className="hover:border-primary/50 hover:shadow-md transition-all"
+          className="hover:border-[var(--matrix-green-border)] hover:shadow-md transition-all"
         >
           <CardContent className="p-4">
             <div className="text-sm font-medium text-muted-foreground mb-1">
