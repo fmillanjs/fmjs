@@ -91,7 +91,7 @@ Full archive: `.planning/milestones/v3.0-ROADMAP.md`
 - LenisProvider scoped to `(portfolio)/layout.tsx` only — TeamFlow dashboard unaffected
 
 - [x] **Phase 29: Lenis Foundation** - Inertia smooth scroll wired across all portfolio pages with correct GSAP ticker sync, route-reset, modal lock, and reduced-motion bypass (completed 2026-02-21)
-- [ ] **Phase 30: GSAP ScrollTrigger Parallax** - Hero text and section separator depth effects driven by scroll position via GSAP ScrollTrigger synced to Lenis ticker
+- [x] **Phase 30: GSAP ScrollTrigger Parallax** - Hero text and section separator depth effects driven by scroll position via GSAP ScrollTrigger synced to Lenis ticker (completed 2026-02-21)
 - [ ] **Phase 31: Magnetic Buttons** - Spring-physics cursor attraction on hero and contact CTAs with touch/reduced-motion guard
 - [ ] **Phase 32: Matrix Color Harmony** - Four new CSS tokens and consistent Matrix green applied across all portfolio sections, eliminating all blue Radix primary mismatches
 - [ ] **Phase 33: Footer Redesign + Matrix Animation** - Terminal-themed footer with CRT scanlines and single-fire CSS glitch text
@@ -127,8 +127,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 30-01-PLAN.md — LenisProvider autoRaf: false + LenisGSAPBridge ticker sync + hero text parallax (yPercent: -15, scrub: 1)
-- [ ] 30-02-PLAN.md — ParallaxDivider component (scaleX depth effect) + homepage/page inserts + Lighthouse CI gate (CLS = 0, all 5 URLs >= 0.90)
+- [x] 30-01-PLAN.md — LenisProvider autoRaf: false + LenisGSAPBridge ticker sync + hero text parallax (yPercent: -15, scrub: 1)
+- [x] 30-02-PLAN.md — ParallaxDivider component (scaleX depth effect) + homepage/page inserts + Lighthouse CI gate (CLS = 0, all 5 URLs >= 0.90)
 
 ### Phase 31: Magnetic Buttons
 **Goal**: Users hovering the hero CTAs and contact CTA experience spring-physics cursor attraction; users on touch devices or with reduced-motion preference see a plain button with no behavior change
@@ -219,7 +219,7 @@ Plans:
 | 27. Infrastructure Foundation + Prisma Fix | v3.0 | 3/3 | Complete | 2026-02-20 |
 | 28. DevCollab UI Debt Closure | v3.0 | 3/3 | Complete | 2026-02-20 |
 | 29. Lenis Foundation | 3/3 | Complete    | 2026-02-21 | - |
-| 30. GSAP ScrollTrigger Parallax | 1/2 | In Progress|  | - |
+| 30. GSAP ScrollTrigger Parallax | v3.1 | 2/2 | Complete | 2026-02-21 |
 | 31. Magnetic Buttons | v3.1 | 0/2 | Not started | - |
 | 32. Matrix Color Harmony | v3.1 | 0/4 | Not started | - |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 0/3 | Not started | - |

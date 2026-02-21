@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 30: GSAP ScrollTrigger)
+**Current focus:** v3.1 — Portfolio Polish & Matrix Cohesion (Phase 31: Magnetic Buttons)
 
 ## Current Position
 
-Phase: 30 of 33 (GSAP ScrollTrigger) — Phase 30 in progress
-Plan: 2 of N in current phase
-Status: 30-01 complete — LenisGSAPBridge + hero parallax shipped
-Last activity: 2026-02-20 — Completed 30-01 (LenisGSAPBridge autoRaf:false + hero yPercent:-15 scrub:1 parallax)
+Phase: 31 of 33 (Magnetic Buttons) — Phase 30 COMPLETE
+Plan: Next plan in Phase 31
+Status: 30-02 complete — ParallaxDivider scaleX + Lighthouse CI gate; Phase 30 COMPLETE (PRLLX-01, PRLLX-02, PRLLX-03 all verified)
+Last activity: 2026-02-21 — Completed 30-02 (ParallaxDivider scaleX 0.92→1.04 + LHCI 1.00 + human visual verify approved)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
-Progress: [█████████████████░░░] 85% (29/33 phases complete, Phase 30 in progress)
+Progress: [█████████████████░░░] 88% (30/33 phases complete, Phase 31 next)
 
 ## Performance Metrics
 
@@ -57,6 +57,10 @@ Progress: [█████████████████░░░] 85% (29
 - **30-01:** `LenisGSAPBridge` uses named `tickerFn` variable (not inline arrow) — same reference required for `gsap.ticker.remove()` to work correctly
 - **30-01:** `gsap.ticker.lagSmoothing(0)` — prevents GSAP jump-catch-up when tab regains focus after being backgrounded
 - **30-01:** `overflow-hidden` on hero section (not textRef div) — MatrixRainCanvas is `absolute inset-0` so canvas stays clipped correctly without breaking background effect
+- **30-02:** `ParallaxDivider` uses `origin-center` on line + `overflow-hidden` on container — scaleX expands symmetrically from center, clipped at container edges, CLS = 0 confirmed by LHCI
+- **30-02:** `bg-primary/30` for divider line — Matrix green at 30% opacity within `.matrix-theme`; avoids blue Radix bleed, consistent with portfolio color tokens
+- **30-02:** `scrub: 1` on scaleX — defers entirely to RAF, blends with Lenis inertia, prevents TBT spike on main thread
+- **30-02:** `projects/page.tsx` and `contact/page.tsx` skipped for ParallaxDivider inserts — single-section layouts where forcing a divider would be visually incorrect
 
 ### Pending Todos
 
@@ -70,7 +74,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-20
-Stopped at: Completed 30-01-PLAN.md — LenisGSAPBridge (autoRaf:false) + hero parallax (yPercent:-15, scrub:1)
+Last session: 2026-02-21
+Stopped at: Completed 30-02-PLAN.md — ParallaxDivider scaleX 0.92→1.04 + LHCI gate (1.00 performance, CLS=0) + human visual verify all 8 checks passed. Phase 30 COMPLETE.
 Resume file: None
-Next action: Execute next Phase 30 plan
+Next action: Execute Phase 31 (Magnetic Buttons)

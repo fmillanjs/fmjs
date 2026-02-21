@@ -18,8 +18,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 ### Parallax (PRLLX)
 
 - [x] **PRLLX-01**: User scrolling the hero section sees the hero text drift upward at a slower rate than page scroll (GSAP ScrollTrigger, yPercent: -15, scrub: 1)
-- [ ] **PRLLX-02**: User scrolling past section separators sees decorative lines move at an independent depth (subtle scale/y transform, no layout shift)
-- [ ] **PRLLX-03**: Lighthouse CI performance score remains ≥ 0.90 on all five portfolio URLs after parallax is added (no pin: true, transform-only properties)
+- [x] **PRLLX-02**: User scrolling past section separators sees decorative lines move at an independent depth (subtle scale/y transform, no layout shift)
+- [x] **PRLLX-03**: Lighthouse CI performance score remains ≥ 0.90 on all five portfolio URLs after parallax is added (no pin: true, transform-only properties)
 
 ### Magnetic Buttons (MAGN)
 
@@ -84,8 +84,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | SCROLL-03 | Phase 29 | Complete |
 | SCROLL-04 | Phase 29 | Complete |
 | PRLLX-01 | Phase 30 | Complete |
-| PRLLX-02 | Phase 30 | Pending |
-| PRLLX-03 | Phase 30 | Pending |
+| PRLLX-02 | Phase 30 | Complete |
+| PRLLX-03 | Phase 30 | Complete |
 | MAGN-01 | Phase 31 | Pending |
 | MAGN-02 | Phase 31 | Pending |
 | MAGN-03 | Phase 31 | Pending |
