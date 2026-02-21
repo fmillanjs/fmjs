@@ -1,7 +1,7 @@
 {
-  "http://localhost:3000/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771492068725-97337.report.html",
-  "http://localhost:3000/projects": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771492069189-17785.report.html",
-  "http://localhost:3000/projects/teamflow": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771492069786-46149.report.html",
-  "http://localhost:3000/projects/devcollab": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771492070303-46333.report.html",
-  "http://localhost:3000/contact": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771492070786-60619.report.html"
+  "http://localhost:3000/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771497376402-39780.report.html",
+  "http://localhost:3000/projects": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771497376935-4428.report.html",
+  "http://localhost:3000/projects/teamflow": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771497377410-92467.report.html",
+  "http://localhost:3000/projects/devcollab": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771497377968-27638.report.html",
+  "http://localhost:3000/contact": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1771497378551-43339.report.html"
 }
