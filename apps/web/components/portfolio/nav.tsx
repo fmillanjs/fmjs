@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'motion/react';
@@ -76,12 +75,10 @@ export function PortfolioNav() {
             <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded bg-muted text-muted-foreground">
               <span className="text-xs">⌘</span>K
             </kbd>
-            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"

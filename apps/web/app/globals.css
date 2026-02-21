@@ -110,6 +110,11 @@
   --matrix-green-border: #00FF4133;   /* ~20% opacity — border tint */
   --matrix-scan-line: #00FF410D;      /* ~5% opacity — CRT scan line (Phase 33) */
   --matrix-terminal: #00FF41;         /* Full bright green — metric numbers, labels */
+
+  /* Override Radix blue primary with Matrix green — all Button/Badge default variants harmonize automatically */
+  /* Dashboard routes never have .matrix-theme so their blue primary is unaffected */
+  --primary: var(--matrix-green);
+  --primary-foreground: #000000;
 }
 
 html:not(.dark) .matrix-theme {
