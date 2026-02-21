@@ -80,3 +80,13 @@
 
 ---
 
+
+## v3.1 Portfolio Polish & Matrix Cohesion (Shipped: 2026-02-21)
+
+**Phases completed:** 14 phases, 60 plans, 48 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+

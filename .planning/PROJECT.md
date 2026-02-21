@@ -8,9 +8,9 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current State: v3.0 Shipped 2026-02-20
+## Current State: v3.1 Shipped 2026-02-21
 
-Both SaaS applications are live at HTTPS custom domains. All milestones complete. Portfolio is production-ready for recruiter evaluation.
+Both SaaS applications are live at HTTPS custom domains. Portfolio is production-ready with Awwwards-quality animation polish: Lenis inertia scroll, GSAP parallax depth layers, spring-physics magnetic CTAs, consistent Matrix green design system, and a terminal-themed animated footer. All recruiter-facing flows verified WCAG AA compliant with Lighthouse ≥ 0.90 on all 5 public URLs.
 
 ## Requirements
 
@@ -74,26 +74,16 @@ Both SaaS applications are live at HTTPS custom domains. All milestones complete
 - ✓ Dashboard server-side auth guard: zero content flash redirect to `/login` — v3.0
 - ✓ Prisma import isolation: `reactions.service.ts` uses `.prisma/devcollab-client` runtime — v3.0
 
-## Current Milestone: v3.1 Portfolio Polish & Matrix Cohesion
-
-**Goal:** Apply the Matrix aesthetic consistently across the entire portfolio and ship the remaining deferred animation features for an Awwwards-quality, cohesive final product.
-
-**Target features:**
-- Lenis smooth scroll throughout portfolio
-- GSAP parallax depth effects on scroll
-- Magnetic buttons on CTAs
-- Matrix color harmony: project cards/case studies, skills/about, contact/CTA, typography
-- Footer redesign with Matrix animation effect
+**v3.1 (Portfolio Polish & Matrix Cohesion):**
+- ✓ Lenis inertia smooth scroll across all portfolio pages with GSAP ticker sync, route-reset, CommandPalette lock — Lighthouse 100% — v3.1
+- ✓ GSAP ScrollTrigger parallax: hero text yPercent:-15 depth layer, ParallaxDivider scaleX sections — CLS=0 — v3.1
+- ✓ Spring-physics magnetic CTAs (Framer Motion useSpring) on hero + contact buttons — touch/reduced-motion safe — v3.1
+- ✓ Matrix green design system: 4 CSS tokens + SectionLabel component, all blue Radix primary eliminated site-wide — v3.1
+- ✓ Terminal-themed footer: #0a0a0a, CRT scanlines via CSS ::before, > EOF tagline, single-fire GlitchSignature — WCAG AA — v3.1
 
 ### Active
 
-- [ ] Lenis smooth scroll integrated across all portfolio pages
-- [ ] GSAP parallax effects on scroll
-- [ ] Magnetic button component on CTA elements
-- [ ] Matrix color harmony applied to project cards and case study pages
-- [ ] Matrix color harmony applied to skills/about section
-- [ ] Matrix color harmony applied to contact/CTA sections and typography
-- [ ] Footer redesigned with Matrix animation
+(No active requirements — planning next milestone)
 
 ### Out of Scope
 
@@ -120,7 +110,7 @@ Both SaaS applications are live at HTTPS custom domains. All milestones complete
 
 **Purpose:** Job hunting for senior full-stack developer roles. Need an impressive, interactive demo showcasing production-level thinking and execution.
 
-**Current state:** v3.0 shipped 2026-02-20. Both apps are live in production. Total: ~27,942 TypeScript/TSX LOC across the monorepo.
+**Current state:** v3.1 shipped 2026-02-21. Both apps are live in production. Portfolio has full animation polish. Total: ~28,450 TypeScript/TSX LOC across the monorepo.
 
 **Deployed apps:**
 - `https://devcollab.fernandomillan.me` — DevCollab web (Next.js 15, NestJS 11 API, Postgres)
@@ -188,5 +178,13 @@ Both SaaS applications are live at HTTPS custom domains. All milestones complete
 | Server-side dashboard auth guard using cookies() + redirect() | Eliminates client-side auth flash; pattern from w/[slug]/layout.tsx | ✓ Good — zero flash confirmed in browser verification |
 | window.location.origin for invite join URL | API_URL points to backend; join URL must use web app's own origin | ✓ Good — correct URL generated in production |
 
+| autoRaf: false + LenisGSAPBridge ticker sync | GSAP ScrollTrigger requires ownership of the RAF loop; Lenis cannot run its own RAF alongside GSAP | ✓ Good — single RAF loop, no jitter, no double-RAF |
+| motion/react (not framer-motion) for MagneticButton | Framer Motion package renamed to motion; React 19 requires motion/react | ✓ Good — no peer dep warnings |
+| MagneticButton spring on about page "Get In Touch" (not contact page) | Contact page has no standalone CTA — contains a form; about CTA navigates to /contact | ✓ Good — correct UX placement |
+| 'use client' on footer.tsx for next/dynamic ssr:false | Next.js 15 forbids dynamic(ssr:false) in Server Components; footer became a client component | ✓ Good — consistent with hero-section.tsx pattern |
+| waitForTimeout(500) in accessibility.spec.ts | ThemeProvider hydration fires after component mount, causing false axe contrast violations before token CSS loads | ✓ Good — stable 13 consecutive test passes |
+| LinkedIn + email removed from footer | User preference: LinkedIn not used, mailto link bad practice for public portfolio | ✓ Good — GitHub only, email on contact page as plain text |
+| hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
+
 ---
-*Last updated: 2026-02-20 after v3.1 milestone started — Portfolio Polish & Matrix Cohesion*
+*Last updated: 2026-02-21 after v3.1 milestone complete — Portfolio Polish & Matrix Cohesion shipped*
