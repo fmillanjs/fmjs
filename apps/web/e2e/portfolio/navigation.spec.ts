@@ -16,7 +16,7 @@ test.describe('Portfolio Navigation', () => {
 
     // Expect heading and tech stack section
     await expect(page.getByRole('heading', { name: /about/i })).toBeVisible()
-    await expect(page.getByText(/Tech Stack|Skills|Technologies/i)).toBeVisible()
+    await expect(page.getByText(/Tech Stack|Skills|Technologies/i).first()).toBeVisible()
   })
 
   test('projects page loads with TeamFlow', async ({ page }) => {
