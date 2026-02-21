@@ -180,6 +180,9 @@ jobs:
         if: always()
         run: docker compose down postgres redis
 
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
+
       - name: Install Lighthouse CI
         run: npm install -g @lhci/cli@0.15.x
 
