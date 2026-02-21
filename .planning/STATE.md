@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 29 of 33 (Lenis Foundation)
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-21 — Completed 29-01 (LenisProvider foundation — smooth scroll + reduced-motion gate)
+Plan: 2 of 3 in current phase
+Status: In progress (awaiting human verify checkpoint for 29-02)
+Last activity: 2026-02-21 — Completed 29-02 Task 1 (CommandPalette Lenis scroll lock); checkpoint pending human verification
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE (41/41) | v2.5 COMPLETE (13/13) | v3.0 COMPLETE (8/8)
 
-Progress: [████████████████░░░░] 82% (28/33 phases complete, Phase 29 in progress — 1/3 plans done)
+Progress: [████████████████░░░░] 82% (28/33 phases complete, Phase 29 in progress — 2/3 plans done)
 
 ## Performance Metrics
 
@@ -47,6 +47,8 @@ Progress: [████████████████░░░░] 82% (28
 - **29-01:** `LenisScrollReset` inner component inside ReactLenis tree (not exported) — required for `useLenis()` context; handles SCROLL-02 route-change reset
 - **29-01:** `LenisProvider` wraps outermost portfolio layout div — CommandPalette + PortfolioNav inside scope for upcoming 29-02 scroll lock
 - **29-01:** `lerp: 0.1` shipping value; real-device feel testing may adjust to 0.08-0.12 — documented in provider comment
+- **29-02:** `useLenis()` with optional chaining `lenis?.stop()/start()` in CommandPalette — returns `undefined` outside LenisProvider (dashboard); optional chaining prevents crash
+- **29-02:** `useEffect([open, lenis])` as single source of truth for scroll lock — all close paths (Escape, backdrop, item select) set open=false triggering start()
 - **v3.1 arch:** No `pin: true` in any ScrollTrigger — causes CLS spacer that fails Lighthouse CI >= 0.90 gate
 - **v3.1 arch:** MagneticButton uses `motion/react` spring (not `gsap.to()` in mousemove) — prevents TBT spike from per-pixel tween creation
 - **v3.1 arch:** Matrix color tokens scoped to `.matrix-theme {}` — never in `:root @theme inline` (Tailwind bleed to dashboard)
@@ -64,6 +66,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 29-01-PLAN.md — LenisProvider component + portfolio layout wired
+Stopped at: 29-02 Task 1 complete (2ad11f6) — awaiting checkpoint:human-verify (Task 2) for SCROLL behaviors in browser
 Resume file: None
-Next action: Execute 29-02 (CommandPalette scroll lock via useLenis)
+Next action: Human verify all 5 SCROLL behaviors at http://localhost:3000 (start dev server: npm run dev --workspace=apps/web), then execute 29-03

@@ -11,9 +11,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 ### Smooth Scroll (SCROLL)
 
 - [x] **SCROLL-01**: User experiences inertia-based smooth scroll across all portfolio pages (Lenis, scoped to portfolio layout only — TeamFlow dashboard unaffected)
-- [ ] **SCROLL-02**: User navigating between portfolio pages always starts at the top of the new page (Lenis route-change scroll reset)
+- [x] **SCROLL-02**: User navigating between portfolio pages always starts at the top of the new page (Lenis route-change scroll reset)
 - [x] **SCROLL-03**: User with `prefers-reduced-motion` gets native browser scroll with no Lenis overhead (reduced-motion bypass)
-- [ ] **SCROLL-04**: User opening the CommandPalette (Cmd+K) cannot scroll the background page while the modal is open (lenis.stop() on open, lenis.start() on close)
+- [x] **SCROLL-04**: User opening the CommandPalette (Cmd+K) cannot scroll the background page while the modal is open (lenis.stop() on open, lenis.start() on close)
 
 ### Parallax (PRLLX)
 
@@ -80,9 +80,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | SCROLL-01 | Phase 29 | Complete |
-| SCROLL-02 | Phase 29 | Pending |
+| SCROLL-02 | Phase 29 | Complete |
 | SCROLL-03 | Phase 29 | Complete |
-| SCROLL-04 | Phase 29 | Pending |
+| SCROLL-04 | Phase 29 | Complete |
 | PRLLX-01 | Phase 30 | Pending |
 | PRLLX-02 | Phase 30 | Pending |
 | PRLLX-03 | Phase 30 | Pending |
