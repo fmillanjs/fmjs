@@ -62,7 +62,7 @@ export default function TeamFlowCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fmillanjs/fmjs/tree/teamflow"
+              href="https://github.com/fmillanjs/fmjs"
               target="_blank"
               rel="noopener noreferrer"
             >

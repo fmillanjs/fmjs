@@ -64,7 +64,7 @@ export default function DevCollabCaseStudy() {
           </Button>
           <Button asChild variant="outline">
             <a
-              href="https://github.com/fmillanjs/fmjs/tree/devcollab"
+              href="https://github.com/fmillanjs/fmjs"
               target="_blank"
               rel="noopener noreferrer"
             >
