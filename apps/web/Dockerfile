@@ -55,7 +55,7 @@ RUN npx turbo build --filter=web
 # Stage 4: Runner - production runtime
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Set to production
