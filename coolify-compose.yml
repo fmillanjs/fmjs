@@ -26,12 +26,21 @@ services:
     environment:
       DEVCOLLAB_DATABASE_URL: ${DEVCOLLAB_DATABASE_URL}
 
+  devcollab-seed:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/devcollab-seed:latest
+    restart: "no"
+    depends_on:
+      devcollab-migrate:
+        condition: service_completed_successfully
+    environment:
+      DEVCOLLAB_DATABASE_URL: ${DEVCOLLAB_DATABASE_URL}
+
   devcollab-api:
     image: ghcr.io/fernandomillan-dev/fernandomillan/devcollab-api:latest
     container_name: devcollab-api
     restart: unless-stopped
     depends_on:
-      devcollab-migrate:
+      devcollab-seed:
         condition: service_completed_successfully
     environment:
       NODE_ENV: production
