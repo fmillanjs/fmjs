@@ -8,8 +8,8 @@
 
 ### Authentication & Live Fixes
 
-- [ ] **LIVE-01**: User can log into DevCollab at `devcollab.fernandomillan.me` using seeded demo credentials
-- [ ] **LIVE-02**: User can log into TeamFlow at `teamflow.fernandomillan.me` using seeded demo credentials
+- [x] **LIVE-01**: User can log into DevCollab at `devcollab.fernandomillan.me` using seeded demo credentials
+- [x] **LIVE-02**: User can log into TeamFlow at `teamflow.fernandomillan.me` using seeded demo credentials
 - [ ] **LIVE-03**: DevCollab demo workspace loads with all seeded content (snippets, posts, members) after login
 - [ ] **LIVE-04**: TeamFlow demo project loads with tasks, columns, and real-time features functional after login
 
@@ -53,8 +53,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LIVE-01 | Phase 34 | Pending |
-| LIVE-02 | Phase 34 | Pending |
+| LIVE-01 | Phase 34 | Complete |
+| LIVE-02 | Phase 34 | Complete |
 | LIVE-03 | Phase 34 | Pending |
 | LIVE-04 | Phase 34 | Pending |
 | QA-01 | Phase 35 | Pending |
