@@ -8,7 +8,18 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current State: v3.1 Shipped 2026-02-21
+## Current Milestone: v4.0 Live QA & Content Polish
+
+**Goal:** Get the portfolio recruiter-ready — fix live demo authentication, audit both apps end-to-end, and update case study content with accurate copy, real metrics, and live screenshots.
+
+**Target features:**
+- Fix login on live deployed apps (DevCollab + TeamFlow)
+- Full exploratory QA audit of both live demo apps
+- Case study copy rewrite (accurate features, architecture, technical depth)
+- Tech stack metrics update (real numbers, correct stack)
+- Live app screenshots captured and wired into case studies / project cards
+
+## Previous: v3.1 Shipped 2026-02-21
 
 Both SaaS applications are live at HTTPS custom domains. Portfolio is production-ready with Awwwards-quality animation polish: Lenis inertia scroll, GSAP parallax depth layers, spring-physics magnetic CTAs, consistent Matrix green design system, and a terminal-themed animated footer. All recruiter-facing flows verified WCAG AA compliant with Lighthouse ≥ 0.90 on all 5 public URLs.
 
@@ -83,7 +94,19 @@ Both SaaS applications are live at HTTPS custom domains. Portfolio is production
 
 ### Active
 
-(No active requirements — planning next milestone)
+**v4.0 (Live QA & Content Polish):**
+- [ ] LIVE-01: User can log into DevCollab demo with seeded credentials
+- [ ] LIVE-02: User can log into TeamFlow demo with seeded credentials
+- [ ] LIVE-03: DevCollab workspace loads with seeded content after login
+- [ ] LIVE-04: TeamFlow project loads with tasks and real-time features after login
+- [ ] QA-01: All critical DevCollab recruiter flows complete without errors
+- [ ] QA-02: All critical TeamFlow recruiter flows complete without errors
+- [ ] QA-03: All portfolio links resolve correctly
+- [ ] QA-04: Lighthouse ≥ 0.90 on all 5 public URLs after fixes
+- [ ] CONT-01: DevCollab case study copy accurate and compelling
+- [ ] CONT-02: TeamFlow case study copy accurate and compelling
+- [ ] CONT-03: Tech stack badges and metrics reflect actual shipped stack
+- [ ] CONT-04: Live app screenshots captured and displayed in case studies
 
 ### Out of Scope
 
@@ -187,4 +210,4 @@ Both SaaS applications are live at HTTPS custom domains. Portfolio is production
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
 
 ---
-*Last updated: 2026-02-21 after v3.1 milestone complete — Portfolio Polish & Matrix Cohesion shipped*
+*Last updated: 2026-02-25 after v4.0 milestone started — Live QA & Content Polish*
