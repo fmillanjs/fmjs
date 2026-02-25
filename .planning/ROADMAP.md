@@ -200,11 +200,11 @@ Plans:
   2. User visiting `teamflow.fernandomillan.me` and entering seeded demo credentials is authenticated and lands on the TeamFlow project dashboard
   3. After DevCollab login, user sees the seeded workspace with snippets, posts, and members populated — not an empty state
   4. After TeamFlow login, user sees tasks across columns, drag-and-drop works, and real-time presence indicator is functional
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 34-01: Investigate auth failure root cause on both live apps (logs, env vars, cookie config, CORS, Docker networking)
-- [ ] 34-02: Apply fixes and verify login end-to-end on both live deployments
+- [ ] 34-01-PLAN.md — Diagnostic script + devcollab-seed in compose + VPS diagnosis checkpoint
+- [ ] 34-02-PLAN.md — Code fixes, seed scripts, Coolify env var guide, redeploy + end-to-end login verification
 
 ### Phase 35: Full QA Audit & Fixes
 **Goal**: Every recruiter-facing flow on both live apps completes without errors, all portfolio links resolve correctly, and Lighthouse scores remain >= 0.90 on all 5 public URLs
