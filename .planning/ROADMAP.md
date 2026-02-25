@@ -8,6 +8,7 @@
 - ✅ **v2.5 Matrix Portfolio Overhaul** — Phases 22-26 (shipped 2026-02-19)
 - ✅ **v3.0 Deployment & Tech Debt Closure** — Phases 27-28 (shipped 2026-02-20)
 - ✅ **v3.1 Portfolio Polish & Matrix Cohesion** — Phases 29-33 (shipped 2026-02-21)
+- 🚧 **v4.0 Live QA & Content Polish** — Phases 34-36 (in progress)
 
 ## Phases
 
@@ -92,6 +93,14 @@ Full archive: `.planning/milestones/v3.0-ROADMAP.md`
 Full archive: `.planning/milestones/v3.1-ROADMAP.md`
 
 </details>
+
+### v4.0 Live QA & Content Polish (In Progress)
+
+**Milestone Goal:** Get the portfolio recruiter-ready — fix live demo authentication, audit both apps end-to-end, and update case study content with accurate copy, real metrics, and live screenshots.
+
+- [ ] **Phase 34: Live Auth Investigation & Fix** - Diagnose and fix broken login on DevCollab and TeamFlow live deployments
+- [ ] **Phase 35: Full QA Audit & Fixes** - End-to-end exploratory audit of both live apps and all portfolio links with Lighthouse gate
+- [ ] **Phase 36: Content Update** - Rewrite case study copy, update tech stack metrics, and capture live screenshots
 
 ## Phase Details
 
@@ -182,6 +191,53 @@ Plans:
 - [ ] 33-02-PLAN.md — GlitchSignature 'use client' island: IntersectionObserver single-fire + next/dynamic ssr:false wired into footer.tsx
 - [ ] 33-03-PLAN.md — Accessibility audit (axe WCAG AA, keyboard focus rings) + Playwright baseline update + all 18 snapshots green + human visual approval
 
+### Phase 34: Live Auth Investigation & Fix
+**Goal**: Recruiters can log into both DevCollab and TeamFlow live demos using seeded credentials and land directly in the demo workspace or project with all seeded content visible
+**Depends on**: Phase 33 (v3.1 complete)
+**Requirements**: LIVE-01, LIVE-02, LIVE-03, LIVE-04
+**Success Criteria** (what must be TRUE):
+  1. User visiting `devcollab.fernandomillan.me/login` and entering seeded demo credentials is authenticated and redirected to the demo workspace — no error, no loop, no blank screen
+  2. User visiting `teamflow.fernandomillan.me` and entering seeded demo credentials is authenticated and lands on the TeamFlow project dashboard
+  3. After DevCollab login, user sees the seeded workspace with snippets, posts, and members populated — not an empty state
+  4. After TeamFlow login, user sees tasks across columns, drag-and-drop works, and real-time presence indicator is functional
+**Plans**: TBD
+
+Plans:
+- [ ] 34-01: Investigate auth failure root cause on both live apps (logs, env vars, cookie config, CORS, Docker networking)
+- [ ] 34-02: Apply fixes and verify login end-to-end on both live deployments
+
+### Phase 35: Full QA Audit & Fixes
+**Goal**: Every recruiter-facing flow on both live apps completes without errors, all portfolio links resolve correctly, and Lighthouse scores remain >= 0.90 on all 5 public URLs
+**Depends on**: Phase 34 (live auth must work before flows can be audited end-to-end)
+**Requirements**: QA-01, QA-02, QA-03, QA-04
+**Success Criteria** (what must be TRUE):
+  1. User completing the full DevCollab recruiter flow (login → workspace → view snippet → search content → check notifications) encounters no errors, broken UI, or dead ends
+  2. User completing the full TeamFlow recruiter flow (login → project → create/move task → observe real-time presence) encounters no errors or broken functionality
+  3. User clicking every navigation link, project card CTA, case study link, and footer link on `fernandomillan.me` reaches the correct destination with no 404s or broken anchors
+  4. Lighthouse CI reports performance >= 0.90 on all five public portfolio URLs (`/`, `/projects`, `/projects/teamflow`, `/projects/devcollab`, `/contact`) after all fixes applied
+**Plans**: TBD
+
+Plans:
+- [ ] 35-01: Exploratory audit of DevCollab live demo — all recruiter flows, document bugs found
+- [ ] 35-02: Exploratory audit of TeamFlow live demo — all recruiter flows, document bugs found
+- [ ] 35-03: Portfolio link audit (fernandomillan.me nav, cards, CTAs, footer) + Lighthouse CI gate
+
+### Phase 36: Content Update
+**Goal**: Both case studies accurately describe the shipped features, architecture decisions, and technical depth; tech stack badges reflect the real stack; and live app screenshots are displayed in both case studies and project cards
+**Depends on**: Phase 34 (live apps must be functional for screenshots), Phase 35 (all UI bugs resolved before capturing reference screenshots)
+**Requirements**: CONT-01, CONT-02, CONT-03, CONT-04
+**Success Criteria** (what must be TRUE):
+  1. User reading the DevCollab case study encounters accurate descriptions of CASL RBAC, tsvector full-text search, Tiptap v3 editor, and Shiki syntax highlighting — no placeholder copy or inaccurate claims
+  2. User reading the TeamFlow case study encounters accurate descriptions of Socket.io real-time collaboration, dnd-kit drag-and-drop, NextAuth v5 JWT strategy, and the audit log — no placeholder copy or inaccurate claims
+  3. User viewing tech stack badges and metric numbers on either case study sees the actual shipped stack (Next.js 15, NestJS 11, Prisma, Postgres, etc.) and real measurable numbers — no fabricated metrics
+  4. User viewing both case studies and the project cards on `/projects` sees real screenshots captured from the live running apps — no placeholder images or missing visuals
+**Plans**: TBD
+
+Plans:
+- [ ] 36-01: Rewrite DevCollab case study copy (features, architecture, technical depth) — CONT-01
+- [ ] 36-02: Rewrite TeamFlow case study copy (features, real-time architecture, RBAC) — CONT-02
+- [ ] 36-03: Update tech stack badges + metrics on both case studies + capture and wire live screenshots — CONT-03, CONT-04
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -215,8 +271,11 @@ Plans:
 | 26. Navigation Redesign | v2.5 | 2/2 | Complete | 2026-02-19 |
 | 27. Infrastructure Foundation + Prisma Fix | v3.0 | 3/3 | Complete | 2026-02-20 |
 | 28. DevCollab UI Debt Closure | v3.0 | 3/3 | Complete | 2026-02-20 |
-| 29. Lenis Foundation | 3/3 | Complete    | 2026-02-21 | - |
-| 30. GSAP ScrollTrigger Parallax | v3.1 | Complete    | 2026-02-21 | 2026-02-21 |
-| 31. Magnetic Buttons | 2/2 | Complete    | 2026-02-21 | - |
-| 32. Matrix Color Harmony | 4/4 | Complete    | 2026-02-21 | - |
-| 33. Footer Redesign + Matrix Animation | 3/3 | Complete    | 2026-02-21 | - |
+| 29. Lenis Foundation | v3.1 | 3/3 | Complete | 2026-02-21 |
+| 30. GSAP ScrollTrigger Parallax | v3.1 | 2/2 | Complete | 2026-02-21 |
+| 31. Magnetic Buttons | v3.1 | 2/2 | Complete | 2026-02-21 |
+| 32. Matrix Color Harmony | v3.1 | 4/4 | Complete | 2026-02-21 |
+| 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
+| 34. Live Auth Investigation & Fix | v4.0 | 0/2 | Not started | - |
+| 35. Full QA Audit & Fixes | v4.0 | 0/3 | Not started | - |
+| 36. Content Update | v4.0 | 0/3 | Not started | - |
