@@ -2,3 +2,6 @@
 playwright/.auth/
 playwright-report/
 test-results/
+
+# Lighthouse temp dirs (Windows path artifacts from WSL runs)
+C:*
