@@ -42,3 +42,13 @@ next-env.d.ts
 
 # drizzle
 drizzle/
+
+# testing artifacts
+playwright/
+test-results/
+
+# Windows artifacts
+*:Zone.Identifier
+
+# local files
+resume.pdf
