@@ -14,7 +14,11 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
   }
 
   // Redirect to login page after logout
-  const response = NextResponse.redirect(new URL('/login', _req.url));
+  // Use forwarded headers to build the public URL — _req.url resolves to the
+  // internal container address (0.0.0.0:80) behind a reverse proxy
+  const proto = _req.headers.get('x-forwarded-proto') || 'https';
+  const host = _req.headers.get('x-forwarded-host') || _req.headers.get('host') || 'devcollab.fernandomillan.me';
+  const response = NextResponse.redirect(new URL('/login', `${proto}://${host}`));
 
   // Also clear the cookie from the Next.js side as a safety measure
   // (the API response already cleared it via Set-Cookie: devcollab_token=; Max-Age=0)
