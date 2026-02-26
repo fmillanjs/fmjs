@@ -259,15 +259,15 @@ export const DEVCOLLAB_WALKTHROUGH_SCREENSHOTS: WalkthroughScreenshot[] = [
     steps: [
       {
         number: 1,
-        x: 1200,
-        y: 40,
+        x: 1180,
+        y: 55,
         label: 'Notification Bell',
         explanation: 'The bell icon in the header provides one-click access to all recent notifications.',
       },
       {
         number: 2,
-        x: 1210,
-        y: 30,
+        x: 1220,
+        y: 20,
         label: 'Unread Badge',
         explanation: 'A numeric badge on the bell counts unseen notifications so nothing slips through.',
       },

@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { AnimateIn } from '@/components/portfolio/animate-in'
-import { StaggerContainer, StaggerItem } from '@/components/portfolio/stagger-container'
 
 export interface WalkthroughStep {
   /** The step number shown in the callout circle (1-based) */
@@ -36,18 +35,18 @@ export interface WalkthroughSectionProps {
 
 export function WalkthroughSection({ title, screenshots }: WalkthroughSectionProps) {
   return (
-    <AnimateIn as="section" className="py-16 px-4 bg-[#0a0a0a]">
+    <section className="py-16 px-4 bg-[#0a0a0a]">
       {title && (
         <h2 className="font-mono text-2xl font-bold mb-10" style={{ color: 'var(--matrix-green)' }}>
           {title}
         </h2>
       )}
-      <StaggerContainer className="space-y-0">
+      <div className="space-y-0">
         {screenshots.map((shot, idx) => (
-          <StaggerItem key={idx}>
+          <AnimateIn key={idx}>
             <div className="mb-16">
-              {/* Image + overlay callout circles */}
-              <div className="relative w-full">
+              {/* Image + overlay callout circles — overflow hidden keeps circles inside the image frame */}
+              <div className="relative w-full" style={{ overflow: 'hidden' }}>
                 <Image
                   src={shot.src}
                   alt={shot.alt}
@@ -59,10 +58,12 @@ export function WalkthroughSection({ title, screenshots }: WalkthroughSectionPro
                   <span
                     key={step.number}
                     aria-label={`Step ${step.number}: ${step.label}`}
+                    title={`Step ${step.number}: ${step.label}`}
                     style={{
                       position: 'absolute',
-                      left: step.x,
-                      top: step.y,
+                      left: `${(step.x / shot.width) * 100}%`,
+                      top: `${(step.y / shot.height) * 100}%`,
+                      transform: 'translate(-50%, -50%)',
                       width: 28,
                       height: 28,
                       borderRadius: '50%',
@@ -75,6 +76,7 @@ export function WalkthroughSection({ title, screenshots }: WalkthroughSectionPro
                       fontWeight: 'bold',
                       fontSize: '0.75rem',
                       userSelect: 'none',
+                      cursor: 'pointer',
                       zIndex: 10,
                     }}
                   >
@@ -115,9 +117,9 @@ export function WalkthroughSection({ title, screenshots }: WalkthroughSectionPro
                 ))}
               </div>
             </div>
-          </StaggerItem>
+          </AnimateIn>
         ))}
-      </StaggerContainer>
-    </AnimateIn>
+      </div>
+    </section>
   )
 }
