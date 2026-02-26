@@ -180,6 +180,11 @@ jobs:
         if: always()
         run: docker compose down postgres redis
 
+      - name: Copy static assets to standalone
+        run: |
+          cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+          cp -r apps/web/public apps/web/.next/standalone/apps/web/public
+
       - name: Install Chrome
         id: setup-chrome
         uses: browser-actions/setup-chrome@latest
