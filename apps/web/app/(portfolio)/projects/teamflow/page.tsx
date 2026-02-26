@@ -52,7 +52,7 @@ export default function TeamFlowCaseStudy() {
         <div className="flex gap-4">
           <Button asChild>
             <a
-              href="/teams"
+              href="https://teamflow.fernandomillan.me"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -532,7 +532,7 @@ export default function TeamFlowCaseStudy() {
           </p>
           <Button asChild>
             <a
-              href="/teams"
+              href="https://teamflow.fernandomillan.me"
               target="_blank"
               rel="noopener noreferrer"
             >
