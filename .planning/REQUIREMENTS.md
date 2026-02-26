@@ -15,9 +15,9 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 
 ### Walkthrough Component
 
-- [x] **WALK-01**: `WalkthroughSection` component renders screenshots vertically with numbered callout overlay circles pinned at defined coordinates on each screenshot
-- [x] **WALK-02**: Each step has a legend below the screenshot — numbered entries matching the overlay circles, each with a short label and 1-sentence explanation
-- [x] **WALK-03**: Component is styled in Matrix theme: `#0a0a0a` background, `--matrix-green` accents on callout circles and step numbers, monospace font for labels
+- [x] **WALK-01**: `WalkthroughSection` component renders screenshots vertically with a text label legend below each screenshot (callout overlay circles removed per user decision — visually distracting)
+- [x] **WALK-02**: Each step has a legend below the screenshot — entries with a bold label and 1-sentence explanation in Matrix green
+- [x] **WALK-03**: Component is styled in Matrix theme: `#0a0a0a` background, `--matrix-green` accents on step labels, monospace font for labels
 - [x] **WALK-04**: Walkthrough section has scroll-reveal entrance animation consistent with existing portfolio animation system (AnimateIn/StaggerContainer)
 
 ### Integration
@@ -28,7 +28,7 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 ### Quality
 
 - [x] **QA-01**: Lighthouse CI ≥ 0.90 on case study pages after new screenshot assets (next/image lazy loading, proper sizing)
-- [x] **QA-02**: Callout overlays have `aria-label` attributes; screenshots have descriptive `alt` text
+- [x] **QA-02**: Screenshots have descriptive `alt` text (callout overlay `aria-label` requirement dropped — overlays removed per user decision)
 - [x] **QA-03**: Walkthrough section works correctly with `prefers-reduced-motion` (no animation violations)
 
 ## Future Requirements
