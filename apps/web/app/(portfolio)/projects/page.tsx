@@ -22,6 +22,7 @@ export default function ProjectsPage() {
             techStack={['Next.js 15', 'NestJS', 'TypeScript', 'Socket.io', 'PostgreSQL', 'Redis', 'Prisma', 'Docker']}
             href="/projects/teamflow"
             featured
+            screenshot={{ src: '/screenshots/teamflow-kanban.png', alt: 'TeamFlow Kanban board' }}
           />
         </StaggerItem>
         <StaggerItem>
@@ -31,6 +32,7 @@ export default function ProjectsPage() {
             techStack={['Next.js 15', 'NestJS', 'TypeScript', 'PostgreSQL', 'Prisma', 'react-markdown', 'Shiki', 'Docker']}
             href="/projects/devcollab"
             featured
+            screenshot={{ src: '/screenshots/devcollab-workspace.png', alt: 'DevCollab workspace' }}
           />
         </StaggerItem>
       </StaggerContainer>
