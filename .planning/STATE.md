@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v4.1 — Phase 40: Integration & QA (Plan 02 complete)
+**Current focus:** v4.1 — Phase 40: Integration & QA (Plan 03 at checkpoint)
 
 ## Current Position
 
-Phase: 40 of 40 (Integration & QA — Plan 02 complete)
-Plan: 02 of 03 (In Progress)
-Status: WalkthroughSection integrated into TeamFlow and DevCollab case study pages with 5 annotated screenshots each
-Last activity: 2026-02-26 — WalkthroughSection wired into teamflow/page.tsx and devcollab/page.tsx
+Phase: 40 of 40 (Integration & QA — Plan 03 at checkpoint:human-verify)
+Plan: 03 of 03 (In Progress — awaiting human visual + reduced-motion verify)
+Status: Lighthouse CI passing (perf >= 0.90, acc = 1.0 all pages); Task 3 visual verification pending
+Last activity: 2026-02-26 — All LHCI gates pass, waiting for human verify of WalkthroughSection visual + reduced-motion
 
-Progress: [#########░] 90%
+Progress: [#########░] 95%
 
 ## Performance Metrics
 
@@ -42,7 +42,7 @@ Progress: [#########░] 90%
 |-------|-------|-------|----------|
 | 38. Screenshot Capture | 3 completed | 17 min | 6 min |
 | 39. Walkthrough Component | 1 completed | 3 min | 3 min |
-| 40. Integration & QA | 2 completed | 4 min | 2 min |
+| 40. Integration & QA | 3 completed | 37 min | 12 min |
 
 *Updated after each plan completion*
 
@@ -61,6 +61,7 @@ Progress: [#########░] 90%
 - **39-01:** AnimateIn does not accept `style` prop — use bg-[#0a0a0a] Tailwind arbitrary class; WalkthroughSection at apps/web/components/portfolio/walkthrough-section.tsx; callout circles use position:absolute with inline left/top pixel values; WalkthroughStep.x and .y are raw numbers (React auto-appends px)
 - **40-01:** walkthrough-data.ts at `apps/web/src/data/walkthrough-data.ts`; alt text reused verbatim from screenshots-manifest.ts; Lighthouse accessibility gate upgraded from warn to error in both lighthouserc.json and lighthouserc.production.json
 - **40-02:** Import path for walkthrough-data is `@/src/data/walkthrough-data` (not `@/data/`) — tsconfig `@/*` maps to `apps/web/` root, not `apps/web/src/`; WalkthroughSection integrated into teamflow/page.tsx and devcollab/page.tsx replacing static Screenshots sections
+- **40-03:** class="dark" on html element server-side fixes LHCI contrast issues caused by next-themes not injecting dark class during SSR; standalone build requires cp .next/static → .next/standalone/apps/web/.next/static before LHCI; use CHROME_PATH=playwright chromium for LHCI in WSL2; explicit #e8e8e8/#b0b0b0 colors on nav/footer links bypass CSS variable resolution issues
 
 ### Pending Todos
 
@@ -68,12 +69,12 @@ None.
 
 ### Blockers/Concerns
 
-Pre-existing build failure in `apps/web/e2e/screenshots/devcollab-capture.ts` (match[1] type mismatch). Out of scope for v4.1 milestone — does not block Phase 40 integration.
+None — the pre-existing build failure in e2e screenshot scripts was auto-fixed in Plan 40-03 (match[1] ?? null).
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 40-02-PLAN.md — WalkthroughSection integrated into TeamFlow and DevCollab case study pages
+Stopped at: 40-03-PLAN.md at checkpoint:human-verify (Task 3 — visual + reduced-motion inspect)
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
