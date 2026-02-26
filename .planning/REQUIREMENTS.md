@@ -9,7 +9,7 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 
 ### Screenshot Capture
 
-- [ ] **SHOT-01**: Playwright script captures 5 TeamFlow workflow screenshots from the live app (authenticated session): Kanban board, real-time presence, task create/assign modal, team RBAC management, audit log
+- [x] **SHOT-01**: Playwright script captures 5 TeamFlow workflow screenshots from the live app (authenticated session): Kanban board, real-time presence, task create/assign modal, team RBAC management, audit log
 - [ ] **SHOT-02**: Playwright script captures 5 DevCollab workflow screenshots from the live app (authenticated session): workspace overview/feed, code snippet with Shiki highlighting, threaded discussion with @mention, Cmd+K full-text search, activity feed / notification bell
 - [ ] **SHOT-03**: All 10 screenshots stored as optimized static assets at consistent resolution (1280×800), served via next/image
 
@@ -54,7 +54,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHOT-01 | Phase 38 | Pending |
+| SHOT-01 | Phase 38 | Complete |
 | SHOT-02 | Phase 38 | Pending |
 | SHOT-03 | Phase 38 | Pending |
 | WALK-01 | Phase 39 | Pending |
