@@ -105,7 +105,7 @@ export default function DevCollabCaseStudy() {
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>Workspace-scoped RBAC (Admin / Contributor / Viewer)</li>
             <li>Code snippets with Shiki syntax highlighting (20 languages)</li>
-            <li>Markdown posts with Tiptap editor and Shiki server-side rendering</li>
+            <li>Markdown posts with react-markdown rendering and Shiki server-side syntax highlighting</li>
             <li>Threaded discussions with @mention notifications</li>
             <li>Emoji reactions (thumbs up, heart, plus one, laugh)</li>
             <li>Real-time activity feed with cursor pagination</li>
@@ -223,14 +223,15 @@ export default function DevCollabCaseStudy() {
               </tr>
               <tr>
                 <td className="py-3 px-4 align-top">
-                  <strong>Tiptap v3 with immediatelyRender: false</strong>
+                  <strong>react-markdown over a rich text editor</strong>
                   <br />
-                  <span className="text-sm text-muted-foreground">for Markdown editing</span>
+                  <span className="text-sm text-muted-foreground">for Markdown rendering</span>
                 </td>
                 <td className="py-3 px-4">
-                  Tiptap v3 + Next.js 15 App Router SSR has hydration edge cases.
-                  Setting immediatelyRender: false prevents mismatches. Validated with
-                  next build + next start before merge — not just dev mode.
+                  Posts are stored as Markdown strings and rendered server-side. react-markdown
+                  with remark-gfm provides full GitHub Flavored Markdown support without client
+                  bundle cost. Shiki handles code blocks server-side via a singleton lazy-initialized
+                  highlighter — zero client JS for syntax highlighting on published post views.
                 </td>
               </tr>
               <tr>
@@ -360,7 +361,7 @@ export default function DevCollabCaseStudy() {
               <li>Workspace CRUD + invite-link flow</li>
               <li>Admin / Contributor / Viewer RBAC</li>
               <li>Code snippets (20 languages, Shiki highlighting)</li>
-              <li>Markdown posts (Tiptap editor + SSR rendering)</li>
+              <li>Markdown posts (react-markdown + Shiki server-side rendering)</li>
               <li>Threaded comments on snippets and posts</li>
               <li>Emoji reactions with race condition guard</li>
               <li>@mention notifications with bell badge</li>
@@ -378,7 +379,7 @@ export default function DevCollabCaseStudy() {
               <li>TypeScript full-stack</li>
               <li>PostgreSQL 16 + Prisma ORM</li>
               <li>Postgres tsvector full-text search</li>
-              <li>Tiptap v3 rich text editor</li>
+              <li>react-markdown + remark-gfm</li>
               <li>Shiki syntax highlighting</li>
               <li>Docker + Turborepo monorepo</li>
               <li>@faker-js/faker deterministic seed</li>
