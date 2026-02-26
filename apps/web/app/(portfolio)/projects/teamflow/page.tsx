@@ -8,7 +8,7 @@ import { ExternalLink, Github } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'TeamFlow - Case Study',
   description:
-    'A production-ready work management SaaS demonstrating full-stack engineering skills with authentication, role-based access control, and modern architecture patterns. Real-time collaboration coming in v1.1.',
+    'A production-ready work management SaaS demonstrating full-stack engineering skills with authentication, real-time collaboration via WebSockets, role-based access control, and modern architecture patterns.',
   openGraph: {
     title: 'TeamFlow Case Study - Fernando Millan',
     description:
@@ -46,7 +46,7 @@ export default function TeamFlowCaseStudy() {
           TeamFlow
         </h1>
         <p className="text-xl text-muted-foreground mb-6">
-          A production-ready work management SaaS
+          A production-ready work management SaaS with real-time collaboration
         </p>
 
         <div className="flex gap-4">
@@ -76,10 +76,7 @@ export default function TeamFlowCaseStudy() {
       {/* Overview */}
       <CaseStudySection title="Overview">
         <p>
-          TeamFlow is a comprehensive work management platform built to demonstrate
-          production-ready full-stack engineering skills. Version 1.0 delivers secure
-          authentication, role-based access control, complete task management, and a
-          polished user experience. <strong className="text-[var(--matrix-green)]">Real-time collaboration features are coming in v1.1.</strong>
+          TeamFlow is a full-featured work management platform built to demonstrate production-ready full-stack engineering skills. It delivers secure authentication, three-tier role-based access control, real-time WebSocket collaboration with live presence indicators, complete task management, and a polished user experience — all deployed and QA-verified.
         </p>
 
         <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -93,10 +90,10 @@ export default function TeamFlowCaseStudy() {
           </div>
           <div className="border border-border rounded-lg p-4">
             <div className="text-3xl font-bold font-mono text-[var(--matrix-terminal)] mb-2">
-              88%
+              11+
             </div>
             <div className="text-sm text-muted-foreground">
-              Features Complete
+              Features Shipped
             </div>
           </div>
           <div className="border border-border rounded-lg p-4">
@@ -109,27 +106,24 @@ export default function TeamFlowCaseStudy() {
           </div>
         </div>
 
-        <div className="mt-6 space-y-4">
-          <div>
-            <p className="font-semibold text-[var(--green-11)] mb-2">
-              ✓ Available in v1.0:
-            </p>
-            <p>
-              JWT Authentication, Role-Based Access Control (Admin/Manager/Member),
-              Team &amp; Project Management, Kanban &amp; List Views, Drag-and-Drop Task
-              Management, Comment Threads, Advanced Filtering &amp; Search, Audit Logging,
-              Activity Feed, Demo Workspace with Seed Data, Dark Mode, Responsive Design
-            </p>
-          </div>
-          <div>
-            <p className="font-semibold text-[var(--matrix-green)] mb-2">
-              → Coming in v1.1:
-            </p>
-            <p>
-              Real-time Updates via WebSockets, Live Presence Indicators, Optimistic UI
-              with Auto-Rollback, Conflict Detection for Concurrent Edits
-            </p>
-          </div>
+        <div className="mt-6">
+          <p className="font-semibold text-[var(--green-11)] mb-2">Features delivered:</p>
+          <ul className="list-disc list-inside space-y-1 ml-2">
+            <li>JWT authentication with NextAuth v5 and password reset</li>
+            <li>Three-tier RBAC (Admin / Manager / Member) via CASL</li>
+            <li>Real-time WebSocket updates via Socket.io + Redis adapter</li>
+            <li>Live presence indicators showing who&apos;s online</li>
+            <li>Team and project management</li>
+            <li>Kanban board with dnd-kit drag-and-drop</li>
+            <li>List view with sorting and filtering</li>
+            <li>Optimistic UI with automatic rollback (React 19 useOptimistic)</li>
+            <li>Comment threads on tasks</li>
+            <li>Comprehensive audit logging (timestamp, user, IP, user agent)</li>
+            <li>Activity feed with pagination</li>
+            <li>Command palette (Ctrl+K)</li>
+            <li>Demo workspace with seed data (10 users, 3 projects, 50+ tasks)</li>
+            <li>Responsive design with dark mode</li>
+          </ul>
         </div>
       </CaseStudySection>
 
@@ -163,7 +157,7 @@ export default function TeamFlowCaseStudy() {
       {/* Solution */}
       <CaseStudySection title="Solution">
         <p>
-          TeamFlow v1.0 addresses these challenges by implementing a full-stack SaaS
+          TeamFlow addresses these challenges by implementing a full-stack SaaS
           application from scratch, demonstrating production-level engineering
           patterns:
         </p>
@@ -190,16 +184,6 @@ export default function TeamFlowCaseStudy() {
           </li>
         </ul>
 
-        <div className="mt-6 p-4 bg-accent border border-border rounded-lg">
-          <p className="text-sm">
-            <strong className="text-accent-foreground">Note on Real-time Features:</strong>{' '}
-            WebSocket-based live updates, presence indicators, and optimistic UI with
-            conflict detection are fully implemented in the codebase but currently
-            blocked by authentication architecture compatibility issues between Next.js
-            15 and NestJS. These features will be activated in v1.1 after resolving the
-            integration layer.
-          </p>
-        </div>
       </CaseStudySection>
 
       {/* Architecture */}
@@ -409,25 +393,16 @@ export default function TeamFlowCaseStudy() {
         <div className="space-y-6">
           <div className="border-l-4 border-[var(--matrix-green-border)] pl-4">
             <h3 className="font-semibold text-lg mb-2">
-              Challenge 1: Next.js 15 + NestJS Authentication Integration
+              Challenge 1: Next.js 15 + NestJS Production Authentication
             </h3>
             <p className="mb-2">
-              Integrating NextAuth v5 (Next.js 15) with NestJS WebSocket authentication
-              revealed architectural compatibility challenges. Server Components cannot
-              reliably access session cookies during SSR, and WebSocket JWT token
-              validation has format mismatches.
+              Deploying NextAuth v5 behind a reverse proxy introduced subtle auth failures in production that did not occur in local development. Server Components cannot reliably access session state during SSR hydration, and WebSocket JWT validation requires explicit configuration.
             </p>
             <p className="mb-2">
-              <strong>Current Status:</strong> All real-time features are fully
-              implemented (WebSocket gateway, event listeners, frontend hooks, conflict
-              detection) but blocked at the authentication layer. HTTP-based task
-              management works perfectly. v1.1 will resolve the auth integration.
+              <strong>Solution:</strong> Added AUTH_TRUST_HOST=true to enable reverse proxy header forwarding. Implemented a hydration guard — always check status === &apos;loading&apos; before acting on session in useEffect or router.push calls. Fixed Socket.IO room join order: join the room before any async Prisma queries to prevent presence race conditions. Verified end-to-end in production with full recruiter flow QA.
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>Learning:</strong> Bleeding-edge framework versions (Next.js 15,
-              NextAuth v5) can have integration challenges with other frameworks.
-              Sometimes the most valuable learning comes from hitting architectural
-              boundaries and documenting them transparently.
+              <strong>Learned:</strong> Production deployment surfaces auth edge cases that never appear in local dev. Bleeding-edge framework versions (Next.js 15, NextAuth v5) require explicit trust host configuration behind reverse proxies.
             </p>
           </div>
 
@@ -486,10 +461,13 @@ export default function TeamFlowCaseStudy() {
 
         <div className="grid md:grid-cols-2 gap-6 mt-6">
           <div>
-            <h3 className="font-semibold mb-3">Features Delivered in v1.0</h3>
+            <h3 className="font-semibold mb-3">Features Delivered</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
               <li>✓ Secure JWT authentication with password reset</li>
               <li>✓ Role-based access control (Admin/Manager/Member)</li>
+              <li>✓ Real-time task updates via Socket.io</li>
+              <li>✓ Live presence indicators (who&apos;s online)</li>
+              <li>✓ Optimistic UI with automatic rollback</li>
               <li>✓ Team and project management</li>
               <li>✓ Kanban board with drag-and-drop</li>
               <li>✓ List view with sorting and filtering</li>
@@ -499,9 +477,6 @@ export default function TeamFlowCaseStudy() {
               <li>✓ Demo workspace with seed data</li>
               <li>✓ Responsive design with dark mode</li>
               <li>✓ Command palette (Ctrl+K)</li>
-              <li className="text-[var(--matrix-green)]">→ Real-time updates (v1.1)</li>
-              <li className="text-[var(--matrix-green)]">→ Live presence indicators (v1.1)</li>
-              <li className="text-[var(--matrix-green)]">→ Optimistic UI with rollback (v1.1)</li>
             </ul>
           </div>
 
@@ -525,7 +500,7 @@ export default function TeamFlowCaseStudy() {
         <div className="mt-8 p-6 bg-card border border-[var(--matrix-green-border)] rounded-lg">
           <h3 className="font-semibold mb-2">Try the Demo</h3>
           <p className="mb-4">
-            Experience TeamFlow v1.0 firsthand with the pre-seeded demo workspace.
+            Experience TeamFlow firsthand with the pre-seeded demo workspace.
             Login with <code className="bg-card px-2 py-1 rounded">demo1@teamflow.dev</code> / <code className="bg-card px-2 py-1 rounded">Password123</code> and
             explore all features with sample data including 10 users, 3 projects, and
             50+ tasks.
