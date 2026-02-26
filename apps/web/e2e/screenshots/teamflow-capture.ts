@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test'
 import * as path from 'path'
 import * as fs from 'fs'
 
-const SCREENSHOTS_DIR = path.resolve(__dirname, '../../../public/screenshots')
+const SCREENSHOTS_DIR = path.resolve(__dirname, '../../public/screenshots')
 const BASE_URL = 'https://teamflow.fernandomillan.me'
 
 async function capture() {
@@ -40,15 +40,20 @@ async function capture() {
     return match ? match[1] : null
   }
 
-  // ---- Helper: get first project URL for a team ----
+  // ---- Helper: get first project URL for a team (skip "new") ----
   async function getFirstProjectId(teamId: string): Promise<string | null> {
     await page.goto(`${BASE_URL}/teams/${teamId}`)
     await page.waitForLoadState('networkidle')
-    const projectLink = page.locator('a[href*="/projects/"]').first()
-    const href = await projectLink.getAttribute('href').catch(() => null)
-    if (!href) return null
-    const match = href.match(/\/projects\/([^/?#]+)/)
-    return match ? match[1] : null
+    // Get all project links and skip the "new" route
+    const projectLinks = page.locator('a[href*="/projects/"]')
+    const count = await projectLinks.count()
+    for (let i = 0; i < count; i++) {
+      const href = await projectLinks.nth(i).getAttribute('href').catch(() => null)
+      if (!href) continue
+      const match = href.match(/\/projects\/([^/?#]+)/)
+      if (match && match[1] !== 'new') return match[1]
+    }
+    return null
   }
 
   const teamId = await getFirstTeamId()
@@ -132,7 +137,7 @@ async function capture() {
 
     // Try to open the create task / new task modal
     const createTaskBtn = page
-      .getByRole('button', { name: /new task|create task|add task|\+ task/i })
+      .getByRole('button', { name: /^New Task$|new task|create task|add task|\+ task/i })
       .first()
 
     if (await createTaskBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -213,42 +218,23 @@ async function capture() {
   console.log('\n[5/5] Capturing audit log / activity...')
   try {
     if (teamId) {
-      // Try common audit/activity routes
-      const activityUrl = `${BASE_URL}/teams/${teamId}/activity`
-      const auditUrl = `${BASE_URL}/teams/${teamId}/audit`
-
-      await page.goto(activityUrl)
+      // The route is /teams/${teamId}/audit-log (confirmed from Next.js file structure)
+      const auditLogUrl = `${BASE_URL}/teams/${teamId}/audit-log`
+      await page.goto(auditLogUrl)
       await page.waitForLoadState('networkidle')
 
       const currentUrl = page.url()
-      if (!currentUrl.includes('/activity') && !currentUrl.includes('/audit')) {
-        await page.goto(auditUrl)
-        await page.waitForLoadState('networkidle')
-      }
-
-      // If still not on activity page, try finding activity link on team detail
-      const finalUrl = page.url()
-      if (!finalUrl.includes('/activity') && !finalUrl.includes('/audit')) {
+      // If redirected away, try finding the Audit Log link on the team detail page
+      if (!currentUrl.includes('/audit-log')) {
         await page.goto(`${BASE_URL}/teams/${teamId}`)
         await page.waitForLoadState('networkidle')
 
-        // Look for an "Activity" or "Audit" tab/link on the page
-        const activityLink = page
-          .getByRole('link', { name: /activity|audit log/i })
+        const auditLink = page
+          .getByRole('link', { name: /audit log|activity/i })
           .first()
-
-        if (await activityLink.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await activityLink.click()
+        if (await auditLink.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await auditLink.click()
           await page.waitForLoadState('networkidle')
-        } else {
-          // Try tab button
-          const activityTab = page
-            .getByRole('tab', { name: /activity|audit/i })
-            .first()
-          if (await activityTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-            await activityTab.click()
-            await page.waitForTimeout(500)
-          }
         }
       }
     } else {
