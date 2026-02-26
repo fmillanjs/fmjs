@@ -55,20 +55,21 @@ export default function HomePage() {
                 <p className="text-foreground mb-6 leading-relaxed">
                   A comprehensive team collaboration platform featuring real-time updates,
                   role-based access control, task management with Kanban/List views,
-                  WebSocket-powered presence indicators, and complete audit logging.
+                  Socket.io-powered presence indicators, and complete audit logging.
                   Built with Next.js 15, NestJS, PostgreSQL, Redis, and deployed with Docker.
                 </p>
 
                 {/* Tech Stack Badges */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {[
-                    'Next.js',
+                    'Next.js 15',
                     'NestJS',
                     'TypeScript',
-                    'WebSocket',
+                    'Socket.io',
                     'PostgreSQL',
                     'Prisma',
                     'Redis',
+                    'CASL',
                     'Docker',
                     'Tailwind',
                   ].map((tech) => (
@@ -103,7 +104,7 @@ export default function HomePage() {
 
                 <p className="text-foreground mb-6 leading-relaxed">
                   A platform for developer teams combining code snippets with Shiki syntax
-                  highlighting, Markdown posts with Tiptap editor, full-text search via
+                  highlighting, Markdown posts with react-markdown, full-text search via
                   Postgres tsvector, threaded discussions, emoji reactions, and @mention
                   notifications.
                 </p>
@@ -111,11 +112,12 @@ export default function HomePage() {
                 {/* Tech Stack Badges */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {[
-                    'Next.js',
+                    'Next.js 15',
                     'NestJS',
                     'TypeScript',
                     'PostgreSQL',
-                    'Tiptap',
+                    'Prisma',
+                    'react-markdown',
                     'Shiki',
                     'Docker',
                     'Tailwind',

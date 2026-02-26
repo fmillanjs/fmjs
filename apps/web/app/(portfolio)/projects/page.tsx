@@ -19,7 +19,7 @@ export default function ProjectsPage() {
           <ProjectCard
             title="TeamFlow"
             description="A production-ready work management SaaS with real-time collaboration"
-            techStack={['Next.js', 'NestJS', 'TypeScript', 'PostgreSQL', 'Redis', 'WebSocket']}
+            techStack={['Next.js 15', 'NestJS', 'TypeScript', 'Socket.io', 'PostgreSQL', 'Redis', 'Prisma', 'Docker']}
             href="/projects/teamflow"
             featured
           />
@@ -28,7 +28,7 @@ export default function ProjectsPage() {
           <ProjectCard
             title="DevCollab"
             description="A developer collaboration platform with code snippets, Markdown posts, full-text search, and role-based workspaces"
-            techStack={['Next.js', 'NestJS', 'TypeScript', 'PostgreSQL', 'Prisma', 'Tiptap', 'Shiki']}
+            techStack={['Next.js 15', 'NestJS', 'TypeScript', 'PostgreSQL', 'Prisma', 'react-markdown', 'Shiki', 'Docker']}
             href="/projects/devcollab"
             featured
           />
