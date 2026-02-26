@@ -77,6 +77,6 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 38. Screenshot Capture | 1/3 | In Progress|  | - |
+| 38. Screenshot Capture | 2/3 | In Progress|  | - |
 | 39. Walkthrough Component | v4.1 | 0/TBD | Not started | - |
 | 40. Integration & QA | v4.1 | 0/TBD | Not started | - |
