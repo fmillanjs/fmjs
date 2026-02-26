@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { CaseStudySection } from '@/components/portfolio/case-study-section';
 import { AnimateIn } from '@/components/portfolio/animate-in';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
+import { WalkthroughSection } from '@/components/portfolio/walkthrough-section';
+import { TEAMFLOW_WALKTHROUGH_SCREENSHOTS } from '@/src/data/walkthrough-data';
 
 export const metadata: Metadata = {
   title: 'TeamFlow - Case Study',
@@ -453,31 +454,8 @@ export default function TeamFlowCaseStudy() {
         </div>
       </CaseStudySection>
 
-      {/* Screenshots */}
-      <CaseStudySection title="Screenshots">
-        <div className="grid md:grid-cols-2 gap-4 mt-4">
-          <div>
-            <Image
-              src="/screenshots/teamflow-kanban.png"
-              alt="TeamFlow Kanban board with tasks organized in Todo, In Progress, and Done columns"
-              width={1280}
-              height={800}
-              className="rounded-lg border border-border w-full h-auto"
-            />
-            <p className="text-sm text-muted-foreground mt-2">Kanban board with drag-and-drop task management</p>
-          </div>
-          <div>
-            <Image
-              src="/screenshots/teamflow-presence.png"
-              alt="TeamFlow dashboard showing real-time presence indicators for online team members"
-              width={1280}
-              height={800}
-              className="rounded-lg border border-border w-full h-auto"
-            />
-            <p className="text-sm text-muted-foreground mt-2">Real-time presence indicators via Socket.io</p>
-          </div>
-        </div>
-      </CaseStudySection>
+      {/* App Walkthrough */}
+      <WalkthroughSection title="App Walkthrough" screenshots={TEAMFLOW_WALKTHROUGH_SCREENSHOTS} />
 
       {/* Results */}
       <CaseStudySection title="Results">
