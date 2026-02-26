@@ -277,5 +277,5 @@ Plans:
 | 32. Matrix Color Harmony | v3.1 | 4/4 | Complete | 2026-02-21 |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
 | 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
-| 35. Full QA Audit & Fixes | v4.0 | 0/3 | Not started | - |
+| 35. Full QA Audit & Fixes | 1/3 | In Progress|  | - |
 | 36. Content Update | v4.0 | 0/3 | Not started | - |

@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 
 ## Current Position
 
-Phase: 34 of 36 (Live Auth Investigation & Fix)
-Plan: 01 — checkpoint (Task 3 awaiting human action)
-Status: Checkpoint — human must run diagnostic script on VPS
-Last activity: 2026-02-25 — Phase 34 complete: both apps fully working in production (LIVE-01 + LIVE-02 done)
+Phase: 35 of 36 (Full QA Audit & Fixes)
+Plan: 01 of N complete
+Status: Active — Plan 01 complete (TeamFlow CTA fix + Playwright CTA assertions)
+Last activity: 2026-02-25 — Phase 35 Plan 01 complete: fixed TeamFlow CTA link bug, added E2E regression tests
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE
 
-Progress: [████████████████████░░░░░░░░░░] 67% (33/36 phases complete)
+Progress: [████████████████████░░░░░░░░░░] 67% (33/36 phases complete — Phase 35 in progress)
 
 ## Performance Metrics
 
@@ -41,6 +41,8 @@ Progress: [████████████████████░░░
 
 ### Decisions (relevant to v4.0)
 
+- **Phase 35 Plan 01:** Portfolio case study CTAs must use absolute https:// URLs — relative paths (e.g., /teams) cause 404 on fernandomillan.me
+- **Phase 35 Plan 01:** Playwright CTA tests run against local dev server via relative paths to verify href attribute values without navigating to external URLs
 - **Phase 34 Plan 01:** devcollab-seed added to coolify-compose.yml; devcollab-api now depends on devcollab-seed completing; CI builds devcollab-seed image in build-and-push-devcollab job
 - **Phase 34 Plan 01:** Diagnostic script (scripts/diagnose-live-auth.sh) covers all 7 auth failure classes; auto-detects API domains; human must run it on VPS and report findings
 - **Phase 34 COMPLETE:** Both apps fully authenticated and working in production
@@ -63,6 +65,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Phase 34 complete — both apps working. Ready for Phase 35 (QA audit).
+Stopped at: Phase 35 Plan 01 complete — TeamFlow CTA fixed, Playwright assertions added.
 Resume file: None
-Next action: /gsd:execute-phase 35 — full QA audit of both live apps
+Next action: /gsd:execute-phase 35 — continue remaining Phase 35 plans

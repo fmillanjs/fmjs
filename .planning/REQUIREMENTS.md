@@ -17,7 +17,7 @@
 
 - [ ] **QA-01**: All critical DevCollab recruiter flows complete without errors (login → workspace → view/search content → notifications)
 - [ ] **QA-02**: All critical TeamFlow recruiter flows complete without errors (login → project → task management → real-time presence)
-- [ ] **QA-03**: All portfolio links on `fernandomillan.me` resolve correctly (nav, project cards, case study CTAs, footer)
+- [x] **QA-03**: All portfolio links on `fernandomillan.me` resolve correctly (nav, project cards, case study CTAs, footer)
 - [ ] **QA-04**: Portfolio Lighthouse scores remain ≥ 0.90 on all 5 public URLs after any fixes applied
 
 ### Portfolio Content
@@ -59,7 +59,7 @@
 | LIVE-04 | Phase 34 | Pending |
 | QA-01 | Phase 35 | Pending |
 | QA-02 | Phase 35 | Pending |
-| QA-03 | Phase 35 | Pending |
+| QA-03 | Phase 35 | Complete |
 | QA-04 | Phase 35 | Pending |
 | CONT-01 | Phase 36 | Pending |
 | CONT-02 | Phase 36 | Pending |
