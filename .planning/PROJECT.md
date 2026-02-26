@@ -8,7 +8,18 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current State: v4.0 Shipped 2026-02-26
+## Current Milestone: v4.1 Screenshot Story Walkthroughs
+
+**Goal:** Add a visual screenshot walkthrough section to each case study page that tells the workflow story of each SaaS app through annotated screenshots — Matrix-themed, numbered callout overlays, vertical scroll.
+
+**Target features:**
+- Playwright-captured workflow screenshots (5 steps) for TeamFlow and DevCollab
+- `WalkthroughSection` component with numbered callout overlays pinned on screenshots
+- Matrix-themed presentation: dark background, Matrix green accents, monospace labels
+- Integrated into /projects/teamflow and /projects/devcollab case study pages
+- Lighthouse CI ≥ 0.90 maintained after new image assets
+
+## Previous: v4.0 Shipped 2026-02-26
 
 Both SaaS applications are fully recruiter-ready. Authentication fixed on both live demos (COOKIE_DOMAIN, AUTH_TRUST_HOST, port/Redis/CORS fixes). Both recruiter flows fully verified end-to-end. All portfolio links correct. Case study copy rewritten to match deployed reality. Live screenshots wired. Lighthouse scores 0.97–1.00 on all 5 URLs.
 
@@ -99,7 +110,11 @@ Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting seni
 
 ### Active
 
-(None — all requirements shipped. Define next milestone with `/gsd:new-milestone`)
+- [ ] Playwright-captured workflow screenshots for TeamFlow (5 key moments: Kanban, real-time presence, task creation/assignment, RBAC team management, audit log)
+- [ ] Playwright-captured workflow screenshots for DevCollab (5 key moments: workspace overview, code snippet + Shiki, threaded discussion/@mentions, Cmd+K search, activity feed)
+- [ ] `WalkthroughSection` React component with numbered callout overlays and legend, Matrix-themed
+- [ ] Walkthrough section integrated into both case study pages (/projects/teamflow, /projects/devcollab)
+- [ ] Lighthouse CI ≥ 0.90 maintained on case study pages with new screenshot assets
 
 ### Out of Scope
 
@@ -203,4 +218,4 @@ Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting seni
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
 
 ---
-*Last updated: 2026-02-26 after v4.0 milestone — Live QA & Content Polish shipped*
+*Last updated: 2026-02-26 after v4.1 milestone start — Screenshot Story Walkthroughs*
