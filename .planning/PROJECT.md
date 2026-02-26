@@ -8,22 +8,11 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current Milestone: v4.1 Screenshot Story Walkthroughs
+## Shipped: v4.1 Screenshot Story Walkthroughs (2026-02-26)
 
-**Goal:** Add a visual screenshot walkthrough section to each case study page that tells the workflow story of each SaaS app through annotated screenshots — Matrix-themed, numbered callout overlays, vertical scroll.
+Both case study pages now include a `WalkthroughSection` with 10 Playwright-captured production screenshots (5 TeamFlow + 5 DevCollab), Matrix-themed legend labels, scroll-reveal animations, and full reduced-motion compliance. Lighthouse CI: performance ≥ 0.90, accessibility 1.0 on all 5 portfolio URLs.
 
-**Target features:**
-- Playwright-captured workflow screenshots (5 steps) for TeamFlow and DevCollab
-- `WalkthroughSection` component with numbered callout overlays pinned on screenshots
-- Matrix-themed presentation: dark background, Matrix green accents, monospace labels
-- Integrated into /projects/teamflow and /projects/devcollab case study pages
-- Lighthouse CI ≥ 0.90 maintained after new image assets
-
-## Previous: v4.0 Shipped 2026-02-26
-
-Both SaaS applications are fully recruiter-ready. Authentication fixed on both live demos (COOKIE_DOMAIN, AUTH_TRUST_HOST, port/Redis/CORS fixes). Both recruiter flows fully verified end-to-end. All portfolio links correct. Case study copy rewritten to match deployed reality. Live screenshots wired. Lighthouse scores 0.97–1.00 on all 5 URLs.
-
-Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting senior full-stack developer hiring managers.
+Total: ~31,700+ TypeScript/TSX LOC across the monorepo. Portfolio is fully recruiter-ready — no active development planned.
 
 ## Requirements
 
@@ -108,13 +97,16 @@ Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting seni
 - ✓ CONT-03: Tech stack badges reflect actual deployed stack — badge arrays match package.json — v4.0
 - ✓ CONT-04: 4 live screenshots (1280×800) captured and wired into case studies + ProjectCard — v4.0
 
+**v4.1 (Screenshot Story Walkthroughs):**
+- ✓ Playwright-captured workflow screenshots for TeamFlow (5: Kanban, real-time presence, task create/assign, RBAC team management, audit log) — v4.1
+- ✓ Playwright-captured workflow screenshots for DevCollab (5: workspace overview, code snippet + Shiki, threaded discussion/@mentions, Cmd+K search, activity feed) — v4.1
+- ✓ `WalkthroughSection` React component with vertical screenshot layout, Matrix-themed legend (callout overlay circles removed per user decision), scroll-reveal animations — v4.1
+- ✓ Walkthrough section integrated into both case study pages (/projects/teamflow, /projects/devcollab) — v4.1
+- ✓ Lighthouse CI ≥ 0.90 maintained on all 5 portfolio pages with new screenshot assets — v4.1
+
 ### Active
 
-- [ ] Playwright-captured workflow screenshots for TeamFlow (5 key moments: Kanban, real-time presence, task creation/assignment, RBAC team management, audit log)
-- [ ] Playwright-captured workflow screenshots for DevCollab (5 key moments: workspace overview, code snippet + Shiki, threaded discussion/@mentions, Cmd+K search, activity feed)
-- [ ] `WalkthroughSection` React component with numbered callout overlays and legend, Matrix-themed
-- [ ] Walkthrough section integrated into both case study pages (/projects/teamflow, /projects/devcollab)
-- [ ] Lighthouse CI ≥ 0.90 maintained on case study pages with new screenshot assets
+(None — portfolio complete as of v4.1)
 
 ### Out of Scope
 
@@ -208,6 +200,10 @@ Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting seni
 | Domain TLD is .me not .dev | Registrar uses fernandomillan.me — planned .dev never existed | ✓ Good — DNS confirmed for all subdomains |
 | Server-side dashboard auth guard using cookies() + redirect() | Eliminates client-side auth flash; pattern from w/[slug]/layout.tsx | ✓ Good — zero flash confirmed in browser verification |
 | window.location.origin for invite join URL | API_URL points to backend; join URL must use web app's own origin | ✓ Good — correct URL generated in production |
+| Callout overlay circles removed from WalkthroughSection | User found numbered circles visually distracting; legend-only below screenshot is cleaner | ✓ Good — cleaner visual, WALK-01/02 requirements updated to match |
+| Standalone Playwright chromium.launch() for screenshot capture (not test runner) | Production screenshots require auth state not available in test context | ✓ Good — tsx script runs independently against live apps |
+| walkthrough-data.ts imports from @/src/data/ (not @/data/) | tsconfig `@/*` maps to `apps/web/` root, not `apps/web/src/`; component imports must match | ✓ Good — no module resolution errors |
+| class="dark" on html element server-side for LHCI | next-themes doesn't inject dark class during LHCI headless SSR run, causing contrast violations | ✓ Good — Lighthouse accessibility 1.0 on all 5 URLs |
 
 | autoRaf: false + LenisGSAPBridge ticker sync | GSAP ScrollTrigger requires ownership of the RAF loop; Lenis cannot run its own RAF alongside GSAP | ✓ Good — single RAF loop, no jitter, no double-RAF |
 | motion/react (not framer-motion) for MagneticButton | Framer Motion package renamed to motion; React 19 requires motion/react | ✓ Good — no peer dep warnings |
@@ -218,4 +214,4 @@ Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting seni
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
 
 ---
-*Last updated: 2026-02-26 after v4.1 milestone start — Screenshot Story Walkthroughs*
+*Last updated: 2026-02-26 after v4.1 milestone — Screenshot Story Walkthroughs (final milestone)*

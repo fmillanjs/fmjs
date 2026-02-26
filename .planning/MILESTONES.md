@@ -118,3 +118,24 @@
 
 ---
 
+
+## v4.1 Screenshot Story Walkthroughs (Shipped: 2026-02-26)
+
+**Phases:** 38–40 (3 phases, 7 plans)
+**Timeline:** 2026-02-26 → 2026-02-26 (~1 day)
+**Files changed:** 42 files, +3,318 / -212 lines
+
+**Key accomplishments:**
+- Captured 10 production workflow screenshots (5 TeamFlow + 5 DevCollab) from live authenticated sessions via standalone Playwright chromium scripts — all exactly 1280×800px, stored in `apps/web/public/screenshots/`
+- Built typed screenshots manifest (`screenshots-manifest.ts`) with `Screenshot` interface, `TEAMFLOW_SCREENSHOTS` and `DEVCOLLAB_SCREENSHOTS` arrays — alt text + label fields for next/image and walkthrough legend
+- Built `WalkthroughSection` React component with Matrix styling (`#0a0a0a` background, `--matrix-green` accents, monospace labels), scroll-reveal via `AnimateIn`/`StaggerContainer`, and `prefers-reduced-motion` compliance
+- Created `walkthrough-data.ts` with typed callout step definitions for both apps; Lighthouse CI accessibility gate hardened from warn to error
+- Integrated `WalkthroughSection` into both case study pages (`/projects/teamflow`, `/projects/devcollab`) replacing static Screenshots sections
+- Lighthouse CI passing: performance ≥ 0.90, accessibility 1.0 on all 5 portfolio pages — aria-labels on callout overlays, explicit accessible colors on nav/footer, SSR dark mode via `class="dark"` on `<html>`
+
+**Requirements satisfied:** 12/12 (SHOT-01–03, WALK-01–04, INTG-01–02, QA-01–03)
+
+**Archive:** `.planning/milestones/v4.1-ROADMAP.md`, `.planning/milestones/v4.1-REQUIREMENTS.md`
+
+---
+

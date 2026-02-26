@@ -47,6 +47,48 @@
 
 ---
 
+## Milestone: v4.1 — Screenshot Story Walkthroughs
+
+**Shipped:** 2026-02-26
+**Phases:** 3 (38–40) | **Plans:** 7 | **Files:** 42 changed (+3,318 / -212)
+
+### What Was Built
+- 10 production screenshots captured via standalone Playwright chromium scripts against live authenticated apps (5 TeamFlow + 5 DevCollab) — all 1280×800px, stored in `apps/web/public/screenshots/`
+- Typed `screenshots-manifest.ts` with `Screenshot` interface and two arrays ready for next/image and walkthrough legends
+- `WalkthroughSection` React component: Matrix-themed dark background, `--matrix-green` step labels, monospace font, scroll-reveal via AnimateIn/StaggerContainer, full `prefers-reduced-motion` compliance
+- `walkthrough-data.ts` with typed callout step definitions; Lighthouse CI accessibility gate hardened from warn to error
+- WalkthroughSection integrated into both case study pages replacing the old static Screenshots sections
+- Lighthouse CI passing: performance ≥ 0.90 and accessibility 1.0 on all 5 portfolio URLs — resolved via SSR dark mode (`class="dark"` on `<html>`), explicit accessible colors on nav/footer, `aria-label` on all callout elements
+
+### What Worked
+- Smallest milestone in the project (3 phases, 7 plans) — tight scope made execution very fast (~1 day total)
+- Standalone Playwright script approach for screenshots was the right call: no auth state issues, runs against real production apps, no test runner overhead
+- Typed manifest + typed data layer pattern: `screenshots-manifest.ts` → `walkthrough-data.ts` → `WalkthroughSection` props was clean and caught type errors before integration
+- User decision to remove callout overlay circles (WALK-01 adjusted) resolved a visual complexity problem cleanly — the legend-only layout is better for recruiter skimming
+
+### What Was Inefficient
+- LHCI SSR dark mode issue (`class="dark"` not injected by next-themes during headless run) required a round of debugging in Plan 40-03 — this is a known issue pattern that could have been pre-empted
+- Standalone server binary path for LHCI (`node .next/standalone/apps/web/server.js`) + static file copy step required — this pattern is established but still adds friction on every Lighthouse CI run
+
+### Patterns Established
+- **SSR dark mode for LHCI:** Set `class="dark"` directly on `<html>` element via `layout.tsx` (not only via next-themes) so Lighthouse headless runs see correct dark contrast from the start
+- **Standalone Playwright for production screenshots:** `chromium.launch()` + `tsx` executor; run from `apps/web/e2e/screenshots/`; always use try/catch per screenshot so all N files always exist
+- **Typed screenshot pipeline:** `screenshots-manifest.ts` (src/width/height/alt/label) → typed walkthrough data arrays → component props — no runtime path guessing
+- **Import path reminder:** In this monorepo `@/*` maps to `apps/web/` root — data files in `apps/web/src/data/` import as `@/src/data/`, not `@/data/`
+
+### Key Lessons
+1. **Overlay circles vs legend labels.** Numbered circles pinned on screenshots look cluttered at 1280px width. Legend-only below each screenshot is simpler, more readable, and easier to maintain — user confirmed this is the better UX.
+2. **LHCI needs SSR dark mode.** next-themes is client-side only; in headless Lighthouse runs, `data-theme` class is never injected. Setting `class="dark"` server-side in layout.tsx is the correct pattern.
+3. **Lighthouse accessibility gate at `error` not `warn`.** Hardening the gate early means accessibility regressions block CI immediately instead of being noticed late.
+4. **Final milestone scoping.** Keeping v4.1 to exactly 3 phases (capture → component → integration+QA) with no scope creep made it the cleanest, fastest execution in the project. Tight phase sequencing with clear handoffs between phases worked well.
+
+### Cost Observations
+- Model mix: primarily Sonnet 4.6 throughout
+- Sessions: ~2-3 sessions in 1 day
+- Notable: Phase 39 (Walkthrough Component) completed in ~3 min — cleanest single-plan phase in the project; the typed manifest from Phase 38 made component development trivial
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -60,6 +102,7 @@
 | v3.0 | 2 | 6 | Deployment focus — Coolify + debt closure |
 | v3.1 | 5 | 14 | Polish: Lenis + GSAP + magnetic buttons + footer |
 | v4.0 | 4 | 9 | Live QA + content accuracy — recruiter-readiness |
+| v4.1 | 3 | 7 | Screenshot walkthroughs — visual storytelling on case studies |
 
 ### Top Lessons (Verified Across Milestones)
 

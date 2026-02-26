@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Screenshot Story Walkthroughs
 status: unknown
-last_updated: "2026-02-26T13:58:09.736Z"
+last_updated: "2026-02-26T20:32:57.749Z"
 progress:
   total_phases: 12
   completed_phases: 9
@@ -15,10 +15,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-26)
+See: .planning/PROJECT.md (updated 2026-02-26 after v4.1)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v4.1 COMPLETE — Phase 40: Integration & QA (all plans done)
+**Current focus:** Portfolio complete — v4.1 archived. No active milestone. Run /gsd:new-milestone to start next.
 
 ## Current Position
 
