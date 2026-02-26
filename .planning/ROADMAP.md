@@ -72,7 +72,12 @@ Plans:
   3. Lighthouse CI reports performance score ≥ 0.90 on both case study pages after the new screenshot assets are added
   4. All callout overlay elements have `aria-label` attributes and all screenshots have descriptive `alt` text readable by a screen reader
   5. With `prefers-reduced-motion: reduce` active, the walkthrough section renders without any entrance animation, and no animation-related errors appear
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 40-01-PLAN.md — Walkthrough data file + Lighthouse accessibility gate upgrade
+- [ ] 40-02-PLAN.md — WalkthroughSection integration into TeamFlow and DevCollab case study pages
+- [ ] 40-03-PLAN.md — Lighthouse CI run + accessibility audit + reduced-motion checkpoint
 
 ---
 
@@ -82,4 +87,4 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 38. Screenshot Capture | 3/3 | Complete    | 2026-02-26 | - |
 | 39. Walkthrough Component | 1/1 | Complete    | 2026-02-26 | - |
-| 40. Integration & QA | v4.1 | 0/TBD | Not started | - |
+| 40. Integration & QA | v4.1 | 0/3 | Not started | - |
