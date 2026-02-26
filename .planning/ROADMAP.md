@@ -278,4 +278,4 @@ Plans:
 | 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
 | 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
 | 35. Full QA Audit & Fixes | 3/3 | Complete    | 2026-02-26 | - |
-| 36. Content Update | v4.0 | 0/3 | Not started | - |
+| 36. Content Update | 1/3 | In Progress|  | - |

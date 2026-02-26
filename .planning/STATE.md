@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Live QA & Content Polish
 status: unknown
-last_updated: "2026-02-26T05:44:05.498Z"
+last_updated: "2026-02-26T06:03:30Z"
 progress:
   total_phases: 11
   completed_phases: 7
   total_plans: 51
-  completed_plans: 47
+  completed_plans: 48
 ---
 
 # Project State
@@ -22,14 +22,14 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 
 ## Current Position
 
-Phase: 35 of 36 (Full QA Audit & Fixes)
-Plan: 03 of 03 complete — PHASE COMPLETE
-Status: Complete — Phase 35 done. All 4 QA requirements satisfied (QA-01, QA-02, QA-03, QA-04)
-Last activity: 2026-02-26 — Phase 35 Plan 03 complete: TeamFlow recruiter flow verified, 2 bugs fixed, Lighthouse CI passed (all 5 URLs >= 0.90)
+Phase: 36 of 36 (Content Update)
+Plan: 01 of 03 complete
+Status: In Progress — Phase 36 underway. Plan 01 complete: DevCollab case study Tiptap references removed, replaced with accurate react-markdown + remark-gfm + Shiki descriptions.
+Last activity: 2026-02-26 — Phase 36 Plan 01 complete: DevCollab case study copy corrected (CONT-01 satisfied)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
 
-Progress: [█████████████████████████░░░░░] 69% (35/36 phases complete — Phase 35 DONE)
+Progress: [██████████████████████████░░░░] 72% (48/51 plans complete — Phase 36 in progress)
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████████████████████
 
 ### Decisions (relevant to v4.0)
 
+- **Phase 36 Plan 01:** Case study copy must match deployed package.json — list only libraries actually present; Tiptap was never installed in devcollab-web, react-markdown is the actual renderer
 - **Phase 35 Plan 03:** useSession() returns null during SSR hydration — always check `status === 'loading'` before acting on session state in useEffect or router.push calls
 - **Phase 35 Plan 03:** Socket.IO room join order matters for presence — call `client.join(roomName)` before any async Prisma queries to prevent presence:request race conditions
 - **Phase 35 Plan 03:** lhci CLI `--collect.url` flags do not override `startServerCommand` in config file — use a separate config file without startServerCommand for production URL auditing
@@ -82,6 +83,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Phase 35 Plan 03 complete — TeamFlow recruiter flow verified, Lighthouse CI gate passed. Phase 35 COMPLETE.
+Stopped at: Phase 36 Plan 01 complete — DevCollab case study corrected (Tiptap removed, react-markdown added).
 Resume file: None
-Next action: /gsd:execute-phase 36 — final phase (if any)
+Next action: Execute Phase 36 Plan 02

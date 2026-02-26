@@ -22,7 +22,7 @@
 
 ### Portfolio Content
 
-- [ ] **CONT-01**: DevCollab case study copy is accurate and compelling — describes actual features, architecture decisions, and technical depth
+- [x] **CONT-01**: DevCollab case study copy is accurate and compelling — describes actual features, architecture decisions, and technical depth
 - [ ] **CONT-02**: TeamFlow case study copy is accurate and compelling — describes actual features, real-time architecture, and RBAC
 - [ ] **CONT-03**: Tech stack badges and metrics on both case studies reflect the actual shipped stack and real numbers
 - [ ] **CONT-04**: Screenshots from live apps are captured and displayed in both case studies and project cards
@@ -61,7 +61,7 @@
 | QA-02 | Phase 35 | Complete |
 | QA-03 | Phase 35 | Complete |
 | QA-04 | Phase 35 | Complete |
-| CONT-01 | Phase 36 | Pending |
+| CONT-01 | Phase 36 | Complete |
 | CONT-02 | Phase 36 | Pending |
 | CONT-03 | Phase 36 | Pending |
 | CONT-04 | Phase 36 | Pending |
