@@ -231,12 +231,12 @@ Plans:
   2. User reading the TeamFlow case study encounters accurate descriptions of Socket.io real-time collaboration, dnd-kit drag-and-drop, NextAuth v5 JWT strategy, and the audit log — no placeholder copy or inaccurate claims
   3. User viewing tech stack badges and metric numbers on either case study sees the actual shipped stack (Next.js 15, NestJS 11, Prisma, Postgres, etc.) and real measurable numbers — no fabricated metrics
   4. User viewing both case studies and the project cards on `/projects` sees real screenshots captured from the live running apps — no placeholder images or missing visuals
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 36-01: Rewrite DevCollab case study copy (features, architecture, technical depth) — CONT-01
-- [ ] 36-02: Rewrite TeamFlow case study copy (features, real-time architecture, RBAC) — CONT-02
-- [ ] 36-03: Update tech stack badges + metrics on both case studies + capture and wire live screenshots — CONT-03, CONT-04
+- [ ] 36-01-PLAN.md — Correct DevCollab case study: remove Tiptap, add react-markdown (CONT-01)
+- [ ] 36-02-PLAN.md — Rewrite TeamFlow case study: remove v1.1 framing, real-time as shipped (CONT-02)
+- [ ] 36-03-PLAN.md — Fix badge arrays + capture 4 live screenshots + wire into case studies and project cards (CONT-03, CONT-04)
 
 ## Progress
 
