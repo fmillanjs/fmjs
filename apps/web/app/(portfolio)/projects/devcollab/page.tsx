@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { CaseStudySection } from '@/components/portfolio/case-study-section';
 import { AnimateIn } from '@/components/portfolio/animate-in';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
+import { WalkthroughSection } from '@/components/portfolio/walkthrough-section';
+import { DEVCOLLAB_WALKTHROUGH_SCREENSHOTS } from '@/src/data/walkthrough-data';
 
 const DEVCOLLAB_URL = process.env.NEXT_PUBLIC_DEVCOLLAB_URL || 'https://devcollab.fernandomillan.me';
 
@@ -352,31 +353,8 @@ export default function DevCollabCaseStudy() {
         </div>
       </CaseStudySection>
 
-      {/* Screenshots */}
-      <CaseStudySection title="Screenshots">
-        <div className="grid md:grid-cols-2 gap-4 mt-4">
-          <div>
-            <Image
-              src="/screenshots/devcollab-workspace.png"
-              alt="DevCollab workspace showing code snippets with syntax highlighting"
-              width={1280}
-              height={800}
-              className="rounded-lg border border-border w-full h-auto"
-            />
-            <p className="text-sm text-muted-foreground mt-2">Workspace snippet list with Shiki syntax highlighting</p>
-          </div>
-          <div>
-            <Image
-              src="/screenshots/devcollab-search.png"
-              alt="DevCollab Cmd+K search modal showing full-text search results"
-              width={1280}
-              height={800}
-              className="rounded-lg border border-border w-full h-auto"
-            />
-            <p className="text-sm text-muted-foreground mt-2">Cmd+K full-text search across all workspace content</p>
-          </div>
-        </div>
-      </CaseStudySection>
+      {/* App Walkthrough */}
+      <WalkthroughSection title="App Walkthrough" screenshots={DEVCOLLAB_WALKTHROUGH_SCREENSHOTS} />
 
       {/* Results */}
       <CaseStudySection title="Results">
