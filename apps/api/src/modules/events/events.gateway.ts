@@ -169,6 +169,11 @@ export class EventsGateway
         };
       }
 
+      // Join room immediately so concurrent presence:request calls see this socket.
+      // Auth check happens below — if it fails, we leave the room before returning.
+      const roomName = `project:${projectId}`;
+      client.join(roomName);
+
       // Verify user has access to project via organization membership
       const project = await this.prisma.project.findUnique({
         where: { id: projectId },
@@ -176,6 +181,7 @@ export class EventsGateway
       });
 
       if (!project) {
+        client.leave(roomName);
         return {
           event: 'error',
           data: { message: 'Project not found' },
@@ -192,15 +198,12 @@ export class EventsGateway
       });
 
       if (!membership) {
+        client.leave(roomName);
         return {
           event: 'error',
           data: { message: 'Forbidden: Not a member of this organization' },
         };
       }
-
-      // Join project room
-      const roomName = `project:${projectId}`;
-      client.join(roomName);
 
       // [DEBUG] Log room join confirmation
       console.log(`[Room] Client ${client.id} (user: ${user.id}) joined ${roomName}`);
