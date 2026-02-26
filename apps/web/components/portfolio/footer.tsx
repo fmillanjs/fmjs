@@ -24,21 +24,21 @@ export function PortfolioFooter() {
           {/* Column 1: Name and Tagline */}
           <div>
             <GlitchSignature />
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-sm text-[#b0b0b0] mt-2">
               Full-Stack Engineer building production-ready SaaS applications
             </p>
           </div>
 
           {/* Column 2: Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold font-mono text-[var(--matrix-terminal)] mb-3">
+            <p className="text-sm font-semibold font-mono text-[var(--matrix-terminal)] mb-3">
               {'>'} navigation
-            </h4>
+            </p>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/"
-                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
+                  className="inline-block py-1 text-sm text-[#b0b0b0] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
                 >
                   Home
                 </Link>
@@ -46,7 +46,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
+                  className="inline-block py-1 text-sm text-[#b0b0b0] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
                 >
                   About
                 </Link>
@@ -54,7 +54,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/projects"
-                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
+                  className="inline-block py-1 text-sm text-[#b0b0b0] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
                 >
                   Projects
                 </Link>
@@ -62,7 +62,7 @@ export function PortfolioFooter() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-muted-foreground hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
+                  className="inline-block py-1 text-sm text-[#b0b0b0] hover:text-[var(--matrix-green)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--matrix-green)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
                 >
                   Contact
                 </Link>
@@ -72,9 +72,9 @@ export function PortfolioFooter() {
 
           {/* Column 3: Terminal-prompt social links (FOOTER-02) */}
           <div>
-            <h4 className="text-sm font-semibold font-mono text-[var(--matrix-terminal)] mb-3">
+            <p className="text-sm font-semibold font-mono text-[var(--matrix-terminal)] mb-3">
               {'>'} connect
-            </h4>
+            </p>
             <ul className="space-y-2">
               <li>
                 <a
@@ -101,7 +101,7 @@ export function PortfolioFooter() {
 
       {/* Copyright */}
       <div className="border-t py-4" style={{ borderColor: 'var(--matrix-green-border)' }}>
-        <p className="text-center text-xs font-mono text-muted-foreground">
+        <p className="text-center text-xs font-mono text-[#b0b0b0]">
           &copy; {currentYear} Fernando Millan. All rights reserved.
         </p>
       </div>

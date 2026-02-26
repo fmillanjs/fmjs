@@ -41,7 +41,7 @@ async function capture() {
         const href = await link.getAttribute('href').catch(() => null)
         if (!href) continue
         const match = href.match(/\/snippets\/([^/?#]+)/)
-        if (match && match[1] !== 'new') return match[1]
+        if (match && match[1] !== 'new') return match[1] ?? null
       }
       return null
     } catch {
@@ -60,7 +60,7 @@ async function capture() {
         const href = await link.getAttribute('href').catch(() => null)
         if (!href) continue
         const match = href.match(/\/posts\/([^/?#]+)/)
-        if (match && match[1] !== 'new') return match[1]
+        if (match && match[1] !== 'new') return match[1] ?? null
       }
       return null
     } catch {

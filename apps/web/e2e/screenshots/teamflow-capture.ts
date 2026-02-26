@@ -37,7 +37,7 @@ async function capture() {
     const href = await teamLink.getAttribute('href').catch(() => null)
     if (!href) return null
     const match = href.match(/\/teams\/([^/?#]+)/)
-    return match ? match[1] : null
+    return match ? (match[1] ?? null) : null
   }
 
   // ---- Helper: get first project URL for a team (skip "new") ----
@@ -51,7 +51,7 @@ async function capture() {
       const href = await projectLinks.nth(i).getAttribute('href').catch(() => null)
       if (!href) continue
       const match = href.match(/\/projects\/([^/?#]+)/)
-      if (match && match[1] !== 'new') return match[1]
+      if (match && match[1] !== 'new') return match[1] ?? null
     }
     return null
   }

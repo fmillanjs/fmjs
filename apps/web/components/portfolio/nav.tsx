@@ -28,7 +28,7 @@ export function PortfolioNav() {
           {/* Logo/Name */}
           <Link
             href="/"
-            className="text-xl font-bold text-foreground hover:text-[var(--matrix-green)] transition-colors"
+            className="text-xl font-bold text-[#e8e8e8] hover:text-[var(--matrix-green)] transition-colors"
           >
             Fernando Millan
           </Link>
@@ -43,7 +43,7 @@ export function PortfolioNav() {
                   'group relative inline-flex flex-col py-1 text-sm font-medium tracking-wide transition-colors',
                   pathname === link.href
                     ? 'text-[var(--matrix-green)]'
-                    : 'text-muted-foreground hover:text-[var(--matrix-green)]'
+                    : 'text-[#b0b0b0] hover:text-[var(--matrix-green)]'
                 )}
               >
                 {link.label}
@@ -108,7 +108,7 @@ export function PortfolioNav() {
                   'block px-3 py-2 rounded-lg text-base font-medium transition-colors',
                   pathname === link.href
                     ? 'border-l-2 border-[var(--matrix-green)] text-[var(--matrix-green)] bg-transparent pl-2'
-                    : 'text-muted-foreground hover:text-[var(--matrix-green)] hover:bg-muted'
+                    : 'text-[#b0b0b0] hover:text-[var(--matrix-green)] hover:bg-muted'
                 )}
               >
                 {link.label}
