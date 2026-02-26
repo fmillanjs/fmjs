@@ -81,5 +81,5 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 38. Screenshot Capture | 3/3 | Complete    | 2026-02-26 | - |
-| 39. Walkthrough Component | v4.1 | 0/1 | Not started | - |
+| 39. Walkthrough Component | 1/1 | Complete   | 2026-02-26 | - |
 | 40. Integration & QA | v4.1 | 0/TBD | Not started | - |

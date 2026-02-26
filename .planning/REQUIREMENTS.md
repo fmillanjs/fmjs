@@ -15,10 +15,10 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 
 ### Walkthrough Component
 
-- [ ] **WALK-01**: `WalkthroughSection` component renders screenshots vertically with numbered callout overlay circles pinned at defined coordinates on each screenshot
-- [ ] **WALK-02**: Each step has a legend below the screenshot — numbered entries matching the overlay circles, each with a short label and 1-sentence explanation
-- [ ] **WALK-03**: Component is styled in Matrix theme: `#0a0a0a` background, `--matrix-green` accents on callout circles and step numbers, monospace font for labels
-- [ ] **WALK-04**: Walkthrough section has scroll-reveal entrance animation consistent with existing portfolio animation system (AnimateIn/StaggerContainer)
+- [x] **WALK-01**: `WalkthroughSection` component renders screenshots vertically with numbered callout overlay circles pinned at defined coordinates on each screenshot
+- [x] **WALK-02**: Each step has a legend below the screenshot — numbered entries matching the overlay circles, each with a short label and 1-sentence explanation
+- [x] **WALK-03**: Component is styled in Matrix theme: `#0a0a0a` background, `--matrix-green` accents on callout circles and step numbers, monospace font for labels
+- [x] **WALK-04**: Walkthrough section has scroll-reveal entrance animation consistent with existing portfolio animation system (AnimateIn/StaggerContainer)
 
 ### Integration
 
@@ -57,10 +57,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHOT-01 | Phase 38 | Complete |
 | SHOT-02 | Phase 38 | Complete |
 | SHOT-03 | Phase 38 | Complete |
-| WALK-01 | Phase 39 | Pending |
-| WALK-02 | Phase 39 | Pending |
-| WALK-03 | Phase 39 | Pending |
-| WALK-04 | Phase 39 | Pending |
+| WALK-01 | Phase 39 | Complete |
+| WALK-02 | Phase 39 | Complete |
+| WALK-03 | Phase 39 | Complete |
+| WALK-04 | Phase 39 | Complete |
 | INTG-01 | Phase 40 | Pending |
 | INTG-02 | Phase 40 | Pending |
 | QA-01 | Phase 40 | Pending |
