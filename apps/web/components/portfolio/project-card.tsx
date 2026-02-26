@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -8,13 +9,25 @@ interface ProjectCardProps {
   techStack: string[]
   href: string
   featured?: boolean
+  screenshot?: { src: string; alt: string }
 }
 
-export function ProjectCard({ title, description, techStack, href, featured }: ProjectCardProps) {
+export function ProjectCard({ title, description, techStack, href, featured, screenshot }: ProjectCardProps) {
   return (
     <Link href={href} className="card-glow-hover block group">
       <Card className="h-full">
         <CardHeader>
+          {screenshot && (
+            <div className="mb-4 overflow-hidden rounded-md">
+              <Image
+                src={screenshot.src}
+                alt={screenshot.alt}
+                width={1280}
+                height={800}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          )}
           {featured && (
             <Badge variant="default" className="w-fit mb-2">Featured</Badge>
           )}
