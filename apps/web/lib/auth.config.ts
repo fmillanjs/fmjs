@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true, // Required behind Coolify's reverse proxy; also set AUTH_TRUST_HOST=true in env
   pages: {
     signIn: '/login',
     error: '/auth/error',
