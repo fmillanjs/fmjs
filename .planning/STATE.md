@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 35 of 36 (Full QA Audit & Fixes)
-Plan: 02 of N complete
-Status: Active — Plan 02 complete (DevCollab full recruiter flow QA + logout fix)
-Last activity: 2026-02-26 — Phase 35 Plan 02 complete: DevCollab recruiter flow verified, logout redirect bug fixed
+Plan: 03 of 03 complete — PHASE COMPLETE
+Status: Complete — Phase 35 done. All 4 QA requirements satisfied (QA-01, QA-02, QA-03, QA-04)
+Last activity: 2026-02-26 — Phase 35 Plan 03 complete: TeamFlow recruiter flow verified, 2 bugs fixed, Lighthouse CI passed (all 5 URLs >= 0.90)
 
-Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE
+Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
 
-Progress: [████████████████████░░░░░░░░░░] 67% (33/36 phases complete — Phase 35 in progress)
+Progress: [█████████████████████████░░░░░] 69% (35/36 phases complete — Phase 35 DONE)
 
 ## Performance Metrics
 
@@ -41,6 +41,9 @@ Progress: [████████████████████░░░
 
 ### Decisions (relevant to v4.0)
 
+- **Phase 35 Plan 03:** useSession() returns null during SSR hydration — always check `status === 'loading'` before acting on session state in useEffect or router.push calls
+- **Phase 35 Plan 03:** Socket.IO room join order matters for presence — call `client.join(roomName)` before any async Prisma queries to prevent presence:request race conditions
+- **Phase 35 Plan 03:** lhci CLI `--collect.url` flags do not override `startServerCommand` in config file — use a separate config file without startServerCommand for production URL auditing
 - **Phase 35 Plan 02:** Next.js API routes behind a reverse proxy must use x-forwarded-proto + x-forwarded-host headers for redirect URL construction — req.url resolves to internal container address (0.0.0.0:80), not the public domain
 - **Phase 35 Plan 02:** DevCollab API is at devcollab-api.fernandomillan.me (separate subdomain) — devcollab.fernandomillan.me/api routes are served by the Next.js frontend, not the NestJS backend
 - **Phase 35 Plan 01:** Portfolio case study CTAs must use absolute https:// URLs — relative paths (e.g., /teams) cause 404 on fernandomillan.me
@@ -66,6 +69,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Phase 35 Plan 02 complete — DevCollab full recruiter flow QA verified, logout redirect bug fixed.
+Stopped at: Phase 35 Plan 03 complete — TeamFlow recruiter flow verified, Lighthouse CI gate passed. Phase 35 COMPLETE.
 Resume file: None
-Next action: /gsd:execute-phase 35 — continue remaining Phase 35 plans
+Next action: /gsd:execute-phase 36 — final phase (if any)
