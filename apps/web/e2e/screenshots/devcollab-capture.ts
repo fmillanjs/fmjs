@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test'
 import * as path from 'path'
 import * as fs from 'fs'
 
-const SCREENSHOTS_DIR = path.resolve(__dirname, '../../../public/screenshots')
+const SCREENSHOTS_DIR = path.resolve(__dirname, '../../public/screenshots')
 const BASE_URL = 'https://devcollab.fernandomillan.me'
 const WORKSPACE_SLUG = 'devcollab-demo'
 
@@ -24,37 +24,45 @@ async function capture() {
   await page.goto(`${BASE_URL}/login`)
   await page.waitForLoadState('networkidle')
 
-  await page.getByLabel('Email').fill('admin@demo.devcollab')
-  await page.getByLabel('Password').fill('Demo1234!')
+  await page.locator('input[type="email"]').fill('admin@demo.devcollab')
+  await page.locator('input[type="password"]').fill('Demo1234!')
   await page.getByRole('button', { name: /sign in/i }).click()
   await page.waitForURL(`${BASE_URL}/w/${WORKSPACE_SLUG}`, { timeout: 15000 })
   console.log(`[Auth] Login successful, on /w/${WORKSPACE_SLUG}`)
 
-  // ---- Helper: get first snippet ID ----
+  // ---- Helper: get first snippet ID (excluding /new) ----
   async function getFirstSnippetId(): Promise<string | null> {
     try {
       await page.goto(`${BASE_URL}/w/${WORKSPACE_SLUG}/snippets`)
       await page.waitForLoadState('networkidle')
-      const snippetLink = page.locator(`a[href*="/w/${WORKSPACE_SLUG}/snippets/"]`).first()
-      const href = await snippetLink.getAttribute('href').catch(() => null)
-      if (!href) return null
-      const match = href.match(/\/snippets\/([^/?#]+)/)
-      return match ? match[1] : null
+      // Get all snippet links, filter out /snippets/new
+      const links = await page.locator(`a[href*="/w/${WORKSPACE_SLUG}/snippets/"]`).all()
+      for (const link of links) {
+        const href = await link.getAttribute('href').catch(() => null)
+        if (!href) continue
+        const match = href.match(/\/snippets\/([^/?#]+)/)
+        if (match && match[1] !== 'new') return match[1]
+      }
+      return null
     } catch {
       return null
     }
   }
 
-  // ---- Helper: get first post ID ----
+  // ---- Helper: get first post ID (excluding /new) ----
   async function getFirstPostId(): Promise<string | null> {
     try {
       await page.goto(`${BASE_URL}/w/${WORKSPACE_SLUG}/posts`)
       await page.waitForLoadState('networkidle')
-      const postLink = page.locator(`a[href*="/w/${WORKSPACE_SLUG}/posts/"]`).first()
-      const href = await postLink.getAttribute('href').catch(() => null)
-      if (!href) return null
-      const match = href.match(/\/posts\/([^/?#]+)/)
-      return match ? match[1] : null
+      // Get all post links, filter out /posts/new
+      const links = await page.locator(`a[href*="/w/${WORKSPACE_SLUG}/posts/"]`).all()
+      for (const link of links) {
+        const href = await link.getAttribute('href').catch(() => null)
+        if (!href) continue
+        const match = href.match(/\/posts\/([^/?#]+)/)
+        if (match && match[1] !== 'new') return match[1]
+      }
+      return null
     } catch {
       return null
     }
