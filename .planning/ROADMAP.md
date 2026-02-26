@@ -41,7 +41,12 @@ Phase 37 (last v4.0 phase): Phase 34 Documentation Closure — complete 2026-02-
   1. A Playwright script runs against `teamflow.fernandomillan.me`, authenticates, and saves 5 screenshots covering: Kanban board, real-time presence, task create/assign modal, RBAC team management, audit log
   2. A Playwright script runs against `devcollab.fernandomillan.me`, authenticates, and saves 5 screenshots covering: workspace overview/feed, code snippet with Shiki, threaded discussion with @mention, Cmd+K search, activity feed/notification bell
   3. All 10 PNG files exist in `apps/web/public/screenshots/` at exactly 1280x800px and are referenced via `next/image` with proper width/height props
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 38-01-PLAN.md — TeamFlow Playwright capture script + 5 screenshots
+- [ ] 38-02-PLAN.md — DevCollab Playwright capture script + 5 screenshots
+- [ ] 38-03-PLAN.md — Dimension verification + typed screenshots manifest
 
 ### Phase 39: Walkthrough Component
 **Goal**: A `WalkthroughSection` React component exists that renders any set of screenshots with numbered callout circles, a matching legend, Matrix styling, and scroll-reveal animations — fully reusable for both case studies.
@@ -72,6 +77,6 @@ Phase 37 (last v4.0 phase): Phase 34 Documentation Closure — complete 2026-02-
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 38. Screenshot Capture | v4.1 | 0/TBD | Not started | - |
+| 38. Screenshot Capture | v4.1 | 0/3 | Planned | - |
 | 39. Walkthrough Component | v4.1 | 0/TBD | Not started | - |
 | 40. Integration & QA | v4.1 | 0/TBD | Not started | - |
