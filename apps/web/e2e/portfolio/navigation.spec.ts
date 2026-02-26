@@ -88,6 +88,20 @@ test.describe('Portfolio Navigation', () => {
     await expect(page.getByRole('heading', { name: /404|not found/i }).first()).toBeVisible()
   })
 
+  test('case study live demo CTAs point to production URLs', async ({ page }) => {
+    // TeamFlow case study CTA
+    await page.goto('/projects/teamflow')
+    const teamflowDemo = page.getByRole('link', { name: /view live demo/i }).first()
+    const teamflowHref = await teamflowDemo.getAttribute('href')
+    expect(teamflowHref).toContain('teamflow.fernandomillan.me')
+
+    // DevCollab case study CTA
+    await page.goto('/projects/devcollab')
+    const devCollabDemo = page.getByRole('link', { name: /view live demo/i }).first()
+    const devCollabHref = await devCollabDemo.getAttribute('href')
+    expect(devCollabHref).toContain('devcollab.fernandomillan.me')
+  })
+
   test('mobile navigation works', async ({ page }) => {
     // Set viewport to mobile size
     await page.setViewportSize({ width: 375, height: 667 })
