@@ -8,7 +8,7 @@ progress:
   total_phases: 11
   completed_phases: 7
   total_plans: 51
-  completed_plans: 48
+  completed_plans: 49
 ---
 
 # Project State
@@ -23,13 +23,13 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 36 of 36 (Content Update)
-Plan: 01 of 03 complete
-Status: In Progress — Phase 36 underway. Plan 01 complete: DevCollab case study Tiptap references removed, replaced with accurate react-markdown + remark-gfm + Shiki descriptions.
-Last activity: 2026-02-26 — Phase 36 Plan 01 complete: DevCollab case study copy corrected (CONT-01 satisfied)
+Plan: 02 of 03 complete
+Status: In Progress — Phase 36 underway. Plan 02 complete: TeamFlow case study v1.0/v1.1 framing removed, real-time collaboration presented as fully shipped and QA-verified.
+Last activity: 2026-02-26 — Phase 36 Plan 02 complete: TeamFlow case study copy corrected (CONT-02 satisfied)
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
 
-Progress: [██████████████████████████░░░░] 72% (48/51 plans complete — Phase 36 in progress)
+Progress: [███████████████████████████░░░] 74% (49/51 plans complete — Phase 36 in progress)
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████████████████████
 
 ### Decisions (relevant to v4.0)
 
+- **Phase 36 Plan 02:** TeamFlow case study must present real-time features as shipped, not future promises — Challenge 1 rewritten as solved (AUTH_TRUST_HOST=true, Socket.IO room join before Prisma async queries)
 - **Phase 36 Plan 01:** Case study copy must match deployed package.json — list only libraries actually present; Tiptap was never installed in devcollab-web, react-markdown is the actual renderer
 - **Phase 35 Plan 03:** useSession() returns null during SSR hydration — always check `status === 'loading'` before acting on session state in useEffect or router.push calls
 - **Phase 35 Plan 03:** Socket.IO room join order matters for presence — call `client.join(roomName)` before any async Prisma queries to prevent presence:request race conditions
@@ -83,6 +84,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Phase 36 Plan 01 complete — DevCollab case study corrected (Tiptap removed, react-markdown added).
+Stopped at: Phase 36 Plan 02 complete — TeamFlow case study corrected (v1.1 framing removed, real-time presented as shipped).
 Resume file: None
-Next action: Execute Phase 36 Plan 02
+Next action: Execute Phase 36 Plan 03
