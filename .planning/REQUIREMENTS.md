@@ -29,7 +29,7 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 
 - [x] **QA-01**: Lighthouse CI ≥ 0.90 on case study pages after new screenshot assets (next/image lazy loading, proper sizing)
 - [x] **QA-02**: Callout overlays have `aria-label` attributes; screenshots have descriptive `alt` text
-- [ ] **QA-03**: Walkthrough section works correctly with `prefers-reduced-motion` (no animation violations)
+- [x] **QA-03**: Walkthrough section works correctly with `prefers-reduced-motion` (no animation violations)
 
 ## Future Requirements
 
@@ -65,7 +65,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INTG-02 | Phase 40 | Complete |
 | QA-01 | Phase 40 | Complete |
 | QA-02 | Phase 40 | Complete |
-| QA-03 | Phase 40 | Pending |
+| QA-03 | Phase 40 | Complete |
 
 **Coverage:**
 - v4.1 requirements: 12 total

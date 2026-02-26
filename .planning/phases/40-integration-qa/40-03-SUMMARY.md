@@ -15,7 +15,8 @@ provides:
   - "aria-label on all callout overlay circles (Step N: Label format)"
   - "Explicit accessible colors (#e8e8e8/#b0b0b0) on nav and footer links"
   - "SSR dark mode via class='dark' on <html> element"
-  - "Reduced-motion QA checkpoint pending human verify"
+  - "Human-verified visual + reduced-motion compliance on both case study pages (QA-03 confirmed)"
+  - "v4.1 milestone COMPLETE — all 12 requirements satisfied (SHOT-01 through QA-03)"
 affects: [deployment, any future lighthouse CI runs]
 
 # Tech tracking
@@ -56,14 +57,14 @@ completed: 2026-02-26
 
 # Phase 40 Plan 03: Lighthouse CI QA Gates Summary
 
-**Lighthouse CI passing with accessibility = 1.0 and performance >= 0.90 on all 5 portfolio pages after fixing nav/footer contrast, SSR dark mode, heading order, and standalone build static copy**
+**Lighthouse CI passing (acc = 1.0, perf >= 0.92) on all 5 pages + human-verified visual and reduced-motion compliance completes v4.1 milestone with all 12 requirements satisfied**
 
 ## Performance
 
-- **Duration:** 33 min
+- **Duration:** ~55 min (includes LHCI setup, build troubleshooting, and human verify checkpoint wait)
 - **Started:** 2026-02-26T12:58:42Z
-- **Completed:** 2026-02-26T13:29:00Z
-- **Tasks:** 2 of 3 complete (Task 3 is checkpoint:human-verify — pending)
+- **Completed:** 2026-02-26T13:51:15Z
+- **Tasks:** 3 of 3 complete
 - **Files modified:** 6
 
 ## Accomplishments
@@ -77,8 +78,7 @@ completed: 2026-02-26
 
 1. **Task 1: Verify aria-label attributes on callout circles** — Verification only, no code changes (aria-label was already correct from Phase 39)
 2. **Task 2: Build and run Lighthouse CI** — `227117c` (fix: resolve accessibility gate violations)
-
-**Pending:** Task 3 checkpoint:human-verify (visual + reduced-motion check)
+3. **Task 3: Human visual + reduced-motion verification** — Approved by user (no commit — visual-only verification; no code changes)
 
 ## Files Created/Modified
 
@@ -143,14 +143,14 @@ completed: 2026-02-26
 
 QA-01: PASS (performance >= 0.90 on all pages)
 QA-02: PASS (accessibility = 1.0 error gate on all pages)
-QA-03: PENDING human verify (reduced-motion visual check)
+QA-03: PASS (human confirmed — no entrance animation fires under prefers-reduced-motion: reduce)
 
 ## Next Phase Readiness
 
-- v4.1 milestone: 11 of 12 requirements complete — QA-03 requires human verify
+- v4.1 milestone: ALL 12 requirements complete (SHOT-01 through QA-03) — milestone SHIPPED
 - Both case study pages show WalkthroughSection with real screenshots and callout overlays
 - All Lighthouse CI gates pass
-- Human visual verification pending (Task 3 checkpoint)
+- Human visual verification complete — both pages render correctly, reduced-motion compliant, console error-free
 
 ## Self-Check: PASSED
 
@@ -159,6 +159,7 @@ QA-03: PENDING human verify (reduced-motion visual check)
 - FOUND: `apps/web/app/layout.tsx` (class="dark" added)
 - FOUND: `apps/web/.lighthouseci/assertion-results.json` (empty array = all passing)
 - FOUND: commit 227117c (accessibility fixes)
+- Task 3: Visual + reduced-motion verification approved by user on 2026-02-26
 
 ---
 *Phase: 40-integration-qa*

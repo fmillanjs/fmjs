@@ -9,7 +9,7 @@
 - ✅ **v3.0 Deployment & Tech Debt Closure** - Phases 27-32 (shipped 2026-02-21)
 - ✅ **v3.1 Portfolio Polish & Matrix Cohesion** - Phases 33 (shipped 2026-02-21)
 - ✅ **v4.0 Live QA & Content Polish** - Phases 34-37 (shipped 2026-02-26)
-- 🚧 **v4.1 Screenshot Story Walkthroughs** - Phases 38-40 (in progress)
+- ✅ **v4.1 Screenshot Story Walkthroughs** - Phases 38-40 (shipped 2026-02-26)
 
 ## Phases
 
@@ -27,7 +27,7 @@ Phase 37 (last v4.0 phase): Phase 34 Documentation Closure — complete 2026-02-
 
 ---
 
-### 🚧 v4.1 Screenshot Story Walkthroughs (In Progress)
+### ✅ v4.1 Screenshot Story Walkthroughs (SHIPPED 2026-02-26)
 
 **Milestone Goal:** Add annotated screenshot walkthrough sections to both case study pages that narrate each SaaS app's workflow through Matrix-themed, numbered callout overlays — giving recruiters a visual story of each app without requiring a live demo session.
 
@@ -44,9 +44,9 @@ Phase 37 (last v4.0 phase): Phase 34 Documentation Closure — complete 2026-02-
 **Plans**: 3 plans
 
 Plans:
-- [ ] 38-01-PLAN.md — TeamFlow Playwright capture script + 5 screenshots
-- [ ] 38-02-PLAN.md — DevCollab Playwright capture script + 5 screenshots
-- [ ] 38-03-PLAN.md — Dimension verification + typed screenshots manifest
+- [x] 38-01-PLAN.md — TeamFlow Playwright capture script + 5 screenshots
+- [x] 38-02-PLAN.md — DevCollab Playwright capture script + 5 screenshots
+- [x] 38-03-PLAN.md — Dimension verification + typed screenshots manifest
 
 ### Phase 39: Walkthrough Component
 **Goal**: A `WalkthroughSection` React component exists that renders any set of screenshots with numbered callout circles, a matching legend, Matrix styling, and scroll-reveal animations — fully reusable for both case studies.
@@ -60,7 +60,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 39-01-PLAN.md — WalkthroughSection component: types + callout circles + legend + Matrix styling + animations
+- [x] 39-01-PLAN.md — WalkthroughSection component: types + callout circles + legend + Matrix styling + animations
 
 ### Phase 40: Integration & QA
 **Goal**: Both case study pages display the `WalkthroughSection` with their respective screenshots and callout definitions, pass Lighthouse CI, meet accessibility requirements, and handle reduced-motion correctly.
@@ -75,9 +75,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 40-01-PLAN.md — Walkthrough data file + Lighthouse accessibility gate upgrade
-- [ ] 40-02-PLAN.md — WalkthroughSection integration into TeamFlow and DevCollab case study pages
-- [ ] 40-03-PLAN.md — Lighthouse CI run + accessibility audit + reduced-motion checkpoint
+- [x] 40-01-PLAN.md — Walkthrough data file + Lighthouse accessibility gate upgrade
+- [x] 40-02-PLAN.md — WalkthroughSection integration into TeamFlow and DevCollab case study pages
+- [x] 40-03-PLAN.md — Lighthouse CI run + accessibility audit + reduced-motion checkpoint
 
 ---
 
