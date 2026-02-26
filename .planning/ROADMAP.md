@@ -218,8 +218,8 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Fix TeamFlow CTA link bug (href=/teams → absolute production URL) + extend Playwright nav spec with CTA href assertions (QA-03)
-- [ ] 35-02-PLAN.md — DevCollab recruiter walkthrough: API health check + human browser flow audit + fix any bugs found (QA-01)
+- [x] 35-01-PLAN.md — Fix TeamFlow CTA link bug (href=/teams → absolute production URL) + extend Playwright nav spec with CTA href assertions (QA-03)
+- [x] 35-02-PLAN.md — DevCollab recruiter walkthrough: API health check + human browser flow audit + fix any bugs found (QA-01)
 - [ ] 35-03-PLAN.md — TeamFlow recruiter walkthrough: health check + human browser flow audit + Lighthouse CI gate all 5 URLs >= 0.90 (QA-02, QA-04)
 
 ### Phase 36: Content Update
@@ -277,5 +277,5 @@ Plans:
 | 32. Matrix Color Harmony | v3.1 | 4/4 | Complete | 2026-02-21 |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
 | 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
-| 35. Full QA Audit & Fixes | 1/3 | In Progress|  | - |
+| 35. Full QA Audit & Fixes | 2/3 | In Progress|  | - |
 | 36. Content Update | v4.0 | 0/3 | Not started | - |
