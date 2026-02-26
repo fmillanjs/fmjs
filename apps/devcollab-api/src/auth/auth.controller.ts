@@ -51,6 +51,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'strict',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
     });
     return { message: 'Logged out' };
   }
@@ -67,6 +68,7 @@ export class AuthController {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'strict',
+      domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
