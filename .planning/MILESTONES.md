@@ -90,3 +90,31 @@
 
 ---
 
+
+## v4.0 Live QA & Content Polish (Shipped: 2026-02-26)
+
+**Phases:** 34–37 (4 phases, 9 plans)
+**Timeline:** 2026-02-25 → 2026-02-26 (2 days)
+**Files changed:** 41 files, +4,645 / -132 lines
+
+**Key accomplishments:**
+- Fixed live auth on both apps — COOKIE_DOMAIN cross-subdomain sharing, AUTH_TRUST_HOST behind Coolify reverse proxy, PORT env var, Redis deadlock fix, CORS_ORIGIN; both demos fully functional for recruiters
+- Fixed DevCollab logout redirect using `x-forwarded-host` headers so container URL resolves to public domain correctly
+- Fixed TeamFlow Kanban session hydration race + Socket.IO presence join race condition (join room before async Prisma queries)
+- Fixed portfolio CTA link (relative `/teams` → absolute production URL) + added Playwright regression assertions for both CTA hrefs
+- Lighthouse CI gate passed — all 5 public portfolio URLs scoring 0.97–1.00 performance
+- Rewrote both case studies with accurate copy — react-markdown replacing Tiptap references, real-time presented as shipped reality
+- Corrected tech stack badge arrays on home + projects pages to match deployed package.json exactly
+- Captured 4 live production screenshots at 1280×800 and wired into case study pages + ProjectCard component
+
+**Requirements satisfied:** 12/12 (LIVE-01–04, QA-01–04, CONT-01–04)
+
+**Known Tech Debt (accepted at ship):**
+- QA-01, QA-02, QA-04: human walkthrough documented in SUMMARYs; static re-run not repeatable without live session
+- AUTH_TRUST_HOST=true set in Coolify env only — cannot verify statically
+- CONT-04: 4 PNGs present and wired; browser visit to confirm no CLS deferred
+
+**Archive:** `.planning/milestones/v4.0-ROADMAP.md`, `.planning/milestones/v4.0-REQUIREMENTS.md`
+
+---
+

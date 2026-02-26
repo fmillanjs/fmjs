@@ -8,20 +8,11 @@ A professional portfolio showcasing two production-quality SaaS applications bui
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current Milestone: v4.0 Live QA & Content Polish
+## Current State: v4.0 Shipped 2026-02-26
 
-**Goal:** Get the portfolio recruiter-ready — fix live demo authentication, audit both apps end-to-end, and update case study content with accurate copy, real metrics, and live screenshots.
+Both SaaS applications are fully recruiter-ready. Authentication fixed on both live demos (COOKIE_DOMAIN, AUTH_TRUST_HOST, port/Redis/CORS fixes). Both recruiter flows fully verified end-to-end. All portfolio links correct. Case study copy rewritten to match deployed reality. Live screenshots wired. Lighthouse scores 0.97–1.00 on all 5 URLs.
 
-**Target features:**
-- Fix login on live deployed apps (DevCollab + TeamFlow)
-- Full exploratory QA audit of both live demo apps
-- Case study copy rewrite (accurate features, architecture, technical depth)
-- Tech stack metrics update (real numbers, correct stack)
-- Live app screenshots captured and wired into case studies / project cards
-
-## Previous: v3.1 Shipped 2026-02-21
-
-Both SaaS applications are live at HTTPS custom domains. Portfolio is production-ready with Awwwards-quality animation polish: Lenis inertia scroll, GSAP parallax depth layers, spring-physics magnetic CTAs, consistent Matrix green design system, and a terminal-themed animated footer. All recruiter-facing flows verified WCAG AA compliant with Lighthouse ≥ 0.90 on all 5 public URLs.
+Total: ~28,450+ TypeScript/TSX LOC across the monorepo. Portfolio targeting senior full-stack developer hiring managers.
 
 ## Requirements
 
@@ -92,21 +83,23 @@ Both SaaS applications are live at HTTPS custom domains. Portfolio is production
 - ✓ Matrix green design system: 4 CSS tokens + SectionLabel component, all blue Radix primary eliminated site-wide — v3.1
 - ✓ Terminal-themed footer: #0a0a0a, CRT scanlines via CSS ::before, > EOF tagline, single-fire GlitchSignature — WCAG AA — v3.1
 
+**v4.0 (Live QA & Content Polish):**
+- ✓ LIVE-01: User can log into DevCollab demo — COOKIE_DOMAIN=.fernandomillan.me fix — v4.0
+- ✓ LIVE-02: User can log into TeamFlow demo — AUTH_TRUST_HOST, AUTH_SECRET, PORT, Redis, CORS fixes — v4.0
+- ✓ LIVE-03: DevCollab workspace loads with seeded content after login — v4.0
+- ✓ LIVE-04: TeamFlow project loads with tasks and real-time features — session hydration + Socket.IO race fixes — v4.0
+- ✓ QA-01: All critical DevCollab recruiter flows complete — 9/9 walkthrough steps PASS — v4.0
+- ✓ QA-02: All critical TeamFlow recruiter flows complete — 11/11 walkthrough steps PASS — v4.0
+- ✓ QA-03: All portfolio links resolve correctly — CTA href fixed to absolute URL, Playwright assertions — v4.0
+- ✓ QA-04: Lighthouse ≥ 0.90 on all 5 public URLs — scores 0.97–1.00 — v4.0
+- ✓ CONT-01: DevCollab case study copy accurate — react-markdown/Shiki/CASL described correctly — v4.0
+- ✓ CONT-02: TeamFlow case study copy accurate — real-time as shipped, Socket.IO/dnd-kit/NextAuth v5 — v4.0
+- ✓ CONT-03: Tech stack badges reflect actual deployed stack — badge arrays match package.json — v4.0
+- ✓ CONT-04: 4 live screenshots (1280×800) captured and wired into case studies + ProjectCard — v4.0
+
 ### Active
 
-**v4.0 (Live QA & Content Polish):**
-- [ ] LIVE-01: User can log into DevCollab demo with seeded credentials
-- [ ] LIVE-02: User can log into TeamFlow demo with seeded credentials
-- [ ] LIVE-03: DevCollab workspace loads with seeded content after login
-- [ ] LIVE-04: TeamFlow project loads with tasks and real-time features after login
-- [ ] QA-01: All critical DevCollab recruiter flows complete without errors
-- [ ] QA-02: All critical TeamFlow recruiter flows complete without errors
-- [ ] QA-03: All portfolio links resolve correctly
-- [ ] QA-04: Lighthouse ≥ 0.90 on all 5 public URLs after fixes
-- [ ] CONT-01: DevCollab case study copy accurate and compelling
-- [ ] CONT-02: TeamFlow case study copy accurate and compelling
-- [ ] CONT-03: Tech stack badges and metrics reflect actual shipped stack
-- [ ] CONT-04: Live app screenshots captured and displayed in case studies
+(None — all requirements shipped. Define next milestone with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -133,7 +126,7 @@ Both SaaS applications are live at HTTPS custom domains. Portfolio is production
 
 **Purpose:** Job hunting for senior full-stack developer roles. Need an impressive, interactive demo showcasing production-level thinking and execution.
 
-**Current state:** v3.1 shipped 2026-02-21. Both apps are live in production. Portfolio has full animation polish. Total: ~28,450 TypeScript/TSX LOC across the monorepo.
+**Current state:** v4.0 shipped 2026-02-26. Both apps are live, recruiter-ready with working auth. Case studies have accurate copy and live screenshots. Lighthouse scores 0.97–1.00. Total: ~28,450+ TypeScript/TSX LOC across the monorepo.
 
 **Deployed apps:**
 - `https://devcollab.fernandomillan.me` — DevCollab web (Next.js 15, NestJS 11 API, Postgres)
@@ -210,4 +203,4 @@ Both SaaS applications are live at HTTPS custom domains. Portfolio is production
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
 
 ---
-*Last updated: 2026-02-25 after v4.0 milestone started — Live QA & Content Polish*
+*Last updated: 2026-02-26 after v4.0 milestone — Live QA & Content Polish shipped*
