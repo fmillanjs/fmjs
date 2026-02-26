@@ -44,7 +44,7 @@ export function ClientProjectPage({
   projectId: string;
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState<Project | null>(null);
@@ -54,6 +54,9 @@ export function ClientProjectPage({
 
   useEffect(() => {
     const fetchData = async () => {
+      // Wait for session to finish loading before acting — on page refresh useSession()
+      // briefly returns null while hydrating, which would incorrectly redirect to login
+      if (status === 'loading') return;
       if (!session?.accessToken) {
         router.push('/login');
         return;
@@ -131,7 +134,7 @@ export function ClientProjectPage({
     };
 
     fetchData();
-  }, [session, projectId, teamId, router, searchParams]);
+  }, [session, status, projectId, teamId, router, searchParams]);
 
   if (loading || !project) {
     return (
