@@ -215,12 +215,12 @@ Plans:
   2. User completing the full TeamFlow recruiter flow (login → project → create/move task → observe real-time presence) encounters no errors or broken functionality
   3. User clicking every navigation link, project card CTA, case study link, and footer link on `fernandomillan.me` reaches the correct destination with no 404s or broken anchors
   4. Lighthouse CI reports performance >= 0.90 on all five public portfolio URLs (`/`, `/projects`, `/projects/teamflow`, `/projects/devcollab`, `/contact`) after all fixes applied
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 35-01: Exploratory audit of DevCollab live demo — all recruiter flows, document bugs found
-- [ ] 35-02: Exploratory audit of TeamFlow live demo — all recruiter flows, document bugs found
-- [ ] 35-03: Portfolio link audit (fernandomillan.me nav, cards, CTAs, footer) + Lighthouse CI gate
+- [ ] 35-01-PLAN.md — Fix TeamFlow CTA link bug (href=/teams → absolute production URL) + extend Playwright nav spec with CTA href assertions (QA-03)
+- [ ] 35-02-PLAN.md — DevCollab recruiter walkthrough: API health check + human browser flow audit + fix any bugs found (QA-01)
+- [ ] 35-03-PLAN.md — TeamFlow recruiter walkthrough: health check + human browser flow audit + Lighthouse CI gate all 5 URLs >= 0.90 (QA-02, QA-04)
 
 ### Phase 36: Content Update
 **Goal**: Both case studies accurately describe the shipped features, architecture decisions, and technical depth; tech stack badges reflect the real stack; and live app screenshots are displayed in both case studies and project cards
