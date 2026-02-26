@@ -23,13 +23,13 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 36 of 36 (Content Update)
-Plan: 02 of 03 complete
-Status: In Progress — Phase 36 underway. Plan 02 complete: TeamFlow case study v1.0/v1.1 framing removed, real-time collaboration presented as fully shipped and QA-verified.
-Last activity: 2026-02-26 — Phase 36 Plan 02 complete: TeamFlow case study copy corrected (CONT-02 satisfied)
+Plan: 03 of 03 complete
+Status: COMPLETE — Phase 36 complete. All four content update requirements satisfied (CONT-01 through CONT-04). Badge arrays corrected, 4 live production screenshots captured and wired into case studies and project cards.
+Last activity: 2026-02-26 — Phase 36 Plan 03 complete: badge arrays corrected, screenshots captured and wired (CONT-03 and CONT-04 satisfied). Phase 36 DONE.
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
 
-Progress: [███████████████████████████░░░] 74% (49/51 plans complete — Phase 36 in progress)
+Progress: [██████████████████████████████] 100% (51/51 plans complete — Phase 36 DONE — ALL PHASES COMPLETE)
 
 ## Performance Metrics
 
@@ -54,6 +54,8 @@ Progress: [███████████████████████
 
 ### Decisions (relevant to v4.0)
 
+- **Phase 36 Plan 03:** Badge arrays must match deployed package.json exactly — WebSocket replaced with Socket.io, Tiptap replaced with react-markdown throughout; Next.js Image requires explicit width/height to prevent CLS
+- **Phase 36 Plan 03:** Screenshots captured via Playwright from authenticated live production sessions at 1280x800; stored in apps/web/public/screenshots/ and served as static assets
 - **Phase 36 Plan 02:** TeamFlow case study must present real-time features as shipped, not future promises — Challenge 1 rewritten as solved (AUTH_TRUST_HOST=true, Socket.IO room join before Prisma async queries)
 - **Phase 36 Plan 01:** Case study copy must match deployed package.json — list only libraries actually present; Tiptap was never installed in devcollab-web, react-markdown is the actual renderer
 - **Phase 35 Plan 03:** useSession() returns null during SSR hydration — always check `status === 'loading'` before acting on session state in useEffect or router.push calls
@@ -84,6 +86,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Phase 36 Plan 02 complete — TeamFlow case study corrected (v1.1 framing removed, real-time presented as shipped).
+Stopped at: Phase 36 Plan 03 complete — ALL PHASES COMPLETE. Badge arrays corrected, 4 live screenshots captured and wired into case studies and project cards.
 Resume file: None
-Next action: Execute Phase 36 Plan 03
+Next action: None — all 51 plans across all 11 phases are complete. Portfolio is production-ready.

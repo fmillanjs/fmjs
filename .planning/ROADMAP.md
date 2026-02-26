@@ -8,7 +8,7 @@
 - ✅ **v2.5 Matrix Portfolio Overhaul** — Phases 22-26 (shipped 2026-02-19)
 - ✅ **v3.0 Deployment & Tech Debt Closure** — Phases 27-28 (shipped 2026-02-20)
 - ✅ **v3.1 Portfolio Polish & Matrix Cohesion** — Phases 29-33 (shipped 2026-02-21)
-- 🚧 **v4.0 Live QA & Content Polish** — Phases 34-36 (in progress)
+- ✅ **v4.0 Live QA & Content Polish** — Phases 34-36 (shipped 2026-02-26)
 
 ## Phases
 
@@ -100,7 +100,7 @@ Full archive: `.planning/milestones/v3.1-ROADMAP.md`
 
 - [ ] **Phase 34: Live Auth Investigation & Fix** - Diagnose and fix broken login on DevCollab and TeamFlow live deployments
 - [x] **Phase 35: Full QA Audit & Fixes** - End-to-end exploratory audit of both live apps and all portfolio links with Lighthouse gate
-- [ ] **Phase 36: Content Update** - Rewrite case study copy, update tech stack metrics, and capture live screenshots
+- [x] **Phase 36: Content Update** - Rewrite case study copy, update tech stack metrics, and capture live screenshots
 
 ## Phase Details
 
@@ -234,9 +234,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 36-01-PLAN.md — Correct DevCollab case study: remove Tiptap, add react-markdown (CONT-01)
-- [ ] 36-02-PLAN.md — Rewrite TeamFlow case study: remove v1.1 framing, real-time as shipped (CONT-02)
-- [ ] 36-03-PLAN.md — Fix badge arrays + capture 4 live screenshots + wire into case studies and project cards (CONT-03, CONT-04)
+- [x] 36-01-PLAN.md — Correct DevCollab case study: remove Tiptap, add react-markdown (CONT-01)
+- [x] 36-02-PLAN.md — Rewrite TeamFlow case study: remove v1.1 framing, real-time as shipped (CONT-02)
+- [x] 36-03-PLAN.md — Fix badge arrays + capture 4 live screenshots + wire into case studies and project cards (CONT-03, CONT-04)
 
 ## Progress
 
@@ -278,4 +278,4 @@ Plans:
 | 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
 | 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
 | 35. Full QA Audit & Fixes | 3/3 | Complete    | 2026-02-26 | - |
-| 36. Content Update | 2/3 | In Progress|  | - |
+| 36. Content Update | 3/3 | Complete | 2026-02-26 | - |
