@@ -1,11 +1,27 @@
-FROM node:20-alpine AS runner
+FROM node:20-alpine AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+RUN npm install -g turbo
+COPY . .
+RUN turbo prune devcollab-api --docker
 
-# Copy what's needed for seeding (includes src/ for prisma client)
-COPY packages/devcollab-database/prisma ./packages/devcollab-database/prisma
-COPY packages/devcollab-database/src ./packages/devcollab-database/src
-COPY node_modules ./node_modules
+FROM node:20-alpine AS installer
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
+RUN npm ci
+
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
+
+COPY --from=pruner /app/out/full/ .
+# devcollab-database not listed as dep so turbo prune omits it — copy manually
+COPY --from=pruner /app/packages/devcollab-database ./packages/devcollab-database
+COPY --from=installer /app/node_modules ./node_modules
+
+RUN npx prisma@5 generate --schema=packages/devcollab-database/prisma/schema.prisma
 
 ENV DEVCOLLAB_DATABASE_URL=${DEVCOLLAB_DATABASE_URL}
 
