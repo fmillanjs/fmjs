@@ -87,4 +87,4 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 38. Screenshot Capture | 3/3 | Complete    | 2026-02-26 | - |
 | 39. Walkthrough Component | 1/1 | Complete    | 2026-02-26 | - |
-| 40. Integration & QA | 1/3 | In Progress|  | - |
+| 40. Integration & QA | 2/3 | In Progress|  | - |

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Screenshot Story Walkthroughs
 status: unknown
-last_updated: "2026-02-26T12:53:22.452Z"
+last_updated: "2026-02-26T12:57:37.268Z"
 progress:
   total_phases: 12
   completed_phases: 8
   total_plans: 53
-  completed_plans: 48
+  completed_plans: 49
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** v4.1 — Phase 40: Integration & QA (Plan 01 complete)
+**Current focus:** v4.1 — Phase 40: Integration & QA (Plan 02 complete)
 
 ## Current Position
 
-Phase: 40 of 40 (Integration & QA — Plan 01 complete)
-Plan: 01 of 03 (In Progress)
-Status: Walkthrough data file created with 10 screenshots/callout steps; Lighthouse accessibility gate hardened to error
-Last activity: 2026-02-26 — walkthrough-data.ts created, lighthouserc files updated to error
+Phase: 40 of 40 (Integration & QA — Plan 02 complete)
+Plan: 02 of 03 (In Progress)
+Status: WalkthroughSection integrated into TeamFlow and DevCollab case study pages with 5 annotated screenshots each
+Last activity: 2026-02-26 — WalkthroughSection wired into teamflow/page.tsx and devcollab/page.tsx
 
 Progress: [#########░] 90%
 
@@ -42,7 +42,7 @@ Progress: [#########░] 90%
 |-------|-------|-------|----------|
 | 38. Screenshot Capture | 3 completed | 17 min | 6 min |
 | 39. Walkthrough Component | 1 completed | 3 min | 3 min |
-| 40. Integration & QA | 1 completed | 2 min | 2 min |
+| 40. Integration & QA | 2 completed | 4 min | 2 min |
 
 *Updated after each plan completion*
 
@@ -60,6 +60,7 @@ Progress: [#########░] 90%
 - **38-03:** Screenshot manifest at `apps/web/src/data/screenshots-manifest.ts`; exports `Screenshot` interface, `TEAMFLOW_SCREENSHOTS` (5), `DEVCOLLAB_SCREENSHOTS` (5); all width:1280 height:800; includes `label` field for callout legends in Phase 39
 - **39-01:** AnimateIn does not accept `style` prop — use bg-[#0a0a0a] Tailwind arbitrary class; WalkthroughSection at apps/web/components/portfolio/walkthrough-section.tsx; callout circles use position:absolute with inline left/top pixel values; WalkthroughStep.x and .y are raw numbers (React auto-appends px)
 - **40-01:** walkthrough-data.ts at `apps/web/src/data/walkthrough-data.ts`; alt text reused verbatim from screenshots-manifest.ts; Lighthouse accessibility gate upgraded from warn to error in both lighthouserc.json and lighthouserc.production.json
+- **40-02:** Import path for walkthrough-data is `@/src/data/walkthrough-data` (not `@/data/`) — tsconfig `@/*` maps to `apps/web/` root, not `apps/web/src/`; WalkthroughSection integrated into teamflow/page.tsx and devcollab/page.tsx replacing static Screenshots sections
 
 ### Pending Todos
 
@@ -72,7 +73,7 @@ Pre-existing build failure in `apps/web/e2e/screenshots/devcollab-capture.ts` (m
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 40-01-PLAN.md — walkthrough-data.ts created with 10 typed screenshots, Lighthouse accessibility hardened to error
+Stopped at: Completed 40-02-PLAN.md — WalkthroughSection integrated into TeamFlow and DevCollab case study pages
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE
