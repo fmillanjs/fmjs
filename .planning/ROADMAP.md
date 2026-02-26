@@ -57,7 +57,10 @@ Plans:
   2. Below each screenshot, a legend renders numbered entries — each with a short label and one-sentence explanation — whose numbers match the overlay circles
   3. The component background is `#0a0a0a`, callout circles and step numbers use `--matrix-green`, and labels use a monospace font
   4. The walkthrough section entrance animation fires on scroll using the existing `AnimateIn`/`StaggerContainer` animation system and respects `prefers-reduced-motion`
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 39-01-PLAN.md — WalkthroughSection component: types + callout circles + legend + Matrix styling + animations
 
 ### Phase 40: Integration & QA
 **Goal**: Both case study pages display the `WalkthroughSection` with their respective screenshots and callout definitions, pass Lighthouse CI, meet accessibility requirements, and handle reduced-motion correctly.
@@ -78,5 +81,5 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 38. Screenshot Capture | 3/3 | Complete    | 2026-02-26 | - |
-| 39. Walkthrough Component | v4.1 | 0/TBD | Not started | - |
+| 39. Walkthrough Component | v4.1 | 0/1 | Not started | - |
 | 40. Integration & QA | v4.1 | 0/TBD | Not started | - |
