@@ -55,8 +55,8 @@
 |-------------|-------|--------|
 | LIVE-01 | Phase 34 | Complete |
 | LIVE-02 | Phase 34 | Complete |
-| LIVE-03 | Phase 34 | Pending |
-| LIVE-04 | Phase 34 | Pending |
+| LIVE-03 | Phase 37 | Pending |
+| LIVE-04 | Phase 37 | Pending |
 | QA-01 | Phase 35 | Complete |
 | QA-02 | Phase 35 | Complete |
 | QA-03 | Phase 35 | Complete |

@@ -101,6 +101,7 @@ Full archive: `.planning/milestones/v3.1-ROADMAP.md`
 - [ ] **Phase 34: Live Auth Investigation & Fix** - Diagnose and fix broken login on DevCollab and TeamFlow live deployments
 - [x] **Phase 35: Full QA Audit & Fixes** - End-to-end exploratory audit of both live apps and all portfolio links with Lighthouse gate
 - [x] **Phase 36: Content Update** - Rewrite case study copy, update tech stack metrics, and capture live screenshots
+- [ ] **Phase 37: Phase 34 Documentation & Tracking Closure** - Formally close Phase 34 by creating missing summary and verification artifacts, updating requirement checkboxes
 
 ## Phase Details
 
@@ -191,6 +192,22 @@ Plans:
 - [ ] 33-02-PLAN.md — GlitchSignature 'use client' island: IntersectionObserver single-fire + next/dynamic ssr:false wired into footer.tsx
 - [ ] 33-03-PLAN.md — Accessibility audit (axe WCAG AA, keyboard focus rings) + Playwright baseline update + all 18 snapshots green + human visual approval
 
+### Phase 37: Phase 34 Documentation & Tracking Closure
+**Goal**: Formally close Phase 34 by creating 34-02-SUMMARY.md and VERIFICATION.md using Phase 35 evidence, updating REQUIREMENTS.md checkboxes for LIVE-03 and LIVE-04, and cleaning up stale .continue-here.md — unblocking v4.0 milestone completion
+**Depends on**: Phase 36 (v4.0 content complete)
+**Requirements**: LIVE-03, LIVE-04
+**Gap Closure:** Closes gaps from v4.0 audit
+**Success Criteria** (what must be TRUE):
+  1. 34-02-SUMMARY.md exists and documents VPS fixes and login verification that occurred during Phase 34/35
+  2. 34-VERIFICATION.md exists and records Phase 35 walkthrough evidence confirming LIVE-03 and LIVE-04 satisfied
+  3. REQUIREMENTS.md checkboxes for LIVE-03 and LIVE-04 are `[x]` and Traceability table shows Complete
+  4. Phase 34 `.continue-here.md` stale remaining_work entries are cleaned up
+  5. ROADMAP.md Phase 34 row shows Complete
+**Plans**: 1 plan
+
+Plans:
+- [ ] 37-01-PLAN.md — Create 34-02-SUMMARY.md + 34-VERIFICATION.md + update REQUIREMENTS.md + clean .continue-here.md + mark Phase 34 complete in ROADMAP
+
 ### Phase 34: Live Auth Investigation & Fix
 **Goal**: Recruiters can log into both DevCollab and TeamFlow live demos using seeded credentials and land directly in the demo workspace or project with all seeded content visible
 **Depends on**: Phase 33 (v3.1 complete)
@@ -279,3 +296,4 @@ Plans:
 | 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
 | 35. Full QA Audit & Fixes | 3/3 | Complete    | 2026-02-26 | - |
 | 36. Content Update | 3/3 | Complete    | 2026-02-26 | - |
+| 37. Phase 34 Documentation & Tracking Closure | v4.0 | 0/1 | Pending | - |
