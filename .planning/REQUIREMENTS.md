@@ -22,13 +22,13 @@ Requirements for the Screenshot Story Walkthroughs milestone. Each maps to roadm
 
 ### Integration
 
-- [ ] **INTG-01**: TeamFlow case study page (`/projects/teamflow`) includes the `WalkthroughSection` with its 5 captured screenshots and callout definitions
-- [ ] **INTG-02**: DevCollab case study page (`/projects/devcollab`) includes the `WalkthroughSection` with its 5 captured screenshots and callout definitions
+- [x] **INTG-01**: TeamFlow case study page (`/projects/teamflow`) includes the `WalkthroughSection` with its 5 captured screenshots and callout definitions
+- [x] **INTG-02**: DevCollab case study page (`/projects/devcollab`) includes the `WalkthroughSection` with its 5 captured screenshots and callout definitions
 
 ### Quality
 
-- [ ] **QA-01**: Lighthouse CI ≥ 0.90 on case study pages after new screenshot assets (next/image lazy loading, proper sizing)
-- [ ] **QA-02**: Callout overlays have `aria-label` attributes; screenshots have descriptive `alt` text
+- [x] **QA-01**: Lighthouse CI ≥ 0.90 on case study pages after new screenshot assets (next/image lazy loading, proper sizing)
+- [x] **QA-02**: Callout overlays have `aria-label` attributes; screenshots have descriptive `alt` text
 - [ ] **QA-03**: Walkthrough section works correctly with `prefers-reduced-motion` (no animation violations)
 
 ## Future Requirements
@@ -61,10 +61,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WALK-02 | Phase 39 | Complete |
 | WALK-03 | Phase 39 | Complete |
 | WALK-04 | Phase 39 | Complete |
-| INTG-01 | Phase 40 | Pending |
-| INTG-02 | Phase 40 | Pending |
-| QA-01 | Phase 40 | Pending |
-| QA-02 | Phase 40 | Pending |
+| INTG-01 | Phase 40 | Complete |
+| INTG-02 | Phase 40 | Complete |
+| QA-01 | Phase 40 | Complete |
+| QA-02 | Phase 40 | Complete |
 | QA-03 | Phase 40 | Pending |
 
 **Coverage:**
