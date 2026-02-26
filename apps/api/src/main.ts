@@ -12,9 +12,10 @@ async function bootstrap() {
   app.useWebSocketAdapter(redisIoAdapter);
 
   // Enable CORS for Next.js frontend
-  const nextAuthUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  // CORS_ORIGIN is the canonical env var; NEXTAUTH_URL accepted as legacy fallback
+  const corsOrigin = process.env.CORS_ORIGIN || process.env.NEXTAUTH_URL || 'http://localhost:3000';
   app.enableCors({
-    origin: nextAuthUrl,
+    origin: corsOrigin,
     credentials: true,
   });
 
@@ -45,7 +46,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.API_PORT || 3001;
+  // PORT is set by Dockerfile (4000) and standard for container runtimes
+  const port = process.env.PORT || process.env.API_PORT || 3001;
   await app.listen(port);
 
   console.log(`
@@ -56,7 +58,7 @@ async function bootstrap() {
   Health:  http://localhost:${port}/api/health
 
   Environment: ${process.env.NODE_ENV || 'development'}
-  CORS Origin: ${nextAuthUrl}
+  CORS Origin: ${corsOrigin}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   `);
 }

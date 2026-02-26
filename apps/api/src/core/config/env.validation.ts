@@ -11,10 +11,12 @@ export const envSchema = z.object({
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 
   // API
+  PORT: z.string().default('3001'),
   API_PORT: z.string().default('3001'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
-  // NextAuth
+  // CORS — use CORS_ORIGIN in production; NEXTAUTH_URL accepted as legacy fallback
+  CORS_ORIGIN: z.string().url().optional(),
   NEXTAUTH_URL: z.string().url('NEXTAUTH_URL must be a valid URL').default('http://localhost:3000'),
 });
 

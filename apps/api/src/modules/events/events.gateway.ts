@@ -16,7 +16,7 @@ import * as jwt from 'jsonwebtoken';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || process.env.NEXTAUTH_URL || 'http://localhost:3000',
     credentials: true,
   },
   namespace: '/',

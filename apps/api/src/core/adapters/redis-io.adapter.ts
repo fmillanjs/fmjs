@@ -12,29 +12,36 @@ export class RedisIoAdapter extends IoAdapter {
   }
 
   async connectToRedis(): Promise<void> {
-    const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
-    const subClient = pubClient.duplicate();
+    try {
+      const pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6380');
+      const subClient = pubClient.duplicate();
 
-    // Wait for both clients to connect
-    await Promise.all([
-      new Promise<void>((resolve) => {
-        pubClient.on('connect', () => resolve());
-      }),
-      new Promise<void>((resolve) => {
-        subClient.on('connect', () => resolve());
-      }),
-    ]);
+      const connectWithTimeout = (client: Redis, name: string): Promise<void> =>
+        new Promise((resolve, reject) => {
+          const timer = setTimeout(
+            () => reject(new Error(`[Redis ${name}] Connection timeout after 8s`)),
+            8000
+          );
+          client.once('connect', () => { clearTimeout(timer); resolve(); });
+          client.once('error', (err) => { clearTimeout(timer); reject(err); });
+        });
 
-    // Error handling
-    pubClient.on('error', (err) => {
-      console.error('[Redis Pub] Connection error:', err.message);
-    });
-    subClient.on('error', (err) => {
-      console.error('[Redis Sub] Connection error:', err.message);
-    });
+      await Promise.all([
+        connectWithTimeout(pubClient, 'Pub'),
+        connectWithTimeout(subClient, 'Sub'),
+      ]);
 
-    this.adapterConstructor = createAdapter(pubClient, subClient);
-    console.log('[Redis Adapter] Connected successfully');
+      pubClient.on('error', (err) => console.error('[Redis Pub] Error:', err.message));
+      subClient.on('error', (err) => console.error('[Redis Sub] Error:', err.message));
+
+      this.adapterConstructor = createAdapter(pubClient, subClient);
+      console.log('[Redis Adapter] Connected successfully');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[Redis Adapter] Failed to connect:', message);
+      console.warn('[Redis Adapter] Running without cross-session WebSocket support');
+      this.adapterConstructor = null;
+    }
   }
 
   createIOServer(port: number, options?: ServerOptions): any {
