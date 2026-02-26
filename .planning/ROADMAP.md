@@ -94,14 +94,14 @@ Full archive: `.planning/milestones/v3.1-ROADMAP.md`
 
 </details>
 
-### v4.0 Live QA & Content Polish (In Progress)
+### v4.0 Live QA & Content Polish (Complete — 2026-02-26)
 
 **Milestone Goal:** Get the portfolio recruiter-ready — fix live demo authentication, audit both apps end-to-end, and update case study content with accurate copy, real metrics, and live screenshots.
 
-- [ ] **Phase 34: Live Auth Investigation & Fix** - Diagnose and fix broken login on DevCollab and TeamFlow live deployments
+- [x] **Phase 34: Live Auth Investigation & Fix** - Diagnose and fix broken login on DevCollab and TeamFlow live deployments
 - [x] **Phase 35: Full QA Audit & Fixes** - End-to-end exploratory audit of both live apps and all portfolio links with Lighthouse gate
 - [x] **Phase 36: Content Update** - Rewrite case study copy, update tech stack metrics, and capture live screenshots
-- [ ] **Phase 37: Phase 34 Documentation & Tracking Closure** - Formally close Phase 34 by creating missing summary and verification artifacts, updating requirement checkboxes
+- [x] **Phase 37: Phase 34 Documentation & Tracking Closure** - Formally close Phase 34 by creating missing summary and verification artifacts, updating requirement checkboxes
 
 ## Phase Details
 
@@ -293,7 +293,7 @@ Plans:
 | 31. Magnetic Buttons | v3.1 | 2/2 | Complete | 2026-02-21 |
 | 32. Matrix Color Harmony | v3.1 | 4/4 | Complete | 2026-02-21 |
 | 33. Footer Redesign + Matrix Animation | v3.1 | 3/3 | Complete | 2026-02-21 |
-| 34. Live Auth Investigation & Fix | 1/2 | In Progress|  | - |
-| 35. Full QA Audit & Fixes | 3/3 | Complete    | 2026-02-26 | - |
-| 36. Content Update | 3/3 | Complete    | 2026-02-26 | - |
-| 37. Phase 34 Documentation & Tracking Closure | v4.0 | 0/1 | Pending | - |
+| 34. Live Auth Investigation & Fix | v4.0 | 2/2 | Complete | 2026-02-25 |
+| 35. Full QA Audit & Fixes | v4.0 | 3/3 | Complete | 2026-02-26 |
+| 36. Content Update | v4.0 | 3/3 | Complete | 2026-02-26 |
+| 37. Phase 34 Documentation & Tracking Closure | v4.0 | 1/1 | Complete | 2026-02-26 |

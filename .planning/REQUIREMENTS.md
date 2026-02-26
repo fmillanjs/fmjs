@@ -10,8 +10,8 @@
 
 - [x] **LIVE-01**: User can log into DevCollab at `devcollab.fernandomillan.me` using seeded demo credentials
 - [x] **LIVE-02**: User can log into TeamFlow at `teamflow.fernandomillan.me` using seeded demo credentials
-- [ ] **LIVE-03**: DevCollab demo workspace loads with all seeded content (snippets, posts, members) after login
-- [ ] **LIVE-04**: TeamFlow demo project loads with tasks, columns, and real-time features functional after login
+- [x] **LIVE-03**: DevCollab demo workspace loads with all seeded content (snippets, posts, members) after login
+- [x] **LIVE-04**: TeamFlow demo project loads with tasks, columns, and real-time features functional after login
 
 ### QA Audit
 
@@ -55,8 +55,8 @@
 |-------------|-------|--------|
 | LIVE-01 | Phase 34 | Complete |
 | LIVE-02 | Phase 34 | Complete |
-| LIVE-03 | Phase 37 | Pending |
-| LIVE-04 | Phase 37 | Pending |
+| LIVE-03 | Phase 34 | Complete (2026-02-26) |
+| LIVE-04 | Phase 34 | Complete (2026-02-26) |
 | QA-01 | Phase 35 | Complete |
 | QA-02 | Phase 35 | Complete |
 | QA-03 | Phase 35 | Complete |
@@ -73,4 +73,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-02-25 — traceability mapped after v4.0 roadmap creation (phases 34-36)*
+*Last updated: 2026-02-26 — LIVE-03 and LIVE-04 marked complete; Phase 37 closure*
