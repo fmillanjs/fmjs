@@ -114,6 +114,15 @@ export function LoginForm() {
           Sign up
         </Link>
       </p>
+
+      <div className="mt-6 p-4 border border-border rounded-lg bg-muted/50">
+        <p className="text-sm font-semibold mb-2">Demo Credentials</p>
+        <div className="text-xs leading-relaxed font-mono space-y-1">
+          <div><span className="font-semibold">Admin:</span> demo1@teamflow.dev / Password123</div>
+          <div><span className="font-semibold">Manager:</span> demo2@teamflow.dev / Password123</div>
+          <div><span className="font-semibold">Member:</span> demo4@teamflow.dev / Password123</div>
+        </div>
+      </div>
     </div>
   );
 }
