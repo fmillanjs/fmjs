@@ -144,5 +144,5 @@ Plans:
 | 42. Claude API Integration | 2/2 | Complete    | 2026-03-01 | - |
 | 43. Enrichment Pipeline | 3/3 | Complete    | 2026-03-01 | - |
 | 44. NestJS REST + SSE Endpoints | 2/2 | Complete    | 2026-03-01 | - |
-| 45. Next.js Frontend | 4/4 | Complete   | 2026-03-01 | - |
+| 45. Next.js Frontend | 4/4 | Complete    | 2026-03-01 | - |
 | 46. Demo Seed + Portfolio Integration | v5.0 | 0/3 | Not started | - |
