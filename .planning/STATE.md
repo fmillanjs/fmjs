@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T12:21:56.476Z"
+last_updated: "2026-03-01T12:25:02Z"
 progress:
   total_phases: 14
   completed_phases: 10
   total_plans: 59
-  completed_plans: 54
+  completed_plans: 55
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 45 of 46 (Next.js Frontend)
-Plan: 2 of 3 COMPLETE (CRM Dashboard — LeadTable, ScoreBar, LeadInputForm — Plan 45-02 DONE)
-Status: Phase 45 Plan 02 COMPLETE — /leads RSC dashboard with server-fetched lead table, ICP ScoreBar, and zod-validated input form wired to createLead Server Action. Build clean. Ready for Plan 45-03 (lead detail page + SSE streaming).
-Last activity: 2026-03-01 — Plan 45-02 complete, CRM dashboard verified
+Plan: 3 of 3 COMPLETE (Lead Detail Page + PipelineMonitor SSE — Plan 45-03 DONE)
+Status: Phase 45 Plan 03 COMPLETE — /leads/:id RSC page with PipelineMonitor client component: three-step pipeline progress indicators, token-by-token email streaming via EventSource SSE, shouldStream guard. Build clean. Ready for Plan 45-04 (ScoreCard + EnrichmentCard).
+Last activity: 2026-03-01 — Plan 45-03 complete, lead detail page and PipelineMonitor verified
 
 Progress: [█████░░░░░] 24%
 
@@ -44,7 +44,7 @@ Progress: [█████░░░░░] 24%
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
 | 43 Enrichment Pipeline | 3/3 | 10 min | 3 min |
 | 44 NestJS REST + SSE | 2/2 complete | 10 min | 5 min |
-| 45 Next.js Frontend | 2/3 | 9 min | 5 min |
+| 45 Next.js Frontend | 3/3 | 11 min | 4 min |
 
 *Updated after each plan completion*
 
@@ -95,6 +95,9 @@ Progress: [█████░░░░░] 24%
 - **45-02:** leads/page.tsx uses explicit LeadSummary[] type annotation — TypeScript strict mode requires it when let [] is reassigned inside try/catch
 - **45-02:** createLead Server Action calls revalidatePath('/leads') before returning — ensures table refreshes if user navigates back
 - **45-02:** LeadInputForm navigates to /leads/:id on submit via router.push — leads user directly to SSE pipeline monitor (Plan 03)
+- **45-03:** shouldStream = lead.status === 'pending' only — prevents double pipeline trigger for processing/complete/failed leads; SSE endpoint IS the pipeline trigger
+- **45-03:** onerror does NOT reconnect EventSource — NestJS 30s pipeline timeout is terminal, not a transient network error to retry
+- **45-03:** NEXT_PUBLIC_API_URL env var required in Client Component — server-side API_URL is not accessible in browser context
 
 ### Pending Todos
 
@@ -113,7 +116,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 45-02-PLAN.md — CRM dashboard with LeadTable, ScoreBar, LeadInputForm, and createLead Server Action. Plan 45-02 COMPLETE. Ready to execute Plan 45-03 (lead detail page + SSE pipeline monitor).
+Stopped at: Completed 45-03-PLAN.md — lead detail RSC page with PipelineMonitor client component (EventSource SSE, three-step progress, token streaming). Plan 45-03 COMPLETE. Ready to execute Plan 45-04 (ScoreCard + EnrichmentCard components).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE

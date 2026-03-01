@@ -27,8 +27,8 @@ Requirements for v5.0. Each maps to roadmap phases.
 - [ ] **PIPE-03**: User can expand a "Why this score?" card showing matched and weak ICP criteria
 - [x] **PIPE-04**: AI automatically enriches CRM fields: company size, industry, tech stack, pain points
 - [ ] **PIPE-05**: Enrichment is displayed in a structured card with intent signals as badges
-- [ ] **PIPE-06**: AI generates a personalized cold email that streams token-by-token to the browser
-- [ ] **PIPE-07**: Pipeline shows step-by-step progress indicators while Claude API runs
+- [x] **PIPE-06**: AI generates a personalized cold email that streams token-by-token to the browser
+- [x] **PIPE-07**: Pipeline shows step-by-step progress indicators while Claude API runs
 - [ ] **PIPE-08**: User can copy the generated email to clipboard
 
 ### Demo Data
@@ -89,8 +89,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PIPE-03 | Phase 45 | Pending |
 | PIPE-04 | Phase 43 | Complete |
 | PIPE-05 | Phase 45 | Pending |
-| PIPE-06 | Phase 45 | Pending |
-| PIPE-07 | Phase 45 | Pending |
+| PIPE-06 | Phase 45 | Complete |
+| PIPE-07 | Phase 45 | Complete |
 | PIPE-08 | Phase 45 | Pending |
 | DEMO-01 | Phase 46 | Pending |
 | DEMO-02 | Phase 46 | Pending |
