@@ -2,17 +2,30 @@
 
 ## What This Is
 
-A professional portfolio showcasing two production-quality SaaS applications built by Fernando Millan: **TeamFlow** (work management with real-time collaboration, RBAC, and audit logging) and **DevCollab** (a developer collaboration platform with GitHub-style code snippets, Markdown posts, threaded discussions, notifications, full-text search, and workspace RBAC). Both applications live in a Turborepo monorepo with separate databases, separate auth systems, and shared CI/CD infrastructure. The portfolio presents both apps with live demos, case studies, and source code — wrapped in a Matrix-inspired dark aesthetic with scroll-reveal animations, canvas digital rain, mouse spotlight effects, and Awwwards-quality navigation — targeting senior full-stack developer hiring managers.
+A professional portfolio showcasing three production-quality SaaS applications built by Fernando Millan: **TeamFlow** (work management with real-time collaboration, RBAC, and audit logging), **DevCollab** (a developer collaboration platform with GitHub-style code snippets, Markdown posts, threaded discussions, notifications, full-text search, and workspace RBAC), and **AI SDR** (an AI-powered Sales Development Representative system with lead qualification, CRM enrichment, personalized cold email generation, and follow-up sequencing — powered by the Claude API). TeamFlow and DevCollab live in a Turborepo monorepo; AI SDR lives in a separate standalone repo. The portfolio presents all three apps with live demos, case studies, and source code — wrapped in a Matrix-inspired dark aesthetic with scroll-reveal animations, canvas digital rain, mouse spotlight effects, and Awwwards-quality navigation — targeting senior full-stack developer hiring managers.
 
 ## Core Value
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
+## Current Milestone: v5.0 AI SDR App
+
+**Goal:** Build and deploy a standalone AI SDR Replacement System that demonstrates applied AI integration skills using the Claude API, then add it to the portfolio as a third project.
+
+**Target features:**
+- AI lead qualification (ICP scoring with reasoning, intent signal analysis)
+- CRM enrichment automation (company size/industry, tech stack, pain points, lead score 0–100)
+- AI outbound personalization engine (Claude-written cold emails tailored to each lead)
+- AI follow-up sequencing (3-email cadence auto-generated per lead)
+- Mini-CRM dashboard with lead pipeline view and persistent storage
+- Demo account with pre-seeded leads for recruiter tryout
+- Portfolio integration: project card, case study at `/projects/ai-sdr`, live demo link
+
 ## Shipped: v4.1 Screenshot Story Walkthroughs (2026-02-26)
 
 Both case study pages now include a `WalkthroughSection` with 10 Playwright-captured production screenshots (5 TeamFlow + 5 DevCollab), Matrix-themed legend labels, scroll-reveal animations, and full reduced-motion compliance. Lighthouse CI: performance ≥ 0.90, accessibility 1.0 on all 5 portfolio URLs.
 
-Total: ~31,700+ TypeScript/TSX LOC across the monorepo. Portfolio is fully recruiter-ready — no active development planned.
+Total: ~31,700+ TypeScript/TSX LOC across the monorepo.
 
 ## Requirements
 
@@ -106,7 +119,13 @@ Total: ~31,700+ TypeScript/TSX LOC across the monorepo. Portfolio is fully recru
 
 ### Active
 
-(None — portfolio complete as of v4.1)
+- [ ] AI lead qualification with ICP scoring and reasoning — v5.0
+- [ ] CRM enrichment: company size/industry, tech stack, pain points, lead score — v5.0
+- [ ] AI personalized cold email generation via Claude API — v5.0
+- [ ] AI follow-up sequencing (3-email cadence per lead) — v5.0
+- [ ] Mini-CRM dashboard with lead pipeline and persistent storage — v5.0
+- [ ] Demo account with pre-seeded leads — v5.0
+- [ ] Portfolio integration: project card + case study + live demo — v5.0
 
 ### Out of Scope
 
@@ -214,4 +233,4 @@ Total: ~31,700+ TypeScript/TSX LOC across the monorepo. Portfolio is fully recru
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
 
 ---
-*Last updated: 2026-02-26 after v4.1 milestone — Screenshot Story Walkthroughs (final milestone)*
+*Last updated: 2026-02-28 after v5.0 milestone start — AI SDR App*
