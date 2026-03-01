@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T11:46:20.995Z"
+last_updated: "2026-03-01T12:15:00.000Z"
 progress:
   total_phases: 13
   completed_phases: 10
   total_plans: 55
-  completed_plans: 52
+  completed_plans: 53
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** Milestone v5.0 — AI SDR App, Phase 44 (NestJS REST + SSE Endpoints)
+**Current focus:** Milestone v5.0 — AI SDR App, Phase 45 (Next.js Frontend)
 
 ## Current Position
 
-Phase: 44 of 46 (NestJS REST + SSE Endpoints)
-Plan: 2 of 2 COMPLETE (SSE streaming endpoint — Phase 44 DONE)
-Status: Phase 44 COMPLETE — All 5 success criteria satisfied. SC1-SC3 confirmed in Plan 01, SC4-SC5 confirmed in Plan 02. SSE streaming verified end-to-end with curl. Ready for Phase 45 (React frontend).
-Last activity: 2026-03-01 — Plan 44-02 complete, SSE endpoint verified end-to-end
+Phase: 45 of 46 (Next.js Frontend)
+Plan: 1 of 3 COMPLETE (Bootstrap + iron-session auth — Plan 45-01 DONE)
+Status: Phase 45 Plan 01 COMPLETE — Next.js 16 app bootstrapped, iron-session auth working, build clean. AUTH-01, AUTH-02, AUTH-03 satisfied. Ready for Plan 45-02 (leads table + CRM dashboard).
+Last activity: 2026-03-01 — Plan 45-01 complete, auth flow verified end-to-end
 
-Progress: [████░░░░░░] 21%
+Progress: [█████░░░░░] 24%
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [████░░░░░░] 21%
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
 | 43 Enrichment Pipeline | 3/3 | 10 min | 3 min |
 | 44 NestJS REST + SSE | 2/2 complete | 10 min | 5 min |
+| 45 Next.js Frontend | 1/3 | 7 min | 7 min |
 
 *Updated after each plan completion*
 
@@ -87,6 +88,10 @@ Progress: [████░░░░░░] 21%
 - **44-02:** @Res() injected without passthrough:true in @Sse() method — @Sse() owns response lifecycle; @Res() used only for setHeader and close listener
 - **44-02:** Observable/callback bridge pattern: new Observable<MessageEvent>(subscriber => onStep callback) connects PipelineService StepCallback to SSE subscriber.next()
 - **44-02:** closed boolean flag + subscriber.closed guard in onStep prevents "Cannot call next on closed subscriber" errors after client disconnect
+- **45-01:** Next.js 16.1.6 installed (not 15 as planned) — middleware.ts renamed to proxy.ts with proxy() function export per Next.js 16 convention
+- **45-01:** turbopack.root set in next.config.ts — silences multiple-lockfiles workspace root warning in monorepo context
+- **45-01:** Radix Color tokens override Shadcn oklch defaults — CSS variables point to Radix slate/blue/red/green/amber scale steps
+- **45-01:** web/.gitignore pattern changed from .env* to .env*.local — allows .env.example to be tracked in git while blocking .env.local secrets
 
 ### Pending Todos
 
@@ -105,7 +110,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 44-02-PLAN.md — SSE streaming endpoint verified end-to-end. Phase 44 COMPLETE. Ready to execute Phase 45 (React frontend).
+Stopped at: Completed 45-01-PLAN.md — Next.js 16 bootstrap + iron-session auth verified. Plan 45-01 COMPLETE. Ready to execute Plan 45-02 (leads table CRM dashboard).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE

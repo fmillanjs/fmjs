@@ -10,9 +10,9 @@ Requirements for v5.0. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can log into the demo with shared credentials
-- [ ] **AUTH-02**: Demo credentials (email + password) are displayed on the login page
-- [ ] **AUTH-03**: User session persists across browser refresh
+- [x] **AUTH-01**: User can log into the demo with shared credentials
+- [x] **AUTH-02**: Demo credentials (email + password) are displayed on the login page
+- [x] **AUTH-03**: User session persists across browser refresh
 
 ### Lead Management
 
@@ -78,9 +78,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 45 | Pending |
-| AUTH-02 | Phase 45 | Pending |
-| AUTH-03 | Phase 45 | Pending |
+| AUTH-01 | Phase 45 | Complete |
+| AUTH-02 | Phase 45 | Complete |
+| AUTH-03 | Phase 45 | Complete |
 | LEAD-01 | Phase 44 | Complete |
 | LEAD-02 | Phase 44 | Complete |
 | LEAD-03 | Phase 44 | Complete |
