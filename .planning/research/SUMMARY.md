@@ -1,217 +1,233 @@
 # Project Research Summary
 
-**Project:** Fernando Millan Portfolio — v3.1 Polish & Matrix Cohesion
-**Domain:** Animation polish, smooth scroll, parallax depth, interactive CTAs, Matrix aesthetic
-**Researched:** 2026-02-20
+**Project:** AI SDR Replacement System (v5.0 portfolio milestone)
+**Domain:** AI-powered lead qualification, CRM enrichment, personalized outbound email generation, follow-up sequencing
+**Researched:** 2026-02-28
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This milestone (v3.1) is a visual polish and aesthetic cohesion pass on an already-deployed Next.js 15 App Router portfolio. The goal is not to build new features in the product sense — it is to wire up animation libraries already installed but not yet used (Lenis, GSAP, @gsap/react), apply consistent Matrix color tokens across all portfolio sections, redesign the footer for narrative closure, and add magnetic button physics to primary CTAs. Every dependency required is already in `node_modules`. No new packages are needed.
+This project is a portfolio-grade AI SDR (Sales Development Representative) replacement system targeting technical recruiters as the primary audience. Experts build AI SDR tools on a pipeline architecture where lead data flows through sequential enrichment stages — qualification scoring, CRM enrichment, email personalization, and sequence generation — each driven by a structured LLM call. The core technical differentiation for this portfolio context is not mimicking a real SDR tool's feature set (email sending, CRM integrations, multi-tenancy) but rather demonstrating production-quality AI integration patterns: structured JSON outputs from Claude, streaming prose generation, and explainable AI reasoning surfaces.
 
-The recommended approach is a strict phased delivery ordered by dependency chain: Lenis smooth scroll first (it is the scroll runtime everything else depends on), GSAP ScrollTrigger parallax second (requires Lenis ticker sync before it can work), then magnetic buttons and Matrix color harmony in parallel (both are independent of each other), and finally the footer redesign last (highest Playwright snapshot surface area, fully self-contained). This ordering minimizes debugging complexity by ensuring each moving part is stable before the next is added.
+The recommended approach is a hybrid synchronous pipeline with SSE progress events. The NestJS backend orchestrates four sequential Claude API calls (qualify then enrich then personalize then generate sequence), fires the pipeline in-process without blocking the HTTP response, and emits step-level progress events via a NestJS `@Sse()` endpoint. The critical architectural insight from research is that only the email personalization step should stream tokens to the frontend — the three structured output steps (qualification, enrichment, sequence) cannot be meaningfully rendered incrementally since partial JSON is not displayable. This hybrid approach delivers the highest recruiter-visible impressiveness (watching Claude write an email in real time) at medium implementation complexity, without the Redis infrastructure overhead that background job queues would require.
 
-The primary risks are not technical novelty but integration correctness: the Lenis + GSAP ticker sync pattern is well-documented but frequently botched in older tutorials, the `useGSAP` hook cleanup discipline must be applied from the start to prevent ScrollTrigger memory leaks on navigation, and Playwright visual regression baselines must be updated deliberately at every phase that changes rendered colors. The Lighthouse CI gate (≥ 0.90 performance across 5 URLs) is the hard constraint guarding every phase merge — and all libraries are already installed so there is zero new bundle delta to worry about.
+The primary risks center on three areas: AI output quality (Claude hallucinating company details when scraping fails; inconsistent lead scores from non-zero temperature), streaming infrastructure (NestJS SSE Observable memory leaks from abandoned connections; Nginx/Coolify buffering blocking token delivery), and demo data quality (generic seeded leads with no score variance undermine the demo's credibility). All three are well-understood and have concrete mitigations documented in research. The most important preventive decisions are: setting `temperature: 0` on all structured output calls before building any UI on top, adding graceful scraping fallbacks with Cloudflare challenge page detection, and pre-generating all demo content during seeding rather than live-generating during recruiter sessions.
+
+---
 
 ## Key Findings
 
 ### Recommended Stack
 
-All four animation libraries are already installed in `apps/web/package.json`: `lenis@1.3.17`, `gsap@3.14.2`, `@gsap/react@2.1.2`, `motion@12.34.2`. Zero new dependencies are required for any v3.1 feature. The only required "setup" work is importing `lenis/dist/lenis.css` into `globals.css` and adding four new CSS custom property tokens for Matrix color extension (`--matrix-green-subtle`, `--matrix-green-border`, `--matrix-scan-line`, `--matrix-terminal`). No Tailwind `@theme inline` changes — Matrix tokens stay in `:root` only.
+The locked project stack (Next.js 15, NestJS 11, Prisma, Postgres, `claude-sonnet-4-6`) requires four new technology additions for the AI SDR capabilities. The `@anthropic-ai/sdk` v0.78.0 is the official Anthropic SDK providing streaming, structured outputs, and built-in retry logic — it must live in NestJS only, never in client components. Cheerio v1.2.0 plus Axios handles company URL scraping without the 300MB browser engine overhead that Playwright would add. Zod v3 with `zod-to-json-schema` defines structured output schemas with TypeScript type inference that carries through to Prisma writes. No Redis or BullMQ is needed: the architecture decision settled on an in-process async pipeline because the pipeline steps are sequential (each step's output is the next step's input), making parallel queue distribution architecturally incorrect for this use case.
 
 **Core technologies:**
-- `lenis@1.3.17` via `ReactLenis` from `lenis/react`: Document-level smooth scroll provider — the `root` prop wraps native document scroll; `options={{ autoRaf: false }}` is mandatory when GSAP ScrollTrigger is also used
-- `gsap@3.14.2` + `ScrollTrigger` + `@gsap/react@2.1.2` via `useGSAP`: Scroll-position-tied parallax — `useGSAP` is required (not `useEffect`) for React 19 cleanup correctness; `{ scope: containerRef }` limits cleanup per component and prevents cross-page leaks
-- `motion@12.34.2` via `motion/react` (`useMotionValue` + `useSpring`): Spring physics for magnetic buttons — consistent with all existing portfolio animations (nav, scroll-reveal, hover); no second animation system introduced
-- CSS custom properties only: Matrix color extension — four new `:root` tokens scoped to `.matrix-theme`; no libraries, no Tailwind utilities
+- `@anthropic-ai/sdk` v0.78.0 — Claude API client with streaming, structured outputs, built-in retry — official SDK, only viable choice; do not use Vercel AI SDK in NestJS
+- `cheerio` v1.2.0 — HTML parsing for company URL scraping — stable release, ships own TypeScript types (do NOT install `@types/cheerio`)
+- `axios` v1.7.x — HTTP fetch layer for cheerio scraping — handles redirects, timeouts, custom User-Agent headers; already common in NestJS
+- `zod` v3.24.x — schema definition and Claude response validation — TypeScript-first; v4 still in beta, do not use
+- `zod-to-json-schema` v3.23.x — converts Zod schemas to JSON Schema for Claude's `output_config.format` — required bridge until Zod v4 stabilizes
+- `@nestjs/throttler` v6.x — HTTP rate limiting on enrichment endpoints — prevents API flooding from the UI layer
+
+**Critical version and usage notes:**
+- Do NOT install `@types/cheerio` — conflicts with Cheerio 1.x built-in types
+- Do NOT use Zod v4 — still in beta, breaks `zod-to-json-schema` integration
+- Structured outputs are GA (no beta header needed): use `output_config.format`, not deprecated `output_format` or `anthropic-beta: structured-outputs-2025-11-13` header
+- Redis and BullMQ are NOT needed for this architecture — the pipeline steps are sequential dependencies, not parallel workers
+- Claude API Tier 1 limits: 50 RPM, 30K ITPM — sufficient for demo scale with prompt caching on repeated system prompts
 
 ### Expected Features
 
-**Must have (table stakes):**
-- Lenis smooth scroll across all portfolio pages — absence is jarring at this quality level; 20-line wrapper component, library installed
-- Matrix color consistency across all portfolio sections — current blue Radix `--primary` mismatch in `about/page.tsx`, `contact/page.tsx`, footer, case study pages, and `tech-stack.tsx` is the most visible visual inconsistency
-- Anchor links and route-change scroll-to-top with Lenis — without scroll reset, users land mid-page on navigation (confirmed GitHub issue #319)
-- Reduced-motion bypass at the JS layer for Lenis — existing three-layer gate (CSS + RAF + MotionConfig) must extend to Lenis initialization; skip `<ReactLenis>` when `prefers-reduced-motion: reduce` is active
-- Footer Matrix theming — current `bg-muted` footer visually disconnects from the dark-terminal portfolio aesthetic
+Research identifies a clear distinction between table stakes (recruiter expects these to exist), differentiators (what makes a senior engineer stand out), and anti-features (commonly requested but counterproductive). The anti-features list is as important as the must-haves.
 
-**Should have (competitive differentiators):**
-- GSAP ScrollTrigger parallax on hero text drift and section separator decorations — depth effect that elevates from "animated" to "crafted"
-- Magnetic buttons on hero CTAs ("View Projects", "View GitHub") and contact CTA ("Get In Touch") — spring-physics pull applied to 2–3 CTAs max; applied everywhere is gimmicky
-- CRT scanline texture on footer via CSS `::before` pseudo-element — zero JS, zero cost, immediate visual upgrade over current plain footer
-- CSS glitch text on "Fernando Millan" footer signature, firing once via IntersectionObserver — memorable narrative close that differs mechanically from the hero scramble
-- Terminal-prompt social links (`> github`, `> email`) and `> EOF` tagline in footer — narrative coherence with the terminal theme
+**Must have (P1 — table stakes):**
+- Lead input form (name, company, URL) — entry point for the entire demo
+- Lead list with score column, status column, sortable by score descending — proves there is a real backend
+- Lead score displayed prominently (0-100) with horizontal colored bar — first visual hit on detail view; horizontal bar not circular gauge
+- Lead detail view showing all enrichment fields — clicking must reveal depth
+- 3-email follow-up sequence displayed as vertical timeline (Day 1 / Day 5 / Day 10)
+- Loading progress indicator with explicit step labels while Claude API runs — prevents "is it broken?" confusion during 3-8 second calls
+- Demo account pre-seeded with 5-8 varied leads (full score spectrum) — recruiter will not wait for live generation
+- Copy buttons on emails — basic polished UX signal
+
+**Should have (P2 — differentiators that signal senior-level AI work):**
+- ICP reasoning transparency ("Why this score?" collapsible card) — primary technical differentiator showing prompt engineering sophistication; shows matched vs weak criteria
+- Personalization callout under each email ("Personalized for: Series A milestone, SDR hiring signal") — explainable AI pattern
+- Intent signals as badge cloud (max 4: Hiring SDRs, Recently Funded, Expanding to EMEA, etc.) — visual richness requiring prompt engineering
+- Enrichment metadata as structured cards: company size, industry, funding stage, tech stack as badge chips, pain points as bullet list
 
 **Defer (v2+):**
-- Inner-content magnetic parallax (text at 60% of button movement) — ship basic magnetic first, validate the feel before adding complexity
-- Scrolling katakana ticker in footer — low information density relative to effort; CSS scanlines cover the texture need
-- Parallax on all portfolio sections — validate Phase 2 Lighthouse impact on targeted sections first before expanding scope
-- Magnetic glow intensification on cursor proximity — additive polish layer on top of the basic magnetic effect
+- Bulk lead import via CSV
+- Lead status workflow (contacted / replied / meeting booked)
+- Export to CSV
+- Sequence step editor for custom cadence timing
+- Webhook integrations to HubSpot / Salesforce
+
+**Anti-features (do not build):**
+- Actual email sending — SMTP, deliverability, CAN-SPAM overhead with zero recruiter-visible benefit
+- Drag-and-drop kanban pipeline — TeamFlow already demonstrates dnd-kit; duplication adds no new portfolio signal
+- Multi-user workspaces — single shared demo account is correct; multi-tenancy adds weeks of work that hides the AI story
+- Streaming all pipeline steps — structured JSON cannot be rendered incrementally; only email personalization step should stream
+- Live web scraping during demo — pre-scrape and cache in seed; live scraping fails on ~20-30% of sites during recruiter sessions
 
 ### Architecture Approach
 
-The integration adds a thin new `LenisProvider` layer inside the existing `(portfolio)/layout.tsx`, wrapping `<main>` and `<PortfolioFooter>` but leaving `<DotGridSpotlight>`, `<PortfolioNav>`, and `<CommandPalette>` outside. The `<MotionProvider>` moves inside `LenisProvider`. New client-only components follow the established pattern: `'use client'` providers for stateful scroll logic, `next/dynamic(ssr: false)` for canvas/animation islands — identical to how `MatrixRainCanvas` is handled in `hero-section.tsx`. The animation library split remains intentional: motion/react owns entrance animations and spring interactions; GSAP owns scroll-position-tied transforms. No cross-contamination between the two systems.
+The architecture is a hybrid synchronous pipeline with SSE progress events and selective email streaming. The NestJS `LeadsController` receives a POST, creates the Lead record, fires `PipelineService.processWithStream()` without awaiting it (in-process fire-and-forget), and returns the `leadId` immediately. The Next.js client opens an `EventSource` to `GET /leads/:id/stream` which returns a NestJS `@Sse()` Observable. The pipeline emits four types of SSE events: step-complete events for qualify, enrich, and sequence (structured JSON calls), and token events during email personalization (the one streaming step). After pipeline completion, all results are persisted to Postgres and displayed via standard RSC fetches on the lead detail page.
 
 **Major components:**
-1. `LenisProvider` (new, `providers/lenis-provider.tsx`) — ReactLenis root instance; wires GSAP ticker (`autoRaf: false` + `gsap.ticker.add`); ScrollTrigger event sync; scoped exclusively to `(portfolio)/layout.tsx`
-2. `LenisScrollRestorer` (new, `components/portfolio/lenis-scroll-restorer.tsx`) — zero-render child; `useLenis()` + `usePathname()` → `lenis.scrollTo(0, { immediate: true })` on route change
-3. `MagneticButton` (new, `components/portfolio/magnetic-button.tsx`) — `motion.div` with `useMotionValue` + `useSpring`; `useReducedMotion()` guard returns plain `<div>`; applied only to primary CTAs
-4. `FooterMatrixEffect` (new, `components/portfolio/footer-matrix-effect.tsx`) — isolated dynamic client animation island inside the server-component footer; CRT scanlines + single-fire glitch text
-5. `globals.css` (modified) — four new CSS tokens in `:root`; Lenis required CSS rules; `@import "lenis/dist/lenis.css"`; no changes to `@theme inline`
+1. `ClaudeService` (NestJS) — isolated wrapper exposing `structuredOutput<T>()` and `streamText()`. All `@anthropic-ai/sdk` usage is contained here. No other service imports the SDK directly.
+2. `PipelineService` (NestJS) — orchestrator for qualify then enrich then personalize then sequence. Receives an emitter callback from the SSE Observable; calls it after each step and for each token during email generation. Includes 100ms startup delay to give the client time to connect EventSource before first event fires.
+3. `ScraperService` (NestJS) — Axios + Cheerio extracts 3000-char text summary from company URL; validates response is not a Cloudflare challenge page; returns empty string on failure (graceful fallback is required, not optional).
+4. `LeadsController` (NestJS) — REST endpoints (POST /leads, GET /leads, GET /leads/:id) plus `@Sse(':id/stream')` endpoint with `res.on('close')` cleanup wired.
+5. `PipelineMonitor` (Next.js, `'use client'`) — EventSource consumer that renders step progress indicators and accumulates streaming email tokens into live text display.
+6. CRM Dashboard and Lead Detail (Next.js RSC) — standard server-side fetches of persisted Postgres data; no client-side state management needed for completed leads.
+
+**Database schema highlights:**
+- `Lead` — status enum (pending/processing/complete/error), denormalized score + industry + companySize for fast list queries without AIOutput joins
+- `AIOutput` — Json column per pipeline step (handles different shapes per step without per-field migrations); unique constraint on `[leadId, step]` prevents duplicates
+- `EmailSequence` — denormalized 3-email table for fast CRM dashboard reads without parsing AIOutput JSON on every list load
+- `DemoLead` — separate table for pre-seeded content; prevents idempotency issues when re-running the seed script
 
 ### Critical Pitfalls
 
-1. **ReactLenis placed in a Server Component crashes SSR** (`ReferenceError: window is not defined`) — always wrap `<ReactLenis>` in a `'use client'` provider component, identical to the existing `MotionProvider` pattern; this is the first thing to get right in Phase 1
+Eight pitfalls were identified. The five with the highest impact on demo success:
 
-2. **`autoRaf: true` with GSAP ScrollTrigger creates two competing RAF loops** — scroll jitter, `useScroll` value drift, browser freeze on fast scroll; fix: `options={{ autoRaf: false }}` on ReactLenis + `gsap.ticker.add((time) => lenis.raf(time * 1000))` + `gsap.ticker.lagSmoothing(0)`; this is the canonical pattern from the official Lenis README
+1. **Structured outputs guarantee format, not accuracy** — Claude hallucinated company details fill required schema fields when scraping fails or data is sparse. Mitigate with nullable schema fields (`anyOf: [type: string, type: null]`), explicit "use null if unknown" system prompt instruction, a `confidence` field alongside AI-generated values, and range validation before Prisma writes. Verify during seed phase that lead scores show full-spectrum variance (not all clustered 70-85).
 
-3. **Lenis carries scroll position across Next.js soft navigation** — user clicks a link while scrolled down, lands mid-page on new route; fix: `LenisScrollRestorer` component with `lenis.scrollTo(0, { immediate: true })` on pathname change; `immediate: true` is the critical detail that skips the easing
+2. **NestJS SSE Observable never closes on client disconnect** — Confirmed GitHub issue #11601 produces `MaxListenersExceededWarning` with orphaned Claude API streams accumulating under demo load. Mitigate with `res.on('close')` cleanup handler in the SSE controller, `stream.abort()` in a finally block on the Claude stream, and `timeout(30000)` RxJS operator as a safety net on the Observable.
 
-4. **Lenis breaks Radix Dialog/CommandPalette scroll lock** — `overflow: hidden` on `<body>` has no effect against Lenis's RAF-driven scroll; the existing `CommandPalette` in the portfolio layout will regress immediately on Lenis activation; fix: `lenis.stop()` on modal open, `lenis.start()` on close, `data-lenis-prevent` on scrollable modal content
+3. **Next.js route handler buffers the entire stream before sending** — Awaiting async work before returning `Response` causes Next.js to buffer everything; recruiter sees blank screen for 10-30 seconds then all text appears at once. Mitigate by calling NestJS SSE directly from the browser EventSource (bypass Next.js proxy entirely), add `X-Accel-Buffering: no` header for Coolify's Nginx proxy, and `export const dynamic = 'force-dynamic'` on any route files that do proxy. Verify in Docker build, not just `next dev`.
 
-5. **`gsap.to()` in mousemove handler spikes Lighthouse Total Blocking Time** — creates hundreds of concurrent tween objects per second (30% of Lighthouse score); fix: `gsap.quickTo()` creates a single reusable setter; for this project motion/react spring is used instead of GSAP quickTo, which avoids the problem entirely
+4. **Web scraping silently returns Cloudflare challenge pages** — Default Axios headers (User-Agent: axios/1.x) get 403'd or Cloudflare challenge pages (which return HTTP 200 with placeholder HTML). Claude then hallucinates company data from "Just a moment..." page text. Mitigate with realistic browser User-Agent headers, post-fetch detection (`html.includes('cf-browser-verification')`), and for demo seeds: pre-scrape and cache content in Prisma so live scraping is never called during recruiter sessions.
 
-6. **Playwright baselines break on every visual color change** — 18 existing PNG baselines at `maxDiffPixelRatio: 0.02`; Matrix color harmony across project cards and sections will fail 6–8 tests; this is not a bug — update baselines deliberately with `--update-snapshots`, review diffs, commit in the same commit as the color change
+5. **Inconsistent lead scores across runs** — Non-zero temperature plus an underspecified scoring rubric produces 10-20 point variance on repeated calls for the same lead. Recruiter who refreshes notices scores change. Mitigate with `temperature: 0` on all structured output calls, explicit numeric rubric in system prompt (define what 80-100 means vs 60-79 vs below), 2-3 few-shot examples, and persisting scores to Prisma — never re-run scoring on page load.
 
-7. **Matrix color tokens in `@theme inline` bleed into dashboard** — `text-matrix-green` Tailwind utility would activate in TeamFlow/DevCollab where `--matrix-green` is not in scope; fix: keep all Matrix tokens in `:root` only; consume via `var(--matrix-green)` inline styles or `.matrix-theme`-scoped CSS classes; the PROJECT.md explicitly documents this decision
+---
 
 ## Implications for Roadmap
 
-Based on the dependency chain established across all four research files, the phase structure is clear and non-negotiable. GSAP ScrollTrigger cannot be correctly wired before Lenis is running. Color harmony is independent but benefits from being done before footer work since the footer consumes the same new token set. Footer is last because it has the highest snapshot surface area and is fully self-contained.
+Based on research, the build order is driven by hard dependencies: the database schema must exist before Claude calls can persist results; ClaudeService must be validated before the pipeline is built on top of it; the pipeline must work end-to-end before SSE transport is wired; and the backend API must be stable before the frontend can consume it. Research also identifies the demo seed phase as a critical path item that is typically underestimated — pre-seeded data must be generated against the live Claude API and reviewed before committing to the seed file.
 
-### Phase 1: Lenis Foundation
+### Phase 1: Project Foundation and Database Schema
 
-**Rationale:** Every other scroll animation depends on Lenis being wired correctly. GSAP ScrollTrigger will misfire against native scroll position (always 0) if Lenis is not the scroll runtime first. This must ship and pass gates before Phase 2 begins.
+**Rationale:** Everything else depends on the database schema. Prisma migrations are expensive to change after pipeline logic is written against them. Design the schema correctly first, including the nullable fields and the `confidence` column pattern that prevent hallucination issues downstream.
+**Delivers:** NestJS app skeleton, Prisma schema (Lead, AIOutput, EmailSequence, DemoLead models), Docker Compose with Postgres, environment variable configuration including `ANTHROPIC_API_KEY` wired to NestJS config only.
+**Addresses:** API key security pitfall (ANTHROPIC_API_KEY configured in NestJS env, CI grep check added from day one), Prisma seed race condition setup (sequential seed pattern established in seed script structure before any data is added).
+**Avoids:** Pitfall 6 (API key browser exposure — enforced by architecture from day one, not by discipline later), Pitfall 8 (Prisma seed race condition — sequential seeding pattern established in seed script before any leads are seeded).
+**Research flag:** Standard patterns — no research needed. Matches the established Prisma + NestJS + Docker Compose pattern from TeamFlow and DevCollab.
 
-**Delivers:** Buttery smooth scroll across all five portfolio URLs; correct scroll-to-top on route navigation; CommandPalette continues to lock background scroll correctly; reduced-motion users get plain native scroll with zero Lenis overhead.
+### Phase 2: Claude API Integration (ClaudeService and Schema Validation)
 
-**Addresses:** Lenis smooth scroll (table stakes), anchor link support, route-change reset, dashboard isolation (dashboard routes in `(dashboard)/layout.tsx` are architecturally untouched).
+**Rationale:** ClaudeService is the dependency of every pipeline step. Validate that structured outputs return correctly-typed responses before building business logic on top. This is where prompt engineering happens — getting `temperature: 0`, nullable fields, and rubric definitions correct early prevents cascading quality issues in later phases that are expensive to retrofit.
+**Delivers:** `ClaudeService` singleton with `structuredOutput<T>()` and `streamText()` methods, Zod schemas for qualify/enrich/sequence steps with nullable fields and confidence metadata, integration test confirming Claude returns valid typed responses for each schema against real API calls.
+**Uses:** `@anthropic-ai/sdk` v0.78.0, `zod` v3.24.x, `zod-to-json-schema` v3.23.x, single `CLAUDE_MODEL` constant definition.
+**Avoids:** Pitfall 1 (structured output accuracy — nullable fields and confidence fields in schema from the start), Pitfall 5 (wrong model ID — single constant defined here, never hardcoded at call sites), Pitfall 7 (inconsistent scores — `temperature: 0` locked in before any UI is built on top of it).
+**Research flag:** Needs iteration — Claude prompt engineering for ICP scoring rubric and nullable field design requires 5-10 test calls to validate score variance and reasoning quality before proceeding to Phase 3.
 
-**Avoids:** SSR crash from ReactLenis in Server Component (Pitfall 1); double RAF loop jitter with motion/react (Pitfall 2); navigation scroll position drift (Pitfall 3); Radix modal background scroll regression on CommandPalette (Pitfall 4); double scroll bar from missing Lenis CSS (Pitfall 10 from PITFALLS.md).
+### Phase 3: Enrichment Pipeline (ScraperService and PipelineService)
 
-**New files:** `providers/lenis-provider.tsx`, `components/portfolio/lenis-scroll-restorer.tsx`
+**Rationale:** The scraper and pipeline orchestrator are the core business logic. Build and validate these before adding HTTP endpoints so failures are isolated to the AI/data layer, not the transport layer. Test with direct TypeScript calls and console.log emitters before wiring to SSE.
+**Delivers:** `ScraperService` (Axios + Cheerio with realistic User-Agent, Cloudflare challenge page detection, graceful empty-string fallback), `QualifyService`, `EnrichService`, `PersonalizeService`, `SequenceService`, `PipelineService` orchestrator with callback-based emitter pattern. End-to-end pipeline verified with a single test lead printing step events to console.
+**Uses:** `axios` v1.7.x, `cheerio` v1.2.0.
+**Avoids:** Pitfall 4 (bot detection — realistic User-Agent and challenge page validator in ScraperService from the start), Anti-Pattern 3 (storing raw HTML — ScraperService returns 3000-char text summary only, discards all raw HTML before returning).
+**Research flag:** Scraping reliability needs validation against real URLs — test the ScraperService against 5 different company URLs including at least one Cloudflare-protected site to confirm fallback behavior works correctly before wiring to the HTTP layer.
 
-**Modified files:** `app/(portfolio)/layout.tsx` (add LenisProvider wrapper), `app/globals.css` (Lenis CSS rules + `@import "lenis/dist/lenis.css"`)
+### Phase 4: NestJS REST and SSE Endpoints
 
-**Gate:** Lighthouse CI ≥ 0.90 on all 5 URLs; no Playwright snapshot regressions; CommandPalette scroll lock verified; new page routes confirmed starting from top.
+**Rationale:** Expose the pipeline over HTTP only after it works end-to-end in isolation. The SSE endpoint is the most architecturally complex piece — the Observable/callback bridge, the 100ms startup delay for client connection establishment, and the `res.on('close')` cleanup all need to be correct before the Next.js frontend depends on them.
+**Delivers:** `LeadsController` with POST /leads, GET /leads, GET /leads/:id endpoints, `@Sse(':id/stream')` endpoint with Observable setup and `res.on('close')` cleanup wired, `@Throttle()` guard on enrichment and generation endpoints, end-to-end curl test confirming SSE events arrive in correct order.
+**Implements:** Hybrid synchronous pipeline with SSE progress events (Option C from architecture research) — no Redis, no BullMQ, in-process fire-and-forget with callback-based SSE emitter.
+**Avoids:** Pitfall 2 (NestJS SSE memory leak — `res.on('close')` + `stream.abort()` + `timeout(30000)` implemented from the start, not retrofitted), Pitfall 2 secondary (API rate limiting — `@nestjs/throttler` guard on generation endpoints).
+**Research flag:** Standard NestJS `@Sse()` patterns are well-documented in official docs. The `res.on('close')` cleanup pattern has confirmed community solutions for GitHub issue #11601. No additional research needed — follow the documented fix directly.
 
-### Phase 2: GSAP ScrollTrigger Parallax
+### Phase 5: Next.js Frontend
 
-**Rationale:** Directly depends on Phase 1 — Lenis ticker sync is established in `LenisProvider`; extending it with ScrollTrigger sync is additive. Adding immediately after Phase 1 while the Lenis wiring is fresh in context.
+**Rationale:** Frontend is the last dependency in the chain. Build after the API is stable and SSE events are verified. The `PipelineMonitor` component (EventSource consumer) is the most complex frontend piece — everything else is standard RSC data fetching with Prisma-backed data.
+**Delivers:** CRM dashboard (RSC, lead list table with score column), lead input form (RSC with client validation), lead detail page with `PipelineMonitor` EventSource client component, step progress indicators, streaming email preview, 3-email sequence vertical timeline, ICP score horizontal colored bar, "Why this score?" collapsible card, enrichment fields two-column grid, intent signals badge cloud, copy-to-clipboard buttons on emails.
+**Avoids:** Pitfall 3 (Next.js buffering — browser EventSource connects directly to NestJS SSE endpoint, bypassing any Next.js route handler proxy entirely), design constraint (no purple in any element; Matrix green `#00FF41` for accent elements consistent with portfolio theme; horizontal score bar not circular gauge).
+**Research flag:** Standard Next.js 15 App Router patterns plus browser EventSource API. Both are well-documented standards. No research phase needed.
 
-**Delivers:** Hero text subtle upward drift as user scrolls (yPercent: -15, scrub: 1); section separator depth lines at 80% scroll speed; case study metric numbers with independent depth. Creates the "crafted" impression that distinguishes this portfolio from scroll-reveal-only portfolios.
+### Phase 6: Demo Seed Data and Portfolio Integration
 
-**Uses:** `gsap@3.14.2` + `@gsap/react@2.1.2`; per-component `useGSAP({ scope: containerRef })`; `scrub: 1` for inertia feel; `ease: 'none'` mandatory (any easing breaks the scroll-tied illusion); transform-only properties (`yPercent`, `y`, `opacity`) — never layout properties.
-
-**Implements:** Shared `lib/gsap.ts` module for single plugin registration (prevents Pitfall 11 — multiple registrations); per-component `useGSAP` with `{ scope }` for automatic cleanup on unmount.
-
-**Avoids:** CLS regression from `pin: true` spacers — use translateY parallax only, no pinning on content-height-dependent elements; wrong `scrollerProxy` pattern (use `lenis.on('scroll', ScrollTrigger.update)` not `scrollerProxy`); ScrollTrigger memory leak on navigation — `useGSAP` exclusively, never `useEffect` for GSAP code.
-
-**Gate:** Lighthouse CI ≥ 0.90 with CLS = 0; `ScrollTrigger.getAll().length` equals active triggers only; navigate away and back — animations fire exactly once on return.
-
-### Phase 3: Magnetic Buttons
-
-**Rationale:** Independent of Phases 1–2 but benefits from Lenis being stable first so debugging is unambiguous. Uses motion/react (not GSAP) for spring physics — consistent with all existing animation patterns in this codebase, no second animation system.
-
-**Delivers:** Hero CTAs and contact CTA with spring-physics cursor attraction (stiffness: 150, damping: 15, mass: 0.1). Elastic snap-back on cursor leave. Touch devices and reduced-motion users get a plain `<div>` wrapper with zero overhead.
-
-**Uses:** `motion/react` `useMotionValue` + `useSpring` from `motion@12.34.2`; `useReducedMotion()` hook reads from existing `MotionConfig reducedMotion="user"` in `MotionProvider`; `strength = 0.3` for subtle professional displacement.
-
-**Avoids:** `gsap.to()` in mousemove TBT regression — motion spring approach bypasses this entirely; focus ring misalignment — transform applies to inner `motion.div`, not to the `<button>` element itself; mobile touch artifacts — `onMouseMove` does not fire on touch devices; applying to nav links — nav already has Awwwards-quality `layoutId` spring underline.
-
-**Gate:** Lighthouse TBT < 50ms after adding to hero; keyboard Tab to button — focus ring aligns with visual center; Chrome DevTools mobile simulation — no button shift on tap; reduced-motion: component renders plain `<div>`.
-
-### Phase 4: Matrix Color Harmony
-
-**Rationale:** CSS-only changes with the lowest risk profile of any phase. Independent of all animation phases. Sets the token foundation the footer redesign consumes.
-
-**Delivers:** Consistent Matrix green aesthetic across all portfolio sections. Eliminates blue Radix `--primary` mismatch in `about/page.tsx` (CTA gradient, value card borders), `contact/page.tsx` (heading accents), `footer.tsx` (link hover states), case study pages (metric numbers in font-mono green), and `tech-stack.tsx` (badge borders). Adds four new CSS tokens: `--matrix-green-subtle`, `--matrix-green-border`, `--matrix-scan-line`, `--matrix-terminal`.
-
-**Implements:** All changes scoped inside `.matrix-theme {}` — never in `:root` `@theme inline`. Terminal-style section labels (`> SECTION_NAME`) above each `h2` as low-effort/high-impact differentiator.
-
-**Avoids:** Matrix color bleeding into TeamFlow/DevCollab dashboard — strict `.matrix-theme` scope; WCAG contrast regression (matrix-green #00FF41 on #0a0a0a = ~12:1, well above 4.5:1 AA); no purple introduced anywhere (global requirement).
-
-**Gate:** Switch to TeamFlow dashboard route — confirm no Matrix green visible; Playwright baselines updated and all 18 tests passing; Lighthouse ≥ 0.90.
-
-### Phase 5: Footer Redesign + Matrix Animation
-
-**Rationale:** Last phase because it has the broadest Playwright snapshot impact (footer renders on every portfolio page) and is fully self-contained — does not block any other phase. Consumes Matrix token work from Phase 4.
-
-**Delivers:** Matrix-themed footer with `#0a0a0a` background, `border-t` in `--matrix-green-border`, monospace copyright, terminal-prompt social links, `> EOF` tagline, CRT scanline texture (CSS `::before`, zero JS), and CSS glitch text on "Fernando Millan" firing once on scroll-into-view via IntersectionObserver.
-
-**Implements:** `FooterMatrixEffect` as isolated dynamic client animation island (`next/dynamic(ssr: false)`); footer static content stays server-rendered for fast initial HTML and LCP — identical pattern to `MatrixRainCanvas` in `hero-section.tsx`.
-
-**Avoids:** Second `MatrixRainCanvas` canvas RAF loop (doubles GPU cost, visually repetitive with hero — the footer is the close, not a repeat of the opening); infinite glitch loop (inaccessible for photosensitive users — fires once only via `animation-iteration-count: 1`); oversized footer that buries the nav links recruiters actually need.
-
-**Gate:** Playwright baselines updated for footer on all routes; Lighthouse ≥ 0.90 (footer below fold — should not affect LCP); reduced-motion: all footer animations disabled; all footer links keyboard-accessible.
+**Rationale:** Pre-seeded demo data is a critical path item that is regularly treated as an afterthought. The seed script must run against the live Claude API to generate realistic, varied enrichment content. Seeded leads must cover the full ICP score spectrum. This phase is the final quality gate before recruiter exposure.
+**Delivers:** Seed script with 6-8 varied leads (2-3 strong ICP 85-95, 2-3 moderate 55-70, 1-2 poor fit 20-40) with `faker.seed(42)` for deterministic IDs, sequential `for...of` upsert pattern with idempotency test (run twice, verify same lead count), demo credentials displayed on login page, Coolify deployment with verified SSE streaming headers (`X-Accel-Buffering: no`), portfolio project card and `/projects/ai-sdr` case study page.
+**Avoids:** UX pitfall (generic leads with no variance — specific fictional companies with distinct industries, specific funding rounds, and realistic ICP profiles), Pitfall 1 (hallucinated demo data — seed generated against real Claude API with validated output reviewed per lead), Pitfall 7 (score variance — verified across all seeded leads before committing seed file), Pitfall 8 (seed race condition — sequential seeding enforced).
+**Research flag:** Needs manual review — run seed script, inspect all 6-8 generated leads for score variance, email personalization quality (does each email reference company-specific facts?), and realistic enrichment signals. This is the one phase that cannot be fully automated; it requires human judgment on demo data quality before committing.
 
 ### Phase Ordering Rationale
 
-- **Phase 1 must be first** — GSAP ScrollTrigger reads native scroll position (always 0) while Lenis is interpolating; parallax fires at wrong depths without the ticker sync established in Phase 1.
-- **Phase 2 immediately after Phase 1** — while Lenis wiring is fresh in context; the ScrollTrigger extension to `LenisProvider` is a small additive change.
-- **Phase 3 is independent** — can move earlier if Phase 1/2 debugging takes longer than expected, but keeping it sequential prevents simultaneous variable debugging across two animation systems.
-- **Phase 4 before Phase 5** — footer redesign consumes the new Matrix color tokens from Phase 4; combining them would increase diff surface area and make snapshot reviews harder to reason about.
-- **Phase 5 last** — highest Playwright snapshot impact; fully self-contained; a Phase 5 regression does not block any earlier-phase work.
+- Schema before Claude: Claude output fields must map to Prisma columns. Designing schema and Claude output schemas simultaneously prevents the costly migrations that happen when Claude output shape is discovered after the data model is already seeded.
+- ClaudeService before Pipeline: The service boundary ensures prompt engineering is done in isolation where iterations are cheap. Building the pipeline on top of an unvalidated ClaudeService means debugging two systems simultaneously when scores are wrong.
+- Pipeline before HTTP: A pipeline that works with console.log emitters confirms Claude calls, Prisma writes, and business logic are correct before adding transport complexity. Failures after this point are isolated to the HTTP and SSE layer.
+- Backend before Frontend: Standard dependency order. The EventSource URL in the frontend is a constant that only works if the NestJS endpoint exists and returns the correct SSE event shapes.
+- Seed data last but before deployment: Seed data quality is the final gating factor before recruiter exposure. Generating seed against the live API after all pipeline logic is stable guarantees the seed reflects the actual system's behavior and prompt engineering quality.
 
 ### Research Flags
 
-Phases with well-documented patterns — skip `research-phase`:
-- **Phase 1 (Lenis):** Official `lenis/react` README + confirmed GitHub issues provide exact implementation. Zero ambiguity. The provider pattern is a direct copy of existing `MotionProvider`.
-- **Phase 3 (Magnetic Buttons):** motion/react spring API is well-documented and already in daily use in this codebase. Pattern from Olivier Larose tutorial is widely validated.
-- **Phase 4 (Color Harmony):** Pure CSS token work with established `.matrix-theme` scope pattern already in production. No architectural decisions needed.
+Phases needing deeper iteration during implementation:
+- **Phase 2 (Claude API Integration):** ICP scoring prompt engineering requires hands-on iteration — run 5-10 test calls against sample leads and inspect score variance and reasoning quality before proceeding. The nullable field design, few-shot examples, and explicit scoring rubric are not boilerplate; they require domain-specific calibration.
+- **Phase 6 (Demo Seed):** Seed data quality requires manual review per lead — no automated test can verify that generated emails are "genuinely personalized" vs. template-like. Review each seeded lead's emails individually before committing the seed file.
 
-Phases that may benefit from targeted investigation during planning:
-- **Phase 2 (GSAP Parallax):** The architecture pattern is clear and fully specified; the specific parallax targets (which elements on which sections, exact `yPercent` ranges) need visual inspection of the current page state during phase planning. Recommended: start with hero text drift and one section separator, measure Lighthouse impact, then expand.
-- **Phase 5 (Footer Glitch Text):** CSS `clip-path` animation is the recommended approach for the glitch effect, but Safari compatibility needs explicit verification before committing. Fallback (typewriter reveal via CSS `steps()`) is ready and documented in FEATURES.md.
+Phases with standard patterns (skip research-phase during planning):
+- **Phase 1 (Foundation):** Matches the established Prisma + NestJS + Docker Compose pattern from TeamFlow and DevCollab. Well-documented and previously executed.
+- **Phase 4 (NestJS SSE):** Official NestJS docs cover `@Sse()` completely. GitHub issue #11601 has documented community solutions. No new research needed.
+- **Phase 5 (Next.js Frontend):** Standard Next.js 15 App Router patterns plus browser EventSource API. No new research needed.
+
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All packages verified via direct `node_modules` inspection; import paths confirmed against TypeScript type definitions; zero new installs needed — this is implementation-ready |
-| Features | HIGH | Current codebase inspected directly; existing color mismatches identified by file and class name; feature dependencies mapped with explicit rationale; anti-features documented with specific reasons |
-| Architecture | HIGH | Existing provider tree read directly from `(portfolio)/layout.tsx`; new components follow identical patterns already in production (`MatrixRainCanvas`, `MotionProvider`); data flow diagrams derived from actual code |
-| Pitfalls | HIGH (SSR/hydration, GSAP cleanup, CI gate impact), MEDIUM (Tailwind v4 @theme conflicts, Playwright stability) | SSR and GSAP pitfalls sourced from official docs + confirmed GitHub issues with issue numbers; Playwright and Tailwind pitfalls from community reports + direct codebase inspection |
+| Stack | HIGH | All packages verified against official npm and Anthropic docs as of 2026-02-28. SDK 0.78.0 confirmed latest (released 2026-02-19). Structured outputs GA status confirmed on claude-sonnet-4-6. Architecture decision (no BullMQ/Redis) is well-reasoned against the sequential dependency structure of the pipeline. |
+| Features | MEDIUM-HIGH | Table stakes and differentiators derived from competitor analysis (Apollo.io, AiSDR, Outreach.io, SalesLoft). Anti-features list based on development cost vs. recruiter signal ratio analysis — this is a subjective judgment call but well-reasoned against the 5-minute recruiter demo context. |
+| Architecture | HIGH | Claude API patterns (structured outputs, streaming) verified against official Anthropic docs. NestJS `@Sse()` pattern verified against official NestJS docs. Database schema derived from explicit analysis of pipeline step output shapes. The SSE race condition (100ms startup delay) and Observable cleanup patterns are confirmed community solutions to documented issues. |
+| Pitfalls | HIGH | Critical pitfalls sourced from official Anthropic docs, confirmed GitHub issues with issue numbers (NestJS #11601, Prisma #3242, Next.js #52809), and Anthropic's own consistency documentation. Model ID verified against official models overview page as of 2026-02-28. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Specific parallax targets in Phase 2:** The research identifies candidate elements (hero text drift, section separator lines, case study metric numbers) but the final selection requires visual inspection during phase planning and per-element Lighthouse validation. Recommended approach: instrument one element at a time, measure, then expand.
+- **Scraping reliability on the specific demo company URLs chosen:** Research identifies the risk of bot detection and Cloudflare blocking but cannot predict which URLs will be affected until the actual fictional company URLs are chosen and tested. Mitigation: test the ScraperService against each URL selected for demo seeding, and pre-cache scraped content in Prisma for those specific leads.
 
-- **CSS `clip-path` glitch animation Safari behavior:** The footer glitch text mechanism uses `clip-path` + offset `@keyframes`. Safari has historically had inconsistent `clip-path` animation performance. Verify during Phase 5 planning or have the fallback (CSS typewriter reveal) ready to substitute without changing the surrounding component structure.
+- **Claude API Tier 1 rate limits during seed generation:** Research documents Tier 1 limits (50 RPM, 30K ITPM) but 30 sequential Claude calls for 8-10 leads during seed script execution is untested. If the seed script hits rate limits, add per-call delays or use `p-limit(2)` for the seed script only (separate from the main pipeline which has no concurrency concern at demo scale).
 
-- **Lenis `lerp` value:** `lerp: 0.08` is suggested as slightly dreamier than the default `0.10`. This is a subjective feel decision that requires real device testing across Chrome, Safari, and Firefox — not something resolvable by research alone.
+- **SSE streaming through Coolify's specific Nginx configuration in production:** Research identifies `X-Accel-Buffering: no` as the standard fix for Nginx SSE buffering, but Coolify's internal Nginx proxy configuration may require additional settings. Verify in a Coolify staging deployment before the final demo build — do not wait until final deployment day to discover proxy buffering issues.
 
-- **Tailwind v4 `@theme` inside `.matrix-theme` class selector:** If Tailwind utilities for Matrix colors become genuinely necessary (beyond current `var()` inline usage), the scoped `@theme` approach is an emerging pattern that needs browser verification before use. Current recommendation is to avoid entirely.
+- **Email personalization quality as a subjective quality gate:** Research identifies the risk of template-like emails but cannot define exactly what prompt engineering produces genuinely personalized output without testing. This is the highest subjective quality gate in the project and must be validated through the seed review phase (Phase 6).
+
+---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-
-- Direct `node_modules` inspection — lenis@1.3.17, gsap@3.14.2, @gsap/react@2.1.2, motion@12.34.2 — versions, import paths, TypeScript types confirmed from package dist files
-- [darkroomengineering/lenis GitHub monorepo packages/react README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md) — ReactLenis API, `root` prop, `autoRaf: false`, `useLenis` hook, GSAP ticker integration pattern
-- [darkroomengineering/lenis Issue #319](https://github.com/darkroomengineering/lenis/issues/319) — scroll position on App Router navigation confirmed issue and `immediate: true` fix
-- [GSAP React documentation — useGSAP hook](https://gsap.com/resources/React/) — cleanup behavior, Strict Mode double-invocation handling, ScrollTrigger setup/teardown
-- [GSAP accessibility resources](https://gsap.com/resources/a11y/) — reducedMotion handling
-- [WCAG 2.3.3 Animations from Interactions](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions.html) — reduced motion requirements
-- Direct codebase inspection: `apps/web/app/(portfolio)/layout.tsx`, `apps/web/app/globals.css`, `apps/web/components/portfolio/*`, `apps/web/app/(portfolio)/about/page.tsx`, `apps/web/app/(portfolio)/contact/page.tsx`, `apps/web/components/portfolio/footer.tsx`, `apps/web/e2e/portfolio/visual-regression.spec.ts`, `apps/web/playwright.visual.config.ts`, `apps/web/package.json`
+- Anthropic Official Docs — `platform.claude.com/docs/en/build-with-claude/structured-outputs` — structured outputs GA status, `output_config.format` shape, ZDR note on lead data
+- Anthropic Official Docs — `platform.claude.com/docs/en/build-with-claude/streaming` — `.stream()` TypeScript SDK patterns, SSE event types, `text_delta` events, error handling mid-stream
+- Anthropic Official Docs — `platform.claude.com/docs/en/api/rate-limits` — Tier 1: 50 RPM, 30K ITPM, 8K OTPM for claude-sonnet-4-6; prompt caching ITPM exclusion
+- Anthropic Official Docs — `platform.claude.com/docs/en/about-claude/models/overview` — confirmed `claude-sonnet-4-6` as current model ID as of 2026-02-28
+- Anthropic Official Docs — `platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency` — temperature and rubric-based scoring guidance
+- Anthropic API Key Best Practices — `support.claude.com/en/articles/9767949` — official security guidance on server-side-only key usage
+- GitHub: `anthropics/anthropic-sdk-typescript` releases — SDK v0.78.0 confirmed 2026-02-19
+- npm: `bullmq` v5.70.1, `@nestjs/bullmq` v11.0.4, `cheerio` v1.2.0 — confirmed current versions
+- NestJS Official Docs — `docs.nestjs.com/techniques/server-sent-events` — `@Sse()` decorator, `Observable<MessageEvent>` return type, auto-set SSE headers
+- BullMQ Official Docs — `docs.bullmq.io/guide/nestjs` — NestJS integration (evaluated and rejected for this use case)
+- Prisma GitHub Issue #3242 — confirmed upsert race condition with `Promise.all()`, official Prisma acknowledgement
+- NestJS GitHub Issue #11601 — confirmed SSE `MaxListenersExceededWarning` under load, community solutions with `res.on('close')` cleanup
 
 ### Secondary (MEDIUM confidence)
-
-- [GSAP Forum — Patterns for synchronizing ScrollTrigger and Lenis in React/Next](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — canonical sync pattern with GSAP team contributor confirmation
-- [GSAP Forum — Using ScrollTriggers in Next.js with useGSAP](https://gsap.com/community/forums/topic/40128-using-scrolltriggers-in-nextjs-with-usegsap/) — scope pattern for App Router per-component cleanup
-- [Olivier Larose — Magnetic Button tutorial](https://blog.olivierlarose.com/tutorials/magnetic-button) — spring config values (stiffness: 150, damping: 15, mass: 0.1); quickTo vs gsap.to comparison; widely cited in creative dev community
-- [Bridger Tower — How to implement Lenis in Next.js](https://bridger.to/lenis-nextjs) — Next.js App Router provider pattern with autoRaf
-- [motion/react GitHub Discussion #2913](https://github.com/motiondivision/motion/discussions/2913) — conflicting RAF loops between motion and Lenis confirmed
-- [Muz.li Web Design Trends 2026](https://muz.li/blog/web-design-trends-2026/) — magnetic/interactive elements premium vs gimmicky distinction
-- [Tailwind v4 @theme inline discussion #15083](https://github.com/tailwindlabs/tailwindcss/discussions/15083) — cascade behavior of @theme inline tokens
+- Apollo.io, AiSDR, Outreach.io, SalesLoft — competitor feature and UX pattern analysis via third-party reviews and documentation
+- NestJS GitHub Issue #9517 — SSE disconnect handling needs explicit cleanup
+- Next.js GitHub Issue #52809 — `abort` signal unreliability in App Router route handlers
+- Medium: "Fixing Slow SSE in Next.js" (Jan 2026) — `X-Accel-Buffering: no` pattern confirmed for Nginx reverse proxy
+- ZenRows blog: bot detection avoidance — realistic User-Agent and Accept header patterns for web scraping
+- Koala ICP scoring, RollWorks ICP Fit Grade system — lead scoring display conventions (horizontal bar, 0-100 scale, grade labels)
+- Instantly, Clay AI enrichment documentation — enrichment field depth and one-liner personalization patterns
 
 ### Tertiary (LOW confidence / needs validation during implementation)
-
-- Tailwind v4 `@theme` inside `.matrix-theme` class selector — emerging pattern, verify before use; current recommendation is to avoid
-- Lenis `lerp: 0.08` optimal value — subjective; requires real device cross-browser testing; not resolvable by research
-- CSS `clip-path` animation for footer glitch text — Safari behavior needs explicit verification in Phase 5 planning
+- HackerNoon: "Streaming in Next.js 15: WebSockets vs SSE" — EventSource hook pattern (community article, verify against actual behavior)
+- DEV.to: "Production-ready Claude streaming with Next.js" — TransformStream pattern for route handler proxy (community article)
+- Coolify Nginx-specific SSE header requirements — inferred from general Nginx `X-Accel-Buffering` documentation; verify in actual Coolify deployment
 
 ---
-*Research completed: 2026-02-20*
+*Research completed: 2026-02-28*
 *Ready for roadmap: yes*

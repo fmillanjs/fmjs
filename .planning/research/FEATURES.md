@@ -1,505 +1,377 @@
 # Feature Research
 
-**Domain:** Portfolio visual polish — Awwwards-quality motion & Matrix aesthetic cohesion (v3.1)
-**Researched:** 2026-02-20
-**Confidence:** HIGH (Lenis/GSAP verified via official GitHub README + gsap.com docs; magnetic buttons verified via Olivier Larose tutorial + GSAP quickTo docs; footer patterns derived from codebase inspection + CSS technique research; color harmony derived from direct codebase inspection)
+**Domain:** AI SDR Replacement System — AI-powered lead qualification, CRM enrichment, personalized outbound email, and follow-up sequencing
+**Researched:** 2026-02-28
+**Confidence:** MEDIUM-HIGH (AI SDR UX patterns researched via competitor analysis of Apollo.io, Outreach.io, SalesLoft, AiSDR, Instantly, Clay; explainability UI patterns from industry research; recruiter-specific framing derived from project context)
 
 ---
 
-## Context: What Already Exists
+## Context: What This Is and Who It's For
 
-Before categorizing new features, the current state matters for dependency analysis. Every new feature sits on top of this foundation.
+This is a **portfolio demo, not a production SDR tool.** The primary audience is a technical recruiter or hiring manager who will spend 3-5 minutes clicking around. Every feature decision must answer:
 
-| Already Shipped | Implementation | Relevant Notes |
-|----------------|----------------|----------------|
-| MatrixRainCanvas | RAF loop, 30fps, #00FF41, opacity 0.05 | Hero section only. Canvas element, SSR-safe via `next/dynamic(ssr:false)` |
-| Scroll-reveal (AnimateIn) | `motion/react`, opacity 0 → 1, y 24 → 0, `whileInView` | `once: true`. Used on most page sections |
-| StaggerContainer/Item | `motion/react` variants, 0.15s stagger | Card grids |
-| Text scramble | Hand-rolled `useTextScramble` RAF hook | Hero h1 only, fires once |
-| Blinking cursor | CSS `::after` + `cursor-blink` keyframe | Hero tagline paragraph |
-| Evervault noise overlay | `motion/react`, radial-gradient mask, katakana chars | Project card hover only |
-| Dot-grid + mouse spotlight | CSS custom props `--cursor-x/y`, `any-hover` guard | Fixed, `pointer-events-none` |
-| Card glow | CSS `box-shadow` via `var(--matrix-green)` | `.card-glow-hover` class on project card links |
-| Nav active indicator | `motion/react` `layoutId` spring | Nav underline slides between routes |
-| Matrix CSS tokens | `--matrix-green: #00FF41`, `--matrix-green-dim: #00CC33`, `--matrix-green-ghost: #00FF4120` | In `:root`, consumed via `var()` |
-| `.matrix-theme` scope | Background `#0a0a0a`, scoped to `(portfolio)` layout div | Dashboard routes unaffected |
-| Reduced-motion gate | CSS global rule + RAF check + `MotionConfig reducedMotion="user"` | Three-layer — comprehensive |
-| Libraries installed | `lenis@1.3.17`, `gsap@3.14.2`, `@gsap/react@2.1.2`, `motion@12.34.2` | All in `apps/web/package.json`. None wired yet. |
+> "Does this make Fernando look like a senior engineer, or does this make the app look like a real product?"
 
-**Critical gap:** The installed libraries (`lenis`, `gsap`, `@gsap/react`) are wired to nothing. They exist in `node_modules` but no portfolio component imports them.
+Both answers can be right, but they lead to different choices. A real SDR tool hides its AI reasoning. A portfolio demo *shows* its AI reasoning — that's the technical flex.
 
 ---
 
 ## Feature Landscape
 
----
+### Table Stakes (Recruiters Expect These)
 
-### Feature 1: Lenis Smooth Scroll
-
-**What it does:** Replaces native browser scroll momentum with a lerp-interpolated virtual scroll. Content lags slightly behind the scroll position then catches up — like content has physical weight. Every scroll interaction (wheel, keyboard, arrow keys) passes through Lenis's interpolation.
-
-**Expected behavior:**
-- Scroll feels buttery across all portfolio pages simultaneously
-- Anchor links still work (Lenis 1.3+ has built-in `anchors` support)
-- Page-top reset on Next.js SPA route navigation
-- Reduced-motion: Lenis must not initialize when `prefers-reduced-motion: reduce` is active
-- Dashboard routes (TeamFlow RBAC, DevCollab) are unaffected — scoped to portfolio layout only
-
-### Table Stakes (Lenis)
+Features a recruiter expects to exist based on the promise "AI SDR system." Missing these = the demo feels unfinished.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Smooth wheel scroll across all portfolio pages | Awwwards-quality portfolios universally use smooth scroll; native momentum feels low-budget by comparison | LOW | `ReactLenis root` prop handles this; 20-line wrapper component |
-| Anchor link support | Navigation must still work; broken anchors fail accessibility + UX | LOW | Lenis 1.3+ `anchors: true` option |
-| Reduced-motion bypass | Must extend existing three-layer gate to JS scroll layer | LOW | Conditional render: do not render ReactLenis if `window.matchMedia('(prefers-reduced-motion: reduce)').matches` |
-| Route-change scroll-to-top | SPA navigation without scroll reset leaves user mid-page on new route | LOW-MEDIUM | `usePathname` effect → `lenis.scrollTo(0, { immediate: true })` on path change |
-| No dashboard bleed | dnd-kit (drag-and-drop in TeamFlow) conflicts with virtual scroll; dashboard must be excluded | LOW | Wrap `(portfolio)/layout.tsx` only — NOT `app/layout.tsx` |
+| Lead input form (name, company, URL) | The entry point — without input, nothing else works | LOW | Single form, 3 fields, validation, loading state |
+| Lead list / pipeline view | Any CRM shows leads in a list or kanban; absence of a list makes the app feel like a toy | LOW-MEDIUM | Table with sortable columns: name, company, score, status, date added |
+| Lead score displayed prominently (0–100) | Every modern lead scoring tool (HubSpot, Apollo, Salesloft) shows the score as the primary sorting signal | LOW | Score badge with color coding: 0-39 red, 40-69 yellow/amber, 70-100 green |
+| Per-lead detail view | Clicking a lead must reveal its enriched data; list-only = no depth demonstration | MEDIUM | Separate route or side drawer: all enrichment fields + emails + sequence |
+| AI-generated cold email displayed per lead | The core AI output — must be visible and copy-able | LOW | Read-only email card with subject + body, copy button |
+| Follow-up sequence emails (3 emails) | If the feature is listed, it must be accessible; buried in code but hidden from UI is a red flag | MEDIUM | Tabbed or stacked email cards: Email 1, Email 2, Email 3 per lead |
+| Demo account pre-seeded | Recruiter will not create a lead from scratch; they need to land and see results immediately | LOW | Seed script, shared demo credentials on login page |
+| Persistent storage (Postgres) | A demo that loses data on page refresh looks like it was built without a backend | LOW | Standard NestJS + Prisma + Postgres — already established pattern |
 
-### Differentiators (Lenis)
+### Differentiators (What Makes This Impressive to a Recruiter)
+
+These are the features that demonstrate AI integration skill, architectural thinking, and product polish — things a junior developer would not build.
 
 | Feature | Value Proposition | Complexity | Notes |
-|---------|------------------|------------|-------|
-| `lerp: 0.08` tuning (slower than default 0.1) | Slightly dreamier feel fits the Matrix "weight of code" narrative better than snappy default | LOW | One config value; test against 0.08/0.10/0.12 |
-| GSAP ticker sync | Prerequisite for frame-accurate ScrollTrigger parallax; without it, parallax fires at wrong depths | MEDIUM | Required if ScrollTrigger is used simultaneously |
+|---------|-------------------|------------|-------|
+| AI reasoning transparency — ICP score *with justification* | Shows Claude API integration depth; any tool can show a number but showing *why* requires prompt engineering and structured output | MEDIUM | A collapsible "Why this score?" card that explains: matched ICP criteria, weak signals, company profile summary |
+| Tech stack detection displayed as badges | Real enrichment data shown as visual chips (e.g., "React", "Stripe", "Segment") — demonstrates that the system actually analyzed the company URL | MEDIUM | Tag cloud of detected technologies, each with a badge; derived from Claude analysis of company website/description |
+| Pain point extraction displayed as bullets | AI extracts 2–3 inferred pain points from company profile — shows prompt design sophistication | MEDIUM | "Likely pain points:" bulleted list card under enrichment section |
+| "How this email was personalized" callout | A one-line explanation beneath each email: "Referenced their use of Stripe and Series B funding round" — shows AI output transparency (explainable AI pattern) | LOW-MEDIUM | Small italic note under the email body; drawn from Claude's structured response |
+| Sequence step timeline UI | Emails displayed as a timeline (Day 1, Day 5, Day 10) with visual step indicators — shows UX design thinking beyond "just dump the text" | MEDIUM | Vertical timeline component: numbered circles, day labels, email content per node |
+| Loading state that shows AI work in progress | A skeleton or animated progress indicator while Claude API runs — prevents "is it broken?" confusion and shows async handling sophistication | LOW | Show step indicators: "Analyzing company..." → "Scoring ICP fit..." → "Generating emails..." |
+| Enrichment metadata displayed as structured cards | Company size, industry, funding stage displayed in a two-column grid card — mirrors Apollo.io / HubSpot detail view pattern | LOW | Card grid: Company Size, Industry, Funding Stage, HQ Location (if inferable), Tech Stack, Founded (if known) |
+| Lead score with visual indicator | 0–100 numeric score backed by a colored progress arc or segmented bar — not just a number, a *visual signal* | LOW-MEDIUM | Circular arc or horizontal bar; green/yellow/red zones; number + label ("Strong Fit", "Weak Fit") |
+| Intent signals as tags | Display inferred intent signals as green badges: "Hiring SDRs", "Recently Funded", "Expanding to EMEA" — shows understanding of B2B sales signals | MEDIUM | Tag list with icon prefix; green outline badges; max 4 signals; powered by Claude analysis |
 
-### Anti-Features (Lenis)
+### Anti-Features (Commonly Requested, Often Problematic)
 
-| Anti-Feature | Why Requested | Why Problematic | Alternative |
-|--------------|---------------|-----------------|-------------|
-| `smoothTouch: true` | "Works on mobile too" | Mobile browsers implement their own momentum; fighting it causes jank and breaks iOS scrolling accessibility | Default `smoothTouch: false` |
-| `lerp: 0.03` (very slow) | "Ultra smooth" | At lerp 0.03, scroll lags so far behind input that users think the site is broken; vestibular motion issues on sensitive users | Stay in 0.08–0.12 range |
-| Applying to root `app/layout.tsx` | Covers all routes | TeamFlow dnd-kit conflicts with virtual scroll position; DevCollab dashboard breaks | Scope to `(portfolio)/layout.tsx` only |
-| `@studio-freight/react-lenis` import | Old tutorials reference this | Package is deprecated; correct import for lenis@1.3.17 is `import { ReactLenis } from 'lenis/react'` | `lenis/react` subpath |
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| Actual email sending | "Make it really send emails" | SMTP setup, deliverability, SPF/DKIM, CAN-SPAM compliance — massive overhead with zero recruiter-visible benefit; not the point | Display-only email with copy button; clear label "Email ready to send" |
+| Real web scraping of company URLs | "Actually analyze the URL the user enters" | Rate limits, bot detection, Playwright overhead in serverless, flaky results on cold run — will fail in demo with ~80% reliability | Claude API infers company details from URL + name in the prompt; cleaner, reliable, and still impressive |
+| Kanban pipeline with drag-and-drop | "Like Trello for leads" | High complexity for zero recruiter signal gain; TeamFlow already demonstrates dnd-kit; duplication adds no new skill signal | Simple table list with status filter; sortable columns are sufficient |
+| Multi-user accounts with separate workspaces | "Real CRM" | Auth system, org management, tenant isolation — 3 weeks of work that obscures the AI integration story | Single shared demo account; clearly labeled "Demo Account" |
+| Real LinkedIn data integration | "Pull their actual LinkedIn" | LinkedIn blocks scraping, has no free public API, OAuth flow adds auth complexity | Claude infers job title, seniority, and profile signals from name + company — nearly as impressive |
+| Sequence editor (letting user edit email timing) | "Let users customize the cadence" | Adds UI complexity without demonstrating new skills; the AI writing is the technical story, not the scheduling | Fixed 3-email sequence per lead; generation is what matters |
+| Lead status Kanban (New → Qualified → Contacted → Won) | "Pipeline management" | Drag-and-drop status changes are not the AI story; this duplicates TeamFlow's core feature | Simple status dropdown in lead detail view — enough to show state management |
+| Webhook integrations (send to HubSpot/Salesforce) | "Real integration" | OAuth flows, token management, Salesforce sandbox setup — weeks of work, zero recruiter time to verify | Show "Export to CRM" as a disabled button with tooltip: "Integration available via API"; signals awareness without building it |
+| Rate limiting / API key management UI | "Production-ready" | Complex admin UI that distracts from the AI features and is invisible to a 5-minute demo | Single Claude API key in environment variables; single shared demo user means no per-user key management |
+| Sentiment analysis on email replies | "Complete the loop" | Requires inbound email parsing infrastructure (IMAP, webhooks) — entirely separate product | Scope to outbound generation only; "reply tracking" noted as future feature |
+| Streaming AI output (typewriter effect) | "Looks cooler" | Claude streaming adds SSE/WebSocket complexity; for structured JSON output (scores, fields, emails), streaming is actually harder to parse | Generate full response, show loading state, reveal complete result — cleaner and more reliable |
 
-**Verified import pattern for lenis@1.3.17 (from darkroomengineering/lenis GitHub README):**
+---
 
-```typescript
-// SmoothScroll.tsx — 'use client'
-import { ReactLenis } from 'lenis/react'
+## UX Patterns for Each Feature
 
-export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothTouch: false }}>
-      {children}
-    </ReactLenis>
-  )
-}
+This section documents specifically how each AI output should be presented. This is the "how it looks" for each feature — what actually makes it impressive.
+
+### Lead Score Display
+
+**Pattern: Colored numeric badge + label + horizontal bar**
+
+```
+┌─────────────────────────────┐
+│  LEAD SCORE                 │
+│  ████████████░░░░  78 / 100 │
+│  [Strong ICP Fit]           │
+└─────────────────────────────┘
 ```
 
-**GSAP ScrollTrigger sync pattern (from lenis/react README):**
+- Score 70–100: green background, label "Strong ICP Fit"
+- Score 40–69: amber/yellow, label "Moderate Fit"
+- Score 0–39: red/muted, label "Weak Fit"
+- Do NOT use a circular gauge/speedometer — looks like a health metric, not a sales tool
+- Use a horizontal segmented bar (consistent with Apollo.io and HubSpot patterns)
+- The number is large (text-3xl), the bar is secondary visual
+- Positioned top-right of the lead detail card — first thing recruiter sees
 
-```typescript
-// autoRaf: false hands tick control to GSAP
-<ReactLenis root options={{ lerp: 0.1, autoRaf: false }}>
+### ICP Reasoning Display
 
-// In useGSAP hook alongside ScrollTrigger setup:
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time) => { lenis.raf(time * 1000) })
-gsap.ticker.lagSmoothing(0)
+**Pattern: Collapsible card with bullet list**
+
+```
+┌──────────────────────────────────────────────────────┐
+│  WHY THIS SCORE?                          [▼ Expand]  │
+│                                                       │
+│  Matched criteria:                                    │
+│  • B2B SaaS company (✓ ICP target industry)          │
+│  • 50–200 employees (✓ target company size)          │
+│  • Uses Stripe (✓ indicates payment infrastructure)  │
+│                                                       │
+│  Weak signals:                                        │
+│  • No clear outbound sales team detected             │
+│  • Series A (earlier than ideal Stage B+ target)     │
+└──────────────────────────────────────────────────────┘
 ```
 
----
+- Collapsed by default to avoid overwhelming the layout
+- Green checkmarks for matches, muted X or dash for misses
+- Stored as structured JSON from Claude response, rendered as a list
+- This is the primary technical differentiator — shows prompt engineering sophistication
 
-### Feature 2: GSAP ScrollTrigger Parallax
+### CRM Enrichment Fields Display
 
-**What it does:** As the user scrolls, different layers of content move at different speeds, creating depth. Background elements move slower than foreground. Applied to hero decorative layers, section separators, and optionally case study stats.
+**Pattern: Two-column property grid (HubSpot-style)**
 
-**What "parallax depth" means concretely for this portfolio:**
-
-The hero already has MatrixRainCanvas as one background layer. Parallax targets:
-1. **Hero text block** — moves at 70% of scroll speed as user scrolls past (yPercent: -15 scrubbed to scroll)
-2. **Section heading decorative elements** — subtle independent movement (y: -20 on scroll through section)
-3. **Decorative Matrix glyphs positioned in sections** — standalone characters that drift
-
-### Table Stakes (Parallax)
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Scroll-scrubbed movement (`scrub: 1`), not triggered | Parallax that plays once on enter then stops looks like a broken entrance animation | LOW | `scrub: 1` creates smooth catch-up; `scrub: true` is abrupt |
-| `ease: 'none'` on all parallax tweens | Any easing breaks the scroll-tied illusion — the animation should feel physically tied to the scrollbar | LOW | Mandatory; wrong easing is the #1 reported mistake |
-| GPU-only properties (transform, opacity) | Animating box-shadow, width, padding causes layout recalculations every frame → jank | LOW | Only `x`, `y`, `xPercent`, `yPercent`, `scale`, `opacity` |
-| `useGSAP` cleanup from `@gsap/react` | Without cleanup, ScrollTrigger accumulates on re-render and navigation → memory leak | MEDIUM | `useGSAP` is a drop-in for `useEffect` with automatic `gsap.context()` cleanup |
-| Lenis sync (if both active) | Without sync, ScrollTrigger reads native scroll (0) while Lenis interpolates a different position | MEDIUM | Required when Lenis is wired |
-
-### Differentiators (Parallax)
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|------------------|------------|-------|
-| Hero text subtle upward drift as user scrolls away | Makes the hero feel like a "departing" intro rather than a static banner | LOW | `yPercent: -15, scrub: 1` on hero text container |
-| Section divider green line moves at 80% scroll speed | Thin horizontal `var(--matrix-green)` lines that have independent depth — adds Z-axis perception without heavy computation | LOW | One `gsap.to` per divider |
-| Case study metrics drift (stat numbers) | Numbers like "27,942 LOC" and "0 axe violations" moving at slightly different rates sells depth on case study pages | MEDIUM | Per-stat tween; test performance |
-
-### Anti-Features (Parallax)
-
-| Anti-Feature | Why Requested | Why Problematic | Alternative |
-|--------------|---------------|-----------------|-------------|
-| `background-attachment: fixed` CSS parallax | Classic look, zero JS | Triggers full-page repaints on every scroll frame; destroys Lighthouse Performance score; broken on iOS entirely | Transform-based parallax on `position: absolute` elements |
-| Parallax on body text (the words themselves) | "Immersive" | Text moving relative to its container breaks reading comprehension; visitors leave | Limit to decorative/background elements |
-| `y` movement >40% viewport height | "Dramatic depth" | Causes visible gaps at section edges; looks broken at non-standard viewport heights | Stay within `yPercent: -20` to `+20` range |
-| >8-10 simultaneous ScrollTriggers on one page | "Rich experience" | Each active ScrollTrigger adds scroll listener overhead; compound cost causes frame drops | Use `ScrollTrigger.batch()` for repeated element types |
-| Parallax active on touch/mobile | Consistent experience | Touch scroll has native momentum; adding GSAP parallax causes visual stutter and motion sickness on mobile | Guard with `@media (pointer: coarse)` or `prefers-reduced-motion` |
-
-**Verified cleanup pattern from @gsap/react docs:**
-
-```typescript
-'use client'
-import { useGSAP } from '@gsap/react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useRef } from 'react'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export function ParallaxHeroText() {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useGSAP(() => {
-    gsap.to(ref.current, {
-      yPercent: -15,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: ref.current,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 1,
-      }
-    })
-  }, { scope: ref }) // scope enables auto-cleanup on unmount
-
-  return <div ref={ref}>...</div>
-}
+```
+┌─────────────────────────────────────────────────────┐
+│  COMPANY ENRICHMENT                                  │
+│                                                      │
+│  Company Size    │  51–200 employees                 │
+│  Industry        │  B2B SaaS                         │
+│  Funding Stage   │  Series A                         │
+│  Tech Stack      │  [React] [Stripe] [AWS] [Segment] │
+│  Pain Points     │  • Scaling outbound sales team    │
+│                  │  • Manual lead qualification      │
+│                  │  • No structured follow-up cadence│
+└─────────────────────────────────────────────────────┘
 ```
 
----
+- Tech stack as badge chips — not a comma-separated string
+- Pain points as a bullet list — not prose
+- Label column left-aligned, value column right of divider
+- "Unknown" for any field Claude could not infer — never leave blank, never hallucinate
 
-### Feature 3: Magnetic Buttons
+### Intent Signals Display
 
-**What it does:** When the cursor enters a button's orbit (50–80px radius), the button drifts toward the cursor. On cursor leave, it snaps back with elastic easing. Makes primary CTAs feel alive and premium.
+**Pattern: Badge tag cloud with icon**
 
-**Premium vs gimmicky — the distinction is specific:**
-
-Premium:
-- Applied to 2–3 key CTAs only ("View Projects", "Get In Touch", "Download Resume")
-- Magnetic pull capped at 30–40% of button width displacement
-- Elastic snap-back that settles in ~1 second (`elastic.out(1, 0.3)` — one oscillation)
-- Inner content (text, icon) moves at 60% of outer container movement — layered "mass" illusion
-- Only on hover-capable devices (`any-hover: hover`)
-- Disabled on reduced-motion
-
-Gimmicky:
-- Applied to every button including nav links and form submits
-- Excessive pull (button moves >50% its width, escapes click target)
-- Slow settle (lerp-based return that visually never stops)
-- Applied on mobile (no cursor; event listeners fire on tap-start then immediately leave, causing jitter)
-- No inner parallax (single rigid block moving — looks mechanical)
-
-### Table Stakes (Magnetic Buttons)
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Elastic snap-back to exact origin | Without snap, button stays displaced — layout breaks, click target shifts | LOW | `gsap.quickTo(el, 'x', { duration: 1, ease: 'elastic.out(1, 0.3)' })` |
-| `any-hover: hover` device guard | Touch has no cursor; event listeners waste CPU and cause tap-jitter | LOW | Consistent with existing spotlight and dot-grid guard pattern |
-| Reduced-motion bypass | Must respect OS preference | LOW | Check `useReducedMotion()` from `motion/react` before attaching handlers |
-| Scoped to primary CTAs only | Table stakes of premium execution | LOW | Hero CTAs (View Projects, View GitHub), contact CTA (Get In Touch) |
-| No layout shift | Button must return precisely to origin — no accumulated drift | LOW | `gsap.quickTo(el, 'x', 0)` + `gsap.quickTo(el, 'y', 0)` on leave |
-
-### Differentiators (Magnetic Buttons)
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|------------------|------------|-------|
-| Inner content parallax (text at 60% of container movement) | Sells the "mass" illusion — button has weight, text has slightly less | MEDIUM | Two nested refs: outer at `strength * 1.0`, inner at `strength * 0.6` |
-| Matrix green glow intensifies as cursor approaches | As cursor enters orbit, `box-shadow` in `var(--matrix-green)` fades in — ties to existing card-glow pattern | MEDIUM | Distance-based opacity on hover; combine with existing CSS glow |
-| Activation radius beyond button bounds | Magnetic field extends 80px beyond the button — user "feels" pull before reaching the button | LOW | Track mousemove on parent container, calculate distance to button center |
-
-### Anti-Features (Magnetic Buttons)
-
-| Anti-Feature | Why Requested | Why Problematic | Alternative |
-|--------------|---------------|-----------------|-------------|
-| Applied to nav links | "Interactive nav" | Nav links are small and close together; magnetic pull causes adjacent links to collide visually | Keep nav with existing CSS `scaleX` underline — it is already Awwwards-level |
-| Applied to form submit button | "Consistent" | Users click submit with intent; magnetic offset makes the button appear to dodge them; anxiety-inducing | Static hover glow on submit button |
-| Applied on mobile | "Universal" | Touch devices have no cursor; tap fires enter-then-immediate-leave, causing single-frame jitter | Guard with `any-hover` media query |
-| `gsap.to()` inside `mousemove` handler | "Simpler" | `gsap.to` allocates a new tween object on every mouse event — 60+ per second; causes GC pressure and frame drops | `gsap.quickTo()` creates a cached setter called directly without tween allocation |
-| Displacement >50% of button width | "Dramatic" | Button escapes its click target area — user aims at the displaced visual but clicks empty space | Cap at 30–40% (`strength = 0.35` in `(clientX - cx) * strength` formula) |
-
-**Verified implementation pattern (Olivier Larose + GSAP quickTo docs):**
-
-```typescript
-'use client'
-import { useRef, useCallback } from 'react'
-import { useGSAP } from '@gsap/react'
-import { gsap } from 'gsap'
-import { useReducedMotion } from 'motion/react'
-
-const MAGNETIC_STRENGTH = 0.35
-const ACTIVATION_RADIUS = 80 // px beyond button bounds
-
-type QuickToFunc = ReturnType<typeof gsap.quickTo>
-
-export function MagneticButton({ children }: { children: React.ReactNode }) {
-  const outerRef = useRef<HTMLDivElement>(null)
-  const xTo = useRef<QuickToFunc | null>(null)
-  const yTo = useRef<QuickToFunc | null>(null)
-  const prefersReducedMotion = useReducedMotion()
-
-  useGSAP(() => {
-    if (prefersReducedMotion) return
-    // any-hover guard — only initialize on pointer devices
-    if (!window.matchMedia('(any-hover: hover)').matches) return
-
-    xTo.current = gsap.quickTo(outerRef.current, 'x', {
-      duration: 1, ease: 'elastic.out(1, 0.3)'
-    })
-    yTo.current = gsap.quickTo(outerRef.current, 'y', {
-      duration: 1, ease: 'elastic.out(1, 0.3)'
-    })
-  }, { scope: outerRef })
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!outerRef.current || !xTo.current || !yTo.current) return
-    const rect = outerRef.current.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    xTo.current((e.clientX - cx) * MAGNETIC_STRENGTH)
-    yTo.current((e.clientY - cy) * MAGNETIC_STRENGTH)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    xTo.current?.(0)
-    yTo.current?.(0)
-  }, [])
-
-  return (
-    <div
-      ref={outerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ display: 'inline-block' }}
-    >
-      {children}
-    </div>
-  )
-}
+```
+Intent Signals:
+[↑ Hiring SDRs]  [$ Series A Raised]  [→ Expanding to EMEA]
 ```
 
----
+- Green outline badges (consistent with Matrix theme)
+- Icon prefix: arrow for growth signals, $ for financial, magnifying glass for research signals
+- Maximum 4 signals — if Claude returns more, show top 4 by confidence
+- "No strong intent signals detected" placeholder if none found — never hide the field
 
-### Feature 4: Matrix Color Harmony
+### Cold Email Display
 
-**What it does:** Apply `var(--matrix-green)`, `var(--matrix-green-dim)`, and `var(--matrix-green-ghost)` consistently across portfolio sections that currently use generic Radix semantic tokens (`--primary` = blue) or neutral styling that breaks the dark-terminal aesthetic.
+**Pattern: Email card mimicking an email client**
 
-**Current violations (found via direct codebase inspection):**
+```
+┌─────────────────────────────────────────────────────────┐
+│  Email 1 — Initial Outreach                             │
+│  ─────────────────────────────────────────────────────  │
+│  Subject: Quick question about your outbound at Acme    │
+│                                                         │
+│  Hi Sarah,                                              │
+│                                                         │
+│  Noticed Acme Co just closed a Series A — congrats.     │
+│  Companies at your stage usually hit a wall with        │
+│  manual lead qualification as the team scales...        │
+│  [full email body]                                      │
+│                                                         │
+│  Personalized for: Series A milestone, SDR hiring signal│
+│                                                         │
+│  [Copy Email]  [Copy Subject Line]                      │
+└─────────────────────────────────────────────────────────┘
+```
 
-| Location | Current Issue | Token to Use Instead |
-|----------|--------------|----------------------|
-| `about/page.tsx` CTA section | `from-primary/10` = blue gradient background | `var(--matrix-green-ghost)` background or border |
-| `about/page.tsx` value cards | `hover:border-primary/50` = blue border hover | `hover:border-[var(--matrix-green)]/50` |
-| `contact/page.tsx` headings | Plain `text-foreground` — no Matrix accent | Section `h2` gets terminal prefix or green accent |
-| `footer.tsx` | `bg-muted`, `hover:text-primary` (blue), generic typography | `bg-[#0a0a0a]`, `hover:text-[var(--matrix-green)]`, font-mono on copyright |
-| `project-card.tsx` | No EvervaultCard wrapping — Evervault is only used in project listing page wrapper, not in the card component itself | Card hover: card-glow-hover class (already present) but needs Matrix badge styling |
-| Case study pages | Unknown — inspect `projects/teamflow/page.tsx` and `projects/devcollab/page.tsx` | Metric numbers as `font-mono text-[var(--matrix-green)]` |
-| `tech-stack.tsx` | Unknown — inspect | Tech category labels as terminal-style `>` prompts |
-| Section `h2` across all portfolio pages | Plain bold foreground — no Matrix accent | Left border `border-l-2 border-[var(--matrix-green)]` or dim green label above |
+- Rendered in a card with a subtle left border in Matrix green
+- Subject line always visible above fold
+- "Personalized for:" note at bottom in italic/muted text — the explainability callout
+- Copy button for both subject and body independently
+- Monospace font for email body (optional but on-brand for this portfolio)
 
-### Table Stakes (Color Harmony)
+### Follow-up Sequence Timeline
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| All hover borders matrix-green (not blue) | Blue in a Matrix portfolio breaks immersion — recruiter sees the mismatch | LOW | Replace `hover:border-primary/50` with `hover:border-[var(--matrix-green)]/50` |
-| CTA section background matrix-green-ghost not primary/10 | Blue glow on dark background reads as an unrelated accent | LOW | CSS change in `about/page.tsx` |
-| Footer links hover state matrix-green | Currently `hover:text-primary` (blue) — inconsistent with nav hover | LOW | Replace in `footer.tsx` |
-| Section `h2` headings have Matrix accent | Without accent, sections feel like a blank dark page | LOW | Left border + small terminal label above or `text-[var(--matrix-green)]` for first word |
-| Code/metric text in case studies uses `font-mono` + matrix-green | Numbers like "27,942 LOC" in monospace green read as terminal output — exactly right for engineering recruiters | LOW | className additions in case study pages |
+**Pattern: Vertical step timeline (Outreach.io / SalesLoft-inspired)**
 
-### Differentiators (Color Harmony)
+```
+● Day 1 ── Email 1: Initial Outreach
+│           [card with email preview]
+│
+● Day 5 ── Email 2: Follow-up — Value Add
+│           [card with email preview]
+│
+● Day 10 ── Email 3: Final Attempt — Soft Close
+            [card with email preview]
+```
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|------------------|------------|-------|
-| Terminal-style section labels (`> SECTION_NAME`) | Small `> SECTION_NAME` prefixes in `font-mono text-[var(--matrix-green-dim)]` above each `h2` — reads like a directory path or terminal prompt | LOW | Very high impact; zero technical risk |
-| Subtle scanline texture on CTA sections | CSS `repeating-linear-gradient` at 0.03 opacity on CTA background = CRT monitor feel | LOW | Pure CSS `::before` pseudo-element; zero JS |
-| Tech skill chips with matrix-green border | Badge outlines in `var(--matrix-green-dim)` instead of Radix secondary | LOW | Custom variant in `tech-stack.tsx` |
+- Numbered circles or colored dots connected by a vertical line
+- Day label on the left, email title on the right
+- Clicking a step expands the email card inline
+- Start collapsed — show subject lines only, expand to full body on click
+- This visual is the clearest signal that a "sequence" was built, not just one email
 
-### Anti-Features (Color Harmony)
+### Lead Pipeline / List View
 
-| Anti-Feature | Why Requested | Why Problematic | Alternative |
-|--------------|---------------|-----------------|-------------|
-| Full-opacity `#00FF41` backgrounds | "More Matrix" | At full opacity on dark background, green is eye-searingly bright; #00FF41 on #0a0a0a fails WCAG for text readability | `var(--matrix-green-ghost)` = `#00FF4120` (8% alpha) for backgrounds |
-| Coloring all body text matrix-green | "Consistent terminal feel" | Green body text at full opacity fails WCAG AA contrast requirements that were carefully validated in v1.1 | Green only on: accents, headings markers, interactive elements, decorative |
-| Modifying `:root` tokens | "Apply globally" | Dashboard routes use the same `:root` token system; changing `--primary` in `:root` breaks the validated WCAG AA Radix color system across TeamFlow and DevCollab UI | Scope ALL overrides to `.matrix-theme {}` — this is the established v2.5 pattern |
-| Orange/amber accent as secondary Matrix color | "Cyberpunk feel" | Orange + green clashes; kills the monochrome terminal aesthetic | White (`#e8e8e8`) for secondary emphasis; dim green for tertiary; black/dark for backgrounds |
+**Pattern: Table with sortable columns (not kanban)**
 
----
+```
+┌──────────┬──────────────┬───────┬─────────────┬──────────┐
+│ Name     │ Company      │ Score │ Status      │ Added    │
+├──────────┼──────────────┼───────┼─────────────┼──────────┤
+│ Sarah K. │ Acme SaaS    │ 78    │ Emails Ready│ Today    │
+│ John M.  │ BuiltWith Co │ 52    │ Processing  │ Yesterday│
+│ Amy L.   │ GrowthCo     │ 91    │ Emails Ready│ 2 days   │
+└──────────┴──────────────┴───────┴─────────────┴──────────┘
+```
 
-### Feature 5: Footer Redesign with Matrix Animation
+- Score column has inline color coding (red/yellow/green chip)
+- Status: "Processing" (AI running), "Emails Ready" (generation complete), "Failed" (API error)
+- Clicking a row navigates to the lead detail view
+- Sortable by Score descending by default — highest-quality leads first
 
-**What it does:** Replace the current plain footer (99 lines, `bg-muted`, standard typography, no theming) with a Matrix-themed footer that signals "end of transmission" — a visual narrative close to the portfolio.
+### Loading / Generation State
 
-**Why the footer animation must be DIFFERENT from the hero canvas:**
+**Pattern: Step-by-step progress indicator**
 
-The hero `MatrixRainCanvas` uses:
-- `<canvas>` element with a 30fps RAF loop
-- Full-column falling rain top-to-bottom across the full section width
-- 60+ columns, all characters falling continuously
-- Opacity 0.05 (full-viewport wash)
+```
+Analyzing company profile...  [▓▓▓▓░░░░░░]
+Scoring ICP fit...            [▓▓▓▓▓▓▓░░░]
+Generating personalized emails [▓▓▓▓▓▓▓▓▓░]
+```
 
-A second identical canvas in the footer is:
-1. Visually repetitive — reads as laziness, not craft
-2. Performance-costly — two concurrent canvas RAF loops on the same page
-3. Narratively wrong — the footer should feel like a closing, not a repeat of the opening
-
-**Evaluated footer animation options (ranked by fit + distinction from hero):**
-
-| Option | Description | Distinctness from Hero | Performance | Complexity |
-|--------|-------------|----------------------|-------------|------------|
-| A: CSS drain columns | 4–5 absolutely-positioned `<span>` elements with CSS `@keyframes`; characters appear at top and fade out before reaching bottom — "draining" rather than falling | HIGH — sparse, fading, narrative | Zero JS | LOW |
-| B: CRT scanline texture | CSS `repeating-linear-gradient` on `::before` pseudo-element; overlays horizontal lines at ~0.04 opacity | HIGH — texture not animation; pure CSS | Zero JS | VERY LOW |
-| C: Glitch text on name | CSS `clip-path` + offset `@keyframes` on "Fernando Millan" signature; fires once on scroll-into-view via IntersectionObserver; not a loop | HIGH — CSS layer-split vs hero's character-replacement | Minimal JS (IO only) | MEDIUM |
-| D: Terminal typewriter reveal | Copyright or tagline types out on scroll-into-view; left-to-right character reveal | MEDIUM — different from hero scramble (scramble goes wrong-chars-first; this is straight reveal) | Minimal JS | LOW |
-| E: Scrolling katakana ticker | Single horizontal `animation: marquee` CSS scroll of katakana + digits across top of footer | MEDIUM — horizontal vs vertical | Zero JS | LOW |
-
-**Recommendation: Options B + C + structural redesign**
-
-- **Option B (CRT scanlines)** as background texture — zero cost, zero JS, immediate visual upgrade
-- **Option C (glitch text)** on "Fernando Millan" footer signature — fires once on scroll-into-view; CSS-driven; narratively memorable; different from hero scramble in mechanism and feel
-- **Structural redesign** of the footer layout with Matrix tokens: `#0a0a0a` background, `border-t border-[var(--matrix-green)]/20`, `font-mono` copyright, `> github` terminal-prompt styled social links, `"> EOF"` or `"CONNECTION TERMINATED"` as footer tagline
-
-Option A (drain columns) is the next addition if the above does not feel "alive" enough — but verify reduced-motion compliance before adding JS animation.
-
-### Table Stakes (Footer)
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Matrix dark background (`#0a0a0a`) | Current `bg-muted` is grey/neutral — footer visually disconnects from the rest of the portfolio | LOW | CSS change |
-| Matrix-green top border accent | Signals the footer boundary with Matrix theming | LOW | `border-t border-[var(--matrix-green)]/20` |
-| `hover:text-[var(--matrix-green)]` on links | Current `hover:text-primary` is blue — inconsistent with nav and card hover | LOW | CSS change |
-| Monospace copyright text | Fits terminal aesthetic | LOW | `font-mono` Tailwind class |
-| Reduced-motion: all footer animations off | Must extend the existing gate (CSS global rule already present) | LOW | Any JS animation needs `window.matchMedia('(prefers-reduced-motion: reduce)')` check |
-
-### Differentiators (Footer)
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|------------------|------------|-------|
-| CRT scanline texture (`::before` pseudo-element) | Terminal/monitor feel; zero JS; distinguishes footer from hero canvas | LOW | `repeating-linear-gradient(to bottom, transparent 0%, rgba(0,255,65,0.03) 50%, transparent 100%)` at 3px repeat |
-| Glitch text on "Fernando Millan" (CSS, fires once via IntersectionObserver) | Memorable narrative close; CSS `clip-path` layer-split differs from hero character-replacement scramble | MEDIUM | IntersectionObserver adds class → CSS `@keyframes` with `animation-iteration-count: 1`; fires once |
-| Terminal-prompt social links (`> github`, `> email`) | Visual styling of links as terminal commands — narrative coherence with terminal prompt on hero | LOW | Text prefix change + `font-mono` |
-| `> EOF` or `CONNECTION TERMINATED` footer tagline | Explicit narrative close to the portfolio story | LOW | Static text, `font-mono`, `text-[var(--matrix-green-dim)]` |
-
-### Anti-Features (Footer)
-
-| Anti-Feature | Why Requested | Why Problematic | Alternative |
-|--------------|---------------|-----------------|-------------|
-| Second `MatrixRainCanvas` (another `<canvas>` RAF loop) | "More immersive" | Two concurrent canvas RAF loops doubles GPU context cost; identical visual to hero reads as copy-paste not design; hero is the opening, footer is the close | CSS-only drain effect (Option A) if ambient animation is needed |
-| Infinite looping glitch on "Fernando Millan" | "Keeps it alive" | Infinite glitch becomes wallpaper — recruiter tries to read the name and it keeps jittering; inaccessible for photosensitive users | Fire once via IntersectionObserver + `animation-iteration-count: 1` |
-| Three.js or p5.js particle footer | "Technically impressive" | 9MB+ bundle; destroys Lighthouse score; no alignment with existing lightweight canvas approach | CSS-only or plain canvas matching existing `MatrixRainCanvas` pattern (vanilla JS, no library) |
-| Full-height footer (>300px) making animation the main content | "Big final moment" | Footer is utility UI — nav links, social, copyright; oversized footer confuses information hierarchy and annoys users who want to find the GitHub link | Animation behind/around content; footer stays compact (~160–200px) |
-| Three-column grid removed for a single centered animation panel | "Dramatic" | Removes Quick Links and Connect columns that are actually useful to recruiters | Keep three-column layout; add Matrix styling on top |
+- Each step labeled explicitly — shows the recruiter what the AI is doing
+- Linear progress, not a spinner — makes the system feel intelligent, not just loading
+- Alternative: simple step list with checkmarks appearing: ✓ Company analyzed → ✓ ICP scored → ⟳ Generating emails...
+- Duration: Claude API typically takes 3–8 seconds; the progress animation should cover this without feeling fake
 
 ---
 
 ## Feature Dependencies
 
 ```
-Lenis smooth scroll
-    └──requires──> 'use client' wrapper component (SmoothScroll.tsx)
-    └──requires──> Scoped to (portfolio)/layout.tsx (NOT root layout)
-    └──requires──> usePathname route-change handler → lenis.scrollTo(0)
-    └──requires──> Conditional render: skip if prefers-reduced-motion
-    └──enables──> GSAP ScrollTrigger sync (when parallax is added)
+Lead Input Form
+    └──triggers──> AI Enrichment Pipeline (NestJS service)
+                       └──calls──> Claude API (structured JSON response)
+                                       └──writes──> Postgres (enrichment fields)
+                                       └──writes──> Postgres (lead score + reasoning)
+                                       └──writes──> Postgres (3 follow-up emails)
 
-GSAP ScrollTrigger parallax
-    └──requires──> Lenis sync: lenis.on('scroll', ScrollTrigger.update)
-    └──requires──> Lenis sync: gsap.ticker.add(time => lenis.raf(time * 1000))
-    └──requires──> gsap.ticker.lagSmoothing(0)
-    └──requires──> gsap.registerPlugin(ScrollTrigger) once at module level
-    └──requires──> useGSAP from @gsap/react (auto-cleanup on unmount)
-    └──depends on──> Lenis being wired first (P2 after P1 Lenis)
+Lead List View
+    └──reads──> Postgres (all leads for demo user)
+    └──navigates to──> Lead Detail View
 
-Magnetic Buttons
-    └──requires──> gsap.quickTo (in gsap@3.14.2 — no additional install)
-    └──requires──> any-hover media guard (matchMedia)
-    └──requires──> useReducedMotion() or matchMedia reduced-motion check
-    └──intentionally excludes──> nav links (CSS underline already excellent)
-    └──intentionally excludes──> form submit buttons
+Lead Detail View
+    └──reads──> Postgres (enrichment + score + emails)
+    └──renders──> ICP Score Card
+    └──renders──> Enrichment Fields Grid
+    └──renders──> Intent Signals Badge Cloud
+    └──renders──> Sequence Timeline (3 emails)
+    └──renders──> "Why This Score?" Collapsible Card
 
-Matrix Color Harmony
-    └──requires──> .matrix-theme CSS class scope (already established in v2.5)
-    └──requires──> var(--matrix-green) token system (already in :root)
-    └──must NOT modify──> :root tokens (breaks dashboard route WCAG AA colors)
-    └──enhances──> Footer redesign (footer uses same token set)
-
-Footer Redesign (CSS glitch + scanlines + structural)
-    └──requires──> IntersectionObserver (for once-on-view glitch trigger)
-    └──requires──> prefers-reduced-motion CSS guard (already present globally)
-    └──must NOT use──> second MatrixRainCanvas (canvas duplication)
-    └──enhances when combined with──> Matrix Color Harmony tokens
+Demo Account
+    └──requires──> Seed script (pre-seeded leads with enrichment complete)
+    └──requires──> Login page with demo credentials displayed
 ```
 
 ### Dependency Notes
 
-- **Lenis must ship before GSAP parallax.** Without the Lenis + GSAP ticker sync, ScrollTrigger reads native scroll position (always 0 while Lenis interpolates) — parallax fires at wrong depths or not at all.
-- **Color harmony must scope to `.matrix-theme` only.** `:root` token modifications would silently break the v1.1 WCAG AA validated color system that powers TeamFlow and DevCollab dashboards. The established pattern (`.matrix-theme {}` in `globals.css`) must be followed for all overrides.
-- **Footer must not duplicate the canvas.** Two concurrent canvas RAF loops on the same page page is measurable GPU overhead. The footer should use CSS-only animation unless the CSS approach proves insufficient — and even then, use a minimal vanilla JS canvas matching the existing `MatrixRainCanvas` pattern (no library).
-- **Magnetic buttons must not touch nav links.** The nav already has Awwwards-quality animation via `motion/react` `layoutId` spring underline. Magnetic effect on small nav items would cause visual collision between close-proximity links.
+- **Claude API must return structured JSON, not prose.** All fields (score, reasoning, tech stack, pain points, emails) must be parsed deterministically. Use `response_format` or prompt-constrained JSON output. Raw prose cannot be reliably split into UI components.
+- **Seed data must include complete enrichment.** Leads seeded without AI-generated content defeat the demo. Run the seed script against a live Claude API call and commit the results to the seed file.
+- **Loading state requires async job tracking.** The NestJS service must store a `status` field on each lead: `pending → processing → complete → failed`. The frontend polls or receives this status to show/hide the progress UI.
+- **ICP reasoning must be stored as structured JSON, not string.** The reasoning display (matched/weak bullets) requires a JSON array, not a single explanation string. Define the schema before writing the Claude prompt.
 
 ---
 
-## MVP Definition (v3.1 Polish Milestone)
+## MVP Definition
 
-### Ship in This Milestone (P1 — All Low-Medium Complexity)
+### Launch With (v1 — AI SDR Demo)
 
-- [ ] **Lenis smooth scroll** — Wire `ReactLenis` in `(portfolio)/layout.tsx` with route-change handler + reduced-motion bypass. Library installed; integration only.
-- [ ] **Matrix color harmony** — CSS edits across `about/page.tsx`, `contact/page.tsx`, `footer.tsx`, case study pages, `tech-stack.tsx`. No new libraries, no new components.
-- [ ] **Footer redesign** — Full rewrite of `footer.tsx` (99 lines). Matrix tokens, CRT scanlines (CSS), glitch text (CSS + IntersectionObserver), terminal-prompt social links, `> EOF` tagline.
-- [ ] **Magnetic buttons** — New `MagneticButton.tsx` component using `gsap.quickTo`. Applied to: hero CTAs, contact page CTA. Guard: `any-hover` + reduced-motion.
+- [ ] Lead input form — 3 fields, validation, submission
+- [ ] Claude API integration — single NestJS service call returning structured JSON (score, reasoning, enrichment, 3 emails)
+- [ ] Lead list view — table with score column, status column, sortable
+- [ ] Lead detail view — all enrichment fields, score, reasoning, sequence timeline
+- [ ] Loading/progress state — step labels while Claude API runs
+- [ ] Demo account — pre-seeded with 5–8 varied leads, login credentials on login page
+- [ ] Copy buttons on emails — recruiter must be able to copy the email text
 
-### Add After P1 Ships (P2)
+### Add After Core Works (v1.x)
 
-- [ ] **GSAP ScrollTrigger parallax** — After Lenis is wired and sync pattern established. Target: hero text drift, section separator decorations, case study metric numbers.
+- [ ] "Personalized for:" explainability callout under each email — impressive but not blocking
+- [ ] Intent signals as badge cloud — requires prompt engineering; add after base JSON schema is stable
+- [ ] Error state handling — "AI generation failed, please try again" with retry button
 
-### Defer (P3 / Out of Scope)
+### Future Consideration (v2+)
 
-- [ ] Inner-content magnetic parallax (text at 60% of button movement) — Extra polish layer; ship basic magnetic first, measure feel
-- [ ] Scrolling katakana ticker in footer — Low information density relative to effort; CSS scanlines cover the texture need
-- [ ] Parallax on all portfolio sections — Verify P2 performance impact on Lighthouse before expanding
+- [ ] Bulk lead import (CSV) — complex parsing, not needed for 5-minute demo
+- [ ] Lead status workflow (contacted → replied → meeting booked) — manual CRM actions, not AI story
+- [ ] Export to CSV — useful feature, not a differentiator
 
 ---
 
 ## Feature Prioritization Matrix
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Lenis smooth scroll | HIGH — immediately perceived on first scroll; the absence is jarring on portfolios at this quality level | LOW — 20-line wrapper, library installed | P1 |
-| Matrix color harmony | HIGH — current blue-in-green-portfolio mismatch is the most obvious visual inconsistency | LOW — CSS edits only | P1 |
-| Footer redesign | MEDIUM-HIGH — last thing recruiter sees; currently generic and breaks aesthetic | MEDIUM — new component, CSS animations | P1 |
-| Magnetic buttons | MEDIUM — premium CTA feel; noticed when present, not noticed when absent | LOW-MEDIUM — GSAP quickTo, 2–3 CTAs | P1 |
-| GSAP parallax depth | MEDIUM — depth effect; scroll-reveal already gives entrance animation; parallax is additive | MEDIUM — Lenis sync required first | P2 |
+| Feature | Recruiter Value | Implementation Cost | Priority |
+|---------|-----------------|---------------------|----------|
+| Lead input → AI generation pipeline | HIGH — the core demo moment | MEDIUM — Claude API + NestJS service | P1 |
+| Lead score with colored bar | HIGH — first visual hit on detail view | LOW — CSS + Prisma field | P1 |
+| Lead list with score column | HIGH — proves there's a real backend | LOW — TanStack Table or plain table | P1 |
+| ICP reasoning transparency | HIGH — differentiating technical signal | MEDIUM — structured Claude prompt design | P1 |
+| Sequence timeline (3 emails, day labels) | HIGH — visual proof of "sequencing" feature | MEDIUM — timeline component + expand/collapse | P1 |
+| Enrichment fields grid (size, industry, tech stack) | HIGH — shows depth of AI analysis | LOW — render structured JSON fields | P1 |
+| Loading/progress state | MEDIUM-HIGH — prevents "is it broken?" confusion | LOW — step list + polling | P1 |
+| Demo pre-seeded leads | HIGH — recruiter won't wait 8 seconds to see anything | LOW — seed script | P1 |
+| Copy buttons on emails | MEDIUM — polished UX signal | LOW — clipboard API | P1 |
+| "Personalized for:" callout | MEDIUM — explainability UX | LOW — field in JSON response | P2 |
+| Intent signals badges | MEDIUM — visual richness | MEDIUM — prompt engineering for reliable signals | P2 |
+| Pain points bullet list | MEDIUM — enrichment depth | LOW — array field in JSON | P2 |
+| Error/retry state | LOW-MEDIUM — robustness signal | LOW — status field + UI | P2 |
+
+**Priority key:**
+- P1: Must have for demo launch
+- P2: Should have, add before portfolio integration
+- P3: Nice to have, not needed for recruiter demo
 
 ---
 
-## Implementation Complexity Notes by Feature
+## Competitor Feature Analysis
 
-| Feature | Files Touched | New Components | Risk |
-|---------|---------------|----------------|------|
-| Lenis | `(portfolio)/layout.tsx` + new `SmoothScroll.tsx` | 1 | LOW — wrapper pattern; wrong scope = dashboard breakage |
-| GSAP parallax | `hero-section.tsx` + section pages | 0–1 (`ParallaxLayer.tsx` optional) | MEDIUM — must not conflict with existing `whileInView` entrance animations |
-| Magnetic button | New `MagneticButton.tsx` + `hero-section.tsx` + `contact/page.tsx` | 1 | LOW-MEDIUM — event listener cleanup via `useGSAP` |
-| Color harmony | `globals.css` + `about/page.tsx` + `contact/page.tsx` + case study pages + `tech-stack.tsx` | 0 | LOW — CSS only; must stay inside `.matrix-theme {}` scope |
-| Footer redesign | `footer.tsx` (full rewrite of existing 99-line component) | 0 (rewrite existing) | LOW-MEDIUM — CSS animations new; `IntersectionObserver` for glitch trigger |
+What Apollo.io, AiSDR, Instantly, and Clay do — and what we do differently for portfolio purposes.
+
+| Feature | Apollo.io | AiSDR / Instantly | Our Approach |
+|---------|-----------|-------------------|--------------|
+| Lead score | Shown as a number in list view | Score + intent tier | Number + colored horizontal bar + label + collapsible reasoning |
+| Email display | Template preview in sequence editor | Full email in outreach UI | Email card mimicking email client, subject prominent, personalization callout |
+| Sequence display | List of steps with type icons | Step-by-step cadence builder | Vertical timeline with day labels; collapsed by default, expand per step |
+| Enrichment display | Sidebar panel with fields | Card with key data points | Two-column property grid; tech stack as badge chips; pain points as bullets |
+| AI transparency | None — score is a black box | Minimal | Full reasoning card showing matched/weak signals — portfolio differentiator |
+| Demo experience | Requires sign-up | Requires trial | Pre-seeded demo, credentials on login page, zero friction |
+
+---
+
+## What Makes This Impressive to a Technical Recruiter
+
+Ordered by recruiter signal strength:
+
+1. **Structured Claude API output.** Not just calling Claude and dumping the response into a textarea. Designing a JSON schema, writing a prompt that reliably produces it, and rendering each field in the correct UI component. This signals senior-level AI integration skill.
+
+2. **Reasoning transparency ("Why this score?").** Showing the AI's logic requires you to engineer the prompt to produce structured reasoning, not just a number. Explainable AI is a 2025 industry standard — building it into a portfolio demo shows awareness of production AI patterns.
+
+3. **Async job architecture.** Lead enrichment takes 3–8 seconds. Handling this with a `status` field, polling (or SSE), and a multi-step progress UI shows event-driven architecture thinking — not just synchronous request/response.
+
+4. **Pre-seeded demo with realistic data.** 5–8 varied leads with different scores, industries, and email styles shows understanding of edge cases and data variety. A single lead with a perfect score is a toy; a pipeline with 78/100, 52/100, 91/100, 34/100 leads looks like a real system.
+
+5. **Email personalization that references specific company facts.** Claude emails that say "noticed you closed a Series A" or "your React + Stripe stack suggests..." — not generic templates. This requires prompt engineering with enrichment data injection.
 
 ---
 
 ## Sources
 
-- [Lenis GitHub README — darkroomengineering/lenis](https://github.com/darkroomengineering/lenis) — verified `lenis/react` import path for v1.3.17; GSAP sync pattern
-- [Lenis React README — packages/react/README.md](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md) — `ReactLenis` API, `autoRaf` option, `useLenis` hook
-- [GSAP React Guide — gsap.com/resources/React](https://gsap.com/resources/React/) — `useGSAP` hook, `contextSafe`, auto-cleanup behavior
-- [GSAPify ScrollTrigger Complete Guide 2025](https://gsapify.com/gsap-scrolltrigger) — `scrub` values, `ease: none` requirement, performance pitfalls
-- [Olivier Larose — Magnetic Button Tutorial (GSAP + Framer Motion)](https://blog.olivierlarose.com/tutorials/magnetic-button) — `quickTo` vs `gsap.to` in mousemove; GSAP vs motion.js comparison
-- [GSAP community — Lenis ScrollTrigger sync patterns](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — canonical sync pattern with ticker
-- [devdreaming.com — Lenis + GSAP Next.js App Router](https://devdreaming.com/blogs/nextjs-smooth-scrolling-with-lenis-gsap) — App Router integration pattern
-- [Muz.li Web Design Trends 2026](https://muz.li/blog/web-design-trends-2026/) — magnetic/interactive elements premium vs gimmicky distinction
-- Direct codebase inspection: `apps/web/app/globals.css`, `apps/web/components/portfolio/*`, `apps/web/app/(portfolio)/*` — all inspected 2026-02-20
+- [Apollo.io competitor analysis](https://www.uplead.com/clay-vs-apollo/) — enrichment field layout patterns
+- [AiSDR review](https://www.dimmo.ai/products/ai-sdr) — email display and sequence UI patterns
+- [Outreach.io sequence documentation](https://support.outreach.io/hc/en-us/articles/115005009048-How-To-Create-an-Outreach-Sequence) — sequence step UI patterns
+- [SalesLoft vs Outreach UI comparison](https://www.avoma.com/blog/outreach-vs-salesloft) — cadence builder UX
+- [Lead scoring display — Monday.com](https://monday.com/blog/crm-and-sales/lead-scoring-rules/) — 0-100 scoring visualization standards
+- [ICP Fit Grade system — RollWorks](https://help.rollworks.com/hc/en-us/articles/360045715211-Account-scoring-Use-ICP-Fit-Grade-to-assess-fit) — A-F grade display, intent + fit combination
+- [Instantly + Clay AI enrichment](https://instantly.ai/blog/instantly-clay-ai-powered-lead-enrichment-personalization/) — enrichment field depth, one-liner generation
+- [AI Cards in CRM — SuperAGI](https://superagi.com/ai-cards-in-crm/) — "AI card" as bite-sized insight container pattern
+- [Explainable AI 2025 trends — SuperAGI](https://superagi.com/mastering-explainable-ai-in-2025-a-beginners-guide-to-transparent-and-interpretable-models/) — YAI/XAI explainability UX, narrative-based reasoning display
+- [AI-powered cold email personalization — Instantly](https://instantly.ai/blog/ai-powered-cold-email-personalization-safe-patterns-prompt-examples-workflow-for-founders/) — personalization token vs AI inference comparison
+- [Sales cadence guide — Outreach](https://www.outreach.io/resources/blog/sales-cadence) — sequence step count, day spacing standards
+- [Koala ICP scoring system](https://getkoala.com/university/lesson/koala-icp-scoring) — ICP score display with intent signals integration
 
 ---
 
-*Feature research for: Fernando Millan Portfolio v3.1 — Matrix Polish & Cohesion*
-*Researched: 2026-02-20*
+*Feature research for: AI SDR Replacement System — v5.0 milestone*
+*Researched: 2026-02-28*

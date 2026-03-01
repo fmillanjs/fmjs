@@ -1,755 +1,347 @@
-# Pitfalls Research: v3.1 Portfolio Polish — Lenis, GSAP ScrollTrigger, Magnetic Buttons, Matrix Color Harmony
+# Pitfalls Research: v5.0 AI SDR Replacement System
 
-**Domain:** Adding animation polish (Lenis smooth scroll, GSAP ScrollTrigger parallax, magnetic buttons) and Matrix color extension to an existing Next.js 15 App Router + motion v12 + GSAP + Lenis portfolio with a hard Lighthouse CI gate (≥ 0.90 performance) and 18 Playwright visual regression baselines.
-**Researched:** 2026-02-20
-**Confidence:** HIGH on SSR/hydration pitfalls (official Next.js + Lenis docs + confirmed GitHub issues), HIGH on GSAP/Lenis integration (official GSAP docs + darkroomengineering README + GSAP forum), HIGH on Lighthouse CI impact (official Lighthouse docs + confirmed library behavior), MEDIUM on Playwright snapshot stability (community patterns + Playwright docs), MEDIUM on Tailwind v4 specificity conflicts (community reports + confirmed GitHub issues)
+**Domain:** AI pipeline with Claude API (claude-sonnet-4-6) in NestJS 11 + Next.js 15 App Router — URL scraping for CRM enrichment, structured JSON output from Claude, SSE streaming to browser, and demo data seeding for recruiter presentation.
+**Researched:** 2026-02-28
+**Confidence:** HIGH on Claude API structured outputs (official Anthropic docs, verified GA status), HIGH on streaming SSE pitfalls (official docs + confirmed GitHub issues), HIGH on scraping detection (community consensus + multiple sources), MEDIUM on demo data quality (community patterns + recruiter feedback aggregates), MEDIUM on NestJS SSE memory leaks (confirmed GitHub issues, community-verified)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: ReactLenis Provider Placed in a Server Component — SSR Crash and Window Access Error
+### Pitfall 1: Structured Outputs Guarantee Format, Not Accuracy — Lead Scores Will Be Confidently Wrong
 
 **What goes wrong:**
-`ReactLenis` from `lenis/react` accesses `window` during initialization. If `<ReactLenis root>` is rendered inside a Server Component (or inside a layout that is not explicitly marked `'use client'`), Next.js 15's SSR environment throws:
-```
-ReferenceError: window is not defined
-```
-This crashes the page on first server render. The component tree below ReactLenis never renders. The portfolio goes blank in production.
-
-A subtler variant: the developer correctly marks the provider `'use client'`, but places `<ReactLenis>` directly in the portfolio `layout.tsx` (which is a Server Component). The `'use client'` directive does not propagate from a child component up to the server component boundary — the import itself is the problem. Next.js attempts to serialize the ReactLenis module for SSR and crashes.
+Claude's `output_config.format` with `json_schema` guarantees the response parses as valid JSON matching your schema. It does NOT guarantee that the values inside are correct. A lead score of `87` with reasoning `"Company shows strong enterprise buying signals"` will be returned as perfectly valid JSON even when Claude is hallucinating the signals from a company URL it failed to scrape meaningfully. Recruiters interacting with the demo will see authoritative-looking scores that are fabricated.
 
 **Why it happens:**
-The existing portfolio layout (`apps/web/app/(portfolio)/layout.tsx`) is a Server Component. It already uses a pattern for this: `<MotionProvider>` is a `'use client'` wrapper imported into the server layout. Developers adding Lenis often place `<ReactLenis root>` directly into layout.tsx, forgetting it needs the same treatment. The fact that lenis is already installed gives false confidence that it can be imported anywhere.
+Developers conflate schema compliance with factual accuracy. The constrained decoding that prevents malformed JSON has no effect on the semantic content Claude generates within those fields. Claude will invent company revenue, team size, and tech stack details to fill required schema fields rather than leaving them empty, because the schema marks them `required`.
 
 **How to avoid:**
-Create a dedicated `'use client'` provider component — exactly the same pattern already used for `MotionProvider`:
-
-```tsx
-// apps/web/components/portfolio/lenis-provider.tsx
-'use client'
-
-import { ReactLenis } from 'lenis/react'
-import type { ReactNode } from 'react'
-
-export function LenisProvider({ children }: { children: ReactNode }) {
-  return (
-    <ReactLenis root>
-      {children}
-    </ReactLenis>
-  )
-}
-```
-
-Then import it into the Server Component layout:
-```tsx
-// apps/web/app/(portfolio)/layout.tsx (Server Component — no changes needed)
-import { LenisProvider } from '@/components/portfolio/lenis-provider'
-
-export default function PortfolioLayout({ children }) {
-  return (
-    <div className="matrix-theme min-h-screen flex flex-col">
-      <LenisProvider>
-        ...
-      </LenisProvider>
-    </div>
-  )
-}
-```
+- Add a nullable pattern: use `"anyOf": [{"type": "string"}, {"type": "null"}]` instead of `"type": "string"` for fields that depend on scraped data. Instruct Claude in the system prompt: "If the information is not available in the provided content, use null. Do not guess."
+- Add a `confidence` field (0–1 float) to the JSON schema alongside each AI-generated field. Claude will self-report uncertainty.
+- Validate outputs: any field in your schema that maps to a numeric range (e.g., `lead_score: 0–100`) should be range-checked before persisting to Prisma.
+- In the system prompt, include: "Do not infer company size from job titles or domain age. If the website does not state it, set company_size to null."
 
 **Warning signs:**
-- Build succeeds locally in dev (Next.js dev mode has different SSR behavior) but fails on `next build` or in production
-- Error message `ReferenceError: window is not defined` in server logs
-- Page returns 500 on first load; client-side navigation still works (because RSC boundary isolates the error)
+- Every lead has a lead score between 70–90 (no variance indicates Claude is pattern-matching, not reasoning).
+- Tech stack detections list frameworks the company website never mentions.
+- `pain_points` field contains generic text like "scaling challenges" for every lead.
 
-**Phase to address:**
-Lenis integration phase — before any other Lenis code is written. The provider structure is the foundation everything else depends on.
+**Phase to address:** CRM Enrichment phase (Phase building the enrichment pipeline). Verify during demo seed phase that lead scores show realistic variance.
 
 ---
 
-### Pitfall 2: Lenis + motion v12 `useScroll` — Double RAF Loop Producing Jitter
+### Pitfall 2: NestJS SSE Observable Never Completes — Memory Leak Under Demo Load
 
 **What goes wrong:**
-The existing portfolio uses `motion/react` (motion v12) for scroll-reveal animations. When Lenis runs with its own RAF loop (`autoRaf: true`, which is the default), and motion's `useScroll` hook ALSO attaches its own scroll listener, two independent animation loops fight over the scroll position. The result is scroll jitter, scroll position drift on fast swipes, and occasional freeze where the page stops responding to wheel events for 200-400ms.
+When using the `@Sse()` decorator in NestJS with an `Observable<MessageEvent>`, if the client disconnects (browser tab closed, page navigated away) before Claude finishes generating, the Observable subscription is not automatically cancelled. The underlying Claude API stream continues consuming tokens and holding the HTTP connection. Under recruiter demo conditions where a user triggers generation and immediately navigates away, you accumulate orphaned streams.
 
-This is confirmed by the motion maintainers: motion's frame system and Lenis's RAF loop conflict when both are managing scroll timing independently. The darkroomengineering Lenis README explicitly documents the fix.
+There is a confirmed NestJS GitHub issue (#11601) showing `MaxListenersExceededWarning` with `101 drain listeners added to [SseStream]` under moderate concurrent usage.
 
 **Why it happens:**
-The existing `MotionProvider` wraps children in `<MotionConfig reducedMotion="user">`. Motion v12's `useScroll` attaches native scroll listeners that fire synchronously. Lenis overrides the native scroll and fires its own interpolated scroll. Both try to report scroll position at the same time but from different sources (native vs. Lenis-smoothed). Motion reads the native DOM scroll position, Lenis is mid-interpolation — they disagree on where the page is.
+NestJS's `@Sse()` handler calls the handler method AFTER the SSE connection is established. Throwing `HttpException` inside results in an SSE error message, not an HTTP 4xx. The `request.signal` abort detection is unreliable — confirmed Next.js GitHub issue (#52809) shows the `abort` event does not fire consistently when the browser cancels the request.
 
 **How to avoid:**
-Set `autoRaf: false` on ReactLenis and drive Lenis from GSAP's ticker (not motion's frame system), since GSAP ScrollTrigger also needs to be in the same RAF loop:
-
-```tsx
-// apps/web/components/portfolio/lenis-provider.tsx
-'use client'
-
-import { ReactLenis } from 'lenis/react'
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-
-export function LenisProvider({ children }: { children: ReactNode }) {
-  const lenisRef = useRef<{ lenis?: { raf: (time: number) => void } }>(null)
-
-  useEffect(() => {
-    function update(time: number) {
-      lenisRef.current?.lenis?.raf(time * 1000)
-    }
-    gsap.ticker.add(update)
-    gsap.ticker.lagSmoothing(0)
-    return () => gsap.ticker.remove(update)
-  }, [])
-
-  return (
-    <ReactLenis root options={{ autoRaf: false }} ref={lenisRef}>
-      {children}
-    </ReactLenis>
-  )
-}
-```
-
-For motion's `useScroll`, the values will still work — motion reads from the scroll container Lenis targets. The jitter disappears because only one RAF loop is running: GSAP's ticker drives both Lenis and GSAP ScrollTrigger on the same frame.
+- Use `fromEvent` + `takeUntil` pattern in RxJS: wire the Observable to a subject that completes when the response closes.
+- In the NestJS controller, inject `@Res() res: Response` alongside `@Sse()` and listen to `res.on('close', ...)` to trigger stream cleanup.
+- Wrap the Anthropic SDK `.stream()` call in a try/finally block and call `stream.abort()` in the finally clause.
+- Set a hard token ceiling via `max_tokens` on every Claude call — never let a generation run unbounded.
+- Use `timeout(30000)` from `rxjs/operators` as a safety net on the Observable.
 
 **Warning signs:**
-- Scroll appears smooth but elements with `useScroll`-driven transforms stutter at high velocities
-- Occasional brief freeze when scrolling fast then stopping
-- `useTransform(scrollYProgress, ...)` values jump erratically during fast scroll
-- Scroll feels fine on Chrome but worse on Safari (different native scroll event timing)
+- Node.js process memory grows after multiple demo triggers without page reload.
+- `MaxListenersExceededWarning` in server logs.
+- Claude API usage dashboard shows unexpectedly high token counts that don't match user-visible completions.
 
-**Phase to address:**
-Lenis integration phase — specifically when wiring the GSAP ticker. Do not defer this to the ScrollTrigger phase; it must be part of the initial Lenis provider.
+**Phase to address:** Streaming phase (Phase building SSE endpoint in NestJS). Add `res.on('close')` cleanup test before merging.
 
 ---
 
-### Pitfall 3: GSAP ScrollTrigger Pin Spacer Creates Layout Shift — Lighthouse CLS Regression
+### Pitfall 3: Next.js 15 Route Handler Buffers the Entire Stream Before Sending
 
 **What goes wrong:**
-When a GSAP ScrollTrigger animation uses `pin: true`, ScrollTrigger wraps the pinned element in a `<div class="pin-spacer">` with a calculated height equal to the pin duration in pixels. This spacer is injected at JavaScript runtime after the initial HTML renders. Lighthouse detects the spacer injection as a layout shift and adds a CLS (Cumulative Layout Shift) penalty.
-
-The existing portfolio scores ≥ 0.90 on Lighthouse with the current animation setup. Each pinned section can add 0.02-0.08 CLS depending on the element size. The Lighthouse performance weight for CLS is 25%. A CLS increase from 0 to 0.1 can drop the performance score by 3-5 points — crossing below 0.90 and failing the CI gate.
-
-The GitHub Actions lhci gate runs `numberOfRuns: 3` and takes the median — a single run penalty is unlikely to fail, but consistent CLS from pinned sections will.
+In Next.js 15 App Router, if you create a route handler that proxies the NestJS SSE stream (or calls Claude directly), and you `await` anything before returning the `Response`, Next.js buffers the entire response body before sending it to the browser. The user sees nothing for 10–30 seconds, then all the text appears at once — defeating the purpose of streaming.
 
 **Why it happens:**
-Developers add parallax depth effects with `pin: true` and `scrub: true` on hero sections or full-viewport panels. ScrollTrigger's pin spacer must match the element's visual height exactly. When the element height is not deterministic at JS initialization time (e.g., depends on image load, font load, or window size), the spacer height is miscalculated, causing cumulative layout shifts when the correct height resolves later.
+Next.js route handlers await the handler function to completion before dispatching the Response to the client. The streaming only works if you return a `Response` wrapping a `ReadableStream` **immediately** — without awaiting the async work first.
 
 **How to avoid:**
-1. **Avoid `pin: true` on elements whose height depends on loaded resources.** Use `pin: false` parallax (translateY transforms only) which has zero CLS impact.
-
-2. **If pinning is required**, ensure the element has explicit dimensions set in CSS before GSAP initializes:
-```css
-.parallax-section {
-  height: 100vh; /* Explicit — not auto/content-based */
-}
-```
-
-3. **Call `ScrollTrigger.refresh()` after all assets load**, not on DOMContentLoaded:
-```tsx
-useEffect(() => {
-  window.addEventListener('load', () => ScrollTrigger.refresh())
-  return () => window.removeEventListener('load', () => ScrollTrigger.refresh())
-}, [])
-```
-
-4. **For the portfolio's parallax depth effect**, translateY-based parallax on content inside a normal-flow section has no CLS impact at all. Prefer this over pinning.
+- Pattern: create a `TransformStream`, return `new Response(readable, { headers })` immediately, then write to `writable` asynchronously after the return.
+- Required headers on the Response: `Content-Type: text/event-stream`, `Cache-Control: no-cache, no-transform`, `Connection: keep-alive`, `X-Accel-Buffering: no` (critical for nginx/Coolify reverse proxy to disable buffering).
+- Add `export const dynamic = 'force-dynamic'` to the route file to prevent Next.js from attempting to cache or statically optimize the SSE endpoint.
+- If proxying through Next.js to NestJS: prefer calling NestJS directly from the browser instead. Avoid the double-hop (browser → Next.js route handler → NestJS SSE) unless CORS makes it unavoidable — every proxy layer adds a buffering risk.
 
 **Warning signs:**
-- Lighthouse "Avoid large layout shifts" audit flags `.pin-spacer` elements
-- CLS score above 0.1 in Lighthouse results
-- `lhci assert` fails with: `categories:performance: 0.88 < 0.90 (error)` in GitHub Actions
-- Visual glitch where content "jumps" 20-50px as page loads
+- Streaming works in local `next dev` but chunks appear all at once in production (`next start` or Docker).
+- `X-Accel-Buffering` header missing from response when inspected in browser DevTools.
+- Response appears after `Content-Length` header is set (indicates fully buffered).
 
-**Phase to address:**
-GSAP parallax phase — validate Lighthouse after each pinned section is added, not after all parallax is complete. Run `npx lhci autorun` locally to catch regressions before pushing.
+**Phase to address:** Streaming phase. Verify with browser DevTools Network tab that chunks arrive incrementally (not all at once) in Docker/Coolify environment before shipping.
 
 ---
 
-### Pitfall 4: Lenis `scroll` Event + ScrollTrigger — Wrong Pattern Causes Desynced Trigger Positions
+### Pitfall 4: Web Scraping the Company URL — Bot Detection Blocks on the First Request
 
 **What goes wrong:**
-A widely circulated integration pattern uses `scrollerProxy`:
-```javascript
-// WRONG for Lenis v1.x — scrollerProxy is for older non-standard scrollers
-ScrollTrigger.scrollerProxy(document.body, {
-  scrollTop(value) { ... },
-  getBoundingClientRect() { ... },
-})
-```
-The `scrollerProxy` pattern was designed for custom scroll containers (like a div with `overflow: scroll`). Lenis on `root: true` scrolls the window directly, not a custom scroller. Using `scrollerProxy` with window-based Lenis causes ScrollTrigger trigger positions to be calculated against the wrong element, producing animations that fire 100-500px early or late.
-
-The correct modern pattern (Lenis 1.x + GSAP 3.x):
-```javascript
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time) => lenis.raf(time * 1000))
-gsap.ticker.lagSmoothing(0)
-```
+The NestJS enrichment service fetches the company URL to extract tech stack clues, meta descriptions, and signals. Sending a `fetch()` or Axios request with Node.js defaults (no `User-Agent`, no `Accept` headers) immediately triggers bot detection on Cloudflare-protected sites, enterprise marketing sites, and modern SaaS landing pages. The response is either a 403, a Cloudflare challenge page (which returns 200 with HTML that says "Just a moment..."), or a redirect to a CAPTCHA. The enrichment pipeline silently succeeds — it receives HTML — but passes Cloudflare's challenge page to Claude, which then hallucinates company details from generic placeholder text.
 
 **Why it happens:**
-The `scrollerProxy` pattern is in countless tutorials, blog posts, and StackOverflow answers. Many tutorials targeting Lenis 0.x (studio-freight era) still rank first in search results but are outdated. The new `lenis.on('scroll', ScrollTrigger.update)` pattern was introduced when Lenis internalized native scroll pass-through.
+Node.js `fetch()` sends minimal headers. Default Axios sends `axios/1.x.x` as User-Agent. Both are instantly identifiable as bots. Developers assume a successful HTTP response (200) means they received the actual page content.
 
 **How to avoid:**
-Never use `ScrollTrigger.scrollerProxy` with `root: true` Lenis. The only integration needed is:
-1. `lenis.on('scroll', ScrollTrigger.update)` — keeps ScrollTrigger in sync with Lenis position
-2. Drive Lenis via GSAP ticker (see Pitfall 2)
-
-Verify by checking trigger positions: an element at exactly 500px from top should trigger when `scrollTop === 500px` in the Lenis-reported position. If it triggers early, the proxy is misconfigured.
+- Always set realistic headers: `User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0`, `Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`, `Accept-Language: en-US,en;q=0.5`.
+- After fetch, check the response HTML for Cloudflare challenge indicators before passing to Claude: `if (html.includes('cf-browser-verification') || html.includes('Just a moment'))`.
+- Set a request timeout of 8–10 seconds. Company sites that take longer will block indefinitely.
+- For the demo: pre-scrape and cache the enrichment data for seeded leads. Do not rely on live scraping during recruiter demos — sites go down, add bot protection, change structure. Store scraped content in a `scraped_content` column in Prisma.
+- Cheerio + Axios is sufficient for static sites; reserve Playwright headless only if a specific demo company URL requires JavaScript rendering.
 
 **Warning signs:**
-- ScrollTrigger animations fire before the element enters the viewport (too early) or only after it's partially offscreen (too late)
-- ScrollTrigger debug markers (add `markers: true` temporarily) show `start` and `end` positions that don't correspond to visual element positions
-- Animation works in GSAP's standalone CodePen example but breaks when Lenis is added
+- `tech_stack` returns empty array for companies you know use specific tools.
+- Company description matches "Checking your browser" or "Please wait..." text.
+- Enrichment latency is always < 500ms (suspiciously fast — means the page content is tiny/redirected).
 
-**Phase to address:**
-GSAP ScrollTrigger integration phase — the very first ScrollTrigger setup must use the correct pattern. Using `scrollerProxy` is a root cause that breaks all subsequent ScrollTrigger work.
+**Phase to address:** URL scraping / enrichment phase. Add a scrape-result validator that checks minimum content length before passing to Claude.
 
 ---
 
-### Pitfall 5: ScrollTrigger Instances Not Cleaned Up on Navigation — Growing Memory Leak and Stale Animations on Return
+### Pitfall 5: Wrong Model ID String Breaks All Claude API Calls Silently
 
 **What goes wrong:**
-In Next.js App Router, navigating between portfolio pages (e.g., `/` → `/projects` → `/projects/teamflow`) unmounts and remounts page components. If GSAP ScrollTrigger instances created in `useEffect` are not properly killed on unmount, they persist in GSAP's internal registry. Each navigation adds more triggers. After 3-4 navigations, there are duplicate triggers for the same elements — the returning page fires animations twice, scroll positions jump, and memory grows continuously.
-
-This also manifests as Playwright test instability: the visual regression test navigates pages via `page.goto()`, and if stale triggers fire during test execution, element positions differ from the baseline snapshot.
+Using an incorrect or outdated model ID string causes the Claude API to return a 404 or model-not-found error. Verified correct model IDs as of 2026-02-28: `claude-sonnet-4-6`, `claude-opus-4-6`, `claude-haiku-4-5-20251001`. Common mistakes: using `claude-sonnet-4-5-20250929` (now legacy, still works but not current), using `claude-3-5-sonnet` (old family, discontinued), or using a dated suffix that doesn't match the current release.
 
 **Why it happens:**
-GSAP's `useGSAP` hook from `@gsap/react` handles cleanup automatically — but only for animations and triggers created inside its callback. If any ScrollTrigger is created in a plain `useEffect` instead of `useGSAP`, it is not tracked and will not be killed on unmount. Mixing `useEffect` and `useGSAP` is the source of leaks.
+Model IDs change between major releases. Training data and tutorials reference old IDs. The TypeScript SDK's `Anthropic.Models` enum may not be updated as quickly as the API. Hardcoding model strings without constants creates silent version drift.
 
 **How to avoid:**
-Use `useGSAP` exclusively for all GSAP-related code. Never mix with `useEffect` for GSAP:
-
-```tsx
-import { useGSAP } from '@gsap/react'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import gsap from 'gsap'
-
-gsap.registerPlugin(ScrollTrigger)
-
-function ParallaxSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useGSAP(() => {
-    // All ScrollTrigger instances created here are auto-killed on unmount
-    gsap.to(containerRef.current, {
-      y: -100,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,
-      },
-    })
-  }, { scope: containerRef }) // scope prevents selector leaks
-
-  return <div ref={containerRef}>...</div>
-}
-```
-
-Also call `ScrollTrigger.refresh()` once after the page layout settles (after fonts and images load) to ensure trigger positions are correct for the new page:
-```tsx
-useGSAP(() => {
-  // ... setup triggers
-  ScrollTrigger.refresh()
-}, [pathname]) // Re-run on route change
-```
+- Define model ID as a single constant in a config file: `export const CLAUDE_MODEL = 'claude-sonnet-4-6' as const`.
+- Use the confirmed current API ID from the models overview page, not SDK enum values.
+- Current confirmed IDs (2026-02-28, HIGH confidence — verified from official docs): `claude-sonnet-4-6` (recommended for this project — fast + capable), `claude-opus-4-6` (most capable, higher cost), `claude-haiku-4-5-20251001` (fastest, cheapest — use for high-volume qualification).
 
 **Warning signs:**
-- Navigating to a page a second time shows animations that already ran firing again from the start
-- Browser memory (Chrome DevTools > Memory tab) grows with each navigation and never stabilizes
-- `ScrollTrigger.getAll().length` in browser console is greater than the number of triggers on the current page
-- Playwright visual regression tests fail intermittently (not consistently) — stale triggers fire during screenshot capture
+- `model_not_found` or 404 errors in Claude API responses.
+- API calls succeed in one environment (where model was verified) but fail in another (where model ID was changed).
 
-**Phase to address:**
-GSAP ScrollTrigger phase — before adding more than one page with ScrollTrigger. The leak compounds rapidly; fix at the first component, not after all parallax is added.
+**Phase to address:** Initial Claude API setup phase. Verify with a single test call before building pipeline logic on top.
 
 ---
 
-### Pitfall 6: Lenis Navigation Scroll Position — Page Opens Halfway Down on Next.js Link Navigation
+### Pitfall 6: ANTHROPIC_API_KEY Exposed to the Browser via Next.js Public Variables
 
 **What goes wrong:**
-When a user clicks a Next.js `<Link>` while Lenis is still interpolating (mid-scroll, momentum still active), Lenis carries its internal scroll state to the next page. The new page opens at the scroll position where Lenis stopped interpolating — which could be 400px down the page — instead of at the top.
-
-This is a confirmed and actively discussed issue in the Lenis GitHub repo (Issue #319, Discussion #244). It manifests as: user scrolls down hero, clicks "View Projects" link, lands on `/projects` but sees the page from 300px down, missing the hero section.
+Any environment variable prefixed with `NEXT_PUBLIC_` is bundled into the client-side JavaScript and visible to anyone who opens DevTools. If `ANTHROPIC_API_KEY` is accidentally prefixed `NEXT_PUBLIC_ANTHROPIC_API_KEY` or referenced in a Client Component without going through a server-side API route, the key is exposed. A leaked API key means unauthorized Claude usage billed to your account.
 
 **Why it happens:**
-Lenis maintains an internal `targetScroll` value that represents where it is trying to scroll to. On page navigation, React Router/Next.js changes the URL but Lenis's internal state is not reset. The RAF loop continues from the previous `targetScroll` value. The `<ReactLenis root>` persists across navigations because it is in the layout component — it is NOT unmounted on page change.
+Developers in a hurry copy-paste env var references into Client Components. Next.js Client Components run in the browser — they cannot access server-only env vars, so the natural fix is to add `NEXT_PUBLIC_` prefix, which is the wrong fix.
 
 **How to avoid:**
-Add a route-change listener that resets Lenis to scroll position 0 with `immediate: true` (no animation) on every pathname change:
-
-```tsx
-// Inside LenisProvider component
-import { useLenis } from 'lenis/react'
-import { usePathname } from 'next/navigation'
-
-function ScrollReset() {
-  const lenis = useLenis()
-  const pathname = usePathname()
-
-  useEffect(() => {
-    lenis?.scrollTo(0, { immediate: true })
-  }, [pathname, lenis])
-
-  return null
-}
-```
-
-Render `<ScrollReset />` inside `<ReactLenis>` so it has access to the Lenis context.
+- The Anthropic SDK must only be instantiated in NestJS (server) or Next.js Server Components / Route Handlers (server-side only).
+- Never pass `ANTHROPIC_API_KEY` to Client Components. Client Components call Next.js Route Handlers which call NestJS which calls Claude.
+- In NestJS: load the key from `process.env.ANTHROPIC_API_KEY` in a `ConfigService` and inject it into an `AnthropicService` singleton.
+- Add to CI: `grep -r "NEXT_PUBLIC_ANTHROPIC" apps/` should return zero results.
 
 **Warning signs:**
-- Clicking any navigation link while the page is scrolled down lands on the new page partway down
-- The browser back button takes you to the previous page but at the top (native scroll restoration wins over Lenis)
-- Lighthouse CI captures the page mid-scroll when the dev server is running and previous test left scroll position — but this is less likely since lhci uses fresh browser sessions
+- `window.__NEXT_DATA__` in browser console contains `ANTHROPIC_API_KEY` value.
+- Build output shows the API key in `.next/static/` chunks.
 
-**Phase to address:**
-Lenis integration phase — immediately after the provider is wired. Test by scrolling to the bottom of the hero, clicking to `/projects`, and verifying the page renders from the top.
+**Phase to address:** Initial project setup / environment configuration phase. Never fixable by "just being careful" — enforce with a grep check in CI.
 
 ---
 
-### Pitfall 7: Magnetic Button Using `mousemove` on Every Event — Mobile Touch Artifacts and Lighthouse TBT Regression
+### Pitfall 7: Prompt Produces Inconsistent Lead Scores Across Runs — Demo Feels Broken
 
 **What goes wrong:**
-The magnetic button effect tracks mouse position using a `mousemove` listener and applies a `gsap.quickTo()` transform. The listener fires at native frequency — up to 200Hz on high-refresh displays. On mobile, `touchmove` fires at similar frequency and can activate the magnetic transform, causing a "drunk button" effect where tap targets shift unpredictably.
-
-More critically: if the `mousemove` handler calls `gsap.to()` (not `quickTo`) on every event, it creates a new tween on every pixel of mouse movement — hundreds of concurrent tweens per second. This saturates the GSAP animation queue and causes Lighthouse Total Blocking Time (TBT) to spike. TBT weight is 30% of the Lighthouse performance score. A spike from 0ms to 200ms TBT can drop performance score from 0.95 to below 0.90.
+The same lead with the same scraped company data receives different ICP scores on different Claude calls (e.g., 72, 85, 91 across three runs). Recruiters who regenerate results notice the inconsistency and conclude the system is unreliable — the opposite of what a demo should communicate.
 
 **Why it happens:**
-The canonical magnetic button tutorial uses `mousemove` with `gsap.to()`. It works in demo conditions where the mouse moves slowly and the device is powerful. On lower-end devices or rapid mouse movements, the tween queue overflows. Mobile touch events are not filtered because the tutorials target desktop.
+Claude's sampling temperature defaults to a non-zero value, introducing randomness. Additionally, underspecified prompts leave scoring criteria open to interpretation. "Rate this lead's fit for a B2B SaaS product" produces different answers depending on what Claude infers about the product.
 
 **How to avoid:**
-1. Use `gsap.quickTo()` which creates a single reusable setter that does not create new tweens per call:
-```tsx
-const xTo = gsap.quickTo(buttonRef.current, 'x', { duration: 0.3, ease: 'power3' })
-const yTo = gsap.quickTo(buttonRef.current, 'y', { duration: 0.3, ease: 'power3' })
-
-// In mousemove handler:
-xTo(relativeX)
-yTo(relativeY)
-```
-
-2. Guard touch devices with the same `any-hover: hover` pattern already used by `DotGridSpotlight`:
-```tsx
-useEffect(() => {
-  const canHover = window.matchMedia('(any-hover: hover)').matches
-  if (!canHover) return // Skip magnetic on touch devices entirely
-  // ... attach mousemove listener
-}, [])
-```
-
-3. Respect `prefers-reduced-motion` — do not apply magnetic transform at all under reduced motion:
-```tsx
-const prefersReducedMotion = useReducedMotion()
-if (prefersReducedMotion) return <button>{children}</button> // Plain button
-```
-
-4. Reset position on `mouseleave` with a smooth return:
-```tsx
-xTo(0) // Return to center
-yTo(0)
-```
+- Set `temperature: 0` for all qualification and scoring calls. Use non-zero temperature only for email generation where creative variation is desirable.
+- Make the scoring rubric explicit in the system prompt: define what score ranges mean ("80–100: strong ICP fit — company is a known buyer of similar tools, has explicit budget signals; 60–79: moderate fit...").
+- Provide few-shot examples in the prompt: 2–3 example lead + score pairs with reasoning.
+- For the demo: pre-compute and persist scores. Do not re-run qualification on every page load. Store in Prisma and display cached results. Offer a "Re-analyze" button that triggers a fresh call only on explicit user action.
 
 **Warning signs:**
-- On mobile, tapping buttons causes them to slide or jitter before activating
-- Lighthouse TBT > 50ms after adding magnetic buttons (check in lhci report)
-- GSAP `gsap.globalTimeline.getChildren().length` grows unboundedly during rapid mouse movement
-- DevTools Performance tab shows long tasks during mouse movement
+- Score variance > 10 points across repeated calls on the same lead.
+- `reasoning` field text changes significantly between calls while score stays similar.
+- Lead ranking order changes on page refresh.
 
-**Phase to address:**
-Magnetic button phase — implement with `quickTo` from the start. Run Lighthouse locally after adding to the first CTA and verify TBT remains < 50ms before adding to additional elements.
+**Phase to address:** Claude prompt engineering phase. Lock in `temperature: 0` on all structured output calls before building the UI on top.
 
 ---
 
-### Pitfall 8: Playwright Visual Regression Snapshots Break From Color Changes Without Baseline Update
+### Pitfall 8: Prisma Upsert Race Condition During Demo Seed — Duplicate Key Errors
 
 **What goes wrong:**
-The 18 existing PNG baselines were taken with the current color values. Adding Matrix color harmony to project cards, typography, and sections changes the colors rendered on those pages. The Playwright visual regression tests (`visual-regression.spec.ts`) use `maxDiffPixelRatio: 0.02` — any change affecting more than 2% of pixels fails.
-
-A Matrix color extension that changes project card backgrounds, border colors, or typography across `/projects`, `/projects/teamflow`, `/projects/devcollab` will immediately fail 6-8 of the 18 snapshot tests. CI blocks merge.
-
-This is not a bug — it is the test suite working correctly. But if the developer does not understand this, they spend time debugging CI failures that are actually intentional visual changes that need new baselines.
+Running `prisma db seed` with `Promise.all()` for multiple lead upserts triggers parallel reads followed by parallel writes. Two concurrent upserts on the same unique key (e.g., `email`) read "record does not exist" simultaneously, then both attempt to create it, causing a P2002 unique constraint violation. The seed script fails partway through, leaving partial data.
 
 **Why it happens:**
-The test suite is designed to catch unintended visual changes. Intentional design changes (Matrix color harmony) are also caught — requiring a baseline update. The `reducedMotion: 'reduce'` is already set in the test, so Lenis/GSAP/motion animations are suppressed for snapshots. But color changes are not animation — they render regardless of reduced motion.
+Prisma's `upsert()` is not atomic at the database level — it performs a read then a write as two separate operations. The confirmed Prisma GitHub issue (#3242) documents this as a known race condition when using `Promise.all()` with upsert.
 
 **How to avoid:**
-Treat each visual milestone (color harmony phase, typography phase) as requiring a deliberate baseline update:
-
-1. Make the color change
-2. Run `npx playwright test --config=playwright.visual.config.ts --update-snapshots` locally
-3. Review the diff images in `/apps/web/test-results/` — verify only the intentional areas changed
-4. Commit the new baselines alongside the color changes in the same commit
-
-This workflow prevents the CI failure pattern. Never run `--update-snapshots` without reviewing diffs — it can silently accept regressions.
-
-Also note: the test runs from `npm run dev` (not standalone build) per the `playwright.visual.config.ts` `webServer` config. Color values must be final in the dev server to produce correct baselines.
+- Seed leads sequentially with `for...of` + `await`, not `Promise.all()`. The performance difference is irrelevant for demo seeding (20–50 leads).
+- Use `createMany` with `skipDuplicates: true` for bulk inserts where update-on-conflict is not needed.
+- Add `faker.seed(42)` (as established in DevCollab) to ensure deterministic IDs and emails across seed runs.
+- Wrap the seed in a try/catch that logs which record caused the conflict so it's debuggable.
 
 **Warning signs:**
-- CI fails with `Screenshot comparison failed` on multiple portfolio routes after a color change
-- Snapshot diff images show the entire card or section changed color (intentional) vs. a small unexpected area changed (regression)
-- Error: `A snapshot doesn't exist at path ... — writing actual` — baseline file is missing entirely
+- `Error P2002: Unique constraint failed on fields: ['email']` during seed.
+- Database has partial data after seed (some leads missing).
+- Re-running seed produces a different result each time.
 
-**Phase to address:**
-Any phase that changes visual appearance of snapshotted pages. Add "update Playwright baselines" as a required checklist item in every phase that touches colors, typography, or layout. Never land a phase without passing Playwright CI.
-
----
-
-### Pitfall 9: Matrix Color CSS Variables Conflict With Tailwind v4 `@theme inline` Tokens
-
-**What goes wrong:**
-The existing design system exposes Tailwind utilities through `@theme inline { --color-background: var(--background); ... }`. If new Matrix color tokens are added to `@theme inline` instead of plain `:root` CSS variables, they compete with Tailwind's cascade layer system.
-
-The specific failure: adding `--color-matrix-green: var(--matrix-green)` to the `@theme inline` block makes `text-matrix-green` a valid Tailwind utility. But the `.matrix-theme` scope applies `var(--matrix-green)` for portfolio routes only. In the dashboard routes (`/dashboard`, `/projects` in the TeamFlow app), the `--matrix-green` variable is not defined in `:root` without the `.matrix-theme` class — it resolves to empty, making `text-matrix-green` render invisibly.
-
-Alternatively, if `--matrix-green` IS added to `:root` globally (for the Tailwind utility to work), it bleeds into the dashboard and TeamFlow routes, potentially conflicting with Shadcn/Radix Colors design tokens there.
-
-**Why it happens:**
-The existing architecture correctly keeps Matrix tokens in `:root` as plain CSS variables (not `@theme inline`) — consumed as `style={{ color: 'var(--matrix-green)' }}` or as raw CSS in `.matrix-theme` scoped classes. Adding them to `@theme inline` breaks this encapsulation. The PROJECT.md Key Decisions section explicitly documents: "Matrix tokens in :root (not @theme)" — the original decision was intentional.
-
-**How to avoid:**
-Never add Matrix color tokens to `@theme inline`. Continue the established pattern:
-- Matrix colors live in `:root` as `--matrix-green`, `--matrix-green-dim`, `--matrix-green-ghost`
-- Consume via `style={{ color: 'var(--matrix-green)' }}` in TSX
-- Or via `.matrix-theme` scoped utility classes in `globals.css`
-
-If a Tailwind utility class is genuinely needed for Matrix colors (e.g., for convenience in components), scope the `@theme inline` token to `.matrix-theme`:
-```css
-/* In globals.css — INSIDE the .matrix-theme scope, not in :root @theme */
-.matrix-theme {
-  @theme inline {
-    --color-matrix-green: #00FF41;
-  }
-}
-```
-
-Note: Tailwind v4's `@theme` inside a class selector is an emerging pattern — verify behavior before using.
-
-**Warning signs:**
-- `text-matrix-green` class renders transparent or invisible in TeamFlow/DevCollab dashboard routes
-- Tailwind utility `text-matrix-green` works on portfolio pages but not in Shadcn component stories
-- Dashboard routes flash green text on page load then return to normal (cascade race condition)
-- CSS specificity warnings in browser DevTools for `--color-matrix-green` resolution
-
-**Phase to address:**
-Matrix color harmony phase — before adding any new CSS variables. Audit every new token against the established "Matrix tokens in :root (not @theme)" decision. If extending globals.css, add a comment noting the intentional separation.
-
----
-
-### Pitfall 10: Lenis `html.lenis` Required CSS Not Added — CLS and Double Scroll Bar
-
-**What goes wrong:**
-Lenis requires specific CSS to function correctly on the `<html>` element. Without it:
-1. **Double scroll bar**: the browser renders its native scrollbar while Lenis also handles scrolling, resulting in two scroll bars (Lenis's and the browser's native one)
-2. **CLS from height mismatch**: `html` defaults to `height: auto` in most Lenis docs, but without explicit CSS, different browsers treat `html` height differently, causing inconsistent layout that Lighthouse flags as layout shift
-
-The required CSS is:
-```css
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-```
-
-Without `scroll-behavior: auto !important`, CSS smooth scroll (`scroll-behavior: smooth` set by some CSS resets or Tailwind base) conflicts with Lenis's own interpolation, creating double-smoothing that makes scroll feel sluggish and wrong.
-
-**Why it happens:**
-The Lenis package is installed but the required CSS is not automatically injected. Developers install ReactLenis, see smooth scrolling appear to work in basic cases, and ship without the CSS. The CLS and double-scroll issues appear only in specific browsers or specific scroll scenarios.
-
-**How to avoid:**
-Add the Lenis CSS requirement to `globals.css` as the first action when integrating Lenis:
-
-```css
-/* globals.css — add immediately when Lenis is integrated */
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-.lenis.lenis-stopped { overflow: hidden; }
-```
-
-Note: `ReactLenis root` adds the `lenis` class to `<html>` automatically — no manual class management needed.
-
-**Warning signs:**
-- Two vertical scroll bars appear side-by-side in Firefox or Safari
-- Scroll feels like it's applying smoothing twice (sluggish, over-damped)
-- CLS score > 0 in Lighthouse (unexplained layout shift on initial paint)
-- `html` element in DevTools does not have the `lenis-smooth` class after page load (indicates ReactLenis did not initialize)
-
-**Phase to address:**
-Lenis integration phase — add the CSS to `globals.css` in the same commit as the LenisProvider component.
-
----
-
-## High-Severity Pitfalls
-
-### Pitfall 11: GSAP Plugin Registered Multiple Times — Causes Warning and Potential Animation State Corruption
-
-**What goes wrong:**
-GSAP requires plugins to be registered once with `gsap.registerPlugin(ScrollTrigger)`. In Next.js App Router with hot module replacement, if the registration call is inside a component body (not a module-level top-of-file call), it re-runs on every HMR update. GSAP emits a warning:
-```
-GSAP: ScrollTrigger is already registered
-```
-In production, repeated registration across multiple components that each import and register the plugin causes GSAP's internal plugin state to be inconsistent — triggers may fire with stale configuration from a previous registration.
-
-**Why it happens:**
-Each component file imports and registers `ScrollTrigger` independently. This works in simple apps but in App Router with multiple page components, all potentially importing the plugin, GSAP sees multiple registrations.
-
-**How to avoid:**
-Register GSAP plugins exactly once in a module-level call in a single shared file:
-
-```typescript
-// apps/web/lib/gsap.ts — run once at module load time
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export { gsap, ScrollTrigger }
-```
-
-All components import from this file, not from `gsap` directly:
-```tsx
-import { gsap, ScrollTrigger } from '@/lib/gsap'
-```
-
-**Warning signs:**
-- Browser console: `GSAP: ScrollTrigger is already registered`
-- Animations work on first page load but break after HMR update in dev
-- Multiple `import { ScrollTrigger } from 'gsap/ScrollTrigger'` + `gsap.registerPlugin(ScrollTrigger)` calls across different component files
-
-**Phase to address:**
-GSAP ScrollTrigger phase — create the shared `lib/gsap.ts` module before writing any ScrollTrigger usage. This is a one-time setup, not a per-component concern.
-
----
-
-### Pitfall 12: Magnetic Button Focus State Lost — WCAG 2.5.3 Violation and Keyboard Navigation Broken
-
-**What goes wrong:**
-The magnetic button effect applies `transform: translate(Xpx, Ypx)` to the button element on mouse move. CSS transforms do not affect the visual focus ring position on all browsers — the focus ring renders at the original (non-transformed) position. On keyboard navigation, the focus ring appears in the center of the button while the button's visual appearance is offset, creating a confusing UX where the focus indicator does not match the interactive element.
-
-Additionally, if the magnetic effect applies `pointer-events: none` to child elements (a common pattern for capturing mouse position), keyboard focus events may not propagate correctly through the component tree, breaking Tab navigation through magnetic buttons.
-
-**Why it happens:**
-The magnetic effect is designed for mouse interaction. Focus behavior during keyboard navigation is an afterthought. The `translate` transform causing focus ring misalignment is a browser rendering edge case that only surfaces during keyboard testing.
-
-**How to avoid:**
-1. Apply the magnetic transform to an inner wrapper, not the `<button>` element itself — the focus ring stays on the `<button>`, the visual effect on the wrapper:
-```tsx
-<button className="magnetic-btn" ref={buttonRef}>
-  <span className="magnetic-inner" ref={innerRef}>
-    {children}
-  </span>
-</button>
-```
-Animate `innerRef` with GSAP, not `buttonRef` — the `<button>` stays fixed, maintaining correct focus ring position.
-
-2. Test keyboard navigation: Tab to the button, verify focus ring appears at the button's visual location.
-
-3. Verify `pointer-events` are not blocked on any interactive element. The existing `EvervaultCard` correctly uses `pointer-events-none` on the noise overlay, not on the link — same principle applies here.
-
-**Warning signs:**
-- Tab to a magnetic button and press Space — focus ring appears elsewhere on the page
-- Screen reader announces the button but keyboard activation doesn't work
-- `axe-core` in Playwright accessibility tests reports "Interactive element has no visible focus indicator"
-- The accessibility spec in `e2e/portfolio/accessibility.spec.ts` catches this if it tests keyboard focus
-
-**Phase to address:**
-Magnetic button phase — test keyboard navigation before any other UX testing. Add to the magnetic button's "done" definition: Tab to the button and visually confirm focus ring aligns with the button.
-
----
-
-### Pitfall 13: Lenis Blocks Radix UI Dialog/Modal Scroll Lock — Modals Unable to Prevent Background Scroll
-
-**What goes wrong:**
-Radix UI's `Dialog`, `AlertDialog`, and `CommandDialog` components manage body scroll lock when a modal is open — they set `overflow: hidden` on `<body>` to prevent background scroll. Lenis bypasses the native browser scroll with its own RAF loop, so the `overflow: hidden` on body has no effect. When a modal is open, Lenis continues scrolling the background page.
-
-The existing portfolio has `<CommandPalette />` (in the portfolio layout) which uses Radix's Dialog. When Lenis is active and the user opens the Command Palette, the background scrolls freely behind the modal.
-
-**Why it happens:**
-Lenis works by using `requestAnimationFrame` to set `window.scrollTo()` values, completely bypassing the CSS `overflow: hidden` mechanism. Radix's scroll lock targets the CSS property, not the scroll event. They are operating at different levels.
-
-**How to avoid:**
-Use Lenis's built-in `stop()` and `start()` API to disable scrolling when Radix modals open:
-
-```tsx
-// Hook to sync Lenis with Radix Dialog open state
-import { useLenis } from 'lenis/react'
-
-function useDisableLenisOnModal(isOpen: boolean) {
-  const lenis = useLenis()
-  useEffect(() => {
-    if (isOpen) lenis?.stop()
-    else lenis?.start()
-    return () => lenis?.start() // Cleanup in case component unmounts while open
-  }, [isOpen, lenis])
-}
-```
-
-Use `data-lenis-prevent` attribute on scrollable modal content to allow inner scroll without Lenis interference:
-```tsx
-<DialogContent data-lenis-prevent>
-  {/* Scrollable content inside modal — Lenis will not interfere */}
-</DialogContent>
-```
-
-**Warning signs:**
-- Opening Command Palette (`Cmd+K`) allows background page to keep scrolling
-- Radix `Dialog` overlays are visible but the page scrolls behind them
-- `overflow: hidden` on body appears in DevTools but background scroll is not stopped
-
-**Phase to address:**
-Lenis integration phase — test the CommandPalette immediately after wiring Lenis. This is a regression on existing functionality, making it critical to catch before any new features are added.
+**Phase to address:** Demo seed / database setup phase. Test seed idempotency by running `npx prisma db seed` twice in a row and asserting the lead count remains the same.
 
 ---
 
 ## Technical Debt Patterns
 
+Shortcuts that seem reasonable but create long-term problems.
+
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| `autoRaf: true` with Lenis when GSAP ScrollTrigger is also used | Works in simple demos | Two RAF loops fight each other; scroll jitter; useScroll conflicts | Never when using GSAP ScrollTrigger simultaneously |
-| `gsap.to()` in mousemove handler for magnetic button | Simple, readable code | Creates hundreds of tweens/second; TBT regression; Lighthouse CI failure | Never — always use `gsap.quickTo()` |
-| Registering `ScrollTrigger` inside each component that uses it | Keeps components self-contained | Duplicate registration warnings; potential state corruption after HMR | Never — use a shared `lib/gsap.ts` module |
-| Adding `--color-matrix-green` to `@theme inline` for Tailwind utility | Convenient utility class | Bleeds into dashboard routes; conflicts with Radix Colors cascade | Never — keep Matrix tokens in `:root` only |
-| Skipping Playwright baseline update after color changes | Avoids a CI step | CI blocks on every push until baselines are updated anyway | Never — update baselines in the same commit as color changes |
-| `pin: true` ScrollTrigger on content-height-dependent elements | Easy parallax depth effect | CLS regression; Lighthouse CI gate failure | Only if element has explicit `height: 100vh` CSS set before GSAP initializes |
-| Skipping Lenis CSS (`html.lenis { height: auto }`) | Less CSS to write | Double scroll bars in Firefox/Safari; `scroll-behavior: smooth` double-dampening | Never — required for correct Lenis behavior |
+| Hardcode model ID string inline at call site | Faster setup | Silent model drift if Anthropic deprecates the model; every call site must be updated | Never — use a single `CLAUDE_MODEL` constant |
+| Skip `temperature: 0` on scoring calls | Slightly more varied reasoning text | Inconsistent scores break recruiter trust in the demo | Never for scoring; only skip for creative email generation |
+| Call Claude API directly from Next.js Route Handler (skipping NestJS) | Saves one HTTP hop | Bypasses NestJS's auth guard, rate limiting, and error handling layers; creates two separate API surfaces to maintain | Only acceptable for portfolio-scale if NestJS is the designated AI gateway and this is a documented exception |
+| Store ANTHROPIC_API_KEY in `.env.local` committed to repo | Convenient for solo dev | Key exposure on push; GitHub scans and auto-deactivates leaked Anthropic keys | Never — use `.gitignore` + secret manager or manual env injection |
+| Skip scrape result validation before Claude call | Fewer code paths | Cloudflare challenge pages fed to Claude produce confident hallucinations | Never — always validate minimum content length |
+| Re-generate AI content on every page load | Simpler state management | Unpredictable API costs; scores change between loads; terrible demo UX | Never for demo — always persist results to Prisma |
+| Use `Promise.all()` for seed upserts | Faster seed script | P2002 race condition on unique keys | Never for upsert — use sequential seeding |
 
 ---
 
 ## Integration Gotchas
 
+Common mistakes when connecting to external services.
+
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Lenis + Next.js Server Component | Importing ReactLenis in a Server Component layout | Create a `'use client'` LenisProvider wrapper, import that into the layout |
-| Lenis + GSAP ScrollTrigger | Using `scrollerProxy()` with root Lenis | Use `lenis.on('scroll', ScrollTrigger.update)` + GSAP ticker |
-| Lenis + motion v12 `useScroll` | Running Lenis with `autoRaf: true` alongside motion RAF | Set `autoRaf: false`; drive Lenis from GSAP ticker |
-| Lenis + Radix Dialog | Relying on CSS `overflow: hidden` to lock background scroll | Call `lenis.stop()` on modal open, `lenis.start()` on close |
-| Lenis + Next.js navigation | ReactLenis persists across routes with stale scroll position | `useLenis()` + `usePathname()` → `lenis.scrollTo(0, { immediate: true })` on pathname change |
-| GSAP + React | Using `useEffect` for GSAP animations | Use `useGSAP` hook from `@gsap/react` exclusively — auto-cleanup on unmount |
-| GSAP ScrollTrigger + parallax pins | `pin: true` on auto-height content | translateY transforms only (no pin) OR explicit CSS height before GSAP init |
-| Magnetic button + mobile | Not guarding `mousemove` for touch devices | `window.matchMedia('(any-hover: hover)')` guard — same pattern as DotGridSpotlight |
-| Magnetic button + keyboard nav | Applying transform to `<button>` element | Apply transform to inner `<span>` wrapper; `<button>` stays fixed |
-| Matrix colors + Tailwind v4 | Adding Matrix tokens to `@theme inline` | Keep in `:root` only; consume as `var(--matrix-green)` inline styles or scoped `.matrix-theme` classes |
-| Playwright snapshots + color changes | Running CI without baseline update | Always `--update-snapshots` locally, review diffs, commit baselines with the color change |
+| Anthropic SDK | Instantiate `new Anthropic()` inside a request handler on every call | Instantiate once as a NestJS singleton via `AnthropicService` registered in a module |
+| Anthropic SDK | Not setting `max_tokens` explicitly | Always set `max_tokens` — the API requires it and unbounded responses cause timeout errors on long generations |
+| Anthropic structured outputs | Using old `output_format` parameter + `anthropic-beta: structured-outputs-2025-11-13` header | Use `output_config.format` — structured outputs are now GA, beta header no longer required (old parameter kept for transition period) |
+| Anthropic streaming | Returning `stream.text_stream` as-is from NestJS to SSE | Convert SDK stream to `Observable<MessageEvent>` that handles `error` events from the SSE protocol; `overloaded_error` can appear mid-stream |
+| Axios/Fetch (scraping) | Default Node.js fetch with no headers | Set explicit `User-Agent`, `Accept`, `Accept-Language` headers; validate response is actual page content not a bot challenge |
+| NestJS HttpModule | Returning raw `AxiosResponse` object from controller | Extract `response.data` only — `AxiosResponse` contains circular references that crash Express JSON serialization |
+| Prisma (seeding) | `Promise.all()` with upsert operations | Sequential `for...of` loop or `createMany` with `skipDuplicates: true` |
+| Next.js Route Handler (SSE) | Awaiting async work before returning Response | Return `new Response(readableStream, headers)` immediately; write to stream asynchronously after return |
+| Next.js Route Handler (SSE) | Missing `export const dynamic = 'force-dynamic'` | Add it to every SSE route file to prevent static optimization attempts |
+| Coolify reverse proxy (SSE) | Missing `X-Accel-Buffering: no` header | Nginx used by Coolify buffers responses by default; this header disables buffering for the stream |
 
 ---
 
 ## Performance Traps
 
+Patterns that work at small scale but cause problems.
+
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| `gsap.to()` in mousemove handler | TBT spike; GSAP animation queue overflow; sluggish button response | `gsap.quickTo()` — single reusable setter, no tween per call | Any device; immediately noticeable on lower-end laptops |
-| `pin: true` on variable-height content | CLS > 0.1 in Lighthouse; CI gate failure | translateY parallax without pin; explicit height CSS before GSAP init | Lighthouse run immediately after adding first pinned section |
-| Lenis + `scroll-behavior: smooth` CSS conflict | Double-smooth scroll; feels sluggish and over-damped | `scroll-behavior: auto !important` in Lenis CSS | All pages; immediately visible |
-| Multiple GSAP ticker callbacks (one per component) | RAF executes N callbacks per frame where N = number of animation components | Single shared `gsap.ticker.add()` in LenisProvider only | When more than 3-4 parallax components are on the page simultaneously |
-| Magnetic transform on `<button>` (not inner wrapper) | WCAG focus ring misalignment; accessibility test failure | Inner wrapper receives transform; button stays in place | Keyboard navigation testing |
-| ScrollTrigger triggers not killed on unmount | Memory grows per navigation; animations fire twice on return | `useGSAP` hook (not useEffect) for all GSAP code | After 3-4 navigations in a single session |
+| Synchronous enrichment pipeline (scrape → Claude → persist) in single request | 15–30 second response time per lead | Make enrichment async — return job ID immediately, poll or SSE for completion | Every lead; makes the dashboard feel broken |
+| Sending full scraped HTML to Claude | Input token costs balloon; slow responses; risk hitting context limit on verbose pages | Extract relevant sections with Cheerio before sending: `<title>`, `<meta description>`, `<h1>`, `<h2>`, visible body text (first 2000 chars) | Any company with a marketing-heavy site (>50KB HTML) |
+| Running qualification + enrichment + email generation as one mega-prompt | Single point of failure; if one output field is wrong, all are suspect; expensive to retry | Split into separate Claude calls with separate schemas: qualify first, enrich second, generate email third | At scale; for demo it "works" but produces lower quality output |
+| No request timeout on external scrape calls | Slow or down company sites hang the NestJS thread indefinitely | Set 8–10 second timeout via `AbortController` or Axios `timeout` config | Any company site with slow DNS or TTFB |
+| Generating emails live on demo click with no caching | Latency visible to recruiter; API cost per click | Pre-generate all emails during seed; only re-generate on explicit "Regenerate" action | Every recruiter demo session |
+
+---
+
+## Security Mistakes
+
+Domain-specific security issues beyond general web security.
+
+| Mistake | Risk | Prevention |
+|---------|------|------------|
+| `NEXT_PUBLIC_ANTHROPIC_API_KEY` or any client-exposed API key | Anthropic auto-deactivates leaked keys found on GitHub; billing fraud if key used elsewhere | Only instantiate Anthropic client server-side (NestJS or Next.js Server Component/Route Handler) |
+| No rate limit on the AI generation endpoints | Malicious actor triggers thousands of Claude calls, running up API bill | Add NestJS `@Throttle()` guard on enrichment and email generation endpoints; demo-mode guard that limits to pre-seeded leads only |
+| Passing user-controlled company URLs directly to the scraper without validation | SSRF — attacker provides `http://169.254.169.254/latest/meta-data/` (AWS metadata) or internal network addresses | Validate URL is public internet (`url.hostname` not localhost/10.x/172.x/192.168.x), allow-list `http(s)` schemes only |
+| Logging full Claude prompts + responses to stdout | Prompt injection payloads, scraped PII (email addresses from company pages) appear in logs | Log only token counts and latency, not content; use structured logging with explicit content exclusion |
+| Demo credentials in `.env` file committed to repo | Exposes ANTHROPIC_API_KEY + database password | `.env` in `.gitignore`; demo credentials injected via Coolify environment variables panel |
+
+---
+
+## UX Pitfalls
+
+Common user experience mistakes specific to AI SDR demos for recruiters.
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| Generic demo leads ("John Doe at ACME Corp") | Recruiter recognizes fake data immediately; undermines credibility | Use realistic fictional companies with specific industries: "Sarah Chen, VP Engineering at Prismatic Data (Series B, 120 employees, uses Snowflake + dbt)" |
+| Lead scores with no variance (all 70–85) | Recruiter cannot see the AI making meaningful distinctions | Seed leads across the full spectrum: 2–3 strong ICP (score 85–95), 2–3 moderate (55–70), 1–2 poor fit (20–40) |
+| Showing raw Claude output without formatting | Wall of unformatted text reads as a prototype, not a product | Structure email output: Subject line, greeting, body paragraphs, CTA — render as formatted card, not textarea dump |
+| No loading state during AI generation | Blank screen during 5–15 second Claude call; recruiter thinks it's broken | Show streaming text in real time or a typed-out progress indicator ("Analyzing company... Scoring ICP fit... Drafting email...") |
+| Email body that could apply to any lead | Proves personalization is fake | Include at minimum: company name, inferred tech stack item, one specific signal from their site, lead's title |
+| No "how it works" annotation visible to recruiter | Recruiter sees output but doesn't know Claude generated it | Show a collapsible "AI Reasoning" panel with the `reasoning` field from the qualification response |
+| Re-running enrichment on every page load | Scores change, recruiter notices; also runs up API costs | Persist all AI results to Prisma; display cached results by default |
+| Demo account can access real enrichment pipeline (live scraping) | Risk of hitting bot-blocked sites during demo; long latency kills flow | Gate live enrichment behind a feature flag; demo account uses pre-seeded enrichment results only |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Lenis provider:** ReactLenis renders → verify `<html>` element has `lenis` class in DevTools; if missing, provider did not initialize
-- [ ] **Lenis + navigation:** Smooth scroll works → verify by scrolling 50% down, clicking a nav link, confirming the new page starts at the top (not mid-scroll)
-- [ ] **Lenis + Command Palette:** Smooth scroll works → verify Cmd+K opens Command Palette and background page does NOT scroll while modal is open
-- [ ] **GSAP ScrollTrigger positions:** Animation fires → verify with `markers: true` that trigger start/end align with the intended viewport positions (not offset by 100-500px)
-- [ ] **ScrollTrigger cleanup:** Animations work → navigate away and back to the page; verify animations run exactly once on the second visit, not twice
-- [ ] **Magnetic button:** Looks correct → Tab to the button and confirm the focus ring aligns with the button's visual center, not the original position
-- [ ] **Magnetic button on mobile:** Appears in test browser → load on a touch device or Chrome DevTools mobile simulation; confirm button does NOT shift on tap
-- [ ] **Magnetic button TBT:** Feels responsive → run Lighthouse after adding magnetic buttons; verify TBT remains < 50ms
-- [ ] **Matrix color variables:** Render correctly in portfolio → switch to TeamFlow dashboard route and confirm no Matrix green bleeds into the dashboard
-- [ ] **Playwright baselines:** All tests green locally → run `npx playwright test --config=playwright.visual.config.ts` locally after any visual change; update baselines if needed before pushing
-- [ ] **Lighthouse gate:** Animations feel great → run `npx lhci autorun` locally before pushing; confirm all 5 URLs score ≥ 0.90 performance
+Things that appear complete but are missing critical pieces.
+
+- [ ] **Streaming:** Verify in production Docker build (not `next dev`) that stream chunks arrive incrementally. `next dev` bypasses many of the buffering behaviors that affect `next start`.
+- [ ] **Structured outputs:** Verify `output_config.format` (not the legacy `output_format`) is used in the API call body. The old parameter still works during the transition period but emits deprecation warnings.
+- [ ] **Lead scores:** Verify score variance across seeded leads — if all scores cluster between 70–85, the prompt is not discriminating. Check with `temperature: 0` locked in.
+- [ ] **Scraping validation:** Verify the enrichment service rejects Cloudflare challenge pages before sending to Claude. Send a request to `https://cloudflare.com` and assert the pipeline returns a "scrape failed" result rather than hallucinated company data.
+- [ ] **SSE cleanup:** Verify that closing the browser tab during generation does not cause the NestJS process memory to grow. Monitor with `process.memoryUsage()` before and after 5 abandoned streams.
+- [ ] **API key security:** Run `grep -r "NEXT_PUBLIC_ANTHROPIC" apps/` — must return zero results.
+- [ ] **Seed idempotency:** Run `npx prisma db seed` twice consecutively. Lead count must be identical after both runs.
+- [ ] **Nginx buffering:** Inspect live Coolify deployment response headers for `X-Accel-Buffering: no`. If missing, SSE will not stream through the reverse proxy.
+- [ ] **Email personalization:** Verify generated emails contain the lead's company name and at least one specific signal. A template that replaces `{{company_name}}` is not personalization.
+- [ ] **Demo credentials:** Verify demo login works with `demo@aisdr.fernandomillan.me` / `demo` (or whatever the seeded credentials are) on production before presenting to any recruiter.
 
 ---
 
 ## Recovery Strategies
 
+When pitfalls occur despite prevention, how to recover.
+
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| SSR crash from ReactLenis in Server Component | LOW | Move ReactLenis behind `'use client'` provider wrapper; same pattern as existing MotionProvider |
-| Lenis + motion scroll jitter | LOW | Set `autoRaf: false` on ReactLenis; add GSAP ticker integration in LenisProvider |
-| CLS regression from pin spacers | MEDIUM | Remove `pin: true` from offending triggers; replace with translateY parallax; re-run Lighthouse to confirm |
-| Wrong scrollerProxy pattern breaking trigger positions | MEDIUM | Remove all `scrollerProxy` calls; replace with `lenis.on('scroll', ScrollTrigger.update)` pattern; test all trigger positions |
-| ScrollTrigger memory leak after 3+ navigations | MEDIUM | Replace all `useEffect` GSAP code with `useGSAP` hook; add `{ scope: containerRef }` to prevent selector leaks |
-| Playwright CI blocked by color change baselines | LOW | Run locally: `npx playwright test --config=playwright.visual.config.ts --update-snapshots`; review diffs; commit new baselines |
-| Lighthouse TBT regression from magnetic button | LOW | Replace `gsap.to()` in mousemove with `gsap.quickTo()`; one setter per axis, created once |
-| Matrix color bleeding into dashboard | LOW | Remove `--color-matrix-*` from `@theme inline`; use `var(--matrix-green)` inline styles in `.matrix-theme`-scoped components only |
-| Lenis scroll background scroll with Radix modal | LOW | Add `useLenis().stop()` on modal open; `useLenis().start()` on close; `data-lenis-prevent` on scrollable modal content |
-| Keyboard focus ring misaligned on magnetic button | LOW | Move GSAP transform from `<button>` to inner `<span>` wrapper; retest keyboard navigation |
+| API key leaked in git history | HIGH | Rotate key immediately in Anthropic Console; `git filter-branch` or BFG Repo Cleaner to remove from history; force push (only acceptable case for force push on main) |
+| All demo lead scores are identical | LOW | Add variance to system prompt rubric; re-run with `temperature: 0` and more explicit scoring criteria; re-seed. Takes ~30 min. |
+| SSE never streams (everything buffered) | MEDIUM | Add `X-Accel-Buffering: no` header; add `export const dynamic = 'force-dynamic'`; refactor to return `Response` immediately without awaiting. Allow 2–4 hours. |
+| Cloudflare blocks scraping on demo leads | LOW | Pre-scrape and cache in Prisma. For live demos, disable live scraping entirely — use cached enrichment only. Takes ~1 hour. |
+| Seed race condition corrupts database | LOW | Add `--reset` flag to seed script that drops and recreates demo leads table; use sequential seeding; re-run. Takes ~30 min. |
+| Structured output returns wrong schema shape | MEDIUM | Switch from prompt-based JSON to `output_config.format` with explicit schema; add `additionalProperties: false` to schema; add Zod validation before Prisma write. Takes 2–4 hours. |
+| NestJS memory leak from orphaned streams | MEDIUM | Add `res.on('close')` cleanup + `stream.abort()` in finally block; deploy. Need load test to verify. Takes 4–8 hours. |
+| Demo data looks fake to recruiter | HIGH | Redesign seed data with realistic companies, specific industries, meaningful score variance, properly personalized emails. Takes 1–2 days. |
 
 ---
 
 ## Pitfall-to-Phase Mapping
 
-| Pitfall | Severity | Prevention Phase | Verification |
-|---------|----------|------------------|--------------|
-| ReactLenis in Server Component → SSR crash | CRITICAL | Lenis integration phase (first commit) | `next build` succeeds; no `window is not defined` in build log |
-| Lenis + motion v12 double RAF → jitter | CRITICAL | Lenis integration phase (provider setup) | Scroll with `useScroll`-driven elements; no jitter at high velocity |
-| Lenis navigation scroll position not reset | CRITICAL | Lenis integration phase | Scroll 50% down, click nav link, new page starts at top |
-| Lenis + Radix modal background scroll | HIGH | Lenis integration phase | Open Command Palette; background scroll is disabled |
-| GSAP ScrollTrigger CLS from pin spacer | CRITICAL | GSAP parallax phase (first parallax component) | `npx lhci autorun` ≥ 0.90 after first pinned section |
-| Wrong scrollerProxy pattern → desynced triggers | CRITICAL | GSAP parallax phase (initial setup) | Trigger markers align with visual element positions |
-| GSAP triggers not cleaned up → memory leak | HIGH | GSAP parallax phase (first useGSAP hook) | Navigate away and back; animations fire once on second visit |
-| GSAP plugin registered multiple times | MEDIUM | GSAP parallax phase (lib/gsap.ts creation) | No `GSAP: ScrollTrigger is already registered` warning in console |
-| Magnetic button `gsap.to()` in mousemove → TBT | CRITICAL | Magnetic button phase | Lighthouse TBT < 50ms after adding buttons |
-| Magnetic button touch artifacts on mobile | HIGH | Magnetic button phase | Chrome DevTools mobile simulation: no button shift on tap |
-| Magnetic button focus ring misalignment | HIGH | Magnetic button phase | Keyboard Tab to button; focus ring aligns with visual center |
-| Matrix colors in `@theme inline` → dashboard bleed | HIGH | Matrix color harmony phase | TeamFlow dashboard: no Matrix green in UI |
-| Playwright baselines stale after color change | HIGH | Every visual phase | All 18 Playwright snapshot tests pass in CI |
-| Lenis required CSS missing → CLS/double scroll | HIGH | Lenis integration phase | No double scroll bar in Firefox; Lighthouse CLS = 0 |
-| Lenis `html.lenis` CSS scroll-behavior conflict | MEDIUM | Lenis integration phase | Scroll does not feel double-smooth in any browser |
+How roadmap phases should address these pitfalls.
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| Structured outputs accuracy vs format confusion | Claude API integration / prompt engineering phase | Schema has nullable fields; `confidence` field present; range validation before Prisma write |
+| NestJS SSE memory leak | Streaming phase (NestJS SSE endpoint) | `res.on('close')` cleanup implemented; memory stable after 5 abandoned streams |
+| Next.js streaming buffering | Streaming phase (Next.js route handler or direct browser call) | Browser DevTools shows incremental chunk delivery in Docker build |
+| Bot detection blocks scraping | URL enrichment / scraping phase | Scrape validator rejects challenge pages; realistic User-Agent set |
+| Wrong Claude model ID | Project setup / environment phase | Single `CLAUDE_MODEL` constant defined; test call succeeds before pipeline build |
+| API key browser exposure | Project setup / environment phase | `grep -r "NEXT_PUBLIC_ANTHROPIC" apps/` returns zero results in CI |
+| Inconsistent lead scores | Claude prompt engineering phase | `temperature: 0` confirmed; score variance across seeded leads is realistic (full spectrum 20–95) |
+| Prisma seed race condition | Demo data / seed phase | `npx prisma db seed` runs twice idempotently; uses sequential seeding |
+| Generic demo data | Demo data / seed phase | Seed data reviewed: specific companies, score variance, personalized email content |
+| Nginx SSE buffering (Coolify) | Deployment / integration phase | `X-Accel-Buffering: no` verified in production response headers |
+| SSRF via user-provided URLs | URL enrichment / scraping phase | URL validation rejects private IP ranges and non-http(s) schemes |
+| No rate limiting on AI endpoints | NestJS API security phase | `@Throttle()` guard confirmed on enrichment and email generation endpoints |
 
 ---
 
 ## Sources
 
-**Lenis SSR and Next.js integration:**
-- [darkroomengineering/lenis React README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md) — autoRaf: false + GSAP ticker pattern (HIGH confidence — official)
-- [ReactLenis begins halfway down on navigation — Issue #319](https://github.com/darkroomengineering/lenis/issues/319) — confirmed scroll position reset issue (HIGH confidence — confirmed bug)
-- [Lenis + Next.js 13 — Issue #170](https://github.com/darkroomengineering/lenis/issues/170) — `use client` placement patterns (HIGH confidence — confirmed)
-- [How to implement Lenis in Next.js — Bridger Tower](https://bridger.to/lenis-nextjs) — provider wrapper pattern (MEDIUM confidence)
-
-**Lenis + GSAP ScrollTrigger integration:**
-- [Patterns for synchronizing ScrollTrigger and Lenis in React/Next — GSAP Forum](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — `lenis.on('scroll', ScrollTrigger.update)` confirmed pattern (HIGH confidence — official GSAP forum)
-- [GSAP React documentation](https://gsap.com/resources/React/) — useGSAP hook cleanup behavior (HIGH confidence — official)
-- [ScrollTrigger + Lenis problem — GSAP Forum](https://gsap.com/community/forums/topic/39286-scrolltrigger-lenis-problem/) — pin spacer and blank space issues (MEDIUM confidence)
-
-**Lenis + motion v12 conflict:**
-- [Correct Way to Integrate Motion and Lenis with React — Discussion #2913](https://github.com/motiondivision/motion/discussions/2913) — conflicting RAF loops (MEDIUM confidence)
-- [How to integrate motion frame with lenis — Discussion #3065](https://github.com/motiondivision/motion/discussions/3065) — frame synchronization (MEDIUM confidence)
-
-**Magnetic buttons:**
-- [2 Ways to Make Magnetic Buttons using React, GSAP, Framer Motion](https://blog.olivierlarose.com/tutorials/magnetic-button) — quickTo pattern (MEDIUM confidence)
-- [GSAP accessible animation](https://gsap.com/resources/a11y/) — reducedMotion with gsap.matchMedia (HIGH confidence — official)
-- [WCAG 2.3.3 Animations from Interactions](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions.html) — reduced motion requirements (HIGH confidence — official W3C)
-
-**Tailwind v4 specificity:**
-- [Tailwind v4 @theme inline dark mode discussion #15083](https://github.com/tailwindlabs/tailwindcss/discussions/15083) — `@theme inline` cascade behavior (MEDIUM confidence — community + confirmed)
-- [Tailwind v4 dark mode upgrade issue #16171](https://github.com/tailwindlabs/tailwindcss/issues/16171) — specificity conflicts (MEDIUM confidence — confirmed issue)
-
-**Lighthouse CI gate:**
-- [Lighthouse performance score calculator](https://unlighthouse.dev/tools/lighthouse-score-calculator) — TBT (30%) and CLS (25%) weights (HIGH confidence)
-- [Debugging CLS](https://www.ditdot.hr/en/debugging-cls-cumulative-layout-shift) — pin spacer as CLS source (MEDIUM confidence)
-
-**Playwright visual regression:**
-- [Fixing flaky Playwright visual regression tests](https://www.houseful.blog/posts/2023/fix-flaky-playwright-visual-regression-tests/) — animation disabling strategy (MEDIUM confidence)
-- Direct codebase analysis: `apps/web/e2e/portfolio/visual-regression.spec.ts` — reducedMotion already set; `maxDiffPixelRatio: 0.02` threshold (HIGH confidence)
-- Direct codebase analysis: `apps/web/playwright.visual.config.ts` — webServer uses `npm run dev`, retries: 2 in CI (HIGH confidence)
-
-**Radix modal + Lenis:**
-- [Lenis stop modal scroll — Discussion #292](https://github.com/darkroomengineering/lenis/discussions/292) — `data-lenis-prevent` and stop/start pattern (MEDIUM confidence)
+- [Anthropic Structured Outputs — Official Docs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) — HIGH confidence; verified GA status, `output_config.format` parameter, accuracy disclaimer
+- [Anthropic Streaming Messages — Official Docs](https://platform.claude.com/docs/en/build-with-claude/streaming) — HIGH confidence; SSE event types, error events, recovery strategies
+- [Anthropic Models Overview — Official Docs](https://platform.claude.com/docs/en/about-claude/models/overview) — HIGH confidence; verified `claude-sonnet-4-6` as correct model ID as of 2026-02-28
+- [NestJS SSE Memory Leak — GitHub Issue #11601](https://github.com/nestjs/nest/issues/11601) — MEDIUM confidence; confirmed community issue with `MaxListenersExceededWarning`
+- [NestJS SSE disconnect cleanup — GitHub Issue #9517](https://github.com/nestjs/nest/issues/9517) — MEDIUM confidence; confirms SSE disconnect handling needs explicit cleanup
+- [Next.js request abort not firing — GitHub Issue #52809](https://github.com/vercel/next.js/issues/52809) — MEDIUM confidence; confirms abort signal unreliability
+- [Fixing Slow SSE in Next.js — Medium, Jan 2026](https://medium.com/@oyetoketoby80/fixing-slow-sse-server-sent-events-streaming-in-next-js-and-vercel-99f42fbdb996) — MEDIUM confidence; X-Accel-Buffering pattern confirmed
+- [Prisma upsert race condition — GitHub Issue #3242](https://github.com/prisma/prisma/issues/3242) — HIGH confidence; documented known issue, official Prisma acknowledgement
+- [Anthropic API Key Best Practices](https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure) — HIGH confidence; official Anthropic security guidance
+- [Playwright bot detection avoidance — ZenRows](https://www.zenrows.com/blog/avoid-playwright-bot-detection) — MEDIUM confidence; community-verified User-Agent and header patterns
+- [Anthropic Increase Output Consistency](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency) — HIGH confidence; official Anthropic guidance on temperature and rubric-based scoring
 
 ---
-
-*Pitfalls research for: v3.1 Portfolio Polish — Lenis smooth scroll, GSAP ScrollTrigger parallax, magnetic buttons, Matrix color harmony on existing Next.js 15 + motion v12 + GSAP stack with Lighthouse CI ≥ 0.90 gate and 18 Playwright visual regression baselines*
-*Researched: 2026-02-20*
-*Confidence: HIGH on SSR/hydration, GSAP cleanup, CI gate impact; MEDIUM on Tailwind v4 @theme conflicts, Playwright stability strategies*
+*Pitfalls research for: AI SDR Replacement System — Claude API + NestJS 11 + Next.js 15*
+*Researched: 2026-02-28*

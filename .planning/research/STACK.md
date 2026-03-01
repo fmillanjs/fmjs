@@ -1,286 +1,373 @@
 # Stack Research
 
-**Domain:** Portfolio Polish — Smooth scroll, GSAP parallax, magnetic buttons, Matrix theme extension
-**Researched:** 2026-02-20
+**Domain:** AI SDR Replacement System — Claude API integration, web scraping, background job queues, structured outputs
+**Researched:** 2026-02-28
 **Confidence:** HIGH
 
 ---
 
-## Existing Installed Packages (Do Not Re-Install)
+## Context: What Is Already Decided
 
-All animation libraries are already in `apps/web/package.json` at the workspace level. Zero new dependencies are needed for the core v3.1 features.
+The following are NOT re-researched. They are locked decisions from PROJECT.md:
 
-| Package | Installed Version | Import Path |
-|---------|-------------------|-------------|
-| `lenis` | 1.3.17 | `lenis` (core), `lenis/react` (ReactLenis + useLenis) |
-| `gsap` | 3.14.2 | `gsap` (core), `gsap/ScrollTrigger` (plugin) |
-| `@gsap/react` | 2.1.2 | `@gsap/react` (useGSAP hook) |
-| `motion` | 12.34.2 | `motion/react` (motion, useMotionValue, useSpring, etc.) |
+- **Frontend:** Next.js 15 (App Router, `'use client'` where needed)
+- **Backend:** NestJS 11 (standalone repo, separate from Turborepo monorepo)
+- **ORM:** Prisma (same pattern as TeamFlow + DevCollab)
+- **Database:** Postgres
+- **AI Model:** `claude-sonnet-4-6` via Anthropic Claude API
+- **Auth:** NextAuth v5 + NestJS JWT strategy (same pattern as TeamFlow)
+- **Deployment:** Docker + Coolify (same CI/CD pattern)
+- **No Redis** in the base stack — see Background Jobs section below
 
-Verified with direct `node_modules` inspection — `lenis@1.3.17`, `gsap@3.14.2`, `motion@12.34.2`, `@gsap/react@2.1.2`.
+This research covers only the **new capabilities** required: Claude API integration, web scraping, job queuing, structured outputs, and cost management.
 
 ---
 
 ## Recommended Stack
 
-### Core Technologies
+### Core New Technologies
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| `lenis` (ReactLenis) | 1.3.17 | Smooth scroll provider for portfolio layout | Already installed. `lenis/react` ships `ReactLenis` and `useLenis` built into the package — no separate `@studio-freight/react-lenis` needed. The `root` prop makes it wrap the native document scroll, not a fake scroll container. |
-| `gsap` + ScrollTrigger | 3.14.2 | Parallax depth effects tied to scroll position | Already installed. ScrollTrigger is at `gsap/ScrollTrigger`. When Lenis drives scroll, ScrollTrigger must be synced via GSAP's ticker — not via its own native scroll listeners. |
-| `@gsap/react` (useGSAP) | 2.1.2 | Safe GSAP animation lifecycle in React components | Already installed. Automatically handles cleanup on unmount and re-runs on deps change. Required for Next.js App Router to avoid ScrollTrigger instances leaking across route navigations. |
-| `motion` (useMotionValue + useSpring) | 12.34.2 | Spring physics for magnetic button cursor tracking | Already installed. `useMotionValue` + `useSpring` from `motion/react` produce layout-thrash-free spring animations without React re-renders. Consistent with existing motion/react usage throughout portfolio. |
+| `@anthropic-ai/sdk` | `^0.78.0` | Claude API client — streaming, tool use, structured outputs | Official SDK from Anthropic. Latest stable is 0.78.0 (released 2026-02-19). Provides `client.messages.stream()` for streaming, `output_config.format` for structured JSON, `strict: true` tool definitions, and built-in retry/backoff logic. No need for raw fetch. |
+| `cheerio` | `^1.2.0` | HTML parsing for company URL scraping | Version 1.0+ is now stable (after 7 years of RC). jQuery-style selectors for server-side HTML. Fast and lightweight (~38KB). Works without a browser engine — correct for scraping static company "About" pages, meta tags, og:description, og:title. |
+| `axios` | `^1.7.x` | HTTP fetch layer for cheerio scraping | Fetches raw HTML from company URLs for cheerio to parse. Already a common dependency in NestJS projects. TypeScript-native. Handles redirects, timeouts, and custom User-Agent headers out of the box. |
+| `@nestjs/bullmq` | `^11.0.4` | NestJS module for BullMQ — background job queue | Official NestJS integration. Matches the NestJS module pattern (imports, decorators, `@Processor`). Ships with `BullModule`, `InjectQueue`, and `@Processor` decorator. Matches NestJS 11 module lifecycle. |
+| `bullmq` | `^5.70.1` | Redis-backed job queue engine | Peer dependency of `@nestjs/bullmq`. Provides `Queue`, `Worker`, `QueueEvents`, and built-in rate limiting at the queue level (`limiter: { max, duration }`). TypeScript-first rewrite of deprecated Bull. Active — 5.70.1 released 2026-02-23. |
+| `zod` | `^3.24.x` | TypeScript-first schema validation for Claude responses | Used to define the JSON schema sent to Claude's `output_config.format`, and to validate + parse the returned structured JSON. `z.object()` schemas generate JSON Schema via `zodToJsonSchema()`. v4 is in beta — use v3 for stability. |
+| `zod-to-json-schema` | `^3.23.x` | Converts Zod schemas to JSON Schema format | Required to pass Zod-defined schemas to Claude's `output_config.format.schema` field, which expects raw JSON Schema. Note: Zod v4 will make this unnecessary — but v4 is not yet stable. |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| `lenis/dist/lenis.css` | included in lenis 1.3.17 | Scroll container CSS rules | Must be imported once — sets `html.lenis body { height: auto }` and overflow rules. Import in `apps/web/app/globals.css` via `@import`. |
-| CSS custom properties only | — | Matrix color token extension | No new library. Extend existing `--matrix-green`, `--matrix-green-dim`, `--matrix-green-ghost` tokens already in `:root`. Add new tokens directly in `globals.css`. |
+| `ioredis` | `^5.4.x` | Redis client for BullMQ | BullMQ requires Redis. Install ioredis as the Redis adapter. Required if you use BullMQ — no way around it. |
+| `@nestjs/throttler` | `^6.x` | HTTP-level rate limiting for NestJS endpoints | Limits how many enrichment/email generation requests one user can trigger per minute. Sits in front of the queue — prevents queue flooding from the UI. |
+| `p-limit` | `^6.x` | In-process concurrency limiter | Alternative to full BullMQ for simple sequential Claude calls. Use when you do NOT want to add Redis as a service dependency (see Alternatives section). |
+| `@types/cheerio` | Not needed in v1+ | TypeScript types for cheerio | Cheerio 1.0+ ships its own TypeScript types. Do NOT install `@types/cheerio` — it was for v0.x and causes type conflicts with v1+. |
 
 ### Development Tools
 
 | Tool | Purpose | Notes |
 |------|---------|-------|
-| Existing Lighthouse CI | Performance regression gate | Run after adding Lenis + ScrollTrigger to confirm score stays at or above 0.90. Lenis itself adds ~8KB gzipped — well within budget. |
-| Existing Playwright visual regression | Snapshot comparison | Update baselines after Matrix color harmony changes to project cards, footer, sections. |
+| Redis (Docker) | Required by BullMQ | Add to `docker-compose.yml` alongside Postgres. Use official `redis:7-alpine` image. Port 6379. If you already have Redis from TeamFlow (for Socket.io adapter), reuse the same Redis service. |
+| `@bull-board/api` + `@bull-board/nestjs` | Queue monitoring UI | Optional but useful for debugging AI pipeline jobs in development. Provides a dashboard showing job status, retries, failures. Add in dev only — do not expose in production without auth. |
 
 ---
 
-## Integration Architecture
+## Critical Architecture Decision: BullMQ vs p-limit
 
-### 1. Lenis Smooth Scroll
+This is the most important stack decision for the AI SDR backend.
 
-**Where:** `apps/web/app/(portfolio)/layout.tsx` via a new `LenisProvider` client component.
+### Option A: BullMQ + Redis (Recommended for Portfolio Impressiveness)
 
-**Why not wrap in root layout:** The dashboard routes (TeamFlow, DevCollab) do not use smooth scroll. Scoping to the portfolio layout keeps it isolated.
+**Add to stack:** `bullmq`, `@nestjs/bullmq`, `ioredis`, Redis Docker service
 
-**CSS import:** Add `@import "lenis/dist/lenis.css";` to `globals.css` before other imports. The lenis.css file contains: `html.lenis body { height: auto }` plus overflow and pointer-events rules for the smooth scroll container. Without it, Lenis does not function correctly.
+**Why:** Demonstrates production-grade background job architecture. Jobs survive server restarts. Queue is observable (Bull Board). Rate limiting at the queue level protects Claude API rate limits automatically. Recruiter-visible: the architecture diagram shows a proper pipeline. Concretely: enriching 10 leads simultaneously without Redis means a NestJS crash loses all in-progress enrichments.
 
-**ReactLenis ref API (from lenis 1.3.17 TypeScript types):**
-- `ReactLenis` is a `forwardRef` component
-- `ref` exposes `{ wrapper, content, lenis }` — access the Lenis instance via `ref.current.lenis`
-- `root` prop (boolean) — when `true`, targets the document scroll (what we want for portfolio)
-- `options.autoRaf` — when `false`, you manually drive the RAF loop (required for GSAP ticker integration)
-- The `autoRaf` prop directly on `<ReactLenis>` is deprecated in 1.3.17 — use `options={{ autoRaf: false }}` instead
+**Trade-off:** Adds Redis as a service dependency. More Docker configuration. More code.
 
-**Lenis provider component structure:**
+**Use when:** This is a standalone repo with its own docker-compose. Adding Redis is a one-line `docker-compose.yml` change. The complexity cost is low and the architectural statement is high.
 
-```tsx
-// apps/web/components/portfolio/lenis-provider.tsx
-'use client'
+### Option B: p-limit (Simpler, No Redis)
 
-import { ReactLenis } from 'lenis/react'
-import type { LenisRef } from 'lenis/react'
-import { useRef, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import gsap from 'gsap'
-import ScrollTrigger from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
+**Add to stack:** `p-limit` only
 
-export function LenisProvider({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<LenisRef>(null)
-  const pathname = usePathname()
+**Why:** p-limit provides in-process concurrency control with zero infrastructure. `pLimit(3)` limits to 3 concurrent Claude calls. Sufficient for a demo with 10-20 pre-seeded leads.
 
-  // Wire Lenis into GSAP ticker for ScrollTrigger synchronization
-  useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger)
+**Trade-off:** Jobs are lost on server restart. No retry logic built-in. No observable queue. Less architecturally impressive.
 
-    function update(time: number) {
-      lenisRef.current?.lenis?.raf(time * 1000)
-    }
+**Use when:** You want to ship faster and the demo's pre-seeded leads make job persistence irrelevant.
 
-    gsap.ticker.add(update)
-    gsap.ticker.lagSmoothing(0)
-    lenisRef.current?.lenis?.on('scroll', ScrollTrigger.update)
+**RECOMMENDATION: Use BullMQ.** The AI SDR project's purpose is to demonstrate production engineering skills. A Redis-backed job queue is a concrete signal of that. The overhead is one extra Docker service and ~150 lines of NestJS boilerplate that follows the exact same module pattern already in the project.
 
-    return () => {
-      gsap.ticker.remove(update)
-      lenisRef.current?.lenis?.off('scroll', ScrollTrigger.update)
-    }
-  }, [])
+---
 
-  // Reset scroll to top on route change
-  useEffect(() => {
-    lenisRef.current?.lenis?.scrollTo(0, { immediate: true })
-  }, [pathname])
+## Claude API Integration Patterns
 
-  return (
-    <ReactLenis root options={{ autoRaf: false }} ref={lenisRef}>
-      {children}
-    </ReactLenis>
-  )
+### Streaming (NestJS SSE)
+
+NestJS has built-in SSE support via the `@Sse()` decorator. Use it to stream Claude email generation responses to the Next.js frontend.
+
+```typescript
+// nestjs: ai-sdr-api/src/emails/emails.controller.ts
+import { Controller, Post, Body, Sse } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Controller('emails')
+export class EmailsController {
+  constructor(private emailsService: EmailsService) {}
+
+  // Step 1: POST stores job data, returns a streamId
+  @Post('generate')
+  async startGeneration(@Body() dto: GenerateEmailDto) {
+    const streamId = await this.emailsService.prepareStream(dto);
+    return { streamId };
+  }
+
+  // Step 2: GET /emails/stream/:id opens SSE connection
+  @Sse('stream/:streamId')
+  streamEmail(@Param('streamId') streamId: string): Observable<MessageEvent> {
+    return this.emailsService.streamEmail(streamId);
+  }
 }
 ```
 
-**Route change scroll reset:** Lenis does not reset scroll position on Next.js App Router navigation. Without the `useEffect` above, users land partway down the page when navigating between portfolio pages. The `immediate: true` flag skips Lenis easing and teleports instantly.
+**Why POST then GET:** Claude streaming requires request body data. SSE uses GET requests. POST stores the parameters temporarily (in-memory Map or Redis), GET opens the stream using the stored ID. This is the confirmed pattern for NestJS + Claude streaming.
 
-**Reduced motion:** Check `window.matchMedia('(prefers-reduced-motion: reduce)').matches` before rendering `<ReactLenis>`. When reduced motion is active, render a plain `<>{children}</>` without the Lenis wrapper. The existing `@media (prefers-reduced-motion: reduce)` CSS already sets `scroll-behavior: auto !important` but Lenis operates in JavaScript — it must be conditionally skipped at the component level too.
+### Structured Output (Lead Enrichment)
 
-**`ReactLenis root` sets `class="lenis"` on `<html>`**, which activates the `lenis.css` rules. The `.matrix-theme` class on the portfolio layout div is unaffected — no cascade conflict.
+Use `output_config.format` with `type: "json_schema"` for non-streaming AI calls that need guaranteed JSON (lead scoring, CRM enrichment). This is generally available — no beta header required as of SDK 0.78.0.
 
-### 2. GSAP ScrollTrigger Parallax
+```typescript
+import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
-**Where:** Per-section 'use client' components. Not in layout.
+const LeadEnrichmentSchema = z.object({
+  companySize: z.enum(['1-10', '11-50', '51-200', '201-1000', '1000+']),
+  industry: z.string(),
+  techStack: z.array(z.string()),
+  painPoints: z.array(z.string()),
+  icpScore: z.number().min(0).max(100),
+  icpReasoning: z.string(),
+});
 
-**Plugin registration:** Register once in `LenisProvider` (shown above). Do NOT register in every component — GSAP's registration is global. A second `registerPlugin(ScrollTrigger)` call is a no-op but adds reader confusion.
+type LeadEnrichment = z.infer<typeof LeadEnrichmentSchema>;
 
-**Pattern per parallax section:**
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-```tsx
-'use client'
-import { useRef } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import ScrollTrigger from 'gsap/ScrollTrigger'
+const response = await client.messages.create({
+  model: 'claude-sonnet-4-6',
+  max_tokens: 1024,
+  messages: [{ role: 'user', content: enrichmentPrompt }],
+  output_config: {
+    format: {
+      type: 'json_schema',
+      schema: zodToJsonSchema(LeadEnrichmentSchema) as Record<string, unknown>,
+    },
+  },
+});
 
-export function ParallaxSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const layerRef = useRef<HTMLDivElement>(null)
+// Response is guaranteed valid JSON — no try/catch on JSON.parse needed
+const enrichment = LeadEnrichmentSchema.parse(
+  JSON.parse(response.content[0].text)
+);
+```
 
-  useGSAP(() => {
-    gsap.to(layerRef.current, {
-      yPercent: -20,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,           // 1:1 with scroll position — pure positional
+**Key facts from official docs (verified 2026-02-28):**
+- `output_config.format` is the current API shape — the old `output_format` top-level param and `structured-outputs-2025-11-13` beta header both still work but are deprecated.
+- Structured outputs are generally available on claude-sonnet-4-6 (no beta header needed).
+- Prompts using structured outputs are processed with Zero Data Retention (ZDR) — good for lead data privacy.
+- `additionalProperties: false` should be set in the schema to prevent extra fields.
+
+### Tool Use (Alternative to Structured Output)
+
+Use `tools` + `tool_choice: { type: "tool", name: "..." }` when you want Claude to reason before returning structured data. More powerful than `output_config.format` for complex reasoning tasks like ICP scoring where the thought process matters.
+
+```typescript
+const response = await client.messages.create({
+  model: 'claude-sonnet-4-6',
+  max_tokens: 2048,
+  tools: [{
+    name: 'score_lead',
+    description: 'Score a lead against our ICP criteria',
+    input_schema: {
+      type: 'object',
+      properties: {
+        icpScore: { type: 'number', description: 'ICP fit score 0-100' },
+        icpReasoning: { type: 'string' },
+        intentSignals: { type: 'array', items: { type: 'string' } },
       },
-    })
-  }, { scope: containerRef })   // limits cleanup to this component's triggers only
+      required: ['icpScore', 'icpReasoning', 'intentSignals'],
+      additionalProperties: false,
+    },
+    strict: true,  // Guarantees schema compliance on tool inputs
+  }],
+  tool_choice: { type: 'tool', name: 'score_lead' },
+  messages: [{ role: 'user', content: leadScoringPrompt }],
+});
 
-  return (
-    <div ref={containerRef} className="overflow-hidden">
-      <div ref={layerRef}>content</div>
-    </div>
-  )
+const toolUse = response.content.find(b => b.type === 'tool_use');
+const scored = toolUse.input; // Typed as the schema shape
+```
+
+**When to use tool use vs structured output:**
+- `output_config.format` = use for extraction tasks (pull data out of text, format CRM fields)
+- `tools` + `tool_choice` = use for reasoning tasks (ICP scoring, intent analysis) where Claude's chain-of-thought before calling the tool produces better results
+
+---
+
+## Web Scraping Pattern
+
+Company URL scraping uses axios (HTTP) + cheerio (HTML parsing). No browser engine needed — company websites' public "About" and homepage HTML contains the metadata we need.
+
+```typescript
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+
+interface ScrapedCompanyData {
+  title: string;
+  description: string;
+  ogDescription: string;
+  keywords: string;
+}
+
+async function scrapeCompanyUrl(url: string): Promise<ScrapedCompanyData> {
+  const { data: html } = await axios.get(url, {
+    timeout: 10_000,
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; AI-SDR-Enrichment/1.0)',
+    },
+  });
+
+  const $ = cheerio.load(html);
+
+  return {
+    title: $('title').text().trim(),
+    description: $('meta[name="description"]').attr('content') ?? '',
+    ogDescription: $('meta[property="og:description"]').attr('content') ?? '',
+    keywords: $('meta[name="keywords"]').attr('content') ?? '',
+  };
 }
 ```
 
-**`scrub: true`** ties animation position directly to scroll. `scrub: 1.5` adds 1.5-second lag for a springy feel. Use `scrub: true` for tight parallax, `scrub: 1.5` for inertia-feel depth.
+**Limitations of this approach (be explicit in case study):**
+- JavaScript-rendered pages (SPAs) will return empty HTML — cheerio cannot execute JS
+- Some sites block headless requests (rate limiting, bot detection, Cloudflare)
+- Solution for production: fall back gracefully — if scraping fails, Claude still enriches from the manually entered company name/domain
 
-**`{ scope: containerRef }`** on useGSAP limits cleanup to that component's ScrollTrigger instances. This is the critical Next.js App Router safety mechanism. Never use `ScrollTrigger.getAll().forEach(st => st.kill())` globally — it kills running ScrollTriggers from other mounted sections.
+**Why not Playwright for scraping:**
+- Playwright is already in the monorepo for screenshot testing, not available in the standalone AI SDR repo
+- A full browser engine adds ~150MB to Docker image just to scrape meta tags
+- cheerio handles 80%+ of company sites (static HTML meta tags)
 
-**After Lenis init:** Call `ScrollTrigger.refresh()` inside the `LenisProvider` `useGSAP` callback after wiring the ticker. Lenis changes how scroll position is calculated and ScrollTrigger needs to recalculate trigger positions after Lenis initializes.
+**Why not Firecrawl:**
+- External paid API dependency for a portfolio demo — not worth it
+- Adds external API key management overhead
+- cheerio + axios achieves the same goal for meta-tag enrichment
 
-**SSR safety:** All code inside `useGSAP` runs only after mount, client-side. With `'use client'` on the component, no SSR issues. Do NOT call `gsap` or `ScrollTrigger` at module level — they access `window` and `document`.
+---
 
-**Import path:** `import ScrollTrigger from 'gsap/ScrollTrigger'` — confirmed working from `gsap@3.14.2` package root. Do NOT use `gsap/dist/ScrollTrigger` — that bypasses module resolution.
+## Rate Limiting Strategy
 
-### 3. Magnetic Button
+### Claude API Rate Limits (Tier 1 — expected for a new API key)
 
-**Approach:** `motion/react` spring physics. NOT GSAP.
+| Model | RPM | ITPM | OTPM |
+|-------|-----|------|------|
+| claude-sonnet-4-6 | 50 | 30,000 | 8,000 |
 
-**Rationale:** Motion already drives every other portfolio animation (AnimateIn, StaggerContainer, nav active indicator). Mixing GSAP `quickTo` for a single UI component adds a second animation system for one feature. Motion's `useMotionValue` + `useSpring` give spring physics without React re-renders, and integrate naturally with the existing `MotionConfig reducedMotion="user"` in `MotionProvider`.
+**Tier 1 is very constrained.** 50 RPM = ~1 request/second. For a demo with 10 pre-seeded leads running 3 AI operations each (enrichment + email + follow-up sequence), that is 30 total calls. At 1/sec they complete in 30 seconds — acceptable.
 
-Both `useMotionValue` and `useSpring` are confirmed available in `motion@12.34.2` from `motion/react` (verified by inspecting exported symbols from `motion/dist/cjs/react.js`).
+**BullMQ queue-level rate limiting:**
 
-**Pattern:**
+```typescript
+// Rate limit the AI queue to 40 jobs/minute (below Claude's 50 RPM limit)
+BullModule.registerQueue({
+  name: 'ai-enrichment',
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 5000 },
+  },
+  limiter: {
+    max: 40,        // max 40 jobs per duration
+    duration: 60000, // per 60 seconds
+  },
+}),
+```
 
-```tsx
-'use client'
-import { useRef } from 'react'
-import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/react'
+**Handle 429 errors from Claude API:**
 
-interface MagneticButtonProps {
-  children: React.ReactNode
-  strength?: number  // fraction of offset distance to follow; default 0.3
-}
-
-export function MagneticButton({ children, strength = 0.3 }: MagneticButtonProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
-
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 })
-  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 })
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    x.set((e.clientX - (rect.left + rect.width / 2)) * strength)
-    y.set((e.clientY - (rect.top + rect.height / 2)) * strength)
+```typescript
+// In the BullMQ processor
+@Processor('ai-enrichment')
+export class EnrichmentProcessor {
+  @Process('enrich-lead')
+  async process(job: Job<EnrichLeadJobData>) {
+    try {
+      return await this.claudeService.enrichLead(job.data);
+    } catch (error) {
+      if (error?.status === 429) {
+        // Re-throw so BullMQ triggers exponential backoff retry
+        throw error;
+      }
+      // Log non-retryable errors (bad prompt, etc.)
+      throw error;
+    }
   }
-
-  const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
-  }
-
-  if (prefersReducedMotion) {
-    return <div>{children}</div>
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      style={{ x: springX, y: springY }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {children}
-    </motion.div>
-  )
 }
 ```
 
-**Spring config:** `stiffness: 150, damping: 15, mass: 0.1`. The low mass (0.1) makes response feel near-instantaneous and cursor-following; damping 15 prevents oscillation on leave. These values come from the Olivier Larose magnetic button tutorial and are the community standard for this effect.
+**Prompt caching to reduce ITPM consumption:**
 
-**`strength` parameter:** Controls displacement in pixels as a fraction of offset from center. 0.3 = subtle professional movement for hero CTAs. Reserve magnetic effect for 2-3 key CTAs only — applying it everywhere makes the site feel gimmicky.
+For operations that reuse the same system prompt (ICP scoring, email generation), use Anthropic's prompt caching. Cache-read tokens do NOT count toward ITPM rate limits at Tier 1. Mark the system prompt with `cache_control: { type: 'ephemeral' }`:
 
-**`useReducedMotion()` integration:** This hook reads from the existing `MotionConfig reducedMotion="user"` context in `MotionProvider`. When the OS requests reduced motion, the hook returns `true` and the component renders a plain div with zero animation overhead.
-
-### 4. Matrix Color Extension
-
-**No new libraries.** Extend existing `:root` CSS token block in `globals.css`.
-
-**Current tokens (already in codebase):**
-```css
---matrix-green: #00FF41;
---matrix-green-dim: #00CC33;
---matrix-green-ghost: #00FF4120;
+```typescript
+messages: [
+  {
+    role: 'user',
+    content: [
+      {
+        type: 'text',
+        text: LONG_SYSTEM_PROMPT,
+        cache_control: { type: 'ephemeral' },
+      },
+      {
+        type: 'text',
+        text: leadSpecificData,
+      },
+    ],
+  },
+],
 ```
-
-**New tokens to add for v3.1:**
-```css
-/* Matrix color extension — v3.1 portfolio polish */
---matrix-green-subtle: #00FF410D;    /* ~5% opacity — section background tints */
---matrix-green-border: #00FF4133;    /* 20% opacity — card and section borders */
---matrix-scan-line: #00FF410A;       /* ~4% opacity — scanline overlay effect for footer */
---matrix-terminal: #0a1a0a;          /* near-black with green tint — deep section backgrounds */
-```
-
-**Token application by section:**
-- Project cards: `border-color: var(--matrix-green-border)`, `background: var(--matrix-terminal)` within `.matrix-theme`
-- Case study pages: `<hr>` dividers use `border-color: var(--matrix-green-dim)`
-- Skills/About: skill badge outlines use `--matrix-green-border`, level indicators use `--matrix-green`
-- Contact/CTA: primary CTA `background: var(--matrix-green)`, `color: #0a0a0a` (dark text on green)
-- Footer: Matrix rain characters use `var(--matrix-green)` with transparency variation
-
-**Contrast verification:** `--matrix-green` (#00FF41) on `#0a0a0a` background = ~12:1 contrast ratio, well above 4.5:1 WCAG AA. On interactive CTA: `#0a0a0a` text on `#00FF41` background = ~12:1. No purple introduced anywhere (user requirement).
-
-**Light mode guard:** The existing `html:not(.dark) .matrix-theme` rule reverts to standard Radix tokens in light mode. New tokens inside `.matrix-theme` inherit this behavior — they only apply in dark mode without additional rules.
 
 ---
 
 ## Installation
 
-No new installations required. All packages are already installed.
+### Backend (ai-sdr-api — NestJS 11)
 
 ```bash
-# Nothing to install — all packages already in apps/web/package.json:
-# lenis@1.3.17, gsap@3.14.2, @gsap/react@2.1.2, motion@12.34.2
+# Claude API
+npm install @anthropic-ai/sdk
+
+# Web scraping
+npm install axios cheerio
+# Do NOT install @types/cheerio — cheerio 1.0+ ships its own types
+
+# Structured output schema validation
+npm install zod zod-to-json-schema
+
+# Background jobs (choose one path — see architecture decision above)
+# Path A: BullMQ (recommended)
+npm install @nestjs/bullmq bullmq ioredis
+
+# Rate limiting for HTTP endpoints
+npm install @nestjs/throttler
 ```
 
-The one required "setup" is importing `lenis.css` in globals.css:
+### Frontend (ai-sdr-web — Next.js 15)
 
-```css
-/* apps/web/app/globals.css — add before @import "tailwindcss" */
-@import "lenis/dist/lenis.css";
+```bash
+# No new packages required for Claude integration
+# SSE streaming is consumed via native browser EventSource API
+# or fetch with ReadableStream — no package needed
+
+# Zod (for form validation, if not already installed)
+npm install zod
+```
+
+### Docker Compose Addition
+
+```yaml
+# docker-compose.yml — add Redis service if using BullMQ
+redis:
+  image: redis:7-alpine
+  ports:
+    - "6379:6379"
+  volumes:
+    - redis_data:/data
+  command: redis-server --appendonly yes
 ```
 
 ---
@@ -289,11 +376,12 @@ The one required "setup" is importing `lenis.css` in globals.css:
 
 | Recommended | Alternative | When to Use Alternative |
 |-------------|-------------|-------------------------|
-| `lenis/react` ReactLenis (root mode) | Vanilla Lenis + manual useEffect | If you need smooth scroll inside a specific scrollable div element rather than the document root. For a full-page portfolio, root mode is the right choice. |
-| motion `useMotionValue` + `useSpring` for magnetic button | GSAP `quickTo` | Use GSAP quickTo when GSAP is already the sole animation system AND you need imperatively-controlled velocity. This codebase uses motion as primary, so stay consistent. |
-| Per-component `useGSAP` with `{ scope }` | Global GSAP setup in singleton | Use singleton only when many components share one ScrollTrigger timeline. For discrete parallax sections, component scope is leak-free and correct. |
-| CSS custom property tokens for Matrix extension | Tailwind utility classes via `@theme inline` | Add Matrix tokens to `@theme inline` only if you want Tailwind utility syntax (`bg-matrix-green`). For component-scoped style attributes and CSS rules, raw vars are simpler. |
-| GSAP ScrollTrigger for parallax | motion `useScroll` + `useTransform` | Use motion's `useScroll` + `useTransform` if you want to avoid GSAP entirely. GSAP ScrollTrigger is more battle-tested for complex scrub animations and is already in the project — use what's installed. |
+| `@anthropic-ai/sdk` direct | `@ai-sdk/anthropic` (Vercel AI SDK) | Use Vercel AI SDK if Next.js API routes are the AI layer (not NestJS). Since AI calls go through NestJS, use the official Anthropic SDK directly — it has no Vercel-specific abstractions to fight. |
+| `bullmq` + `@nestjs/bullmq` | `p-limit` in-process concurrency | Use p-limit if you want to avoid Redis entirely. Sufficient for a demo with pre-seeded data. Lower impressiveness for portfolio showcase. |
+| `cheerio` + `axios` | `playwright` headless browser scraping | Use Playwright scraping only if you need to scrape JS-rendered SPAs. Adds ~150MB to Docker image. Not worth it for meta-tag extraction. |
+| `zod` + `zod-to-json-schema` | Raw JSON Schema objects | Use raw JSON Schema if you want zero dependencies. Zod adds TypeScript type inference (`z.infer<>`) which pays dividends when mapping Claude output to Prisma writes. |
+| `output_config.format` (structured outputs) | Prompt engineering for JSON + regex | Never rely on prompt engineering alone for structured data. Claude's constrained decoding via `output_config.format` guarantees valid JSON — prompt-only approaches fail ~5-15% of the time. |
+| Redis 7 Alpine | Redis 6 | Redis 7 is the current stable. BullMQ 5.x requires Redis >= 6.2. Alpine variant keeps Docker image small. |
 
 ---
 
@@ -301,40 +389,14 @@ The one required "setup" is importing `lenis.css` in globals.css:
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `@studio-freight/lenis` or `@studio-freight/react-lenis` | Deprecated. Package renamed to `lenis`. These are unmaintained and conflict with the current package. | `lenis` and `lenis/react` (already installed at 1.3.17) |
-| `gsap/dist/ScrollTrigger` import path | Bypasses the package export map and may break in ESM module resolution contexts. | `import ScrollTrigger from 'gsap/ScrollTrigger'` — confirmed working from package root |
-| `ScrollTrigger.getAll().forEach(st => st.kill())` | Kills every ScrollTrigger in the entire app. With multiple sections mounted simultaneously, this destroys running animations in other components. | Store component-specific trigger refs and kill only those, or let `useGSAP({ scope })` handle cleanup per component. |
-| GSAP ScrollSmoother | Lenis is already installed and purpose-built for smooth scrolling. ScrollSmoother requires a specific DOM structure (wrapper + content divs) that conflicts with the existing portfolio layout structure. | `lenis` already installed |
-| `framer-motion` package | This codebase uses `motion` (the renamed/split package). Both exist on npm but importing from `framer-motion` introduces a separate dependency with its own React peer requirements. On React 19, only `motion` is validated. | Always import from `motion/react` |
-| `autoRaf: true` on ReactLenis when also using GSAP ScrollTrigger | Creates two competing RAF loops — Lenis's internal loop AND GSAP's ticker both try to drive animation. Results in jank and ScrollTrigger position drift. This is the single most common cause of Lenis + ScrollTrigger integration bugs. | `options={{ autoRaf: false }}` on ReactLenis + manual `gsap.ticker.add()` |
-| GSAP calls at module level (outside useGSAP/useEffect) | GSAP accesses `window` and `document` on import side-effects. Next.js App Router SSR will throw `ReferenceError: window is not defined`. | All GSAP code must live inside `useGSAP` callback or `useEffect`, inside a `'use client'` component |
-| `time * 600` in the GSAP ticker callback | Some older tutorials use `time * 600` — this is wrong. GSAP ticker passes time in seconds; Lenis.raf expects milliseconds. `time * 1000` is the correct conversion. | `lenis.raf(time * 1000)` |
-
----
-
-## Stack Patterns by Variant
-
-**If section has a large visual background (hero, footer):**
-- Use GSAP ScrollTrigger parallax with `scrub: true`
-- Keep `yPercent` range between -15 and -25 to avoid visible content gaps at section edges
-- Wrap content in `overflow-hidden` container to clip overflowing parallax layer
-
-**If section has primarily text content (about, skills, case study body):**
-- Do NOT apply parallax to text — legibility suffers and text parallax is a known readability problem
-- Use existing `AnimateIn` scroll-reveal (already implemented) — it is sufficient and correct for text sections
-
-**If button is a primary CTA (hero CTAs, contact submit):**
-- Wrap with `<MagneticButton strength={0.3}>` — subtle magnetic pull, professional feel
-- Reserve magnetic for 2-3 key CTAs max — applying to every button feels gimmicky and dilutes the effect
-
-**If reduced motion is preferred:**
-- `useReducedMotion()` returns true — MagneticButton renders plain div, parallax sections render static
-- Skip Lenis initialization entirely — check `matchMedia('(prefers-reduced-motion: reduce)').matches` before rendering `<ReactLenis>` wrapper
-- The existing global CSS rule already handles CSS animations and `scroll-behavior: auto`
-
-**If a section needs scroll-driven color change (footer fade-in):**
-- Use `useLenis` hook to get scroll progress, update a CSS custom property via `style` prop
-- Do NOT use GSAP for color — motion handles color better via `useTransform` on a MotionValue
+| `@ai-sdk/anthropic` (Vercel AI SDK) | Built for Next.js API routes and edge runtime. This project uses NestJS as the API layer. The Vercel SDK abstractions (useChat, streamText) are Next.js-centric and do not map to NestJS controllers cleanly. | `@anthropic-ai/sdk` directly in NestJS services |
+| `@nestjs/bull` (old Bull module) | Bull (not BullMQ) is in maintenance-only mode. Maintainers only fix critical bugs. BullMQ is the TypeScript-native successor with active development. | `@nestjs/bullmq` + `bullmq` |
+| `node-fetch` or raw `fetch` for Claude API | The `@anthropic-ai/sdk` already wraps fetch with proper retry logic, streaming support, type-safe responses, and SDK-level error handling. Rolling your own HTTP calls loses all of that. | `@anthropic-ai/sdk` client |
+| `puppeteer` for company URL scraping | Adds a full Chromium binary (~150-300MB) to the Docker image just to read meta tags. Overkill. Most company marketing sites serve static HTML with meta tags. | `axios` + `cheerio` |
+| `@types/cheerio` | This was for cheerio v0.x. Cheerio 1.0+ ships its own TypeScript declarations. Installing `@types/cheerio` creates type conflicts. | Nothing — cheerio 1.x types are included. |
+| Hardcoded `max_tokens` above 4096 for streaming | Large `max_tokens` values with streaming can hit OTPM rate limits quickly at Tier 1. For email generation, 1500 tokens is sufficient. For ICP scoring, 1024 is enough. | Keep `max_tokens` conservative: 1024 for structured outputs, 1500 for emails. |
+| `structured-outputs-2025-11-13` beta header | Deprecated. The structured outputs feature is generally available. The old beta header still works during a transition period but will be removed. | Use `output_config: { format: { type: 'json_schema', ... } }` — no header needed. |
+| Purple in any design element | User requirement — all milestones | Use Matrix green (`#00FF41`) and neutral grays only |
 
 ---
 
@@ -342,23 +404,27 @@ The one required "setup" is importing `lenis.css` in globals.css:
 
 | Package | Compatible With | Notes |
 |---------|-----------------|-------|
-| `lenis@1.3.17` | `react@19`, `next@15.1.0` | lenis/react dist ships with `"use client"` directive — SSR-safe. The `autoRaf` prop directly on ReactLenis is deprecated in 1.3.17; use `options={{ autoRaf: false }}` instead. |
-| `gsap@3.14.2` + `@gsap/react@2.1.2` | `react@19`, `next@15.1.0` | `useGSAP` hook is required for React 19 — the old manual `useLayoutEffect` + cleanup pattern is not React 19 compatible. |
-| `motion@12.34.2` | `react@19`, `next@15.1.0` | Already validated in v2.5. Import from `motion/react` exclusively. `useMotionValue` and `useSpring` confirmed present in dist/cjs/react.js. |
-| `lenis@1.3.17` + `gsap/ScrollTrigger@3.14.2` | Together | Requires `options={{ autoRaf: false }}` on ReactLenis + `gsap.ticker.add((time) => lenis.raf(time * 1000))`. Without ticker wiring, ScrollTrigger loses sync with Lenis-smoothed scroll position. |
-| `motion@12.34.2` + GSAP ScrollTrigger | Together (different responsibilities) | Motion handles spring-physics interactions (magnetic button, entrance animations). GSAP handles scroll-position-tied transforms (parallax). No conflict when kept in separate component trees. |
+| `@anthropic-ai/sdk@0.78.0` | Node.js >= 18, TypeScript >= 4.9, NestJS 11 | ESM + CJS dual build. Import as `import Anthropic from '@anthropic-ai/sdk'`. Works in NestJS modules without any special config. |
+| `cheerio@1.2.0` | Node.js >= 18.17 | Minimum Node 18.17 required. NestJS 11 runs on Node 18+ so no conflict. Do NOT install `@types/cheerio`. |
+| `bullmq@5.70.1` | Redis >= 6.2, Node.js >= 16 | Requires Redis. Works with ioredis as the Redis client. `@nestjs/bullmq@11.0.4` is the tested integration layer. |
+| `@nestjs/bullmq@11.0.4` | NestJS >= 10, bullmq ^5.x | Works with NestJS 11. Version 11.x of the package tracks NestJS major versions — 11.0.4 is the correct version for NestJS 11. |
+| `zod@3.24.x` | TypeScript >= 4.5 | Use Zod v3 (stable). Zod v4 is in beta and changes the `zod-to-json-schema` integration. Wait for v4 stable before migrating. |
+| `zod-to-json-schema@3.23.x` | `zod@3.x` | Converts Zod schemas to JSON Schema objects for Claude's `output_config.format.schema`. Will be deprecated when Zod v4 stabilizes (built-in JSON Schema generation in v4). |
 
 ---
 
 ## Sources
 
-- Direct `node_modules` inspection (`/node_modules/lenis/dist/lenis-react.d.ts`, `/node_modules/gsap/ScrollTrigger.js`, `/node_modules/motion/package.json`) — version numbers, import paths, TypeScript type definitions — HIGH confidence
-- GSAP Community Forum: [Patterns for synchronizing ScrollTrigger and Lenis in React/Next](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — GSAP ticker integration, ReactLenis ref pattern — MEDIUM confidence (community, GSAP team contributor)
-- GSAP Community Forum: [Using ScrollTriggers in Next.js with useGSAP](https://gsap.com/community/forums/topic/40128-using-scrolltriggers-in-nextjs-with-usegsap/) — scope pattern for Next.js App Router, per-component cleanup — MEDIUM confidence
-- Olivier Larose tutorial: [2 Ways to Make a Magnetic Button](https://blog.olivierlarose.com/tutorials/magnetic-button) — spring config values (stiffness: 150, damping: 15, mass: 0.1) — MEDIUM confidence (widely cited creative dev tutorial)
-- Bridger Tower: [How to implement Lenis in Next.js](https://bridger.to/lenis-nextjs) — Next.js App Router Lenis provider pattern with autoRaf — MEDIUM confidence
-- Lenis GitHub README (darkroomengineering/lenis): `root` prop behavior, useLenis hook API, ReactLenis ref shape — HIGH confidence (official source)
+- GitHub: anthropics/anthropic-sdk-typescript releases — Latest version 0.78.0 confirmed 2026-02-19. Streaming and tool use patterns — HIGH confidence
+- Anthropic Official Docs: `platform.claude.com/docs/en/docs/build-with-claude/structured-outputs` — `output_config.format` shape, generally available status for claude-sonnet-4-6, ZDR note — HIGH confidence
+- Anthropic Official Docs: `platform.claude.com/docs/en/api/rate-limits` — Tier 1 limits: 50 RPM, 30K ITPM, 8K OTPM for claude-sonnet-4-6. Cache-aware ITPM (cached tokens don't count) — HIGH confidence
+- npm: `bullmq` — Latest 5.70.1 (2026-02-23), `@nestjs/bullmq` — Latest 11.0.4 — HIGH confidence
+- npm: `cheerio` — Latest 1.2.0, Node >= 18.17 required, own TypeScript types — HIGH confidence
+- BullMQ Docs: `docs.bullmq.io/guide/nestjs` — NestJS integration pattern, `@Processor` decorator, `limiter` config — HIGH confidence
+- NestJS Docs: `docs.nestjs.com/techniques/server-sent-events` — `@Sse()` decorator pattern for streaming — HIGH confidence
+- Zod: `zod.dev` — v3 stable, v4 beta, built-in JSON Schema in v4 — HIGH confidence
+- WebSearch: Cheerio 1.0 release notes — "batteries included", Node 18.17 minimum, own types — HIGH confidence
 
 ---
-*Stack research for: v3.1 Portfolio Polish — Lenis smooth scroll, GSAP ScrollTrigger parallax, magnetic buttons, Matrix theme extension*
-*Researched: 2026-02-20*
+*Stack research for: v5.0 AI SDR Replacement System — Claude API integration, web scraping, job queues, structured outputs*
+*Researched: 2026-02-28*

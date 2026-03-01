@@ -1,667 +1,844 @@
 # Architecture Research
 
-**Domain:** Animation integration — Lenis smooth scroll + GSAP ScrollTrigger + magnetic buttons + Matrix color system into existing Next.js 15 App Router portfolio
-**Researched:** 2026-02-20
-**Confidence:** HIGH (lenis/react API verified against GitHub monorepo; GSAP patterns verified against official docs; motion/react magnetic approach verified; existing codebase read directly)
+**Domain:** AI SDR Replacement System — NestJS 11 backend + Claude API pipeline + Next.js 15 streaming frontend
+**Researched:** 2026-02-28
+**Confidence:** HIGH (Claude API patterns verified against official Anthropic docs; NestJS SSE verified against nestjs.com; structured outputs confirmed GA on Claude Opus 4.6/Sonnet 4.6)
 
 ---
 
-## Existing Architecture Baseline
-
-Before describing what changes, the current state must be understood explicitly.
-
-### Current Provider/Component Tree (Portfolio Routes)
+## System Overview
 
 ```
-app/layout.tsx  [Server Component]
-  └── <html> + <body>
-        └── ThemeProvider (next-themes, class-based dark mode)
-              └── (portfolio)/layout.tsx  [Server Component]
-                    └── <div class="matrix-theme min-h-screen flex flex-col">
-                          ├── <DotGridSpotlight />        [Client -- mousemove listener]
-                          ├── <PortfolioNav />            [Client -- motion/react, usePathname]
-                          ├── <MotionProvider>            [Client -- MotionConfig reducedMotion="user"]
-                          │     └── <main>{children}</main>
-                          └── <PortfolioFooter />         [Server Component currently]
-                          └── <CommandPalette />          [Client]
+┌──────────────────────────────────────────────────────────────────────┐
+│                         Next.js 15 Frontend                           │
+│  ┌────────────────┐  ┌──────────────────┐  ┌──────────────────────┐  │
+│  │  Lead Input    │  │  Pipeline Status  │  │  Email Preview       │  │
+│  │  Form (RSC)    │  │  (Client, SSE)    │  │  (Client, stream)    │  │
+│  └───────┬────────┘  └──────────┬───────┘  └────────────┬─────────┘  │
+│          │ POST /leads          │ GET /leads/:id/status  │ GET /leads/:id/email/stream  │
+├──────────┼──────────────────────┼────────────────────────┼────────────┤
+│                         NestJS 11 API                                 │
+│  ┌────────────────────────────────────────────────────────────────┐   │
+│  │                      LeadsController                            │   │
+│  │   POST /leads    GET /leads     GET /leads/:id/email/stream    │   │
+│  └───────────────────────┬────────────────────────────────────────┘   │
+│                          │                                             │
+│  ┌───────────────────────▼────────────────────────────────────────┐   │
+│  │                   PipelineService (orchestrator)                │   │
+│  │  qualify() -> enrich() -> personalize() -> generateSequence()  │   │
+│  └──┬───────────────┬──────────────────┬────────────────┬─────────┘   │
+│     │               │                  │                │              │
+│  ┌──▼────┐    ┌─────▼──────┐   ┌───────▼──────┐  ┌────▼──────────┐   │
+│  │Qualify│    │Enrich      │   │Personalize   │  │Sequence       │   │
+│  │Service│    │Service     │   │Service       │  │Service        │   │
+│  │(Claude│    │(Claude +   │   │(Claude       │  │(Claude        │   │
+│  │ tool) │    │ scraper)   │   │ stream)      │  │ tool)         │   │
+│  └──┬────┘    └─────┬──────┘   └───────┬──────┘  └────┬──────────┘   │
+│     │               │                  │                │              │
+│  ┌──▼───────────────▼──────────────────▼────────────────▼──────────┐  │
+│  │                     ClaudeService (wrapper)                      │  │
+│  │            @anthropic-ai/sdk  |  structured outputs  |  stream  │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                          Postgres (Prisma ORM)                          │
+│  ┌─────────────┐  ┌──────────────────┐  ┌───────────────────────────┐  │
+│  │ Lead        │  │ AIOutput         │  │ EmailSequence             │  │
+│  └─────────────┘  └──────────────────┘  └───────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Current CSS Token System
+---
+
+## Decision: Synchronous Pipeline (Chosen) vs Background Jobs vs Pure Streaming
+
+### The Three Approaches Evaluated
+
+**Option A: Synchronous await-all pipeline**
+- Run all Claude calls sequentially: qualify → enrich → personalize → sequence
+- Return the entire result when all steps are done
+- UI shows a spinner until all 4 steps complete (8–25 seconds)
+
+**Option B: Background job queue (BullMQ + Redis)**
+- POST /leads returns 202 Accepted immediately
+- BullMQ workers process steps asynchronously
+- UI polls GET /leads/:id until status = complete
+- Requires Redis as a separate infrastructure dependency
+
+**Option C: Hybrid — synchronous pipeline + step-level SSE progress + final email stream**
+This is the recommended approach.
+
+### Recommendation: Option C — Hybrid Synchronous + SSE Progress + Email Stream
+
+**Rationale:**
+
+The pipeline consists of 4 sequential steps where each step's output is the next step's input. They cannot be parallelized. Background jobs (BullMQ) would add Redis infrastructure, job state serialization, polling endpoints, and significant complexity — none of which demonstrates AI integration skills. The recruiter-visible outcome is the same: "it processed the lead."
+
+Streaming the email generation step is distinct from background jobs. Email generation is the most compelling recruiter-visible feature (watching Claude write personalized cold email in real time). Streaming this one step gives a dramatic UX moment without full async architecture complexity.
+
+The 3 structured steps (qualify, enrich, sequence) run synchronously and fast enough that a step-progress indicator via SSE makes the wait feel interactive. At portfolio scale with one demo user, there is no concurrency concern.
+
+**Decision Table:**
+
+| Concern | Sync-only | Background jobs | Hybrid (chosen) |
+|---------|-----------|-----------------|-----------------|
+| Infrastructure | Postgres only | Postgres + Redis | Postgres only |
+| UX during wait | Spinner (bad) | Poll status (meh) | Step progress + stream (compelling) |
+| Demo impressiveness | LOW | MEDIUM | HIGH |
+| Implementation complexity | LOW | HIGH | MEDIUM |
+| Correct for portfolio? | No | No | Yes |
+
+---
+
+## Pipeline Architecture (Detailed)
+
+### Step-by-step execution flow
 
 ```
-:root {
-  --matrix-green: #00FF41;         (Tailwind: no utility, consumed as var())
-  --matrix-green-dim: #00CC33;     (Tailwind: no utility, consumed as var())
-  --matrix-green-ghost: #00FF4120; (Tailwind: no utility, consumed as var())
+POST /leads { name, email, company, url }
+          |
+          v
+    PipelineService.process(leadId)
+          |
+    [Step 1: Qualify]
+    ClaudeService.structuredOutput({
+      prompt: ICP scoring prompt,
+      schema: QualificationSchema  // score 0-100, fit_reason, intent_signals[]
+    })
+    → save to AIOutput (step='qualify', result=JSON)
+    → emit SSE event: { step: 'qualify', status: 'complete', score: 73 }
+          |
+    [Step 2: Enrich]
+    ScraperService.scrapeCompanyUrl(lead.url)  // cheerio fetch + parse
+    ClaudeService.structuredOutput({
+      prompt: enrichment prompt + scraped HTML summary,
+      schema: EnrichmentSchema  // company_size, industry, tech_stack[], pain_points[]
+    })
+    → save to AIOutput (step='enrich', result=JSON)
+    → emit SSE event: { step: 'enrich', status: 'complete' }
+          |
+    [Step 3: Generate email — STREAMING]
+    ClaudeService.stream({
+      prompt: personalization prompt using qualify + enrich data
+    })
+    → save streamed text to AIOutput (step='personalize', result=text)
+    → stream tokens to frontend via NestJS @Sse() endpoint
+    → emit SSE token events as text arrives
+          |
+    [Step 4: Generate sequence — structured]
+    ClaudeService.structuredOutput({
+      prompt: sequence prompt using email + lead context,
+      schema: SequenceSchema  // emails[]: { subject, body, send_delay_days }[]
+    })
+    → save to AIOutput (step='sequence', result=JSON)
+    → emit SSE event: { step: 'sequence', status: 'complete' }
+          |
+    → Update Lead.status = 'complete'
+    → Final SSE event: { step: 'done', leadId }
+```
+
+### Why Email Streaming, Not All Steps
+
+Steps 1, 2, 4 produce structured JSON (scores, arrays, objects). JSON is not meaningful to render incrementally — you cannot display a half-parsed JSON object. Streaming these steps would add NestJS SSE pipe complexity with zero UX benefit.
+
+Step 3 (email generation) produces prose. Prose is exactly what streaming is designed to show — recruiter sees Claude writing the cold email word by word. This is the demo's most impressive moment.
+
+---
+
+## Claude API Integration Patterns
+
+### Pattern 1: Structured Output (Steps 1, 2, 4)
+
+Use `output_config.format` with a JSON schema. As of 2025-11, structured outputs are GA on Claude Opus 4.6 and Sonnet 4.6. No beta headers required.
+
+```typescript
+// src/claude/claude.service.ts
+import Anthropic from '@anthropic-ai/sdk';
+
+@Injectable()
+export class ClaudeService {
+  private client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  async structuredOutput<T>(prompt: string, schema: object): Promise<T> {
+    const response = await this.client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+      output_config: {
+        format: {
+          type: 'json',
+          schema,
+        },
+      },
+    });
+
+    const text = response.content[0].type === 'text' ? response.content[0].text : '';
+    return JSON.parse(text) as T;
+  }
+}
+```
+
+**Why structured outputs over tool use for schema enforcement:**
+- Structured outputs with `output_config.format` are purpose-built for "give me JSON that matches this schema" — exactly what qualification scoring and enrichment need.
+- Tool use is for "call a function with these parameters" — appropriate when Claude needs to invoke your application logic during generation.
+- For lead qualification and CRM enrichment, we want the final response to be structured JSON. Structured outputs is the right primitive.
+- Tool use would be appropriate IF we were letting Claude decide to call a "search_company" function mid-generation (agentic behavior). That is out of scope for this portfolio project.
+
+**Confidence:** HIGH — verified against [Anthropic structured outputs docs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs), GA on Claude Sonnet 4.6 and Opus 4.6 as of 2025-11.
+
+### Pattern 2: Streaming Text (Step 3 — Email Generation)
+
+The TypeScript SDK provides `.stream()` which returns an `AsyncIterable` of events. The NestJS SSE endpoint wraps this in an RxJS `Observable`.
+
+```typescript
+// src/claude/claude.service.ts (addition)
+async *streamText(prompt: string): AsyncGenerator<string> {
+  const stream = this.client.messages.stream({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 2048,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  for await (const event of stream) {
+    if (
+      event.type === 'content_block_delta' &&
+      event.delta.type === 'text_delta'
+    ) {
+      yield event.delta.text;
+    }
+  }
+}
+```
+
+**Confidence:** HIGH — verified against [Anthropic streaming docs](https://platform.claude.com/docs/en/build-with-claude/streaming), TypeScript SDK `.stream()` confirmed.
+
+---
+
+## NestJS SSE Implementation
+
+NestJS has first-class SSE support via the `@Sse()` decorator. The endpoint must return an `Observable<MessageEvent>` from RxJS.
+
+### SSE endpoint for pipeline progress + email streaming
+
+```typescript
+// src/leads/leads.controller.ts
+import { Controller, Sse, Param, MessageEvent } from '@nestjs/common';
+import { Observable, from, mergeMap } from 'rxjs';
+import { PipelineService } from './pipeline.service';
+
+@Controller('leads')
+export class LeadsController {
+
+  constructor(private readonly pipelineService: PipelineService) {}
+
+  // POST /leads — triggers synchronous pipeline, returns leadId immediately
+  @Post()
+  async createLead(@Body() dto: CreateLeadDto) {
+    const lead = await this.leadsService.create(dto);
+    // Do not await — fire pipeline in background within same process
+    this.pipelineService.process(lead.id).catch(console.error);
+    return { leadId: lead.id };
+  }
+
+  // GET /leads/:id/stream — SSE endpoint for pipeline progress + email tokens
+  @Sse(':id/stream')
+  streamLeadPipeline(@Param('id') id: string): Observable<MessageEvent> {
+    return new Observable((subscriber) => {
+      this.pipelineService
+        .processWithStream(id, (event) => {
+          subscriber.next({ data: event } as MessageEvent);
+        })
+        .then(() => subscriber.complete())
+        .catch((err) => subscriber.error(err));
+    });
+  }
+}
+```
+
+**Important:** The `@Sse()` endpoint must return `Observable<MessageEvent>`. NestJS internally calls `.subscribe()` and sends each emission as an SSE frame. The `MessageEvent` type is from `@nestjs/common`.
+
+**SSE response headers NestJS sets automatically:**
+- `Content-Type: text/event-stream`
+- `Cache-Control: no-cache`
+- `Connection: keep-alive`
+
+**Source:** [NestJS official docs — Server-Sent Events](https://docs.nestjs.com/techniques/server-sent-events). HIGH confidence.
+
+---
+
+## Next.js 15 Client-Side SSE Consumption
+
+EventSource is the native browser API for consuming SSE. It works directly against the NestJS `@Sse()` endpoint URL.
+
+```typescript
+// apps/ai-sdr-web/src/components/pipeline-monitor.tsx
+'use client';
+
+import { useEffect, useState, useRef } from 'react';
+
+interface PipelineEvent {
+  step: 'qualify' | 'enrich' | 'personalize' | 'sequence' | 'done';
+  status?: 'complete' | 'error';
+  token?: string;  // email tokens arrive here during step 3
+  data?: unknown;
 }
 
-.matrix-theme { background-color: #0a0a0a; color: #e8e8e8; }
-html:not(.dark) .matrix-theme { reverts to --background / --foreground }
+export function PipelineMonitor({ leadId }: { leadId: string }) {
+  const [events, setEvents] = useState<PipelineEvent[]>([]);
+  const [emailText, setEmailText] = useState('');
+
+  useEffect(() => {
+    const es = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/leads/${leadId}/stream`);
+
+    es.onmessage = (e) => {
+      const event: PipelineEvent = JSON.parse(e.data);
+
+      if (event.token) {
+        // Token from email streaming — append to email text
+        setEmailText((prev) => prev + event.token);
+      } else {
+        setEvents((prev) => [...prev, event]);
+      }
+
+      if (event.step === 'done') {
+        es.close();
+      }
+    };
+
+    es.onerror = () => {
+      es.close();
+    };
+
+    return () => es.close();
+  }, [leadId]);
+
+  return (
+    <div>
+      {/* Step progress indicators */}
+      {events.map((e, i) => <StepIndicator key={i} event={e} />)}
+      {/* Live streaming email preview */}
+      {emailText && <EmailPreview text={emailText} />}
+    </div>
+  );
+}
 ```
 
-Matrix tokens live in `:root`, NOT in `@theme inline`, meaning no `bg-matrix-green` Tailwind utility exists. Direct `var(--matrix-green)` inline usage throughout codebase.
+**EventSource vs fetch with ReadableStream:**
+EventSource is simpler for this use case. It handles reconnection automatically, supports named event types, and is universally supported. Use fetch + ReadableStream only if you need POST requests (EventSource is GET-only). Since our SSE endpoint is GET and the lead ID is in the URL, EventSource is the right choice.
 
-### Current Animation Library Split
-
-| Concern | Library | Files |
-|---------|---------|-------|
-| Scroll-reveal (fade+slide) | motion/react `whileInView` | `animate-in.tsx`, `stagger-container.tsx` |
-| Nav active indicator | motion/react `layoutId` | `nav.tsx` |
-| Noise decryption hover | motion/react `useMotionValue` | `evervault-card.tsx` |
-| Text scramble | Hand-rolled RAF hook | `use-text-scramble.ts`, `scramble-hero.tsx` |
-| Matrix rain canvas | Raw Canvas 2D API, `requestAnimationFrame` | `matrix-rain-canvas.tsx` (dynamic, ssr:false) |
-| Dot-grid spotlight | CSS custom props + `mousemove` listener | `dot-grid-spotlight.tsx` |
-| Reduced motion gate | Three-layer: CSS rule + RAF check + `MotionConfig` | `globals.css`, `matrix-rain-canvas.tsx`, `motion-provider.tsx` |
-
-**GSAP is installed** (`gsap@3.14.2`, `@gsap/react@2.1.2`, `lenis@1.3.17`) but currently unused — no GSAP or Lenis code exists in the codebase yet.
+**Confidence:** HIGH — EventSource is a browser standard, well-documented pattern.
 
 ---
 
-## Standard Architecture — Target State
+## Web Scraping for Company URL Enrichment
 
-### System Overview — Provider Tree After Integration
+Use Axios (already common in NestJS) + Cheerio for HTML parsing. This is the right tool because company landing pages are mostly static HTML — no JavaScript rendering required for the text content Claude needs.
 
+```typescript
+// src/scraper/scraper.service.ts
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+
+@Injectable()
+export class ScraperService {
+  async extractCompanySummary(url: string): Promise<string> {
+    try {
+      const { data: html } = await axios.get(url, {
+        timeout: 8000,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SDR-Bot/1.0)' },
+      });
+
+      const $ = cheerio.load(html);
+      // Remove script, style, nav, footer noise
+      $('script, style, nav, footer, header').remove();
+
+      // Extract meaningful text: headings + paragraphs only
+      const text = $('h1, h2, h3, p').map((_, el) => $(el).text().trim()).get().join('\n');
+
+      // Truncate to avoid blowing Claude's context budget
+      return text.slice(0, 3000);
+    } catch {
+      return '';  // Graceful fallback — enrichment continues without scraped data
+    }
+  }
+}
 ```
-app/layout.tsx  [Server Component -- unchanged]
-  └── <html> + <body>
-        └── ThemeProvider
-              └── (portfolio)/layout.tsx  [Server Component -- MODIFIED]
-                    └── <div class="matrix-theme min-h-screen flex flex-col">
-                          ├── <DotGridSpotlight />        [unchanged]
-                          ├── <PortfolioNav />            [unchanged]
-                          ├── <LenisProvider>             [NEW -- wraps main + footer]
-                          │     ├── <LenisScrollRestorer /> [NEW -- route change scroll-to-top]
-                          │     ├── <MotionProvider>      [MOVED inside LenisProvider]
-                          │     │     └── <main>{children}</main>
-                          │     └── <PortfolioFooter />   [MODIFIED -- Matrix animation added]
-                          └── <CommandPalette />          [unchanged, outside scroll ctx]
-```
 
-**Why LenisProvider wraps `<main>` AND `<PortfolioFooter>`:** Both are in the scroll flow. Lenis must manage the entire scrollable content, not just main.
+**Puppeteer is NOT needed** for this use case. Company websites are static-HTML for their marketing pages. Puppeteer adds 300MB+ to the Docker image and requires a chromium dependency. Avoid.
 
-**Why CommandPalette stays outside:** It renders in a portal/fixed overlay and does not participate in document scroll.
+**Confidence:** MEDIUM — cheerio + axios pattern is well established. Some company sites may block scraping or require JS rendering. Graceful fallback is essential.
 
 ---
 
-## Component Responsibilities
+## Database Schema
 
-| Component | New or Modified | Responsibility | SSR |
-|-----------|----------------|----------------|-----|
-| `LenisProvider` | NEW | Creates ReactLenis root instance; wires GSAP ticker when GSAP is co-used | Client only |
-| `LenisScrollRestorer` | NEW | Watches `usePathname()`, calls `lenis.scrollTo(0, { immediate: true })` on route change | Client only |
-| `MagneticButton` | NEW | Wrapper that pulls child element toward cursor via motion spring; `any-hover` guarded | Client only |
-| `PortfolioFooter` | MODIFIED | Add Matrix animation child (dynamic ssr:false); apply Matrix color styling | Server stays Server |
-| `FooterMatrixEffect` | NEW | The actual animated element inside the footer; isolated client animation island | Client only |
-| `globals.css` | MODIFIED | Add Tailwind utilities for Matrix tokens; add new CSS tokens for surface/glow variants | N/A |
-| `(portfolio)/layout.tsx` | MODIFIED | Wrap with LenisProvider; reorder providers | Server Component |
+```prisma
+// schema.prisma for AI SDR app
+
+generator client {
+  provider = "prisma-client-js"
+  output   = ".prisma/ai-sdr-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Input fields
+  name        String
+  email       String
+  company     String
+  url         String?
+
+  // Pipeline status
+  status      LeadStatus @default(pending)
+
+  // CRM fields (denormalized from AIOutput for easy display)
+  score       Int?           // 0-100, from qualify step
+  industry    String?
+  companySize String?
+
+  // Relations
+  aiOutputs   AIOutput[]
+  sequence    EmailSequence?
+
+  @@map("leads")
+}
+
+enum LeadStatus {
+  pending
+  processing
+  complete
+  error
+}
+
+model AIOutput {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  step      PipelineStep
+  result    Json         // Structured JSON for qualify/enrich/sequence; text string for personalize
+  model     String       // claude-sonnet-4-6 — for auditability
+  tokens    Int?         // input + output tokens, from usage field
+
+  @@unique([leadId, step])
+  @@map("ai_outputs")
+}
+
+enum PipelineStep {
+  qualify
+  enrich
+  personalize
+  sequence
+}
+
+model EmailSequence {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  leadId    String   @unique
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  // Denormalized from sequence AIOutput for fast reads
+  email1Subject String
+  email1Body    String
+  email1DelayDays Int @default(0)
+
+  email2Subject String
+  email2Body    String
+  email2DelayDays Int @default(3)
+
+  email3Subject String
+  email3Body    String
+  email3DelayDays Int @default(7)
+
+  @@map("email_sequences")
+}
+
+model DemoLead {
+  // Pre-seeded leads for recruiter demo
+  // Separate model so seeds don't pollute the real Lead table
+  // Copy to Lead on demo account login
+  id      String @id @default(uuid())
+  payload Json   // Complete lead snapshot including all AI outputs
+
+  @@map("demo_leads")
+}
+```
+
+### Schema Rationale
+
+**AIOutput.result is Json, not separate columns:** Each pipeline step returns a different shape (qualification score JSON, enrichment JSON, prose text). A single `Json` column handles all cases without migrations per new field. The `step` field is a typed enum for querying.
+
+**EmailSequence denormalization:** Storing the 3 emails in their own table (rather than inside AIOutput) makes the CRM dashboard fast — one query to `EmailSequence` instead of parsing the sequence JSON from AIOutput every time the list loads.
+
+**DemoLead separate model:** Pre-seeded demo content lives separately from real leads. The demo seeder populates `DemoLead`; the demo login trigger copies them to `Lead`. This prevents idempotency issues (re-seeding doesn't duplicate real leads).
+
+**No multi-tenancy:** Single demo account, no userId foreign keys needed. If expanding later, add `userId` to `Lead`.
 
 ---
 
-## Recommended Project Structure (Delta -- New Files Only)
+## Project Structure
 
 ```
-apps/web/
-├── providers/
-│   └── lenis-provider.tsx              # NEW: ReactLenis root + GSAP ticker wiring
+ai-sdr-api/                    # NestJS 11 standalone repo
+├── src/
+│   ├── leads/
+│   │   ├── leads.controller.ts        # REST endpoints + SSE endpoint
+│   │   ├── leads.service.ts           # CRUD operations, Lead entity
+│   │   ├── pipeline.service.ts        # Orchestrates qualify→enrich→personalize→sequence
+│   │   ├── dto/
+│   │   │   ├── create-lead.dto.ts
+│   │   │   └── lead-response.dto.ts
+│   │   └── leads.module.ts
+│   │
+│   ├── claude/
+│   │   ├── claude.service.ts          # Wrapper: structuredOutput(), streamText()
+│   │   ├── schemas/
+│   │   │   ├── qualification.schema.ts  # JSON Schema for qualify step
+│   │   │   ├── enrichment.schema.ts     # JSON Schema for enrich step
+│   │   │   └── sequence.schema.ts       # JSON Schema for sequence step
+│   │   └── claude.module.ts
+│   │
+│   ├── scraper/
+│   │   ├── scraper.service.ts         # Axios + cheerio company URL extractor
+│   │   └── scraper.module.ts
+│   │
+│   ├── prisma/
+│   │   ├── prisma.service.ts          # PrismaClient singleton (ai-sdr-client)
+│   │   └── prisma.module.ts           # Global module
+│   │
+│   ├── seed/
+│   │   └── seed.ts                    # Demo leads seeder (faker.seed(42))
+│   │
+│   └── main.ts
 │
-├── components/
-│   └── portfolio/
-│       ├── lenis-scroll-restorer.tsx   # NEW: Route-change scroll-to-top
-│       ├── magnetic-button.tsx         # NEW: Cursor-pull wrapper component
-│       ├── footer-matrix-effect.tsx    # NEW: Animated Matrix element for footer
-│       ├── footer.tsx                  # MODIFIED: dynamic import + Matrix styling
-│       └── animate-in.tsx              # unchanged (motion/react whileInView)
+├── prisma/
+│   └── schema.prisma
 │
-└── app/
-    └── globals.css                     # MODIFIED: Matrix Tailwind utilities added
+└── docker-compose.yml             # Postgres + api
+
+ai-sdr-web/                    # Next.js 15 standalone repo
+├── src/
+│   ├── app/
+│   │   ├── page.tsx                   # CRM dashboard (RSC, list all leads)
+│   │   ├── leads/
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx           # Lead input form
+│   │   │   └── [id]/
+│   │   │       └── page.tsx           # Lead detail with pipeline monitor
+│   │   └── layout.tsx
+│   │
+│   ├── components/
+│   │   ├── pipeline-monitor.tsx       # 'use client' — SSE EventSource consumer
+│   │   ├── email-preview.tsx          # 'use client' — streaming email display
+│   │   ├── lead-card.tsx              # Lead list item
+│   │   └── step-indicator.tsx         # qualify/enrich/personalize/sequence status UI
+│   │
+│   └── lib/
+│       └── api.ts                     # fetch() wrapper for NestJS API calls
+```
+
+### Structure Rationale
+
+- **`claude/` module is isolated:** ClaudeService is a pure wrapper with no business logic. Swapping to a different model or provider requires only changing this module.
+- **`pipeline.service.ts` is the orchestrator:** All step sequencing lives here, not scattered across controllers. The controller only starts the pipeline and opens the SSE stream.
+- **JSON schemas in `schemas/` directory:** Keeping schemas as TypeScript objects (not inline) makes them testable in isolation. The schema objects are passed directly to `output_config.format.schema`.
+- **Separate repos (not Turborepo):** Matches the project decision from PROJECT.md. Each app has its own Docker image, its own Prisma client output path (`.prisma/ai-sdr-client`).
+
+---
+
+## Data Flow
+
+### Full Lead Processing Flow
+
+```
+User fills lead form
+    |
+    v
+POST /leads { name, email, company, url }
+    |
+    v
+NestJS creates Lead record (status=pending)
+    |
+Returns { leadId } immediately (< 100ms)
+    |
+    v                                       (parallel in same process)
+pipelineService.process(leadId) [no await]
+    |
+Client opens EventSource to GET /leads/:id/stream
+    |
+    v
+[Step 1: Qualify]
+  ClaudeService.structuredOutput() with QualificationSchema
+  Saves AIOutput { step: 'qualify', result: { score: 78, fit_reason: '...', intent_signals: [...] } }
+  Updates Lead.score
+  → SSE event: { step: 'qualify', status: 'complete', score: 78 }
+    |
+    v
+[Step 2: Enrich]
+  ScraperService.extractCompanySummary(lead.url)
+  ClaudeService.structuredOutput() with EnrichmentSchema
+  Saves AIOutput { step: 'enrich', result: { industry: 'SaaS', company_size: '50-200', tech_stack: [...] } }
+  → SSE event: { step: 'enrich', status: 'complete' }
+    |
+    v
+[Step 3: Personalize — STREAMING]
+  ClaudeService.streamText() with personalization prompt
+  Each text token → SSE event: { step: 'personalize', token: '...' }
+  After stream complete → saves full text to AIOutput { step: 'personalize', result: fullText }
+    |
+    v
+[Step 4: Sequence]
+  ClaudeService.structuredOutput() with SequenceSchema
+  Saves AIOutput + creates EmailSequence record (denormalized 3 emails)
+  → SSE event: { step: 'sequence', status: 'complete' }
+    |
+    v
+Updates Lead.status = 'complete'
+→ SSE event: { step: 'done' }
+EventSource closes
+```
+
+### CRM Dashboard Data Flow
+
+```
+User visits / (dashboard)
+    |
+    v
+Next.js RSC fetch() → GET /leads
+    |
+    v
+NestJS → Prisma query: Lead + EmailSequence (join)
+    |
+    v
+RSC renders LeadCard components with score, industry, status
+    |
+    v
+User clicks a lead → /leads/:id
+    |
+    v
+Next.js RSC fetch() → GET /leads/:id with aiOutputs
+    |
+    v
+Server renders lead detail with all AI outputs
 ```
 
 ---
 
 ## Architectural Patterns
 
-### Pattern 1: ReactLenis Root Provider + GSAP Ticker Integration
+### Pattern 1: Synchronous Pipeline with In-Process Fire-and-Forget
 
-**What:** A single `LenisProvider` client component placed in the portfolio layout creates one Lenis instance for the entire portfolio, wires it into GSAP's ticker (replacing autoRaf), and disables GSAP lag smoothing. ScrollTrigger then calls `ScrollTrigger.update` on each Lenis scroll event.
+**What:** `POST /leads` creates the lead record and immediately starts the pipeline with `processWithStream().catch(console.error)` — no await, returns the leadId. The pipeline runs to completion in the same Node.js process.
 
-**When to use:** Any time both Lenis and GSAP ScrollTrigger are used together. Ticker unification prevents drift between the two animation loops.
+**When to use:** When the pipeline steps are sequential (output of step N is input to step N+1), when there is no need for cross-process job distribution, and when portfolio-scale concurrency (1-5 simultaneous users) is the target.
 
-**Trade-offs:** One global Lenis instance is simpler to reason about than per-page instances. The GSAP ticker drives Lenis rather than `requestAnimationFrame`, so GSAP and scroll are always in sync. If only Lenis is needed (no GSAP), `autoRaf: true` is simpler and this wiring is unnecessary.
+**Trade-offs:** If the NestJS process crashes mid-pipeline, the job is lost (Lead stays in `processing` status permanently). For a portfolio demo, this is acceptable — add a cron job later if needed to reset stuck leads. The upside is zero infrastructure dependencies beyond Postgres.
 
 **Example:**
-
-```tsx
-// providers/lenis-provider.tsx
-'use client'
-
-import { useEffect, useRef } from 'react'
-import { ReactLenis } from 'lenis/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import type { ReactNode } from 'react'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export function LenisProvider({ children }: { children: ReactNode }) {
-  const lenisRef = useRef<{ lenis?: { raf: (time: number) => void } }>(null)
-
-  useEffect(() => {
-    // Wire Lenis into GSAP ticker -- replaces autoRaf
-    function update(time: number) {
-      lenisRef.current?.lenis?.raf(time * 1000)
-    }
-    gsap.ticker.add(update)
-    gsap.ticker.lagSmoothing(0)  // critical: prevents jank on tab-switch return
-
-    return () => gsap.ticker.remove(update)
-  }, [])
-
-  return (
-    <ReactLenis
-      root
-      ref={lenisRef}
-      options={{ autoRaf: false, lerp: 0.1, duration: 1.2 }}
-    >
-      {children}
-    </ReactLenis>
-  )
+```typescript
+// In LeadsController
+@Post()
+async createLead(@Body() dto: CreateLeadDto) {
+  const lead = await this.leadsService.create(dto);
+  // No await — pipeline runs in background
+  this.pipelineService.processWithStream(lead.id, /* emitter callback */).catch(err => {
+    this.leadsService.updateStatus(lead.id, 'error');
+    console.error('Pipeline failed', err);
+  });
+  return { leadId: lead.id };
 }
 ```
 
-**Source:** Verified against [darkroomengineering/lenis monorepo packages/react README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md). The `autoRaf: false` + `gsap.ticker.add()` pattern is the official documented integration. **HIGH confidence.**
+### Pattern 2: Callback-Based SSE Emitter
 
----
+**What:** The PipelineService receives an `emitter` callback function from the SSE Observable setup. As each step completes or emits a token, it calls `emitter({ step, token?, status? })`. The Observable wraps this pattern.
 
-### Pattern 2: Route-Change Scroll Restoration
+**When to use:** When you need to bridge an async sequential process with an RxJS Observable. This avoids needing to store an EventEmitter in a map keyed by leadId, which would require cleanup logic.
 
-**What:** A zero-render child component that watches `usePathname()` and calls `lenis.scrollTo(0, { immediate: true })` whenever the route changes. Placed inside LenisProvider so it has access to the Lenis instance via `useLenis`.
+**Trade-offs:** The SSE connection must be established before the pipeline starts, or events will be missed. The design guarantees this by having the client open EventSource immediately after receiving leadId, before any pipeline progress events are emitted. A small sleep (100ms) at the start of processWithStream gives the client time to connect.
 
-**When to use:** Required for all Lenis + Next.js App Router setups. App Router soft navigation does not reset scroll position when Lenis intercepts native scroll. Without this, navigating between portfolio pages resumes at the previous scroll position.
+```typescript
+// In PipelineService
+async processWithStream(
+  leadId: string,
+  emitter: (event: PipelineEvent) => void
+): Promise<void> {
+  await sleep(100); // Give client time to connect EventSource
 
-**Trade-offs:** `immediate: true` skips the smooth animation so the page snaps to top, which is the expected browser navigation behavior. Animated scroll-to-top on navigation is disorienting.
+  // Step 1
+  const qualification = await this.qualifyStep(leadId);
+  emitter({ step: 'qualify', status: 'complete', score: qualification.score });
 
-**Example:**
+  // Step 2
+  await this.enrichStep(leadId, qualification);
+  emitter({ step: 'enrich', status: 'complete' });
 
-```tsx
-// components/portfolio/lenis-scroll-restorer.tsx
-'use client'
-
-import { useEffect } from 'react'
-import { useLenis } from 'lenis/react'
-import { usePathname } from 'next/navigation'
-
-export function LenisScrollRestorer() {
-  const lenis = useLenis()
-  const pathname = usePathname()
-
-  useEffect(() => {
-    if (lenis) {
-      lenis.scrollTo(0, { immediate: true })
-    }
-  }, [pathname, lenis])
-
-  return null
-}
-```
-
-**Known issue confirmed:** GitHub issue [darkroomengineering/lenis #319](https://github.com/darkroomengineering/lenis/issues/319) — "ReactLenis begins halfway down the page on navigation in NextJS 14 with app router." The `immediate: true` flag is the critical detail. **HIGH confidence.**
-
----
-
-### Pattern 3: GSAP ScrollTrigger Parallax via useGSAP Hook
-
-**What:** Per-component parallax via `useGSAP()` from `@gsap/react`. ScrollTrigger is registered once globally in the LenisProvider. Each component that needs scroll-driven animation uses `useGSAP` with a scoped container ref.
-
-**When to use:** Decorative parallax on section backgrounds, floating elements, case study image depth effects.
-
-**Trade-offs:** `useGSAP` handles cleanup automatically via `gsap.context()` -- all ScrollTriggers created inside the callback are killed on component unmount. This prevents the memory leak that occurs with raw `useEffect` + `ScrollTrigger.create`. React 18+ Strict Mode double-invocation is handled correctly because `useGSAP` reverts on first cleanup before re-running.
-
-**Lighthouse CI constraint:** Only animate `transform` and `opacity`. Never animate `width`, `height`, `top`, `left`, `margin`, or `padding`. Layout properties cause reflow at 60fps and will fail the CLS check and degrade the Lighthouse performance score below 0.90.
-
-**Example:**
-
-```tsx
-'use client'
-
-import { useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-
-// Register once at module level -- idempotent, safe to call multiple times
-gsap.registerPlugin(ScrollTrigger, useGSAP)
-
-export function ParallaxSection({ children }: { children: React.ReactNode }) {
-  const container = useRef<HTMLDivElement>(null)
-  const inner = useRef<HTMLDivElement>(null)
-
-  useGSAP(() => {
-    gsap.to(inner.current, {
-      yPercent: -15,           // transform only -- no layout recalculation
-      ease: 'none',
-      scrollTrigger: {
-        trigger: container.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 1,              // scrub:1 = 1s lag, feels natural vs scrub:true (immediate)
-      },
-    })
-  }, { scope: container })
-
-  return (
-    <div ref={container} className="overflow-hidden">
-      <div ref={inner}>{children}</div>
-    </div>
-  )
-}
-```
-
-**Source:** [GSAP React documentation — useGSAP hook](https://gsap.com/resources/React/). **HIGH confidence.**
-
----
-
-### Pattern 4: Magnetic Button via motion/react Spring
-
-**What:** A `MagneticButton` wrapper component that uses `useState` with a `motion.div` `animate` prop from `motion/react` to animate `x` and `y` of a wrapper div when the cursor enters the element's bounding box. Resets to zero on mouse leave. Spring physics handle the elastic snap.
-
-**Why motion/react over GSAP `quickTo` for this:** The project already uses `motion/react` for nav, scroll-reveal, and hover effects. Using GSAP's `quickTo` would require explicit `useEffect` cleanup with `removeEventListener` and `cloneElement` ref-threading. The `motion/react` spring approach is declarative, auto-cleaning, and consistent with the existing pattern in `evervault-card.tsx`.
-
-**SSR safety:** The component is `'use client'`, uses only React synthetic events (no `addEventListener`), and reads `getBoundingClientRect` only on mouse event (not at render time). No `window` access during server rendering.
-
-**Touch guard:** Must check `useReducedMotion()` and render children directly when true. The component should also not activate on touch-primary devices since `mousemove` does not fire on touch. A `window.matchMedia('(any-hover: hover)')` check inside `useEffect` is appropriate, but the simpler approach is: if `onMouseMove` never fires, the position stays at `{ x: 0, y: 0 }` and no animation occurs -- functionally safe without an explicit guard, but the reduced-motion guard is mandatory.
-
-**Example:**
-
-```tsx
-// components/portfolio/magnetic-button.tsx
-'use client'
-
-import { useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
-import type { ReactNode } from 'react'
-
-interface MagneticButtonProps {
-  children: ReactNode
-  strength?: number   // 0.3 = subtle, 0.5 = strong
-}
-
-export function MagneticButton({ children, strength = 0.4 }: MagneticButtonProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const prefersReducedMotion = useReducedMotion()
-
-  // Reduced motion: pass through with no wrapper overhead
-  if (prefersReducedMotion) return <>{children}</>
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
-    const { height, width, left, top } = ref.current.getBoundingClientRect()
-    setPosition({
-      x: (e.clientX - (left + width / 2)) * strength,
-      y: (e.clientY - (top + height / 2)) * strength,
-    })
+  // Step 3 — streaming
+  for await (const token of this.claudeService.streamText(emailPrompt)) {
+    emitter({ step: 'personalize', token });
   }
+  emitter({ step: 'personalize', status: 'complete' });
 
-  const handleMouseLeave = () => setPosition({ x: 0, y: 0 })
+  // Step 4
+  await this.sequenceStep(leadId);
+  emitter({ step: 'sequence', status: 'complete' });
 
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={position}
-      transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
-      style={{ display: 'inline-flex' }}
-    >
-      {children}
-    </motion.div>
-  )
+  emitter({ step: 'done' });
 }
 ```
 
-**Usage pattern:**
+### Pattern 3: Isolated ClaudeService Wrapper
 
-```tsx
-// In hero-section.tsx, contact page, etc.
-import { MagneticButton } from '@/components/portfolio/magnetic-button'
+**What:** All Claude API interaction is encapsulated in `ClaudeService`. No other service imports `@anthropic-ai/sdk` directly. ClaudeService exposes two methods: `structuredOutput<T>()` and `streamText()`.
 
-<MagneticButton>
-  <Button asChild size="lg">
-    <Link href="/about">Learn More</Link>
-  </Button>
-</MagneticButton>
-```
+**When to use:** Always. Isolating the AI provider behind a service boundary allows swapping models, adding retry logic, logging token usage, and testing with mocks — all without touching business logic.
 
-**Source:** [Olivier Larose magnetic button tutorial](https://blog.olivierlarose.com/tutorials/magnetic-button) — direct code verification. **MEDIUM confidence (tutorial source, but motion/react spring API is HIGH confidence against official docs).**
-
----
-
-### Pattern 5: Matrix CSS Token Extension (Tailwind Utilities)
-
-**What:** Add Matrix-specific color tokens to `@theme inline` in `globals.css` so Tailwind utilities like `bg-matrix-green`, `text-matrix-green`, `border-matrix-border` are available alongside the existing raw `var(--matrix-green)` usage.
-
-**Current state:** `--matrix-green`, `--matrix-green-dim`, `--matrix-green-ghost` exist in `:root` but are NOT in `@theme inline`. Consuming code uses `text-[var(--matrix-green)]` inline bracket syntax.
-
-**Why add to `@theme inline`:** Color harmony work across project cards, case study pages, typography, and the footer will benefit from composable Tailwind utilities that enable `hover:text-matrix-green`, `dark:border-matrix-border`, and responsive variants without repeated bracket syntax.
-
-**Impact on existing code:** Adding to `@theme inline` is purely additive. All existing `var(--matrix-green)` references and `text-[var(--matrix-green)]` bracket usages continue to work unchanged.
-
-**New tokens to add:**
-
-```css
-/* In globals.css :root block (new additions) */
-:root {
-  /* ... existing matrix tokens unchanged ... */
-  --matrix-surface: #0d1117;         /* deep dark card background */
-  --matrix-border: #1a2a1a;          /* dark green-tinted border */
-  --matrix-glow: rgba(0,255,65,0.15); /* ambient glow color */
-}
-
-/* In globals.css @theme inline block (new additions) */
-@theme inline {
-  /* ... existing semantic tokens unchanged ... */
-
-  /* Matrix green system -- exposed as Tailwind utilities */
-  --color-matrix-green: var(--matrix-green);
-  --color-matrix-green-dim: var(--matrix-green-dim);
-  --color-matrix-green-ghost: var(--matrix-green-ghost);
-
-  /* Matrix surface tokens -- new for v3.1 color harmony work */
-  --color-matrix-surface: var(--matrix-surface);
-  --color-matrix-border: var(--matrix-border);
-}
-```
-
-**Resulting Tailwind utilities:** `text-matrix-green`, `bg-matrix-green`, `border-matrix-green`, `text-matrix-green-dim`, `bg-matrix-surface`, `border-matrix-border`. The `--matrix-glow` raw var is consumed as `shadow-[var(--matrix-glow)]` (arbitrary value) because Tailwind shadow tokens require more complex setup.
-
----
-
-### Pattern 6: Footer Matrix Animation -- Isolated Dynamic Island
-
-**What:** The footer is currently a Server Component. The Matrix animation element should be isolated to a child `FooterMatrixEffect` client component rendered with `next/dynamic(ssr: false)` inside the footer, following the identical pattern as `MatrixRainCanvas`.
-
-**Why dynamic(ssr: false) for the effect, not the whole footer:** The footer's static content (links, copyright, name) remains server-rendered for fast initial HTML. Only the animated element requires client-side hydration. The footer is below the fold on all portfolio pages -- its dynamic island loads after LCP without affecting the score.
-
-**Provider tree position:**
-
-```
-PortfolioFooter (Server Component -- keeps 'use server' behavior)
-  ├── Static content (name, links, copyright) -- server HTML
-  └── FooterMatrixEffect (dynamic, ssr: false) -- client animation island
-```
-
-**Structural pattern:**
-
-```tsx
-// In footer.tsx (Server Component stays Server)
-import dynamic from 'next/dynamic'
-
-const FooterMatrixEffect = dynamic(
-  () => import('./footer-matrix-effect'),
-  { ssr: false }
-)
-
-export function PortfolioFooter() {
-  return (
-    <footer className="border-t border-matrix-border bg-[#0a0a0a] relative overflow-hidden">
-      <FooterMatrixEffect />  {/* loads after LCP, does not block */}
-      <div className="relative z-10 ...">
-        {/* static content -- server-rendered */}
-      </div>
-    </footer>
-  )
-}
-```
-
-**Source:** Direct pattern from existing `matrix-rain-canvas.tsx` + `hero-section.tsx` in this codebase. **HIGH confidence.**
-
----
-
-## Data Flow
-
-### Lenis + GSAP ScrollTrigger Synchronized Loop
-
-```
-Browser scroll event (wheel/touch/keyboard)
-    |
-    v
-Lenis intercepts (native scroll suppressed via preventDefault pattern)
-    |
-    v
-GSAP ticker.add() callback fires each frame (~60fps)
-    |
-    v
-lenisRef.current.lenis.raf(time * 1000)
-    |
-    v
-Lenis calculates velocity + lerped position
-    |
-    v
-Lenis emits 'scroll' event
-    |
-    v
-ScrollTrigger.update() recalculates trigger positions
-    |
-    v
-GSAP tweens execute (yPercent, opacity, etc.)
-    |
-    v
-CSS transform applied on compositor thread (no layout reflow)
-```
-
-### MagneticButton State Flow
-
-```
-User cursor enters MagneticButton bounding box
-    |
-    v
-onMouseMove -> getBoundingClientRect() -> compute delta from center
-    |
-    v
-setPosition({ x, y }) -- React state update
-    |
-    v
-motion.div animate={position} -> spring physics (stiffness 150, damping 15)
-    |
-    v
-motion/react writes CSS transform directly (no re-render per frame after initial)
-    |
-    v
-User cursor leaves -> setPosition({ x: 0, y: 0 }) -> spring returns to origin
-```
-
-### Route Change Scroll Flow
-
-```
-User clicks Next.js <Link>
-    |
-    v
-Next.js App Router soft navigation (no full reload)
-    |
-    v
-usePathname() value changes in LenisScrollRestorer
-    |
-    v
-useEffect fires -> lenis.scrollTo(0, { immediate: true })
-    |
-    v
-Page snaps to top (no eased animation -- matches native browser behavior)
-    |
-    v
-New page content renders -- ScrollTrigger recalculates positions on next scroll
-```
-
----
-
-## Integration Points -- New vs Modified Explicit
-
-### New Files
-
-| File | What It Does | Why It's New |
-|------|-------------|--------------|
-| `providers/lenis-provider.tsx` | ReactLenis root provider + GSAP ticker wiring + ScrollTrigger registration | No Lenis or GSAP code exists in codebase yet |
-| `components/portfolio/lenis-scroll-restorer.tsx` | Route-change scroll-to-top via useLenis | Required for App Router navigation correctness |
-| `components/portfolio/magnetic-button.tsx` | Cursor-attraction wrapper via motion/react spring | New UX component (was deferred in v2.5) |
-| `components/portfolio/footer-matrix-effect.tsx` | Animated Matrix element inside footer | Isolated client animation island |
-
-### Modified Files
-
-| File | What Changes | Risk Level |
-|------|-------------|------------|
-| `app/(portfolio)/layout.tsx` | Add `<LenisProvider>` wrapping `<main>` + `<PortfolioFooter>`; move `<MotionProvider>` inside | LOW -- additive wrapper, no logic changes |
-| `app/globals.css` | Add Matrix tokens to `@theme inline`; add new surface/border vars to `:root` | LOW -- purely additive, no existing tokens touched |
-| `components/portfolio/footer.tsx` | Add `FooterMatrixEffect` dynamic import; apply Matrix color classes | MEDIUM -- visual change triggers Playwright snapshot updates |
-| `components/portfolio/hero-section.tsx` | Wrap CTA buttons with `<MagneticButton>` | LOW -- additive wrapper around existing Button elements |
-| `app/(portfolio)/page.tsx` | Optionally wrap section CTAs with `<MagneticButton>` | LOW |
-| `app/(portfolio)/contact/page.tsx` | Optionally wrap submit button with `<MagneticButton>` | LOW |
-
-### Files That Do NOT Change
-
-| File | Reason |
-|------|--------|
-| `app/layout.tsx` | LenisProvider is portfolio-scoped; must not touch root layout |
-| `(dashboard)/layout.tsx` | Dashboard scroll must remain native; Lenis must not affect it |
-| `components/portfolio/animate-in.tsx` | Existing scroll-reveal stays as motion/react whileInView |
-| `components/portfolio/stagger-container.tsx` | No changes -- already correct |
-| `components/portfolio/motion-provider.tsx` | No changes -- MotionConfig is just repositioned in layout tree |
-| `next.config.ts` | No changes needed |
-
----
-
-## Build Order
-
-The ordering is dictated by dependencies: Lenis must be running before GSAP ScrollTrigger can be wired to it, and Matrix color tokens must be extended before color harmony work touches components.
-
-```
-Phase 1: Lenis Foundation (DEPENDENCY for all scroll animation)
-  New:     providers/lenis-provider.tsx
-  New:     components/portfolio/lenis-scroll-restorer.tsx
-  Modify:  app/(portfolio)/layout.tsx -- add LenisProvider
-  Verify:  smooth scroll works on all 5 portfolio URLs
-  Gate:    Lighthouse CI >= 0.90, no visual regressions
-
-Phase 2: GSAP ScrollTrigger Parallax (DEPENDS ON Phase 1)
-  Register ScrollTrigger in lenis-provider.tsx
-  Wire lenis.on('scroll', ScrollTrigger.update) inside LenisProvider
-  Apply useGSAP() parallax to: hero section, case study images, about section
-  Gate:    Lighthouse CI >= 0.90, CLS = 0 (transform-only rule verified)
-
-Phase 3: Magnetic Buttons (INDEPENDENT of Phases 1-2 but benefits from Lenis being stable)
-  New:     components/portfolio/magnetic-button.tsx
-  Modify:  hero-section.tsx, contact/page.tsx -- wrap CTAs
-  Gate:    Touch devices unaffected, reduced-motion bypasses wrapper entirely
-
-Phase 4: Matrix Color Harmony (INDEPENDENT -- lowest risk)
-  Modify:  app/globals.css -- add @theme inline utilities + :root tokens
-  Apply:   project cards, case study pages, skills/about, typography, contact
-  Gate:    Playwright snapshots update and pass, no purple introduced
-
-Phase 5: Footer Redesign + Matrix Animation (SELF-CONTAINED -- highest visual risk)
-  New:     components/portfolio/footer-matrix-effect.tsx
-  Modify:  components/portfolio/footer.tsx -- dynamic import + Matrix styling
-  Gate:    Lighthouse CI >= 0.90 (footer is below fold -- should not affect LCP)
-           Playwright baseline snapshots updated
-```
-
-**Why this order:**
-- Phase 1 first because GSAP ScrollTrigger requires the Lenis-driven ticker to already be running
-- Phase 2 directly after Phase 1 while Lenis wiring is fresh
-- Phase 3 is independent but sequential prevents debugging two moving parts simultaneously
-- Phase 4 is the safest phase and most additive -- can move earlier if needed
-- Phase 5 is last because footer has the highest Playwright snapshot surface area and is fully self-contained
+**Trade-offs:** Slight indirection. The benefit is that model-specific behavior (structured output schema format, streaming event types) is contained in one place. When Anthropic changes the API shape, only ClaudeService needs updating.
 
 ---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: autoRaf: true with GSAP ScrollTrigger
+### Anti-Pattern 1: Using BullMQ/Redis for This Use Case
 
-**What people do:** Use `ReactLenis` with default `autoRaf: true` and also initialize ScrollTrigger separately.
+**What people do:** Reach for a job queue because the pipeline is "async" and "takes a while."
 
-**Why it's wrong:** Two separate RAF loops (Lenis's own RAF and GSAP's ticker) run at different times in the frame. ScrollTrigger reads scroll position between Lenis updates, causing stutter on fast scrolls. The symptoms appear as scroll-triggered animations jumping or lagging slightly behind the smooth scroll position.
+**Why it's wrong:** A job queue solves horizontal scaling and crash recovery for high-concurrency systems. For a portfolio demo with one demo account, it adds Redis infrastructure, job serialization complexity, dead-letter queue handling, and polling endpoints — none of which demonstrates AI integration skills. The portfolio goal is to show Claude API competency, not queue architecture.
 
-**Do this instead:** Set `autoRaf: false` on ReactLenis, wire Lenis into `gsap.ticker.add()`, and set `gsap.ticker.lagSmoothing(0)`. This is the pattern documented in the official lenis/react README.
+**Do this instead:** In-process async pipeline with SSE progress events. If the system needs to survive process crashes later, add a simple cron that resets `processing` leads older than 5 minutes.
 
----
+### Anti-Pattern 2: Streaming All Steps Instead of Just the Email
 
-### Anti-Pattern 2: Animating Layout Properties with ScrollTrigger
+**What people do:** Try to make every Claude call stream to look "more real-time."
 
-**What people do:** Animate `top`, `left`, `marginTop`, `height`, or `width` with `scrub` to create parallax.
+**Why it's wrong:** Streaming JSON is not meaningful. You cannot display half a JSON object in a UI. Steps 1, 2, and 4 return structured data. The SDK's `streamText` returns partial token strings that are not valid JSON mid-stream. Attempting to stream these steps forces you into partial-JSON accumulation and deferred parsing with no UX benefit.
 
-**Why it's wrong:** Layout properties trigger browser reflow on every scroll frame. At 60fps with scrub enabled, this generates 60 reflows per second. Lighthouse will flag this as a CLS violation if any element shifts layout. The Lighthouse CI gate of >= 0.90 will fail.
+**Do this instead:** Use `structuredOutput()` (non-streaming) for qualify, enrich, and sequence. Use `streamText()` only for the email personalization step where prose tokens are immediately displayable.
 
-**Do this instead:** Only animate `transform: translateY(...)` via GSAP's `yPercent` or `y`, and `opacity`. These are compositor-thread properties that never trigger layout. The `overflow-hidden` on the container prevents the transformed element from affecting surrounding layout.
+### Anti-Pattern 3: Storing Raw Scraped HTML in the Database
 
----
+**What people do:** Save the full scraped HTML of the company page to a database column for later use.
 
-### Anti-Pattern 3: Placing LenisProvider in Root Layout
+**Why it's wrong:** Company pages can be 500KB+ of HTML. Storing this in Postgres is wasteful and the HTML is ephemeral — it changes frequently and the value was already extracted into the AIOutput enrichment JSON. There is no query use case for raw HTML.
 
-**What people do:** Add LenisProvider to `app/layout.tsx` so it wraps all routes including the dashboard.
+**Do this instead:** ScraperService extracts a 3000-character text summary (headings + paragraphs), passes it to Claude for enrichment, and discards it. Only the enrichment output (industry, tech stack, pain points) is persisted.
 
-**Why it's wrong:** The TeamFlow dashboard uses a complex layout with sidebar scroll areas, virtual scroll in TanStack Table, and Socket.io real-time updates. Lenis intercepts all native scroll globally. This breaks dashboard scroll behavior in non-obvious ways and is difficult to debug.
+### Anti-Pattern 4: Bypassing Structured Outputs with JSON Prompt Engineering
 
-**Do this instead:** Place LenisProvider exclusively inside `(portfolio)/layout.tsx` inside the `.matrix-theme` div. Dashboard routes in `(dashboard)/layout.tsx` are completely unaffected by portfolio animation providers.
+**What people do:** Prompt Claude with "return only valid JSON matching this schema" and parse the response with `JSON.parse()`.
 
----
+**Why it's wrong:** Claude can and occasionally does include prose, markdown code fences (` ```json `), or explanation text before/after the JSON even with explicit instructions. This requires regex stripping, error handling, and retries. The `output_config.format` structured output feature uses constrained decoding — it is literally impossible for Claude to generate a response that fails `JSON.parse()`.
 
-### Anti-Pattern 4: Converting PortfolioFooter to a Full Client Component
+**Do this instead:** Use `output_config.format` with a JSON schema. It is GA on Claude Sonnet 4.6 as of November 2025. Zero parsing errors, guaranteed schema compliance.
 
-**What people do:** Add `'use client'` directly to `footer.tsx` to add animations.
+### Anti-Pattern 5: Opening SSE Connection After Receiving LeadId (Race Condition)
 
-**Why it's wrong:** The footer's static content (links, name, copyright) would be excluded from the server-rendered HTML. This delays the footer's initial render until client-side hydration, increasing Time to Interactive. It also violates the established pattern in this codebase.
+**What people do:** `POST /leads` → receive leadId → open EventSource → miss events that already fired.
 
-**Do this instead:** Keep `footer.tsx` as a Server Component. Use `next/dynamic(ssr: false)` to load only the animated effect child (`FooterMatrixEffect`) as a client component. This is identical to how `MatrixRainCanvas` is handled in `hero-section.tsx`.
+**Why it's wrong:** If the pipeline starts immediately and the qualify step completes in <200ms (Claude is fast for structured outputs), the SSE connection may not be established before the first event is emitted. The client never receives the qualify step event and the UI shows an incomplete pipeline.
 
----
-
-### Anti-Pattern 5: Applying MagneticButton to Navigation or Mobile-Primary Elements
-
-**What people do:** Wrap nav links or all buttons globally with MagneticButton.
-
-**Why it's wrong:** Mouse events do not fire on touch devices. The motion.div wrapper adds DOM nodes and JS bundle cost to mobile users who get no benefit. Navigation elements also have tight tap targets on mobile that the magnetic offset could interfere with.
-
-**Do this instead:** Apply `MagneticButton` only to desktop-visible CTAs (hero buttons, contact button). Check `useReducedMotion()` and return children directly when true. The component should only be used on elements where the magnetic effect is visible to a hover-capable device.
+**Do this instead:** Add a 100ms sleep at the start of `processWithStream` to give the client time to establish the EventSource connection. Alternatively, store the last N events in memory and replay them to new SSE connections for the same leadId. The sleep is simpler and sufficient for this use case.
 
 ---
 
-## Scaling Considerations (Lighthouse CI Budget Focus)
+## Integration Points
 
-This is a portfolio site. The relevant "scaling" concern is the Lighthouse CI performance gate.
+### External Services
 
-| Concern | Current Budget | Integration Impact | Mitigation |
-|---------|---------------|-------------------|------------|
-| Lighthouse Performance | >= 0.90 on 5 URLs | Lenis adds ~10KB gzipped | Package already installed -- zero new bundle delta |
-| Lighthouse Performance | >= 0.90 | GSAP + ScrollTrigger ~20KB | Package already installed -- zero new bundle delta |
-| CLS | Must not regress | GSAP parallax on layout props | Transform-only rule -- `yPercent`/`y`/`opacity` only |
-| LCP | Must not regress | Footer animation below fold | `dynamic(ssr: false)` defers load until after hydration |
-| Playwright snapshots | 18 PNG baselines exist | Footer + color changes will diff | Update baselines deliberately per phase; do not auto-approve all diffs |
-| Reduced motion | Three-layer gate active | All new animations must respect it | `useReducedMotion()` in every new animated component |
-| Touch / mobile | `any-hover` pattern established | MagneticButton on touch | `useReducedMotion()` guard + mousemove never fires on touch |
+| Service | Integration | Notes |
+|---------|-------------|-------|
+| Anthropic Claude API | `@anthropic-ai/sdk` via ClaudeService | `claude-sonnet-4-6` for all steps. API key in env var. No streaming for steps 1/2/4. |
+| Company websites | Axios GET + Cheerio parse | 8-second timeout. Graceful fallback to empty string if site is unreachable or blocks scraping. |
+
+### Internal Boundaries
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| Next.js → NestJS (CRUD) | REST over HTTP | `fetch()` from RSC for list/detail. NEXT_PUBLIC_API_URL env var. |
+| Next.js → NestJS (progress) | Server-Sent Events (EventSource) | Client component only. `GET /leads/:id/stream` NestJS `@Sse()` endpoint. |
+| PipelineService → ClaudeService | Direct TypeScript injection | NestJS DI. ClaudeService is scoped to REQUEST or DEFAULT (DEFAULT is fine — no per-request state). |
+| PipelineService → ScraperService | Direct TypeScript injection | Same NestJS DI. |
+| ClaudeService → Anthropic | HTTP via SDK | SDK handles retries (3x default). Do not add manual retry logic on top. |
+
+### Build Order Recommendation
+
+Based on dependencies:
+
+```
+Phase 1: Data foundation
+  - Prisma schema (Lead, AIOutput, EmailSequence, DemoLead)
+  - Prisma migration + PrismaService module
+  - Seed script (faker.seed(42) demo leads)
+  Verify: DB running in Docker, leads seeded
+
+Phase 2: Claude integration (no HTTP yet)
+  - ClaudeService with structuredOutput() + streamText()
+  - JSON schemas for qualify/enrich/sequence
+  - Unit test ClaudeService with real API (verify schemas parse correctly)
+  Verify: Claude calls return valid typed responses
+
+Phase 3: Pipeline service
+  - QualifyService, EnrichService (ScraperService), PersonalizeService, SequenceService
+  - PipelineService orchestrator with emitter callback
+  - Test end-to-end pipeline with console.log emitter
+  Verify: Single lead processes start-to-finish
+
+Phase 4: NestJS REST + SSE
+  - LeadsController: POST /leads, GET /leads, GET /leads/:id
+  - SSE endpoint: GET /leads/:id/stream
+  - Wire PipelineService to fire on POST
+  Verify: curl POST /leads → SSE events arrive in order
+
+Phase 5: Next.js frontend
+  - CRM dashboard (RSC list)
+  - Lead detail page + PipelineMonitor (EventSource client component)
+  - Email preview with streaming display
+  Verify: Full flow from form to email display works
+
+Phase 6: Portfolio integration
+  - ai-sdr project card in portfolio
+  - /projects/ai-sdr case study page
+  - Docker Compose + Coolify deployment
+```
 
 ---
 
-## SSR / Hydration Constraints Summary
+## Scaling Considerations
 
-All animation code in this integration runs client-side only. The constraints are:
+This is a portfolio demo. Relevant "scaling" is Lighthouse CI and demo reliability.
 
-1. **`'use client'` required on:** LenisProvider, LenisScrollRestorer, MagneticButton, FooterMatrixEffect
-2. **`next/dynamic(ssr: false)` required on:** FooterMatrixEffect -- same reason as MatrixRainCanvas: canvas or animation that cannot meaningfully render server-side
-3. **`useReducedMotion()` must guard all new animated components:** MagneticButton (already shown), FooterMatrixEffect (needs RAF check matching MatrixRainCanvas pattern), any useGSAP parallax component
-4. **No `window` access at render time:** LenisProvider's Lenis initialization happens inside `useEffect` -- already safe. MagneticButton only reads `getBoundingClientRect` on mouse events -- already safe.
-5. **`ReactLenis root` prop:** When `root={true}`, Lenis attaches to the `<html>` element and makes the instance globally accessible via `useLenis()`. LenisScrollRestorer uses `useLenis()` and must be a descendant of LenisProvider -- this is guaranteed by the layout tree position.
+| Concern | At Demo Scale (1-5 users) | If Needed Later |
+|---------|--------------------------|-----------------|
+| Concurrent pipelines | Single Node.js event loop handles fine — Claude calls are I/O-bound | Add BullMQ + Redis worker pool |
+| Claude API rate limits | Sonnet 4.6 has generous limits; no throttling expected at demo scale | Add exponential backoff via SDK retry config |
+| SSE connection count | <5 concurrent SSE connections, Node.js handles natively | Add Redis-backed pub/sub for multi-process SSE |
+| Scraped site blocking | Graceful fallback to empty string | Rotate user agents, add proxy |
+| Claude latency | Total pipeline 10-25 seconds depending on Claude response times | Cache enrichment results by company URL |
 
 ---
 
 ## Sources
 
-- [darkroomengineering/lenis GitHub monorepo -- packages/react README](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md) — ReactLenis API, `root` prop, `autoRaf: false`, `useLenis` hook, GSAP ticker pattern (HIGH confidence)
-- [darkroomengineering/lenis issue #319](https://github.com/darkroomengineering/lenis/issues/319) — Scroll restoration on navigation -- confirmed pattern (HIGH confidence)
-- [GSAP React documentation -- useGSAP hook](https://gsap.com/resources/React/) — useGSAP cleanup, ScrollTrigger setup/teardown, Strict Mode handling (HIGH confidence)
-- [GSAP ScrollTrigger + Lenis GSAP forum](https://gsap.com/community/forums/topic/40426-patterns-for-synchronizing-scrolltrigger-and-lenis-in-reactnext/) — synchronized ticker pattern (MEDIUM confidence)
-- [Olivier Larose -- Magnetic Button tutorial](https://blog.olivierlarose.com/tutorials/magnetic-button) — GSAP vs Framer Motion magnetic comparison, code patterns (MEDIUM confidence)
-- Existing codebase direct inspection: `apps/web/app/(portfolio)/layout.tsx`, `apps/web/app/globals.css`, `apps/web/components/portfolio/matrix-rain-canvas.tsx`, `apps/web/components/portfolio/evervault-card.tsx`, `apps/web/components/portfolio/dot-grid-spotlight.tsx`, `apps/web/package.json` (HIGH confidence)
+- [Anthropic Claude Streaming Docs](https://platform.claude.com/docs/en/build-with-claude/streaming) — `.stream()` TypeScript SDK, SSE event types, `text_delta` events. HIGH confidence.
+- [Anthropic Structured Outputs Docs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) — `output_config.format`, JSON schema format, GA status on Sonnet 4.6 and Opus 4.6. HIGH confidence.
+- [NestJS Server-Sent Events Docs](https://docs.nestjs.com/techniques/server-sent-events) — `@Sse()` decorator, `Observable<MessageEvent>` return type. HIGH confidence.
+- [Upstash — Streaming LLM responses via SSE in Next.js](https://upstash.com/blog/sse-streaming-llm-responses) — ReadableStream pattern, client-side chunk buffering. MEDIUM confidence.
+- [HackerNoon — Streaming in Next.js 15: WebSockets vs SSE](https://hackernoon.com/streaming-in-nextjs-15-websockets-vs-server-sent-events) — EventSource hook pattern for Next.js 15 client components. MEDIUM confidence.
+- [DEV.to — Production-ready Claude streaming with Next.js](https://dev.to/bydaewon/building-a-production-ready-claude-streaming-api-with-nextjs-edge-runtime-3e7) — Transform Anthropic SDK events to SSE, buffer management. MEDIUM confidence.
+- [BullMQ docs + NestJS queues docs](https://docs.nestjs.com/techniques/queues) — Background job queue evaluation (explicitly rejected for this use case). HIGH confidence on the technology; decision is architectural.
+- PROJECT.md — Confirmed tech stack decisions (Next.js 15, NestJS 11, Prisma, Postgres, Claude API, separate standalone repo). HIGH confidence (authoritative project document).
 
 ---
 
-*Architecture research for: v3.1 Portfolio Polish & Matrix Cohesion -- Lenis, GSAP ScrollTrigger, magnetic buttons, Matrix color system integration*
-*Researched: 2026-02-20*
+*Architecture research for: v5.0 AI SDR Replacement System — pipeline architecture, Claude API streaming, NestJS SSE, database schema*
+*Researched: 2026-02-28*
