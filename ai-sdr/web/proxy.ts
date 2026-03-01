@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { sessionOptions, SessionData } from '@/lib/session';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // CRITICAL: In Edge Runtime, cookies() from next/headers is NOT available.
   // Must use request.cookies (NextRequest cookie store) directly.
   const session = await getIronSession<SessionData>(
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/leads', request.url));
   }
 
-  // Redirect root to /leads (middleware will redirect to /login if not authenticated)
+  // Redirect root to /leads (proxy will redirect to /login if not authenticated)
   if (pathname === '/') {
     return NextResponse.redirect(new URL('/leads', request.url));
   }
