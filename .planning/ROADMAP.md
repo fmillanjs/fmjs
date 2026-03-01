@@ -93,11 +93,11 @@ Plans:
   3. GET /leads/:id returns complete lead detail including all AI-generated outputs for a completed lead
   4. GET /leads/:id/stream delivers SSE events for each pipeline step and streams email tokens in sequence, confirmed via curl
   5. Disconnecting the curl client terminates the SSE Observable and does not leave orphaned Claude API streams running
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 44-01: LeadsController (POST /leads, GET /leads, GET /leads/:id) with Prisma persistence and @Throttle guard
-- [ ] 44-02: @Sse(':id/stream') endpoint with Observable/callback bridge, res.on('close') cleanup, timeout(30000) safety net
+- [ ] 44-01-PLAN.md — LeadsModule with REST endpoints (POST /leads, GET /leads, GET /leads/:id), CreateLeadDto, class-validator, @nestjs/throttler, global ValidationPipe
+- [ ] 44-02-PLAN.md — @Sse(':id/stream') endpoint with Observable/callback bridge, res.on('close') disconnect cleanup, timeout(30_000) safety net, X-Accel-Buffering header
 
 ### Phase 45: Next.js Frontend
 **Goal**: A recruiter can log in with the demo credentials shown on the login page, browse the lead list, submit a new lead, and watch the pipeline run in real time with full enrichment outputs visible on the lead detail page
