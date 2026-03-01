@@ -2,6 +2,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getLead } from '@/lib/api';
 import { PipelineMonitor } from '@/components/leads/pipeline-monitor';
+import { ScoreCard } from '@/components/leads/score-card';
+import { WhyScoreCard } from '@/components/leads/why-score-card';
+import { EnrichmentCard } from '@/components/leads/enrichment-card';
+import { EmailPreview } from '@/components/leads/email-preview';
 import type { QualifyOutput, EnrichOutput } from '@/lib/api';
 
 interface LeadDetailPageProps {
@@ -30,7 +34,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Breadcrumb */}
         <nav className="text-sm text-muted-foreground">
           <Link href="/leads" className="hover:text-foreground">Leads</Link>
@@ -54,28 +58,46 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           )}
         </div>
 
-        {/* Pipeline Monitor — handles both streaming and static rendering */}
-        {/* Plans 03 and 04 both render here: PipelineMonitor (03) + score/enrichment cards (04) */}
+        {/* Pipeline Monitor — step progress + streaming email (Plans 03 + 04) */}
         <PipelineMonitor
           leadId={id}
           shouldStream={shouldStream}
           initialEmailText={personalizeOutput?.email}
         />
 
-        {/* Plans 04 will add ScoreCard and EnrichmentCard here, below PipelineMonitor */}
-        {/* Placeholder slots for Plan 04 components — rendered only for complete leads */}
-        {lead.status === 'complete' && qualifyOutput && (
-          <div id="score-section" className="rounded-lg border border-border p-4 bg-card">
-            <p className="text-sm text-muted-foreground">
-              ICP Score: {qualifyOutput.icpScore} — Score details rendered in Plan 04
+        {/* Static AI output cards — only for complete leads */}
+        {lead.status === 'complete' && (
+          <div className="space-y-4">
+            {/* ICP Score with colored bar — PIPE-02 */}
+            {qualifyOutput && <ScoreCard qualify={qualifyOutput} />}
+
+            {/* Why this score? collapsible — PIPE-03 */}
+            {qualifyOutput && <WhyScoreCard qualify={qualifyOutput} />}
+
+            {/* Enrichment card with intent signal badges — PIPE-05 */}
+            {enrichOutput && <EnrichmentCard enrich={enrichOutput} />}
+
+            {/* Email preview with copy button — PIPE-06 + PIPE-08 */}
+            {personalizeOutput && (
+              <EmailPreview emailText={personalizeOutput.email} />
+            )}
+          </div>
+        )}
+
+        {/* Failed state */}
+        {lead.status === 'failed' && (
+          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 p-4">
+            <p className="text-sm text-red-700 dark:text-red-300">
+              Pipeline failed for this lead. You can submit a new lead with the same details to retry.
             </p>
           </div>
         )}
 
-        {lead.status === 'complete' && enrichOutput && (
-          <div id="enrich-section" className="rounded-lg border border-border p-4 bg-card">
-            <p className="text-sm text-muted-foreground">
-              Enrichment: {enrichOutput.industry} — Enrichment card rendered in Plan 04
+        {/* Processing state — don't trigger SSE again, show wait message */}
+        {lead.status === 'processing' && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800 p-4">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Pipeline is running — refresh in a moment to see results.
             </p>
           </div>
         )}
