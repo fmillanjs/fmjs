@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { ClaudeModule } from './claude/claude.module';
+import { PipelineModule } from './pipeline/pipeline.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ClaudeModule } from './claude/claude.module';
     DatabaseModule,
     HealthModule,
     ClaudeModule,
+    PipelineModule,
   ],
 })
 export class AppModule {}
