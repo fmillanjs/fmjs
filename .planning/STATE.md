@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** Milestone v5.0 — AI SDR App, Phase 42 (ClaudeService)
+**Current focus:** Milestone v5.0 — AI SDR App, Phase 43 (Enrichment Pipeline)
 
 ## Current Position
 
-Phase: 42 of 46 (Claude API Integration)
-Plan: 2 of 2 (COMPLETE)
-Status: Phase 42 Plan 02 complete — Prompt constants validated end-to-end against real Claude API
-Last activity: 2026-03-01 — Plan 42-02 complete (QUALIFY_SYSTEM_PROMPT, ENRICH_SYSTEM_PROMPT, PERSONALIZE_SYSTEM_PROMPT, validate-claude.ts, human approval received)
+Phase: 43 of 46 (Enrichment Pipeline)
+Plan: 2 of 3 (IN PROGRESS)
+Status: Phase 43 Plan 02 complete — QualifyService, EnrichService, PersonalizeService created and registered in PipelineModule
+Last activity: 2026-03-01 — Plan 43-02 complete (qualify.service.ts, enrich.service.ts, personalize.service.ts, pipeline.module.ts updated; tsc zero errors)
 
-Progress: [███░░░░░░░] 14%
+Progress: [████░░░░░░] 16%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3 (this milestone)
-- Average duration: 4 min
-- Total execution time: 12 min
+- Total plans completed: 5 (this milestone)
+- Average duration: 5 min
+- Total execution time: 27 min
 
 **By Phase:**
 
@@ -42,6 +42,7 @@ Progress: [███░░░░░░░] 14%
 |-------|-------|-------|----------|
 | 41 Project Foundation | 2/2 | 10 min | 5 min |
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
+| 43 Enrichment Pipeline | 2/3 | 8 min | 4 min |
 
 *Updated after each plan completion*
 
@@ -70,6 +71,8 @@ Progress: [███░░░░░░░] 14%
 - **42-02:** Zod v4 required — zodOutputFormat() calls z.toJSONSchema() which only exists in zod v4+; upgraded from v3.25.76 to v4.3.6 (no schema changes needed)
 - **42-02:** Prompt constants co-located in src/claude/prompts/ — single canonical import location for Phase 43 pipeline services
 - **42-02:** ICP rubric uses two few-shot examples anchoring the score distribution — delta=0 between two runs at temperature 0 confirmed
+- **43-02:** PersonalizeService.buildPersonalizeInput() formats EnrichOutput as labeled rows under "## Enrichment Context" heading — null fields render as "Unknown", empty arrays render as "Unknown"
+- **43-02:** Services omit @anthropic-ai/sdk import entirely — all AI calls go through ClaudeService abstraction layer per architecture decision from Phase 42
 
 ### Pending Todos
 
@@ -88,7 +91,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 42-02-PLAN.md — Three prompt constants (qualify, enrich, personalize) validated end-to-end against real Claude API. ICP score 100 for perfect-fit lead, delta=0 between two runs, stream yielded 109 tokens. Human approved all outputs. Phase 42 complete — ready for Phase 43 (pipeline).
+Stopped at: Completed 43-02-PLAN.md — QualifyService, EnrichService, PersonalizeService created as thin NestJS injectables delegating to ClaudeService. All registered in PipelineModule. TypeScript compilation: zero errors. Ready for Plan 43-03 (PipelineService orchestration).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
