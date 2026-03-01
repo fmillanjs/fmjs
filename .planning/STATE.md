@@ -71,6 +71,10 @@ Progress: [████░░░░░░] 16%
 - **42-02:** Zod v4 required — zodOutputFormat() calls z.toJSONSchema() which only exists in zod v4+; upgraded from v3.25.76 to v4.3.6 (no schema changes needed)
 - **42-02:** Prompt constants co-located in src/claude/prompts/ — single canonical import location for Phase 43 pipeline services
 - **42-02:** ICP rubric uses two few-shot examples anchoring the score distribution — delta=0 between two runs at temperature 0 confirmed
+- **43-01:** cheerio 1.x ships own TypeScript types — do NOT install @types/cheerio (would cause type conflicts)
+- **43-01:** responseType 'text' critical on axios.get — prevents SyntaxError when HTML is treated as JSON
+- **43-01:** ScraperService.scrape() catch block returns '' for ALL exceptions — resilience over verbosity for pipeline input steps
+- **43-01:** Cloudflare detection uses dual-check: HTTP status 403/503 AND HTML marker strings — covers both redirect-blocked and challenge-page cases
 - **43-02:** PersonalizeService.buildPersonalizeInput() formats EnrichOutput as labeled rows under "## Enrichment Context" heading — null fields render as "Unknown", empty arrays render as "Unknown"
 - **43-02:** Services omit @anthropic-ai/sdk import entirely — all AI calls go through ClaudeService abstraction layer per architecture decision from Phase 42
 
@@ -91,7 +95,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 43-02-PLAN.md — QualifyService, EnrichService, PersonalizeService created as thin NestJS injectables delegating to ClaudeService. All registered in PipelineModule. TypeScript compilation: zero errors. Ready for Plan 43-03 (PipelineService orchestration).
+Stopped at: Completed 43-01-PLAN.md — ScraperService (Axios + Cheerio, Cloudflare detection, empty-string fallback) and PipelineModule scaffold created. axios@1.13.6 and cheerio@1.2.0 installed. AppModule updated to import PipelineModule. TypeScript: zero errors. Note: 43-02 was already completed in prior session.
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
