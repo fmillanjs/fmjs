@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T06:30:59.481Z"
+last_updated: "2026-03-01T07:11:10Z"
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 48
-  completed_plans: 45
+  completed_plans: 46
 ---
 
 # Project State
@@ -22,25 +22,26 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 ## Current Position
 
-Phase: 41 of 46 (Project Foundation)
-Plan: 2 of 2 (COMPLETE)
-Status: Phase 41 complete — ready for Phase 42
-Last activity: 2026-03-01 — Plan 41-02 complete (Prisma schema, initial migration, smoke test)
+Phase: 42 of 46 (Claude API Integration)
+Plan: 1 of 1 (COMPLETE)
+Status: Phase 42 Plan 01 complete — ClaudeModule wired and boots healthy
+Last activity: 2026-03-01 — Plan 42-01 complete (ClaudeService, QualifySchema, EnrichSchema, AppModule registration)
 
-Progress: [██░░░░░░░░] 12%
+Progress: [███░░░░░░░] 14%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2 (this milestone)
-- Average duration: 5 min
-- Total execution time: 10 min
+- Total plans completed: 3 (this milestone)
+- Average duration: 4 min
+- Total execution time: 12 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 41 Project Foundation | 2/2 | 10 min | 5 min |
+| 42 Claude API Integration | 1/1 | 2 min | 2 min |
 
 *Updated after each plan completion*
 
@@ -63,6 +64,9 @@ Progress: [██░░░░░░░░] 12%
 - **41-02:** Dockerfile must COPY prisma before npm ci — postinstall runs prisma generate which requires schema
 - **41-02:** DemoLead.seedKey is @unique — Phase 46 seed script uses this for idempotent upserts
 - **41-02:** EmailSequence.body uses @db.Text — email bodies are long, avoids VARCHAR limit
+- **42-01:** zodOutputFormat() takes 1 arg (schema only) — plan template had wrong 2-arg call; corrected during execution
+- **42-01:** Use claude-sonnet-4-6 as private constant in ClaudeService — single place to change for all Phase 43 pipeline steps
+- **42-01:** nullable() not optional() for EnrichSchema fields — Anthropic structured outputs require all fields in JSON schema required array; optional() would cause API rejection
 
 ### Pending Todos
 
@@ -81,7 +85,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 41-02-PLAN.md — Prisma schema migrated (Lead, AIOutput, EmailSequence, DemoLead), full stack smoke test passed, Phase 41 complete. Ready for Phase 42 (ClaudeService)
+Stopped at: Completed 42-01-PLAN.md — ClaudeService with structuredOutput<T>()/streamText(), QualifySchema, EnrichSchema, ClaudeModule registered in AppModule, Docker container boots healthy with /health 200. Ready for Phase 43 (pipeline)
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
