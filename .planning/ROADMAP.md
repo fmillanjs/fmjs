@@ -45,11 +45,11 @@ All phases 1-40 complete. See milestone archives in `.planning/milestones/`.
   2. `prisma migrate dev` applies the Lead, AIOutput, EmailSequence, and DemoLead schema with no errors
   3. ANTHROPIC_API_KEY is readable from NestJS ConfigService and is absent from all client-side files and git history
   4. A GET /health endpoint returns 200
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 41-01: Repo init, Docker Compose, NestJS scaffold, environment config
-- [ ] 41-02: Prisma schema (Lead, AIOutput, EmailSequence, DemoLead models) and initial migration
+- [ ] 41-01-PLAN.md — Repo init, Docker Compose, NestJS scaffold, environment config
+- [ ] 41-02-PLAN.md — Prisma schema (Lead, AIOutput, EmailSequence, DemoLead models) and initial migration
 
 ### Phase 42: Claude API Integration
 **Goal**: ClaudeService is validated — structured outputs return correctly-typed ICP scores and enrichment fields at temperature 0, with consistent scores across repeated calls for the same input
