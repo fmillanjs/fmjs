@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-sdr-postgres
+    restart: unless-stopped
+    ports:
+      - '5436:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aisdr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aisdr}
+      POSTGRES_DB: ${POSTGRES_DB:-aisdr}
+    volumes:
+      - ai-sdr-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-aisdr}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-sdr-api
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aisdr}:${POSTGRES_PASSWORD:-aisdr}@postgres:5432/${POSTGRES_DB:-aisdr}
+
+volumes:
+  ai-sdr-pgdata:
