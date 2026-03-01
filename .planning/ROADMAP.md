@@ -76,12 +76,12 @@ Plans:
   2. PipelineService.processWithStream() completes all steps for a test lead and persists AIOutput records for qualify, enrich, and personalize steps to Postgres
   3. The pipeline emits step-progress events in order via the callback emitter: qualify-complete, enrich-complete, then streaming email tokens during personalize
   4. After pipeline completion, the Lead record in Postgres has a non-null ICP score (0-100), status set to complete, and denormalized industry and companySize fields
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 43-01: ScraperService (Axios + Cheerio, realistic User-Agent, Cloudflare challenge detection, empty-string fallback)
-- [ ] 43-02: QualifyService, EnrichService, PersonalizeService — each calling ClaudeService and returning typed results
-- [ ] 43-03: PipelineService orchestrator with callback emitter pattern, end-to-end console test with Prisma writes confirmed
+- [ ] 43-01-PLAN.md — ScraperService (Axios + Cheerio, realistic User-Agent, Cloudflare challenge detection, empty-string fallback)
+- [ ] 43-02-PLAN.md — QualifyService, EnrichService, PersonalizeService — each calling ClaudeService and returning typed results
+- [ ] 43-03-PLAN.md — PipelineService orchestrator with callback emitter pattern, end-to-end console test with Prisma writes confirmed
 
 ### Phase 44: NestJS REST + SSE Endpoints
 **Goal**: The pipeline is exposed over HTTP — a lead can be submitted, listed, and retrieved via REST, with pipeline progress streamable via SSE and no memory leaks on client disconnect
