@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  ai-sdr-postgres:
+    image: postgres:16-alpine
+    container_name: ai-sdr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${AI_SDR_POSTGRES_USER:-aisdr}
+      POSTGRES_PASSWORD: ${AI_SDR_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AI_SDR_POSTGRES_DB:-aisdr}
+    volumes:
+      - ai-sdr-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${AI_SDR_POSTGRES_USER:-aisdr}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai-sdr-api:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-api:latest
+    container_name: ai-sdr-api
+    restart: unless-stopped
+    depends_on:
+      ai-sdr-postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: ${AI_SDR_DATABASE_URL}
+      ANTHROPIC_API_KEY: ${AI_SDR_ANTHROPIC_API_KEY}
+      JWT_SECRET: ${AI_SDR_JWT_SECRET}
+      WEB_URL: ${AI_SDR_WEB_URL}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai-sdr-seed:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-seed:latest
+    restart: "no"
+    depends_on:
+      ai-sdr-api:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${AI_SDR_DATABASE_URL}
+
+  ai-sdr-web:
+    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-web:latest
+    container_name: ai-sdr-web
+    restart: unless-stopped
+    depends_on:
+      ai-sdr-seed:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ai-sdr-pgdata:
+
+networks:
+  default:
+    name: ai-sdr-network
