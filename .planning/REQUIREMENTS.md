@@ -16,9 +16,9 @@ Requirements for v5.0. Each maps to roadmap phases.
 
 ### Lead Management
 
-- [ ] **LEAD-01**: User can submit a new lead by entering name, company name, and company URL
-- [ ] **LEAD-02**: User can view all leads in a sortable list with ICP score column
-- [ ] **LEAD-03**: User can open a lead detail page showing all AI-generated outputs
+- [x] **LEAD-01**: User can submit a new lead by entering name, company name, and company URL
+- [x] **LEAD-02**: User can view all leads in a sortable list with ICP score column
+- [x] **LEAD-03**: User can open a lead detail page showing all AI-generated outputs
 
 ### AI Pipeline
 
@@ -81,9 +81,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-01 | Phase 45 | Pending |
 | AUTH-02 | Phase 45 | Pending |
 | AUTH-03 | Phase 45 | Pending |
-| LEAD-01 | Phase 44 | Pending |
-| LEAD-02 | Phase 44 | Pending |
-| LEAD-03 | Phase 44 | Pending |
+| LEAD-01 | Phase 44 | Complete |
+| LEAD-02 | Phase 44 | Complete |
+| LEAD-03 | Phase 44 | Complete |
 | PIPE-01 | Phase 43 | Complete |
 | PIPE-02 | Phase 45 | Pending |
 | PIPE-03 | Phase 45 | Pending |

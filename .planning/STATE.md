@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T09:39:51.578Z"
+last_updated: "2026-03-01T10:52:00Z"
 progress:
   total_phases: 12
   completed_phases: 9
   total_plans: 53
-  completed_plans: 50
+  completed_plans: 51
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** Milestone v5.0 — AI SDR App, Phase 43 (Enrichment Pipeline)
+**Current focus:** Milestone v5.0 — AI SDR App, Phase 44 (NestJS REST + SSE Endpoints)
 
 ## Current Position
 
-Phase: 43 of 46 (Enrichment Pipeline)
-Plan: 3 of 3 (COMPLETE)
-Status: Phase 43 Plan 03 complete — PipelineService orchestrator created, all 13 end-to-end assertions passed (icpScore=62, industry='No-Code SaaS / Marketing Automation', companySize='1-50 employees', 111 tokens)
-Last activity: 2026-03-01 — Plan 43-03 complete (pipeline.service.ts, pipeline.module.ts updated, validate-pipeline.ts created; all assertions passed)
+Phase: 44 of 46 (NestJS REST + SSE Endpoints)
+Plan: 1 of 2 (awaiting human verification at checkpoint)
+Status: Phase 44 Plan 01 complete (awaiting human checkpoint) — LeadsModule REST API (POST /leads, GET /leads, GET /leads/:id) wired with class-validator, @nestjs/throttler, and global ValidationPipe. All curl checks passed against live Docker container.
+Last activity: 2026-03-01 — Plan 44-01 complete pending checkpoint approval
 
-Progress: [████░░░░░░] 19%
+Progress: [████░░░░░░] 21%
 
 ## Performance Metrics
 
@@ -43,6 +43,7 @@ Progress: [████░░░░░░] 19%
 | 41 Project Foundation | 2/2 | 10 min | 5 min |
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
 | 43 Enrichment Pipeline | 3/3 | 10 min | 3 min |
+| 44 NestJS REST + SSE | 1/2 | 8 min | 8 min |
 
 *Updated after each plan completion*
 
@@ -79,6 +80,10 @@ Progress: [████░░░░░░] 19%
 - **43-02:** Services omit @anthropic-ai/sdk import entirely — all AI calls go through ClaudeService abstraction layer per architecture decision from Phase 42
 - **43-03:** PipelineService exported only from PipelineModule — thin AI services remain internal (Phase 44 injects PipelineService via PipelineModule import)
 - **43-03:** STEP_QUALIFY/ENRICH/PERSONALIZE constants defined in pipeline.service.ts — Phase 45 queries AIOutput by these exact strings, never drift
+- **44-01:** POST /leads creates Lead record only — pipeline triggered from SSE endpoint in Plan 02, not from POST handler
+- **44-01:** LeadsModule imports PipelineModule in Plan 01 even though PipelineService only used in Plan 02 — avoids re-touching module file
+- **44-01:** ThrottlerGuard as APP_GUARD (global) + @Throttle(5/60s) on POST /leads + @SkipThrottle on all GET endpoints including health
+- **44-01:** rootDir: ./src added to tsconfig.json — fixes Docker dist/main.js path (was outputting to dist/src/main.js without rootDir)
 
 ### Pending Todos
 
@@ -97,7 +102,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 43-03-PLAN.md — PipelineService orchestrator (scrape → qualify → enrich → personalize → Prisma writes) and validate-pipeline.ts. All 13 assertions passed against real Postgres + Claude API (icpScore=62, industry='No-Code SaaS / Marketing Automation', companySize='1-50 employees', 111 streaming tokens). Phase 43 complete.
+Stopped at: Completed 44-01-PLAN.md (awaiting human checkpoint) — LeadsModule REST API (POST/GET/GET:id), CreateLeadDto, ThrottlerModule, ValidationPipe. All curl checks passed. Checkpoint requires human to verify endpoints.
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
