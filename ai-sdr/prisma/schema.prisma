@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  pending
+  processing
+  complete
+  failed
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  name        String
+  companyName String
+  companyUrl  String
+  icpScore    Int?
+  status      LeadStatus @default(pending)
+  industry    String?
+  companySize String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  aiOutputs      AIOutput[]
+  emailSequences EmailSequence[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AIOutput {
+  id        String   @id @default(cuid())
+  step      String
+  content   Json
+  createdAt DateTime @default(now())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, step])
+}
+
+model EmailSequence {
+  id        String   @id @default(cuid())
+  subject   String
+  body      String   @db.Text
+  dayOffset Int
+  createdAt DateTime @default(now())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+}
+
+model DemoLead {
+  id          String   @id @default(cuid())
+  name        String
+  companyName String
+  companyUrl  String
+  seedKey     String   @unique
+  createdAt   DateTime @default(now())
+
+  @@index([seedKey])
+}
