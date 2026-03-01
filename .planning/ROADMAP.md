@@ -61,11 +61,11 @@ Plans:
   3. Calling ClaudeService.structuredOutput() with the enrich Zod schema returns company size, industry, tech stack array, and pain points
   4. ClaudeService.streamText() returns an async stream of text tokens for a personalization prompt
   5. No module other than ClaudeService imports the Anthropic SDK directly
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 42-01: ClaudeService with structuredOutput<T>() and streamText(), Zod schemas for qualify and enrich steps
-- [ ] 42-02: Prompt engineering iteration — ICP scoring rubric, nullable fields, few-shot examples, temperature 0 variance validation
+- [ ] 42-01-PLAN.md — ClaudeService with structuredOutput<T>() and streamText(), Zod schemas for qualify and enrich steps, ClaudeModule wired into AppModule
+- [ ] 42-02-PLAN.md — Prompt engineering: ICP scoring rubric, nullable fields, few-shot examples, temperature 0 variance validation via standalone script
 
 ### Phase 43: Enrichment Pipeline
 **Goal**: The full pipeline runs end-to-end in isolation — a lead input flows through scraping, qualification, enrichment, and email personalization, with all results persisted to Postgres
