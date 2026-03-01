@@ -112,10 +112,10 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 45-01: Auth — login page with demo credentials box, JWT session, HttpOnly cookie, redirect on refresh
-- [ ] 45-02: CRM dashboard (RSC lead list table with score column and status) and lead input form with client validation
-- [ ] 45-03: Lead detail page — PipelineMonitor EventSource client, step progress indicators, streaming email preview
-- [ ] 45-04: Score bar, "Why this score?" collapsible card, enrichment card with intent signal badges, copy-to-clipboard button
+- [x] 45-01: Auth — login page with demo credentials box, JWT session, HttpOnly cookie, redirect on refresh
+- [x] 45-02: CRM dashboard (RSC lead list table with score column and status) and lead input form with client validation
+- [x] 45-03: Lead detail page — PipelineMonitor EventSource client, step progress indicators, streaming email preview
+- [x] 45-04: Score bar, "Why this score?" collapsible card, enrichment card with intent signal badges, copy-to-clipboard button
 
 ### Phase 46: Demo Seed + Portfolio Integration
 **Goal**: The deployed app has varied pre-seeded leads ready for recruiters, SSE streaming works through Coolify Nginx, and the portfolio presents AI SDR as a third project with case study and live demo link
