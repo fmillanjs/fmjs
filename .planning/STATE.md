@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 46 of 46 (Demo Seed + Portfolio Integration) — IN PROGRESS
-Plan: 1 of 3 COMPLETE (Demo Seed Script — Plan 46-01 fully executed and verified)
-Status: Phase 46 IN PROGRESS — Plan 46-01 complete. Seed script creates 8 hand-authored leads (ICP scores 22-92, 8 distinct industries) with qualify/enrich/personalize AIOutput rows. Idempotency via DemoLead.seedKey confirmed. db:seed npm script added. Ready for Phase 46 Plan 02 (Docker + Coolify deployment).
-Last activity: 2026-03-01 — Plan 46-01 executed — demo seed script complete
+Plan: 2 of 3 COMPLETE (Docker + Coolify Deployment — Plan 46-02 tasks 1+2 executed; Task 3 is checkpoint:human-verify awaiting Coolify deployment)
+Status: Phase 46 IN PROGRESS — Plan 46-02 complete (code tasks). Docker infrastructure created: ai-sdr/web/Dockerfile (Next.js standalone + NEXT_PUBLIC_API_URL build ARG), ai-sdr/Dockerfile.seed (ts-node runner), ai-sdr/coolify-compose.yml (4-service stack postgres→api→seed→web), GitHub Actions build-and-push-ai-sdr and deploy-ai-sdr jobs. Ready for Plan 46-02 Task 3 human checkpoint (Coolify setup + SSE verification) then Plan 46-03 (portfolio case study).
+Last activity: 2026-03-01 — Plan 46-02 executed — Docker + CI/CD infrastructure complete
 
 Progress: [█████░░░░░] 24%
 
@@ -48,6 +48,7 @@ Progress: [█████░░░░░] 24%
 
 *Updated after each plan completion*
 | Phase 46 P01 | 2 | 2 tasks | 2 files |
+| Phase 46 P02 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,10 @@ Progress: [█████░░░░░] 24%
 - **46-01:** Seed script uses raw new PrismaClient() — not PrismaService which requires NestJS DI container
 - **46-01:** All 8 leads hand-authored (not faker) — DEMO-02 quality requires company-specific facts in personalized emails
 - **46-01:** DemoLead.seedKey @unique is the idempotency guard — re-run is safe, skips existing leads
+- **46-02:** NEXT_PUBLIC_API_URL passed as Docker build ARG (not runtime ENV) — Next.js bakes NEXT_PUBLIC_ vars into client bundle at build time; runtime ENV has no effect
+- **46-02:** Seed Dockerfile uses ts-node --skip-project flag — avoids needing tsconfig.json in runner stage
+- **46-02:** coolify-compose dependency chain: postgres healthy → api healthy → seed completed_successfully → web starts
+- **46-02:** build-and-push-ai-sdr depends only on [test] (not lighthouse) — AI SDR CI independent of Teamflow Lighthouse
 
 ### Pending Todos
 
@@ -123,7 +128,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 46-01-PLAN.md — demo seed script with 8 hand-authored leads, db:seed npm script added to package.json. DEMO-01 and DEMO-02 requirements satisfied. Ready for Phase 46 Plan 02 (Docker + Coolify deployment).
+Stopped at: Completed 46-02-PLAN.md tasks 1+2 — Docker infrastructure (web Dockerfile, seed Dockerfile, coolify-compose.yml, CI/CD jobs). Task 3 is checkpoint:human-verify requiring Coolify deployment setup. Ready for 46-02 human checkpoint then Plan 46-03 (portfolio case study).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
