@@ -1,0 +1,14 @@
+# Environment — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+node_modules/
+
+# Prisma generated
+src/generated/
+
+# OS
+.DS_Store
