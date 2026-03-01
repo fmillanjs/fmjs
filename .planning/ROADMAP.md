@@ -30,7 +30,7 @@ All phases 1-40 complete. See milestone archives in `.planning/milestones/`.
 - [x] **Phase 41: Project Foundation** - Standalone repo, Prisma schema (Lead, AIOutput, EmailSequence, DemoLead), NestJS skeleton, Docker Compose with Postgres (completed 2026-03-01)
 - [x] **Phase 42: Claude API Integration** - ClaudeService with structuredOutput and streamText, Zod schemas, ICP scoring rubric validated at temperature 0 (completed 2026-03-01)
 - [x] **Phase 43: Enrichment Pipeline** - ScraperService, PipelineService orchestrator, qualify/enrich/personalize pipeline end-to-end in isolation (completed 2026-03-01)
-- [ ] **Phase 44: NestJS REST + SSE Endpoints** - LeadsController REST API, SSE streaming endpoint with cleanup, throttle guard
+- [x] **Phase 44: NestJS REST + SSE Endpoints** - LeadsController REST API, SSE streaming endpoint with cleanup, throttle guard (completed 2026-03-01)
 - [ ] **Phase 45: Next.js Frontend** - Auth (login + session), CRM dashboard, lead detail with PipelineMonitor, full pipeline UI with streaming email
 - [ ] **Phase 46: Demo Seed + Portfolio Integration** - Seed script with 6-8 fictional leads, Coolify deployment with verified SSE, portfolio project card and case study
 
@@ -143,6 +143,6 @@ Plans:
 | 41. Project Foundation | 2/2 | Complete    | 2026-03-01 | - |
 | 42. Claude API Integration | 2/2 | Complete    | 2026-03-01 | - |
 | 43. Enrichment Pipeline | 3/3 | Complete    | 2026-03-01 | - |
-| 44. NestJS REST + SSE Endpoints | 1/2 | In Progress|  | - |
+| 44. NestJS REST + SSE Endpoints | 2/2 | Complete   | 2026-03-01 | - |
 | 45. Next.js Frontend | v5.0 | 0/4 | Not started | - |
 | 46. Demo Seed + Portfolio Integration | v5.0 | 0/3 | Not started | - |

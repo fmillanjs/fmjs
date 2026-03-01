@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 44 of 46 (NestJS REST + SSE Endpoints)
-Plan: 2 of 2 (SSE streaming endpoint)
-Status: Phase 44 Plan 01 COMPLETE — LeadsModule REST API (POST /leads, GET /leads, GET /leads/:id) verified end-to-end. Checkpoint approved. Ready for Plan 02 (SSE endpoint).
-Last activity: 2026-03-01 — Plan 44-01 complete, checkpoint verified and approved
+Plan: 2 of 2 COMPLETE (SSE streaming endpoint — Phase 44 DONE)
+Status: Phase 44 COMPLETE — All 5 success criteria satisfied. SC1-SC3 confirmed in Plan 01, SC4-SC5 confirmed in Plan 02. SSE streaming verified end-to-end with curl. Ready for Phase 45 (React frontend).
+Last activity: 2026-03-01 — Plan 44-02 complete, SSE endpoint verified end-to-end
 
 Progress: [████░░░░░░] 21%
 
@@ -43,7 +43,7 @@ Progress: [████░░░░░░] 21%
 | 41 Project Foundation | 2/2 | 10 min | 5 min |
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
 | 43 Enrichment Pipeline | 3/3 | 10 min | 3 min |
-| 44 NestJS REST + SSE | 1/2 complete | 8 min | 8 min |
+| 44 NestJS REST + SSE | 2/2 complete | 10 min | 5 min |
 
 *Updated after each plan completion*
 
@@ -84,6 +84,9 @@ Progress: [████░░░░░░] 21%
 - **44-01:** LeadsModule imports PipelineModule in Plan 01 even though PipelineService only used in Plan 02 — avoids re-touching module file
 - **44-01:** ThrottlerGuard as APP_GUARD (global) + @Throttle(5/60s) on POST /leads + @SkipThrottle on all GET endpoints including health
 - **44-01:** rootDir: ./src added to tsconfig.json — fixes Docker dist/main.js path (was outputting to dist/src/main.js without rootDir)
+- **44-02:** @Res() injected without passthrough:true in @Sse() method — @Sse() owns response lifecycle; @Res() used only for setHeader and close listener
+- **44-02:** Observable/callback bridge pattern: new Observable<MessageEvent>(subscriber => onStep callback) connects PipelineService StepCallback to SSE subscriber.next()
+- **44-02:** closed boolean flag + subscriber.closed guard in onStep prevents "Cannot call next on closed subscriber" errors after client disconnect
 
 ### Pending Todos
 
@@ -102,7 +105,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 44-01-PLAN.md — LeadsModule REST API verified. Checkpoint approved. Ready to execute 44-02-PLAN.md (SSE streaming endpoint).
+Stopped at: Completed 44-02-PLAN.md — SSE streaming endpoint verified end-to-end. Phase 44 COMPLETE. Ready to execute Phase 45 (React frontend).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
