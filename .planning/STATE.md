@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T07:11:10Z"
+last_updated: "2026-03-01T07:35:00Z"
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 48
-  completed_plans: 46
+  completed_plans: 47
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 42 of 46 (Claude API Integration)
-Plan: 1 of 1 (COMPLETE)
-Status: Phase 42 Plan 01 complete — ClaudeModule wired and boots healthy
-Last activity: 2026-03-01 — Plan 42-01 complete (ClaudeService, QualifySchema, EnrichSchema, AppModule registration)
+Plan: 2 of 2 (COMPLETE)
+Status: Phase 42 Plan 02 complete — Prompt constants validated end-to-end against real Claude API
+Last activity: 2026-03-01 — Plan 42-02 complete (QUALIFY_SYSTEM_PROMPT, ENRICH_SYSTEM_PROMPT, PERSONALIZE_SYSTEM_PROMPT, validate-claude.ts, human approval received)
 
 Progress: [███░░░░░░░] 14%
 
@@ -41,7 +41,7 @@ Progress: [███░░░░░░░] 14%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 41 Project Foundation | 2/2 | 10 min | 5 min |
-| 42 Claude API Integration | 1/1 | 2 min | 2 min |
+| 42 Claude API Integration | 2/2 | 17 min | 9 min |
 
 *Updated after each plan completion*
 
@@ -67,6 +67,9 @@ Progress: [███░░░░░░░] 14%
 - **42-01:** zodOutputFormat() takes 1 arg (schema only) — plan template had wrong 2-arg call; corrected during execution
 - **42-01:** Use claude-sonnet-4-6 as private constant in ClaudeService — single place to change for all Phase 43 pipeline steps
 - **42-01:** nullable() not optional() for EnrichSchema fields — Anthropic structured outputs require all fields in JSON schema required array; optional() would cause API rejection
+- **42-02:** Zod v4 required — zodOutputFormat() calls z.toJSONSchema() which only exists in zod v4+; upgraded from v3.25.76 to v4.3.6 (no schema changes needed)
+- **42-02:** Prompt constants co-located in src/claude/prompts/ — single canonical import location for Phase 43 pipeline services
+- **42-02:** ICP rubric uses two few-shot examples anchoring the score distribution — delta=0 between two runs at temperature 0 confirmed
 
 ### Pending Todos
 
@@ -85,7 +88,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 42-01-PLAN.md — ClaudeService with structuredOutput<T>()/streamText(), QualifySchema, EnrichSchema, ClaudeModule registered in AppModule, Docker container boots healthy with /health 200. Ready for Phase 43 (pipeline)
+Stopped at: Completed 42-02-PLAN.md — Three prompt constants (qualify, enrich, personalize) validated end-to-end against real Claude API. ICP score 100 for perfect-fit lead, delta=0 between two runs, stream yielded 109 tokens. Human approved all outputs. Phase 42 complete — ready for Phase 43 (pipeline).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE

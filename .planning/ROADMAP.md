@@ -28,7 +28,7 @@ All phases 1-40 complete. See milestone archives in `.planning/milestones/`.
 **Repo note:** Phases 41-45 are work in a new standalone `ai-sdr` repo (NestJS + Next.js + Postgres). Phase 46 includes portfolio integration back into this monorepo (`apps/web`).
 
 - [x] **Phase 41: Project Foundation** - Standalone repo, Prisma schema (Lead, AIOutput, EmailSequence, DemoLead), NestJS skeleton, Docker Compose with Postgres (completed 2026-03-01)
-- [ ] **Phase 42: Claude API Integration** - ClaudeService with structuredOutput and streamText, Zod schemas, ICP scoring rubric validated at temperature 0
+- [x] **Phase 42: Claude API Integration** - ClaudeService with structuredOutput and streamText, Zod schemas, ICP scoring rubric validated at temperature 0 (completed 2026-03-01)
 - [ ] **Phase 43: Enrichment Pipeline** - ScraperService, PipelineService orchestrator, qualify/enrich/personalize pipeline end-to-end in isolation
 - [ ] **Phase 44: NestJS REST + SSE Endpoints** - LeadsController REST API, SSE streaming endpoint with cleanup, throttle guard
 - [ ] **Phase 45: Next.js Frontend** - Auth (login + session), CRM dashboard, lead detail with PipelineMonitor, full pipeline UI with streaming email
@@ -141,7 +141,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 41. Project Foundation | 2/2 | Complete    | 2026-03-01 | - |
-| 42. Claude API Integration | 1/2 | In Progress|  | - |
+| 42. Claude API Integration | 2/2 | Complete   | 2026-03-01 | - |
 | 43. Enrichment Pipeline | v5.0 | 0/3 | Not started | - |
 | 44. NestJS REST + SSE Endpoints | v5.0 | 0/2 | Not started | - |
 | 45. Next.js Frontend | v5.0 | 0/4 | Not started | - |
