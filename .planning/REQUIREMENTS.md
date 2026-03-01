@@ -1,0 +1,108 @@
+# Requirements: AI SDR Replacement System
+
+**Defined:** 2026-02-28
+**Milestone:** v5.0
+**Core Value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
+
+## v1 Requirements
+
+Requirements for v5.0. Each maps to roadmap phases.
+
+### Authentication
+
+- [ ] **AUTH-01**: User can log into the demo with shared credentials
+- [ ] **AUTH-02**: Demo credentials (email + password) are displayed on the login page
+- [ ] **AUTH-03**: User session persists across browser refresh
+
+### Lead Management
+
+- [ ] **LEAD-01**: User can submit a new lead by entering name, company name, and company URL
+- [ ] **LEAD-02**: User can view all leads in a sortable list with ICP score column
+- [ ] **LEAD-03**: User can open a lead detail page showing all AI-generated outputs
+
+### AI Pipeline
+
+- [ ] **PIPE-01**: AI automatically qualifies a submitted lead with an ICP score (0–100)
+- [ ] **PIPE-02**: ICP score is displayed as a horizontal colored bar with numeric label
+- [ ] **PIPE-03**: User can expand a "Why this score?" card showing matched and weak ICP criteria
+- [ ] **PIPE-04**: AI automatically enriches CRM fields: company size, industry, tech stack, pain points
+- [ ] **PIPE-05**: Enrichment is displayed in a structured card with intent signals as badges
+- [ ] **PIPE-06**: AI generates a personalized cold email that streams token-by-token to the browser
+- [ ] **PIPE-07**: Pipeline shows step-by-step progress indicators while Claude API runs
+- [ ] **PIPE-08**: User can copy the generated email to clipboard
+
+### Demo Data
+
+- [ ] **DEMO-01**: App is pre-seeded with 6–8 fictional leads covering full ICP score spectrum (20–95)
+- [ ] **DEMO-02**: Seeded leads span different industries with realistic enrichment and personalized emails
+
+### Portfolio Integration
+
+- [ ] **PORT-01**: Portfolio home page includes AI SDR as a third project card
+- [ ] **PORT-02**: Case study page at `/projects/ai-sdr` with tech stack, architecture decisions, and screenshots
+- [ ] **PORT-03**: Portfolio project card links to the deployed live demo
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Sequencing
+
+- **SEQ-01**: AI generates a 3-email follow-up sequence (Day 1, Day 5, Day 10) per lead
+- **SEQ-02**: Sequence is displayed as a vertical timeline on the lead detail page
+- **SEQ-03**: User can copy individual sequence emails to clipboard
+
+### Advanced Lead Management
+
+- **LEAD-04**: User can import leads in bulk via CSV upload
+- **LEAD-05**: User can update lead status (contacted / replied / meeting booked)
+- **LEAD-06**: User can export leads and AI outputs to CSV
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| Actual email sending (SMTP) | Deliverability overhead, CAN-SPAM compliance, zero recruiter-visible benefit over copy button |
+| Multi-user workspaces / signup | Single demo account is correct; multi-tenancy adds weeks with no portfolio AI signal |
+| Kanban pipeline view | TeamFlow already demonstrates dnd-kit; duplicate with no new portfolio signal |
+| Streaming JSON pipeline steps | Partial JSON is not renderable; only email personalization step should stream |
+| Live web scraping during recruiter sessions | Pre-scrape and cache in seed; live scraping fails ~20-30% of sites during demos |
+| Webhook integrations (HubSpot, Salesforce) | Out of portfolio scope; real CRM integrations not needed for demo |
+| Purple in any design element | User requirement, all milestones |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| AUTH-01 | — | Pending |
+| AUTH-02 | — | Pending |
+| AUTH-03 | — | Pending |
+| LEAD-01 | — | Pending |
+| LEAD-02 | — | Pending |
+| LEAD-03 | — | Pending |
+| PIPE-01 | — | Pending |
+| PIPE-02 | — | Pending |
+| PIPE-03 | — | Pending |
+| PIPE-04 | — | Pending |
+| PIPE-05 | — | Pending |
+| PIPE-06 | — | Pending |
+| PIPE-07 | — | Pending |
+| PIPE-08 | — | Pending |
+| DEMO-01 | — | Pending |
+| DEMO-02 | — | Pending |
+| PORT-01 | — | Pending |
+| PORT-02 | — | Pending |
+| PORT-03 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 19 total
+- Mapped to phases: 0
+- Unmapped: 19 ⚠️
+
+---
+*Requirements defined: 2026-02-28*
+*Last updated: 2026-02-28 after initial definition*
