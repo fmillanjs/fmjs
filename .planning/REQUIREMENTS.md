@@ -33,8 +33,8 @@ Requirements for v5.0. Each maps to roadmap phases.
 
 ### Demo Data
 
-- [ ] **DEMO-01**: App is pre-seeded with 6–8 fictional leads covering full ICP score spectrum (20–95)
-- [ ] **DEMO-02**: Seeded leads span different industries with realistic enrichment and personalized emails
+- [x] **DEMO-01**: App is pre-seeded with 6–8 fictional leads covering full ICP score spectrum (20–95)
+- [x] **DEMO-02**: Seeded leads span different industries with realistic enrichment and personalized emails
 
 ### Portfolio Integration
 
@@ -92,8 +92,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PIPE-06 | Phase 45 | Complete |
 | PIPE-07 | Phase 45 | Complete |
 | PIPE-08 | Phase 45 | Complete |
-| DEMO-01 | Phase 46 | Pending |
-| DEMO-02 | Phase 46 | Pending |
+| DEMO-01 | Phase 46 | Complete |
+| DEMO-02 | Phase 46 | Complete |
 | PORT-01 | Phase 46 | Pending |
 | PORT-02 | Phase 46 | Pending |
 | PORT-03 | Phase 46 | Pending |

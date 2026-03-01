@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T20:13:12.581Z"
+last_updated: "2026-03-01T22:36:45.348Z"
 progress:
-  total_phases: 14
+  total_phases: 15
   completed_phases: 11
-  total_plans: 59
-  completed_plans: 56
+  total_plans: 62
+  completed_plans: 57
 ---
 
 # Project State
@@ -22,10 +22,10 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 ## Current Position
 
-Phase: 45 of 46 (Next.js Frontend) — COMPLETE
-Plan: 4 of 4 COMPLETE (AI Output Cards — Plan 45-04 fully verified and complete)
-Status: Phase 45 COMPLETE — All 4 plans executed and human-verified end-to-end. ScoreCard (PIPE-02), WhyScoreCard accordion (PIPE-03), EnrichmentCard badges (PIPE-05), EmailPreview copy button (PIPE-06/PIPE-08) built, wired into /leads/:id page, build clean, full recruiter journey approved by human. Ready for Phase 46.
-Last activity: 2026-03-01 — Plan 45-04 human-verify checkpoint approved — Phase 45 complete
+Phase: 46 of 46 (Demo Seed + Portfolio Integration) — IN PROGRESS
+Plan: 1 of 3 COMPLETE (Demo Seed Script — Plan 46-01 fully executed and verified)
+Status: Phase 46 IN PROGRESS — Plan 46-01 complete. Seed script creates 8 hand-authored leads (ICP scores 22-92, 8 distinct industries) with qualify/enrich/personalize AIOutput rows. Idempotency via DemoLead.seedKey confirmed. db:seed npm script added. Ready for Phase 46 Plan 02 (Docker + Coolify deployment).
+Last activity: 2026-03-01 — Plan 46-01 executed — demo seed script complete
 
 Progress: [█████░░░░░] 24%
 
@@ -47,6 +47,7 @@ Progress: [█████░░░░░] 24%
 | 45 Next.js Frontend | 4/4 complete | 18 min | 5 min |
 
 *Updated after each plan completion*
+| Phase 46 P01 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,9 @@ Progress: [█████░░░░░] 24%
 - **45-04:** ScoreCard/WhyScoreCard/EnrichmentCard are RSC (no 'use client') — only EmailPreview needs client context for clipboard API
 - **45-04:** navigator.clipboard.writeText() used directly in EmailPreview — no library needed; Sonner toast already wired in layout.tsx
 - **45-04:** Copy button disabled={!emailText} — prevents clipboard call when email is empty (pipeline not yet complete)
+- **46-01:** Seed script uses raw new PrismaClient() — not PrismaService which requires NestJS DI container
+- **46-01:** All 8 leads hand-authored (not faker) — DEMO-02 quality requires company-specific facts in personalized emails
+- **46-01:** DemoLead.seedKey @unique is the idempotency guard — re-run is safe, skips existing leads
 
 ### Pending Todos
 
@@ -119,7 +123,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 45-04-PLAN.md — Phase 45 Next.js Frontend fully complete. All PIPE-02/03/05/06/07/08 and AUTH-01/02/03 requirements satisfied. Human verification approved. Ready for Phase 46.
+Stopped at: Completed 46-01-PLAN.md — demo seed script with 8 hand-authored leads, db:seed npm script added to package.json. DEMO-01 and DEMO-02 requirements satisfied. Ready for Phase 46 Plan 02 (Docker + Coolify deployment).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
