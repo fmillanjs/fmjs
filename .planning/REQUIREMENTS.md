@@ -78,31 +78,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| LEAD-01 | — | Pending |
-| LEAD-02 | — | Pending |
-| LEAD-03 | — | Pending |
-| PIPE-01 | — | Pending |
-| PIPE-02 | — | Pending |
-| PIPE-03 | — | Pending |
-| PIPE-04 | — | Pending |
-| PIPE-05 | — | Pending |
-| PIPE-06 | — | Pending |
-| PIPE-07 | — | Pending |
-| PIPE-08 | — | Pending |
-| DEMO-01 | — | Pending |
-| DEMO-02 | — | Pending |
-| PORT-01 | — | Pending |
-| PORT-02 | — | Pending |
-| PORT-03 | — | Pending |
+| AUTH-01 | Phase 45 | Pending |
+| AUTH-02 | Phase 45 | Pending |
+| AUTH-03 | Phase 45 | Pending |
+| LEAD-01 | Phase 44 | Pending |
+| LEAD-02 | Phase 44 | Pending |
+| LEAD-03 | Phase 44 | Pending |
+| PIPE-01 | Phase 43 | Pending |
+| PIPE-02 | Phase 45 | Pending |
+| PIPE-03 | Phase 45 | Pending |
+| PIPE-04 | Phase 43 | Pending |
+| PIPE-05 | Phase 45 | Pending |
+| PIPE-06 | Phase 45 | Pending |
+| PIPE-07 | Phase 45 | Pending |
+| PIPE-08 | Phase 45 | Pending |
+| DEMO-01 | Phase 46 | Pending |
+| DEMO-02 | Phase 46 | Pending |
+| PORT-01 | Phase 46 | Pending |
+| PORT-02 | Phase 46 | Pending |
+| PORT-03 | Phase 46 | Pending |
 
 **Coverage:**
 - v1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19 ⚠️
+- Mapped to phases: 19
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-28*
-*Last updated: 2026-02-28 after initial definition*
+*Last updated: 2026-02-28 — traceability filled during roadmap creation (v5.0 phases 41-46)*

@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
-status: defining_requirements
+status: roadmap_created
 last_updated: "2026-02-28T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
-  total_plans: 0
+  total_plans: 16
   completed_plans: 0
 ---
 
@@ -18,50 +18,43 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 
 **Core value:** Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
-**Current focus:** Milestone v5.0 started — Defining requirements for AI SDR App
+**Current focus:** Milestone v5.0 — AI SDR App, Phase 41 ready to plan
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 41 of 46 (Project Foundation)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-28 — Milestone v5.0 started
+Status: Ready to plan
+Last activity: 2026-02-28 — v5.0 roadmap created (6 phases, 19 requirements mapped)
 
-Progress: [##########] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4 (this milestone)
-- Average duration: 5 min
-- Total execution time: 20 min
+- Total plans completed: 0 (this milestone)
+- Average duration: —
+- Total execution time: —
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 38. Screenshot Capture | 3 completed | 17 min | 6 min |
-| 39. Walkthrough Component | 1 completed | 3 min | 3 min |
-| 40. Integration & QA | 3 completed | 55 min | 18 min |
+| (none yet) | - | - | - |
 
 *Updated after each plan completion*
 
 ## Accumulated Context
 
-### Decisions (relevant to v4.1)
+### Decisions (relevant to v5.0)
 
-- **v4.0:** Screenshots stored in `apps/web/public/screenshots/` at 1280x800; served via `next/image`
-- **v3.1:** motion (NOT framer-motion) import from `motion/react` required for React 19 + Next.js 15
-- **v2.5:** AnimateIn/StaggerContainer/StaggerItem are the established scroll-reveal animation primitives
-- **v2.5:** `--matrix-green: #00FF41` is the canonical accent token; `#0a0a0a` is the canonical dark background
-- **v4.0:** Both live apps (teamflow.fernandomillan.me, devcollab.fernandomillan.me) are fully functional with working auth — Playwright can authenticate against them
-- **38-01:** Playwright capture uses chromium.launch() standalone; SCREENSHOTS_DIR=../../public/screenshots from e2e/screenshots/; run with `npx tsx`; audit-log route is /teams/{id}/audit-log; task modal button text is "New Task"; settings page (/teams/{id}/settings) shows RBAC member list
-- **38-02:** DevCollab credentials: admin@demo.devcollab / Demo1234!; workspace slug: devcollab-demo; snippets+posts listing links include /new path — filter out when extracting IDs; SearchModal opens on Control+K (not Meta+K in Linux); 5 screenshots all 1280x800
-- **38-03:** Screenshot manifest at `apps/web/src/data/screenshots-manifest.ts`; exports `Screenshot` interface, `TEAMFLOW_SCREENSHOTS` (5), `DEVCOLLAB_SCREENSHOTS` (5); all width:1280 height:800; includes `label` field for callout legends in Phase 39
-- **39-01:** AnimateIn does not accept `style` prop — use bg-[#0a0a0a] Tailwind arbitrary class; WalkthroughSection at apps/web/components/portfolio/walkthrough-section.tsx; callout circles use position:absolute with inline left/top pixel values; WalkthroughStep.x and .y are raw numbers (React auto-appends px)
-- **40-01:** walkthrough-data.ts at `apps/web/src/data/walkthrough-data.ts`; alt text reused verbatim from screenshots-manifest.ts; Lighthouse accessibility gate upgraded from warn to error in both lighthouserc.json and lighthouserc.production.json
-- **40-02:** Import path for walkthrough-data is `@/src/data/walkthrough-data` (not `@/data/`) — tsconfig `@/*` maps to `apps/web/` root, not `apps/web/src/`; WalkthroughSection integrated into teamflow/page.tsx and devcollab/page.tsx replacing static Screenshots sections
-- **40-03:** class="dark" on html element server-side fixes LHCI contrast issues caused by next-themes not injecting dark class during SSR; standalone build requires cp .next/static → .next/standalone/apps/web/.next/static before LHCI; use CHROME_PATH=playwright chromium for LHCI in WSL2; explicit #e8e8e8/#b0b0b0 colors on nav/footer links bypass CSS variable resolution issues
+- **v4.1:** Screenshots in `apps/web/public/screenshots/` at 1280x800; served via `next/image`
+- **v5.0 research:** ANTHROPIC_API_KEY in NestJS only — enforce from day one, never in client components
+- **v5.0 research:** No Redis/BullMQ — in-process pipeline with callback-based SSE emitter (sequential steps, not parallel)
+- **v5.0 research:** Only email personalization step streams tokens — qualify/enrich use structuredOutput (not renderable incrementally)
+- **v5.0 research:** temperature: 0 on all structured output calls — lock before any UI is built on top
+- **v5.0 research:** Pre-scrape and cache in seed — never run live scraping during recruiter sessions
+- **v5.0 research:** X-Accel-Buffering: no header required on Coolify for SSE to work through Nginx proxy
 
 ### Pending Todos
 
@@ -69,7 +62,7 @@ None.
 
 ### Blockers/Concerns
 
-None — the pre-existing build failure in e2e screenshot scripts was auto-fixed in Plan 40-03 (match[1] ?? null).
+None yet.
 
 ### Quick Tasks Completed
 
@@ -80,7 +73,7 @@ None — the pre-existing build failure in e2e screenshot scripts was auto-fixed
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Quick task 5 COMPLETE — added demo credentials box to TeamFlow login
+Stopped at: v5.0 roadmap created — 6 phases (41-46), 19 requirements mapped, ready to plan Phase 41
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
