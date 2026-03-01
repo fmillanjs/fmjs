@@ -23,7 +23,7 @@ Requirements for v5.0. Each maps to roadmap phases.
 ### AI Pipeline
 
 - [x] **PIPE-01**: AI automatically qualifies a submitted lead with an ICP score (0–100)
-- [ ] **PIPE-02**: ICP score is displayed as a horizontal colored bar with numeric label
+- [x] **PIPE-02**: ICP score is displayed as a horizontal colored bar with numeric label
 - [ ] **PIPE-03**: User can expand a "Why this score?" card showing matched and weak ICP criteria
 - [x] **PIPE-04**: AI automatically enriches CRM fields: company size, industry, tech stack, pain points
 - [ ] **PIPE-05**: Enrichment is displayed in a structured card with intent signals as badges
@@ -85,7 +85,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEAD-02 | Phase 44 | Complete |
 | LEAD-03 | Phase 44 | Complete |
 | PIPE-01 | Phase 43 | Complete |
-| PIPE-02 | Phase 45 | Pending |
+| PIPE-02 | Phase 45 | Complete |
 | PIPE-03 | Phase 45 | Pending |
 | PIPE-04 | Phase 43 | Complete |
 | PIPE-05 | Phase 45 | Pending |

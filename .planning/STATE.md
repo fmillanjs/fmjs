@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T12:15:00.000Z"
+last_updated: "2026-03-01T12:21:56.476Z"
 progress:
-  total_phases: 13
+  total_phases: 14
   completed_phases: 10
-  total_plans: 55
-  completed_plans: 53
+  total_plans: 59
+  completed_plans: 54
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 45 of 46 (Next.js Frontend)
-Plan: 1 of 3 COMPLETE (Bootstrap + iron-session auth — Plan 45-01 DONE)
-Status: Phase 45 Plan 01 COMPLETE — Next.js 16 app bootstrapped, iron-session auth working, build clean. AUTH-01, AUTH-02, AUTH-03 satisfied. Ready for Plan 45-02 (leads table + CRM dashboard).
-Last activity: 2026-03-01 — Plan 45-01 complete, auth flow verified end-to-end
+Plan: 2 of 3 COMPLETE (CRM Dashboard — LeadTable, ScoreBar, LeadInputForm — Plan 45-02 DONE)
+Status: Phase 45 Plan 02 COMPLETE — /leads RSC dashboard with server-fetched lead table, ICP ScoreBar, and zod-validated input form wired to createLead Server Action. Build clean. Ready for Plan 45-03 (lead detail page + SSE streaming).
+Last activity: 2026-03-01 — Plan 45-02 complete, CRM dashboard verified
 
 Progress: [█████░░░░░] 24%
 
@@ -44,7 +44,7 @@ Progress: [█████░░░░░] 24%
 | 42 Claude API Integration | 2/2 | 17 min | 9 min |
 | 43 Enrichment Pipeline | 3/3 | 10 min | 3 min |
 | 44 NestJS REST + SSE | 2/2 complete | 10 min | 5 min |
-| 45 Next.js Frontend | 1/3 | 7 min | 7 min |
+| 45 Next.js Frontend | 2/3 | 9 min | 5 min |
 
 *Updated after each plan completion*
 
@@ -92,6 +92,9 @@ Progress: [█████░░░░░] 24%
 - **45-01:** turbopack.root set in next.config.ts — silences multiple-lockfiles workspace root warning in monorepo context
 - **45-01:** Radix Color tokens override Shadcn oklch defaults — CSS variables point to Radix slate/blue/red/green/amber scale steps
 - **45-01:** web/.gitignore pattern changed from .env* to .env*.local — allows .env.example to be tracked in git while blocking .env.local secrets
+- **45-02:** leads/page.tsx uses explicit LeadSummary[] type annotation — TypeScript strict mode requires it when let [] is reassigned inside try/catch
+- **45-02:** createLead Server Action calls revalidatePath('/leads') before returning — ensures table refreshes if user navigates back
+- **45-02:** LeadInputForm navigates to /leads/:id on submit via router.push — leads user directly to SSE pipeline monitor (Plan 03)
 
 ### Pending Todos
 
@@ -110,7 +113,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 45-01-PLAN.md — Next.js 16 bootstrap + iron-session auth verified. Plan 45-01 COMPLETE. Ready to execute Plan 45-02 (leads table CRM dashboard).
+Stopped at: Completed 45-02-PLAN.md — CRM dashboard with LeadTable, ScoreBar, LeadInputForm, and createLead Server Action. Plan 45-02 COMPLETE. Ready to execute Plan 45-03 (lead detail page + SSE pipeline monitor).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
