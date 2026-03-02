@@ -29,13 +29,13 @@ export default function HomePage() {
                 Featured Projects
               </h2>
               <p className="text-lg text-muted-foreground">
-                Two production-ready SaaS applications showcasing full-stack expertise
+                Three production-ready SaaS applications showcasing full-stack and AI engineering expertise
               </p>
             </div>
           </AnimateIn>
 
           {/* Project Cards Grid */}
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* TeamFlow Card */}
             <StaggerItem>
             <Link
@@ -119,6 +119,55 @@ export default function HomePage() {
                     'Prisma',
                     'react-markdown',
                     'Shiki',
+                    'Docker',
+                    'Tailwind',
+                  ].map((tech) => (
+                    <Badge key={tech} variant="secondary">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="text-[var(--matrix-green)] font-medium hover:underline">
+                  Read full case study →
+                </div>
+              </EvervaultCard>
+            </Link>
+            </StaggerItem>
+
+            {/* AI SDR Card */}
+            <StaggerItem>
+            <Link
+              href="/projects/ai-sdr"
+              className="card-glow-hover block border-2 border-[var(--matrix-green-border)] rounded-lg p-8 bg-gradient-to-br from-[var(--matrix-green-subtle)] to-transparent"
+            >
+              <EvervaultCard className="min-h-full">
+                <div className="mb-6">
+                  <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                    AI SDR
+                  </h3>
+                  <p className="text-base text-muted-foreground">
+                    AI Sales Development Representative System
+                  </p>
+                </div>
+
+                <p className="text-foreground mb-6 leading-relaxed">
+                  A standalone AI SDR replacement system using the Claude API for lead qualification,
+                  CRM enrichment, and personalized cold email generation. Features real-time SSE token
+                  streaming, Zod structured outputs at temperature 0, and a pre-seeded demo with
+                  ICP scores across 8 industries.
+                </p>
+
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {[
+                    'Next.js 16',
+                    'NestJS',
+                    'TypeScript',
+                    'Claude API',
+                    'Prisma',
+                    'PostgreSQL',
+                    'SSE',
                     'Docker',
                     'Tailwind',
                   ].map((tech) => (

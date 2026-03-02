@@ -14,7 +14,7 @@ export default function ProjectsPage() {
         <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Projects</h1>
         <p className="text-xl text-muted-foreground">Things I&apos;ve built</p>
       </AnimateIn>
-      <StaggerContainer className="grid gap-6 md:grid-cols-2">
+      <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <StaggerItem>
           <ProjectCard
             title="TeamFlow"
@@ -33,6 +33,16 @@ export default function ProjectsPage() {
             href="/projects/devcollab"
             featured
             screenshot={{ src: '/screenshots/devcollab-workspace.png', alt: 'DevCollab workspace' }}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <ProjectCard
+            title="AI SDR"
+            description="An AI Sales Development Representative system using Claude for lead qualification, CRM enrichment, and personalized email generation with real-time SSE streaming"
+            techStack={['Next.js 16', 'NestJS', 'TypeScript', 'Claude API', 'Prisma', 'PostgreSQL', 'SSE', 'Docker']}
+            href="/projects/ai-sdr"
+            featured
+            screenshot={{ src: '/screenshots/ai-sdr-leads.png', alt: 'AI SDR CRM dashboard with lead scoring' }}
           />
         </StaggerItem>
       </StaggerContainer>
