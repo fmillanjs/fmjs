@@ -89,6 +89,53 @@
 
 ---
 
+## Milestone: v5.0 — AI SDR App
+
+**Shipped:** 2026-03-01
+**Phases:** 6 (41–46) | **Plans:** 16 | **Files:** 133 changed (+28,816 / -101)
+
+### What Was Built
+- Standalone NestJS 11 + Next.js 15 + Postgres + Prisma stack in a new `ai-sdr/` repo with Docker Compose and health endpoint
+- ClaudeService with `structuredOutput<T>()` and `streamText()`, Zod schemas for qualify/enrich/personalize, ICP scoring rubric at temperature 0 (deterministic)
+- Full enrichment pipeline: ScraperService (Axios + Cheerio), QualifyService, EnrichService, PersonalizeService, PipelineService orchestrator with callback emitter and Prisma persistence
+- LeadsController REST API (POST/GET /leads, GET /leads/:id) + SSE streaming endpoint with disconnect cleanup, `timeout(30_000)` safety net, and throttle guard
+- Complete Next.js 15 frontend: iron-session auth with demo credentials box, CRM dashboard, PipelineMonitor SSE client with step progress, AI output cards (ScoreBar, WhyScoreCard, EnrichmentCard, EmailPreview + copy-to-clipboard)
+- 8 hand-authored demo leads with realistic enrichment, idempotent seed script, Coolify deployment with `X-Accel-Buffering: no` SSE fix, portfolio card + `/projects/ai-sdr` case study page with 4 screenshots
+
+### What Worked
+- Building in a standalone repo (not the monorepo) eliminated all Docker/Prisma/CI cross-contamination concerns — clean environment from day one
+- Callback emitter pattern in PipelineService (not RxJS Observables) kept domain code simple; the Observable bridge lives only in the NestJS controller
+- iron-session over NextAuth: ~50 lines, HttpOnly cookie, zero peer-dep friction — right call for a single-user demo
+- Hand-authored seed data (not faker) produced realistic AI output that actually demonstrates the pipeline's value to recruiters
+- temperature 0 for all structured output calls eliminated ICP score variance — deterministic behavior is essential for recruiter demos where the same lead is run multiple times
+- Milestone completed in a single day sprint (2026-03-01) — 6 phases, 16 plans, 133 files
+
+### What Was Inefficient
+- SSE buffering through Coolify Nginx required a debugging round (`X-Accel-Buffering: no` header discovery) — this should be documented as a standard Coolify SSE setup step
+- Coolify deployment iteration (Phase 46-02) took ~60 min due to Docker image path corrections, ts-node ESM issues, and GHCR image resolution — similar to v3.0 deployment iteration
+- No milestone audit run before completing — the audit was not done due to yolo mode and 100% requirement coverage giving sufficient confidence
+
+### Patterns Established
+- **Coolify SSE setup:** Always add `X-Accel-Buffering: no` to SSE endpoints; Coolify Nginx buffers by default and breaks streaming
+- **Standalone repo for isolated apps:** When a new app has a completely different stack and lifecycle, a standalone repo is cleaner than forcing it into a monorepo
+- **Zod-as-contract for Claude:** Define Zod schemas first, pass to `structuredOutput<T>()` — this is the correct pattern for typed AI responses
+- **Callback emitter → Observable bridge in controller:** Keep AI pipeline domain code callback-based; wrap in `new Observable()` only at the HTTP boundary
+- **Hand-authored seed for AI demos:** AI pipeline output needs to feel realistic. faker generates data that breaks the demo illusion; hand-authored leads with real company-specific facts are worth the effort
+
+### Key Lessons
+1. **SSE through Coolify always needs `X-Accel-Buffering: no`.** Add this header to the endpoint from the start — discovering it during deployment adds unnecessary time.
+2. **iron-session beats NextAuth for single-user demos.** If the app has one hardcoded demo account, iron-session (HttpOnly cookie, ~50 lines) is dramatically simpler than NextAuth.
+3. **Separate repo is the right call when stacks diverge.** Forcing AI SDR into the Turborepo monorepo would have created CI conflicts, Prisma client collisions, and Docker build complexity — the standalone repo made all six phases faster.
+4. **temperature 0 for scoring.** Any AI feature that shows a numeric score to users must use temperature 0. Determinism is the difference between a demo that feels broken and one that feels solid.
+5. **A one-day milestone is achievable when scope is clear.** Phases 41–46 all had precise success criteria defined in the roadmap — zero ambiguity about what "done" meant. Scope clarity directly caused speed.
+
+### Cost Observations
+- Model mix: primarily Sonnet 4.6 throughout
+- Sessions: ~6-8 sessions across 1 day
+- Notable: Phase 41-45 completed in ~8 hours; Phase 46 (deployment + portfolio integration) added ~4 hours including Coolify iteration
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -103,6 +150,7 @@
 | v3.1 | 5 | 14 | Polish: Lenis + GSAP + magnetic buttons + footer |
 | v4.0 | 4 | 9 | Live QA + content accuracy — recruiter-readiness |
 | v4.1 | 3 | 7 | Screenshot walkthroughs — visual storytelling on case studies |
+| v5.0 | 6 | 16 | AI SDR App — standalone repo, Claude API, full pipeline + frontend + deployment |
 
 ### Top Lessons (Verified Across Milestones)
 

@@ -1,5 +1,14 @@
 # Milestones
 
+## v5.0 AI SDR App (Shipped: 2026-03-02)
+
+**Phases completed:** 6 phases, 16 plans, 2 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
 ## v2.0 DevCollab (Shipped: 2026-02-18)
 
 **Phases:** 14–21 (8 phases, 32 plans)

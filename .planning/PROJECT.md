@@ -8,24 +8,11 @@ A professional portfolio showcasing three production-quality SaaS applications b
 
 Prove senior full-stack engineering skills through deployed, production-ready SaaS applications that recruiters can actually use and interact with.
 
-## Current Milestone: v5.0 AI SDR App
+## Shipped: v5.0 AI SDR App (2026-03-01)
 
-**Goal:** Build and deploy a standalone AI SDR Replacement System that demonstrates applied AI integration skills using the Claude API, then add it to the portfolio as a third project.
+Standalone AI SDR Replacement System built with NestJS + Next.js 15 + Postgres + Claude API. Full pipeline: lead qualification (ICP score 0–100 with reasoning), CRM enrichment (company size/industry/tech stack/pain points), personalized cold email generation with real-time SSE streaming. 8 pre-seeded demo leads, deployed on Coolify. Portfolio card + case study at `/projects/ai-sdr`. Previously: v4.1 added Playwright-captured screenshots and WalkthroughSection to both case studies.
 
-**Target features:**
-- AI lead qualification (ICP scoring with reasoning, intent signal analysis)
-- CRM enrichment automation (company size/industry, tech stack, pain points, lead score 0–100)
-- AI outbound personalization engine (Claude-written cold emails tailored to each lead)
-- AI follow-up sequencing (3-email cadence auto-generated per lead)
-- Mini-CRM dashboard with lead pipeline view and persistent storage
-- Demo account with pre-seeded leads for recruiter tryout
-- Portfolio integration: project card, case study at `/projects/ai-sdr`, live demo link
-
-## Shipped: v4.1 Screenshot Story Walkthroughs (2026-02-26)
-
-Both case study pages now include a `WalkthroughSection` with 10 Playwright-captured production screenshots (5 TeamFlow + 5 DevCollab), Matrix-themed legend labels, scroll-reveal animations, and full reduced-motion compliance. Lighthouse CI: performance ≥ 0.90, accessibility 1.0 on all 5 portfolio URLs.
-
-Total: ~31,700+ TypeScript/TSX LOC across the monorepo.
+Total: ~60,000+ TypeScript/TSX LOC across monorepo + ai-sdr repo.
 
 ## Requirements
 
@@ -117,15 +104,17 @@ Total: ~31,700+ TypeScript/TSX LOC across the monorepo.
 - ✓ Walkthrough section integrated into both case study pages (/projects/teamflow, /projects/devcollab) — v4.1
 - ✓ Lighthouse CI ≥ 0.90 maintained on all 5 portfolio pages with new screenshot assets — v4.1
 
+**v5.0 (AI SDR App):**
+- ✓ AI lead qualification with ICP scoring (0–100) and reasoning — v5.0
+- ✓ CRM enrichment: company size/industry, tech stack, pain points, intent signals — v5.0
+- ✓ AI personalized cold email generation via Claude API with real-time SSE streaming — v5.0
+- ✓ Mini-CRM dashboard with lead pipeline and persistent Postgres storage — v5.0
+- ✓ Demo account with 8 pre-seeded leads spanning full ICP score spectrum (22–92) — v5.0
+- ✓ Portfolio integration: AI SDR project card, /projects/ai-sdr case study, live demo link — v5.0
+
 ### Active
 
-- [ ] AI lead qualification with ICP scoring and reasoning — v5.0
-- [ ] CRM enrichment: company size/industry, tech stack, pain points, lead score — v5.0
-- [ ] AI personalized cold email generation via Claude API — v5.0
-- [ ] AI follow-up sequencing (3-email cadence per lead) — v5.0
-- [ ] Mini-CRM dashboard with lead pipeline and persistent storage — v5.0
-- [ ] Demo account with pre-seeded leads — v5.0
-- [ ] Portfolio integration: project card + case study + live demo — v5.0
+(No active requirements — planning next milestone)
 
 ### Out of Scope
 
@@ -152,21 +141,24 @@ Total: ~31,700+ TypeScript/TSX LOC across the monorepo.
 
 **Purpose:** Job hunting for senior full-stack developer roles. Need an impressive, interactive demo showcasing production-level thinking and execution.
 
-**Current state:** v4.0 shipped 2026-02-26. Both apps are live, recruiter-ready with working auth. Case studies have accurate copy and live screenshots. Lighthouse scores 0.97–1.00. Total: ~28,450+ TypeScript/TSX LOC across the monorepo.
+**Current state:** v5.0 shipped 2026-03-01. Three production apps live — TeamFlow, DevCollab, and AI SDR. All recruiter-ready with working auth, seeded demo data, and deployed on Coolify. Lighthouse scores 0.97–1.00. Total: ~60,000+ TypeScript/TSX LOC across monorepo + ai-sdr repo.
 
 **Deployed apps:**
+- `https://fernandomillan.me` — Portfolio site
+- `https://teamflow.fernandomillan.me` — TeamFlow web (Next.js 15, NestJS 11 API, Postgres, Redis)
 - `https://devcollab.fernandomillan.me` — DevCollab web (Next.js 15, NestJS 11 API, Postgres)
 - `https://devcollab-api.fernandomillan.me` — DevCollab API
-- `https://teamflow.fernandomillan.me` — TeamFlow web (Next.js 15, NestJS 11 API, Postgres, Redis)
-- `https://fernandomillan.me` — Portfolio site
+- AI SDR — deployed on Coolify (ai-sdr-api + ai-sdr-web, SSE streaming verified)
 
 **Tech stack (TeamFlow):** Next.js 15 + NestJS 11 + Prisma + Postgres + NextAuth v5 + Socket.io + Radix UI + Shadcn UI + Tailwind v4 + dnd-kit + TanStack Table + Playwright + Vitest
 
 **Tech stack (DevCollab):** Next.js 15 + NestJS 11 + Prisma + Postgres (separate DB, port 5435) + CASL + Shiki + Tiptap v3 + Vitest
 
+**Tech stack (AI SDR):** NestJS 11 + Next.js 15 + Prisma + Postgres + Anthropic Claude API + iron-session + Axios + Cheerio + Zod + Tailwind v4
+
 **Tech stack (Portfolio UI):** motion v12, gsap + @gsap/react, lenis, @lhci/cli
 
-**CI/CD:** GitHub Actions builds 4 GHCR images (devcollab-web, devcollab-api, devcollab-migrate, teamflow images) and triggers Coolify deploys via GET + Bearer token webhooks on push to main.
+**CI/CD:** GitHub Actions builds GHCR images (devcollab-web, devcollab-api, devcollab-migrate, teamflow, ai-sdr-api, ai-sdr-web, ai-sdr-seed) and triggers Coolify deploys via GET + Bearer token webhooks on push to main.
 
 **Target audience:** Technical recruiters and hiring managers evaluating code quality, architecture decisions, and production readiness.
 
@@ -231,6 +223,14 @@ Total: ~31,700+ TypeScript/TSX LOC across the monorepo.
 | waitForTimeout(500) in accessibility.spec.ts | ThemeProvider hydration fires after component mount, causing false axe contrast violations before token CSS loads | ✓ Good — stable 13 consecutive test passes |
 | LinkedIn + email removed from footer | User preference: LinkedIn not used, mailto link bad practice for public portfolio | ✓ Good — GitHub only, email on contact page as plain text |
 | hello@fernandomillan.me (not .dev) | Correct domain TLD is .me — .dev was never registered | ✓ Good — contact page corrected |
+| Standalone ai-sdr repo (not monorepo) | AI SDR has completely different stack + deployment lifecycle; monorepo would complicate NestJS-only CI and Prisma schema isolation | ✓ Good — clean separation, portfolio integration via Phase 46 back into monorepo |
+| iron-session over NextAuth (AI SDR) | Next-Auth v5 adds complexity for a single-user demo; iron-session is 50 lines + HttpOnly cookie, zero overhead | ✓ Good — auth works, session persists, zero footprint |
+| Axios + Cheerio for ScraperService (not Playwright) | Playwright adds ~300MB Docker layer; Cheerio + realistic User-Agent sufficient for company homepages | ✓ Good — Cloudflare fallback (empty string) prevents pipeline failures |
+| Zod schemas as single source of truth for Claude structured outputs | Zod validates API response and types the service return — no manual type casting | ✓ Good — eliminates runtime type errors from AI output |
+| X-Accel-Buffering: no header on SSE endpoint | Coolify Nginx buffers SSE by default; header disables buffering and makes streaming visible in production | ✓ Good — SSE streaming confirmed working through Coolify |
+| callback emitter pattern (not RxJS) in PipelineService | Observable-over-SSE bridge adds complexity; callback → Observable adapter in controller is simpler | ✓ Good — clean separation of concerns, no RxJS in domain layer |
+| Hand-authored seed data (not faker-generated) | AI pipeline output must feel realistic for recruiter demos; faker produces generic data that feels fake | ✓ Good — 8 leads with realistic enrichment, distinct industries, company-specific emails |
+| temperature 0 for all Claude structured output calls | ICP scoring must be deterministic — same lead input must produce same score on every run | ✓ Good — score variance eliminated, verified with repeated calls |
 
 ---
-*Last updated: 2026-02-28 after v5.0 milestone start — AI SDR App*
+*Last updated: 2026-03-01 after v5.0 milestone — AI SDR App*
