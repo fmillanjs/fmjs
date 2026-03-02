@@ -80,9 +80,15 @@ None — plan executed exactly as written.
 - badge variant="secondary" used for all tech stack badges (existing Tailwind style)
 - Pre-existing TypeScript errors in e2e/ and lib/api.test.ts are out of scope — no errors in any modified files
 
-## Awaiting
+## Human Verification Results (Task 4 — APPROVED)
 
-Task 4 is `checkpoint:human-verify` — human must visually verify the portfolio pages in a browser before this plan can be marked complete.
+Human confirmed on 2026-03-01:
+- 3 project cards visible on / (TeamFlow, DevCollab, AI SDR with screenshot thumbnail)
+- /projects/ai-sdr renders with all sections (Overview, Problem, Solution, Architecture, Key Technical Decisions, Challenges, Walkthrough, Results)
+- No purple found anywhere in the new pages
+- "View Live Demo" href = https://ai-sdr.fernandomillan.me/login (correct)
+- AI SDR card found on home page at /
+- Architecture diagram renders correctly
 
 ## Self-Check
 

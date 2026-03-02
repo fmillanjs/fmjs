@@ -10,7 +10,7 @@
 - ✅ **v3.1 Portfolio Polish & Matrix Cohesion** - Phases 34-37 (shipped 2026-02-21)
 - ✅ **v4.0 Live QA & Content Polish** - Phases 34-37 (shipped 2026-02-26)
 - ✅ **v4.1 Screenshot Story Walkthroughs** - Phases 38-40 (shipped 2026-02-26)
-- 🚧 **v5.0 AI SDR App** - Phases 41-46 (in progress)
+- ✅ **v5.0 AI SDR App** - Phases 41-46 (shipped 2026-03-02)
 
 ## Phases
 
@@ -21,7 +21,7 @@ All phases 1-40 complete. See milestone archives in `.planning/milestones/`.
 
 </details>
 
-### 🚧 v5.0 AI SDR App (In Progress)
+### ✅ v5.0 AI SDR App (COMPLETE — shipped 2026-03-02)
 
 **Milestone Goal:** Build and deploy a standalone AI SDR Replacement System using the Claude API (lead qualification, CRM enrichment, personalized cold email generation), then add it to the portfolio as a third project.
 
@@ -130,9 +130,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 46-01: Seed script — 6-8 fictional leads with faker.seed(42), sequential upserts, verified score spectrum (20-95), idempotency test
-- [ ] 46-02: Coolify deployment — Docker images for ai-sdr-api and ai-sdr-web, X-Accel-Buffering: no header, SSE streaming verified end-to-end in production
-- [ ] 46-03: Portfolio integration — AI SDR project card on fernandomillan.me home page, /projects/ai-sdr case study page, PORT-03 live demo link
+- [x] 46-01: Seed script — 6-8 fictional leads with faker.seed(42), sequential upserts, verified score spectrum (20-95), idempotency test
+- [x] 46-02: Coolify deployment — Docker images for ai-sdr-api and ai-sdr-web, X-Accel-Buffering: no header, SSE streaming verified end-to-end in production
+- [x] 46-03: Portfolio integration — AI SDR project card on fernandomillan.me home page, /projects/ai-sdr case study page, PORT-03 live demo link
 
 ## Progress
 
@@ -145,4 +145,4 @@ Plans:
 | 43. Enrichment Pipeline | 3/3 | Complete    | 2026-03-01 | - |
 | 44. NestJS REST + SSE Endpoints | 2/2 | Complete    | 2026-03-01 | - |
 | 45. Next.js Frontend | 4/4 | Complete    | 2026-03-01 | - |
-| 46. Demo Seed + Portfolio Integration | 3/3 | Complete   | 2026-03-02 | - |
+| 46. Demo Seed + Portfolio Integration | 3/3 | Complete | 2026-03-02 | - |
