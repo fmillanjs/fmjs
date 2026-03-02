@@ -18,7 +18,7 @@ services:
       retries: 5
 
   ai-sdr-api:
-    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-api:latest
+    image: ghcr.io/fmillanjs/fmjs/ai-sdr-api:latest
     container_name: ai-sdr-api
     restart: unless-stopped
     depends_on:
@@ -38,7 +38,7 @@ services:
       retries: 5
 
   ai-sdr-seed:
-    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-seed:latest
+    image: ghcr.io/fmillanjs/fmjs/ai-sdr-seed:latest
     restart: "no"
     depends_on:
       ai-sdr-api:
@@ -47,7 +47,7 @@ services:
       DATABASE_URL: ${AI_SDR_DATABASE_URL}
 
   ai-sdr-web:
-    image: ghcr.io/fernandomillan-dev/fernandomillan/ai-sdr-web:latest
+    image: ghcr.io/fmillanjs/fmjs/ai-sdr-web:latest
     container_name: ai-sdr-web
     restart: unless-stopped
     depends_on:
