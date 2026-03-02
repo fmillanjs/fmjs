@@ -116,6 +116,7 @@ export const DEVCOLLAB_WALKTHROUGH_SCREENSHOTS: WalkthroughScreenshot[] = [
       },
     ],
   },
+
   {
     src: '/screenshots/devcollab-code-snippet.png',
     width: 1280,
@@ -193,6 +194,89 @@ export const DEVCOLLAB_WALKTHROUGH_SCREENSHOTS: WalkthroughScreenshot[] = [
       {
         label: 'Event Feed',
         explanation: 'The activity feed lists workspace events in order so teams stay aware of recent changes.',
+      },
+    ],
+  },
+]
+
+export const AI_SDR_WALKTHROUGH_SCREENSHOTS: WalkthroughScreenshot[] = [
+  {
+    src: '/screenshots/ai-sdr-leads.png',
+    width: 1280,
+    height: 800,
+    alt: 'AI SDR CRM dashboard showing 8 pre-seeded leads in a table with color-coded ICP score bars ranging from red (low fit) to green (high fit)',
+    steps: [
+      {
+        label: 'ICP Score Bars',
+        explanation: 'Color-coded bars (green 70+, amber 40-69, red below 40) show qualification fit at a glance — no column sorting needed to identify top prospects.',
+      },
+      {
+        label: 'Pre-Seeded Demo Data',
+        explanation: 'Eight leads spanning FinTech, Healthcare, DevTools, and Logistics are loaded on first login — no setup required for recruiters to explore the full feature set.',
+      },
+      {
+        label: 'Status Column',
+        explanation: 'The status badge (pending / processing / complete / failed) reflects the pipeline state so reps know which leads have AI outputs ready to review.',
+      },
+    ],
+  },
+  {
+    src: '/screenshots/ai-sdr-pipeline.png',
+    width: 1280,
+    height: 800,
+    alt: 'AI SDR lead detail page showing real-time pipeline progress with step indicators for qualify, enrich, and personalize steps, one step completed and one in progress',
+    steps: [
+      {
+        label: 'Step Progress Indicators',
+        explanation: 'Each pipeline step (qualify, enrich, personalize) shows a spinner while Claude API runs, then a checkmark when complete — giving the user live feedback without polling.',
+      },
+      {
+        label: 'SSE Streaming',
+        explanation: 'Progress arrives via Server-Sent Events — the NestJS backend streams step completion events as the pipeline runs, not in a single batch at the end.',
+      },
+      {
+        label: 'Non-Blocking Submission',
+        explanation: 'The lead is created immediately with status pending, then the pipeline triggers on first SSE connection — the form submission returns instantly with no artificial wait.',
+      },
+    ],
+  },
+  {
+    src: '/screenshots/ai-sdr-score.png',
+    width: 1280,
+    height: 800,
+    alt: 'AI SDR lead detail page showing the ICP ScoreCard with a colored horizontal score bar at 85 and the Why This Score accordion expanded with matched and weak criteria bullets',
+    steps: [
+      {
+        label: 'ICP Score Bar',
+        explanation: 'The horizontal bar renders in green (70+), amber (40-69), or red (below 40) and shows the numeric score — communicating qualification strength without any jargon.',
+      },
+      {
+        label: 'Why This Score Accordion',
+        explanation: 'The collapsible card lists matched ICP criteria (green checkmarks) and weak criteria (amber warnings) — so reps understand why Claude scored the lead, not just what the score is.',
+      },
+      {
+        label: 'Structured Output',
+        explanation: 'Score and reasoning come from Claude structured outputs via Zod schemas at temperature 0 — the same input always produces the same score, making the ICP rubric auditable and deterministic.',
+      },
+    ],
+  },
+  {
+    src: '/screenshots/ai-sdr-email.png',
+    width: 1280,
+    height: 800,
+    alt: 'AI SDR lead detail page showing the EmailPreview card with a fully generated personalized cold email and a Copy Email button',
+    steps: [
+      {
+        label: 'Streaming Email Preview',
+        explanation: 'The email arrives token-by-token from Claude via SSE — the user watches it being written in real time rather than waiting for a completed response.',
+      },
+      {
+        label: 'Company-Specific Copy',
+        explanation: 'The email references company-specific facts from the enrichment step (funding stage, tech stack, pain points) — not generic templates that buyers ignore.',
+      },
+      {
+        label: 'One-Click Copy',
+        explanation: 'The Copy Email button uses navigator.clipboard.writeText() to transfer the full email to clipboard instantly — ready to paste into any outreach tool.',
       },
     ],
   },
