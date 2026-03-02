@@ -16,6 +16,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ai-sdr-internal
 
   ai-sdr-api:
     image: ghcr.io/fmillanjs/fmjs/ai-sdr-api:latest
@@ -36,15 +38,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ai-sdr-internal
+      - coolify
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.ai-sdr-api.rule=Host(`ai-sdr-api.fernandomillan.me`)'
+      - 'traefik.http.routers.ai-sdr-api.entrypoints=https'
+      - 'traefik.http.routers.ai-sdr-api.tls=true'
+      - 'traefik.http.routers.ai-sdr-api.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.ai-sdr-api.loadbalancer.server.port=3001'
 
   ai-sdr-seed:
     image: ghcr.io/fmillanjs/fmjs/ai-sdr-seed:latest
-    restart: "no"
+    restart: 'no'
     depends_on:
       ai-sdr-api:
         condition: service_healthy
     environment:
       DATABASE_URL: ${AI_SDR_DATABASE_URL}
+    networks:
+      - ai-sdr-internal
 
   ai-sdr-web:
     image: ghcr.io/fmillanjs/fmjs/ai-sdr-web:latest
@@ -62,10 +76,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ai-sdr-internal
+      - coolify
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.ai-sdr-web.rule=Host(`ai-sdr.fernandomillan.me`)'
+      - 'traefik.http.routers.ai-sdr-web.entrypoints=https'
+      - 'traefik.http.routers.ai-sdr-web.tls=true'
+      - 'traefik.http.routers.ai-sdr-web.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.ai-sdr-web.loadbalancer.server.port=3000'
 
 volumes:
   ai-sdr-pgdata:
 
 networks:
-  default:
-    name: ai-sdr-network
+  ai-sdr-internal:
+    name: ai-sdr-internal
+  coolify:
+    external: true
