@@ -13,4 +13,4 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
-CMD ["node_modules/.bin/ts-node", "--skip-project", "scripts/seed.ts"]
+CMD ["node_modules/.bin/ts-node", "--transpile-only", "--compiler-options", "{\"module\":\"commonjs\"}", "scripts/seed.ts"]
