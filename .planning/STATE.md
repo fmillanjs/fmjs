@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: AI SDR App
 status: unknown
-last_updated: "2026-03-01T22:36:45.348Z"
+last_updated: "2026-03-02T04:57:08.092Z"
 progress:
   total_phases: 15
   completed_phases: 11
   total_plans: 62
-  completed_plans: 57
+  completed_plans: 58
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28 after v5.0 start)
 ## Current Position
 
 Phase: 46 of 46 (Demo Seed + Portfolio Integration) — IN PROGRESS
-Plan: 2 of 3 COMPLETE (Docker + Coolify Deployment — Plan 46-02 tasks 1+2 executed; Task 3 is checkpoint:human-verify awaiting Coolify deployment)
-Status: Phase 46 IN PROGRESS — Plan 46-02 complete (code tasks). Docker infrastructure created: ai-sdr/web/Dockerfile (Next.js standalone + NEXT_PUBLIC_API_URL build ARG), ai-sdr/Dockerfile.seed (ts-node runner), ai-sdr/coolify-compose.yml (4-service stack postgres→api→seed→web), GitHub Actions build-and-push-ai-sdr and deploy-ai-sdr jobs. Ready for Plan 46-02 Task 3 human checkpoint (Coolify setup + SSE verification) then Plan 46-03 (portfolio case study).
-Last activity: 2026-03-01 — Plan 46-02 executed — Docker + CI/CD infrastructure complete
+Plan: 3 of 3 — Plan 46-02 fully COMPLETE (all tasks including human-verify checkpoint approved). Ready for Plan 46-03 (portfolio case study).
+Status: Phase 46 IN PROGRESS — Plan 46-02 complete (all 3 tasks). AI SDR deployed to production: https://ai-sdr.fernandomillan.me (web) and https://ai-sdr-api.fernandomillan.me (API). SSE streaming verified with X-Accel-Buffering: no. 8 seeded leads visible after login. 6 fix commits applied during deployment (Traefik labels, GHCR paths, ts-node ESM, prisma generate, build context isolation). Ready for Plan 46-03 portfolio case study.
+Last activity: 2026-03-01 — Plan 46-02 human verification approved — AI SDR live in production
 
 Progress: [█████░░░░░] 24%
 
@@ -49,6 +49,7 @@ Progress: [█████░░░░░] 24%
 *Updated after each plan completion*
 | Phase 46 P01 | 2 | 2 tasks | 2 files |
 | Phase 46 P02 | 8 | 2 tasks | 4 files |
+| Phase 46 P02 | 60 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,11 @@ Progress: [█████░░░░░] 24%
 - **46-02:** Seed Dockerfile uses ts-node --skip-project flag — avoids needing tsconfig.json in runner stage
 - **46-02:** coolify-compose dependency chain: postgres healthy → api healthy → seed completed_successfully → web starts
 - **46-02:** build-and-push-ai-sdr depends only on [test] (not lighthouse) — AI SDR CI independent of Teamflow Lighthouse
+- **46-02:** Traefik labels + coolify-overlay external network required in Coolify compose for custom domain routing
+- **46-02:** ts-node --compiler-options '{"module":"commonjs"}' required on Alpine — --skip-project alone causes ERR_REQUIRE_ESM
+- **46-02:** GHCR image paths in compose must match github.repository format (owner/repo) — ghcr.io/owner/repo/image-name
+- **46-02:** web/ must be excluded from api Docker build context via .dockerignore — prevents node_modules conflict
+- **46-02:** AI SDR live at https://ai-sdr.fernandomillan.me — PORT-03 dependency satisfied
 
 ### Pending Todos
 
@@ -128,7 +134,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 46-02-PLAN.md tasks 1+2 — Docker infrastructure (web Dockerfile, seed Dockerfile, coolify-compose.yml, CI/CD jobs). Task 3 is checkpoint:human-verify requiring Coolify deployment setup. Ready for 46-02 human checkpoint then Plan 46-03 (portfolio case study).
+Stopped at: Completed 46-02-PLAN.md all 3 tasks — Docker infrastructure deployed to Coolify, SSE streaming verified in production. Ready for Plan 46-03 (portfolio case study — "View Live Demo" button at https://ai-sdr.fernandomillan.me).
 Resume file: None
 
 Previous milestones: v1.0 COMPLETE | v1.1 COMPLETE | v2.0 COMPLETE | v2.5 COMPLETE | v3.0 COMPLETE | v3.1 COMPLETE | v4.0 COMPLETE | v4.1 COMPLETE
