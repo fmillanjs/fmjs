@@ -1,0 +1,91 @@
+name: Update Visual Snapshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-snapshots:
+    name: Update Playwright Snapshots
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate --schema=packages/database/prisma/schema.prisma
+
+      - name: Start Docker services
+        run: docker compose up -d postgres redis
+
+      - name: Wait for PostgreSQL
+        run: timeout 60 bash -c 'until docker exec teamflow-postgres pg_isready -U postgres; do sleep 1; done'
+
+      - name: Wait for Redis
+        run: timeout 60 bash -c 'until docker exec teamflow-redis redis-cli ping; do sleep 1; done'
+
+      - name: Run database migrations
+        run: cd packages/database && npx prisma db push
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
+
+      - name: Seed database
+        run: cd packages/database && npm run seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
+
+      - name: Build API
+        run: cd apps/api && npm run build
+
+      - name: Start API server
+        run: |
+          cd apps/api
+          npm run start &
+          echo $! > api.pid
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
+          REDIS_URL: redis://localhost:6380
+          JWT_SECRET: test-secret-min-32-chars-required-for-jwt
+          PORT: 3001
+
+      - name: Wait for API health check
+        run: timeout 60 bash -c 'until curl -f http://localhost:3001/api/health; do sleep 2; done'
+
+      - name: Install Playwright browsers
+        run: cd apps/web && npx playwright install --with-deps chromium
+
+      - name: Update visual regression snapshots
+        run: cd apps/web && npx playwright test e2e/portfolio/visual-regression.spec.ts e2e/dashboard/visual-regression.spec.ts --update-snapshots
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5434/teamflow
+          NEXTAUTH_SECRET: test-secret-min-32-chars-required-for-jwt
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          JWT_SECRET: test-secret-min-32-chars-required-for-jwt
+
+      - name: Commit updated snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/web/e2e/**/*-snapshots/*.png
+          git diff --staged --quiet || git commit -m "chore(snapshots): update visual regression baselines"
+          git push
+
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f apps/api/api.pid ]; then
+            kill $(cat apps/api/api.pid) || true
+          fi
+          docker compose down postgres redis
