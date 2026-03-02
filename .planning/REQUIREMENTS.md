@@ -38,9 +38,9 @@ Requirements for v5.0. Each maps to roadmap phases.
 
 ### Portfolio Integration
 
-- [ ] **PORT-01**: Portfolio home page includes AI SDR as a third project card
-- [ ] **PORT-02**: Case study page at `/projects/ai-sdr` with tech stack, architecture decisions, and screenshots
-- [ ] **PORT-03**: Portfolio project card links to the deployed live demo
+- [x] **PORT-01**: Portfolio home page includes AI SDR as a third project card
+- [x] **PORT-02**: Case study page at `/projects/ai-sdr` with tech stack, architecture decisions, and screenshots
+- [x] **PORT-03**: Portfolio project card links to the deployed live demo
 
 ## v2 Requirements
 
@@ -94,9 +94,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PIPE-08 | Phase 45 | Complete |
 | DEMO-01 | Phase 46 | Complete |
 | DEMO-02 | Phase 46 | Complete |
-| PORT-01 | Phase 46 | Pending |
-| PORT-02 | Phase 46 | Pending |
-| PORT-03 | Phase 46 | Pending |
+| PORT-01 | Phase 46 | Complete |
+| PORT-02 | Phase 46 | Complete |
+| PORT-03 | Phase 46 | Complete |
 
 **Coverage:**
 - v1 requirements: 19 total
